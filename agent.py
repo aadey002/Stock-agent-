@@ -51,7 +51,7 @@ ATR_LENGTH = 14
 ENTRY_BAND_ATR = 0.5   # entry zone = close ± 0.5 * ATR
 STOP_ATR = 1.5         # guard rail = bar extreme ± 1.5 * ATR
 HOLD_DAYS = 5          # time stop (bars)
-PRICE_TOL_PCT = 0.003  # 0.3% tolerance for price confluence
+PRICE_TOL_PCT = 0.008  # 0.8% tolerance for price confluence (looser)
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -173,7 +173,7 @@ def atr(bars: List[Bar], length: int = ATR_LENGTH) -> List[float]:
 
 
 def find_last_swing_low_high(
-    bars: List[Bar], lookback: int = 120
+    bars: List[Bar], lookback: int = 250
 ) -> Tuple[Tuple[float, date], Tuple[float, date]]:
     """Simple swing detector: min low and max high over recent window."""
     recent = bars[-lookback:] if len(bars) >= lookback else bars
@@ -418,9 +418,9 @@ def build_confluence_dataset(
     sma50 = sma(closes, 50)
     atr14 = atr(bars, ATR_LENGTH)
 
-    # Use last swing low/high as anchors
+    # Use last swing low/high as anchors (now over ~1 trading year)
     (swing_low, swing_low_date), (swing_high, swing_high_date) = \
-        find_last_swing_low_high(bars, lookback=120)
+        find_last_swing_low_high(bars, lookback=250)
     print(
         f"[INFO] Last swing low {swing_low:.2f} on {swing_low_date}, "
         f"high {swing_high:.2f} on {swing_high_date}"
@@ -433,7 +433,7 @@ def build_confluence_dataset(
     time_windows = gann_time_windows(
         pivot_date=swing_low_date,
         counts=[30, 45, 60, 90, 120, 144, 180, 225, 240, 270, 288, 315, 360],
-        half_width_days=2,
+        half_width_days=4,  # wider timing windows (±4 days)
     )
     print(
         f"[INFO] Geometry levels: {len(geom_levels)}, "
@@ -588,8 +588,8 @@ def main():
     symbol_env = os.environ.get("SYMBOLS", "SPY")
     symbol = symbol_env.split(",")[0].strip().upper() or "SPY"
 
-    # Fetch ~1 year of data for confluence analysis
-    start = (date.today() - timedelta(days=365)).isoformat()
+    # Fetch ~3 years of data for confluence analysis
+    start = (date.today() - timedelta(days=3 * 365)).isoformat()
     bars = tiingo_prices(symbol, start, token)
     if not bars:
         print("[WARN] No data returned from Tiingo.")
@@ -611,4 +611,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
