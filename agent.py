@@ -33,6 +33,8 @@ from datetime import date, datetime, timedelta
 from typing import List, Tuple
 
 import urllib.request
+import json
+from statistics import median
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -52,6 +54,33 @@ ENTRY_BAND_ATR = 0.5   # entry zone = close ± 0.5 * ATR
 STOP_ATR = 1.5         # guard rail = bar extreme ± 1.5 * ATR
 HOLD_DAYS = 5          # time stop (bars)
 PRICE_TOL_PCT = 0.008  # 0.8% tolerance for price confluence (looser)
+# ---------------------------------------------------------------------------
+# Tuning grids (Light / Medium / Deep)
+# ---------------------------------------------------------------------------
+
+LIGHT_GRID = [
+    {"ENTRY_BAND_ATR": 0.5, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.4, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.6, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.5, "STOP_ATR": 1.2, "HOLD_DAYS": 4, "PRICE_TOL_PCT": 0.008},
+]
+
+MEDIUM_GRID = [
+    {"ENTRY_BAND_ATR": 0.4, "STOP_ATR": 1.2, "HOLD_DAYS": 4, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.4, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.4, "STOP_ATR": 2.0, "HOLD_DAYS": 7, "PRICE_TOL_PCT": 0.010},
+    {"ENTRY_BAND_ATR": 0.5, "STOP_ATR": 1.2, "HOLD_DAYS": 4, "PRICE_TOL_PCT": 0.008},
+    {"ENTRY_BAND_ATR": 0.5, "STOP_ATR": 1.5, "HOLD_DAYS": 7, "PRICE_TOL_PCT": 0.010},
+    {"ENTRY_BAND_ATR": 0.6, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
+]
+
+DEEP_GRID = [
+    {"ENTRY_BAND_ATR": eb, "STOP_ATR": st, "HOLD_DAYS": hd, "PRICE_TOL_PCT": pt}
+    for eb in (0.4, 0.5, 0.6)
+    for st in (1.2, 1.5, 2.0)
+    for hd in (4, 5, 7)
+    for pt in (0.008, 0.010)
+]
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -579,6 +608,158 @@ def save_confluence_trades(trades: List[Trade]) -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Performance & tuning helpers
+# ---------------------------------------------------------------------------
+
+def trade_r_multiple(trade):
+    """
+    trade is a dict like the ones you write to portfolio_confluence.csv:
+    requires EntryLow, EntryHigh, Stop, PNL.
+    """
+    entry_low = trade.get("EntryLow")
+    entry_high = trade.get("EntryHigh")
+    stop = trade.get("Stop")
+    pnl = trade.get("PNL")
+
+    if None in (entry_low, entry_high, stop, pnl):
+        return None
+
+    entry_mid = (entry_low + entry_high) / 2.0
+    risk = abs(entry_mid - stop)
+    if risk <= 0:
+        return None
+    return pnl / risk
+
+
+def evaluate_confluence_performance(trades, bars):
+    """
+    trades: list of dicts (playbook trades you already build)
+    bars:   list of Bar or dict with fields date, close.
+    """
+    if not trades:
+        summary = {
+            "total_trades": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_rate": 0.0,
+            "avg_pnl": 0.0,
+            "median_pnl": 0.0,
+            "max_drawdown": 0.0,
+            "avg_r": 0.0,
+            "best_r": 0.0,
+            "worst_r": 0.0,
+            "avg_hold_days": 0.0,
+        }
+    else:
+        pnls = [t["PNL"] for t in trades]
+        total_trades = len(trades)
+        wins = sum(1 for t in trades if t["PNL"] > 0)
+        losses = sum(1 for t in trades if t["PNL"] < 0)
+
+        win_rate = wins / total_trades * 100.0
+        avg_pnl = sum(pnls) / total_trades
+        med_pnl = median(pnls)
+
+        # equity curve max drawdown
+        equity = 0.0
+        peak = 0.0
+        max_dd = 0.0
+        for t in trades:
+            equity += t["PNL"]
+            if equity > peak:
+                peak = equity
+            dd = peak - equity
+            if dd > max_dd:
+                max_dd = dd
+
+        # R-multiples
+        r_vals = [trade_r_multiple(t) for t in trades]
+        r_vals = [r for r in r_vals if r is not None]
+        if r_vals:
+            avg_r = sum(r_vals) / len(r_vals)
+            best_r = max(r_vals)
+            worst_r = min(r_vals)
+        else:
+            avg_r = best_r = worst_r = 0.0
+
+        # average hold length
+        hold_days = []
+        for t in trades:
+            ed = t.get("EntryDate")
+            xd = t.get("ExitDate")
+            if not ed or not xd:
+                continue
+            if isinstance(ed, str):
+                ed = datetime.fromisoformat(ed).date()
+            if isinstance(xd, str):
+                xd = datetime.fromisoformat(xd).date()
+            hold_days.append((xd - ed).days)
+        avg_hold = sum(hold_days) / len(hold_days) if hold_days else 0.0
+
+        summary = {
+            "total_trades": total_trades,
+            "wins": wins,
+            "losses": losses,
+            "win_rate": win_rate,
+            "avg_pnl": avg_pnl,
+            "median_pnl": med_pnl,
+            "max_drawdown": max_dd,
+            "avg_r": avg_r,
+            "best_r": best_r,
+            "worst_r": worst_r,
+            "avg_hold_days": avg_hold,
+        }
+
+    # benchmark: SPY buy & hold
+    if bars:
+        start_close = bars[0].close if hasattr(bars[0], "close") else bars[0]["close"]
+        end_close = bars[-1].close if hasattr(bars[-1], "close") else bars[-1]["close"]
+        buy_hold_ret = (end_close - start_close) / start_close * 100.0
+        start_date = bars[0].d if hasattr(bars[0], "d") else bars[0]["date"]
+        end_date = bars[-1].d if hasattr(bars[-1], "d") else bars[-1]["date"]
+    else:
+        buy_hold_ret = 0.0
+        start_date = end_date = None
+
+    benchmark = {
+        "start_date": start_date.isoformat() if start_date else None,
+        "end_date": end_date.isoformat() if end_date else None,
+        "spy_buy_hold_return": buy_hold_ret,
+        "confluence_pnl": sum(t["PNL"] for t in trades) if trades else 0.0,
+        "sma_pnl": None,
+    }
+
+    return {"summary": summary, "benchmark": benchmark}
+
+
+def run_tuning_grid(bars, grid):
+    """
+    bars: list of Bar
+    grid: list of parameter dicts
+    Uses your existing trade-builder with overridden params.
+    """
+    results = []
+
+    for params in grid:
+        trades = build_confluence_trades(
+            bars,
+            entry_band_atr=params["ENTRY_BAND_ATR"],
+            stop_atr=params["STOP_ATR"],
+            hold_days=params["HOLD_DAYS"],
+            price_tol_pct=params["PRICE_TOL_PCT"],
+        )
+        perf = evaluate_confluence_performance(trades, bars)["summary"]
+        results.append({
+            "ENTRY_BAND_ATR": params["ENTRY_BAND_ATR"],
+            "STOP_ATR": params["STOP_ATR"],
+            "HOLD_DAYS": params["HOLD_DAYS"],
+            "PRICE_TOL_PCT": params["PRICE_TOL_PCT"],
+            "total_trades": perf["total_trades"],
+            "win_rate": perf["win_rate"],
+            "avg_r": perf["avg_r"],
+        })
+    return results
 
 def main():
     token = os.environ.get("TIINGO_TOKEN")
@@ -608,6 +789,21 @@ def main():
     save_confluence_trades(trades)
     print("[INFO] Confluence agent run complete.")
 
+    # performance summary for the current parameter set
+    perf = evaluate_confluence_performance(playbook_trades, bars)
+    (DATA_DIR / "performance_confluence.json").write_text(
+        json.dumps(perf, indent=2)
+    )
+
+    # tuning grids: light / medium / deep
+    tuning_results = {
+        "light": run_tuning_grid(bars, LIGHT_GRID),
+        "medium": run_tuning_grid(bars, MEDIUM_GRID),
+        "deep": run_tuning_grid(bars, DEEP_GRID),
+    }
+    (DATA_DIR / "tuning_confluence.json").write_text(
+        json.dumps(tuning_results, indent=2)
+    )
 
 if __name__ == "__main__":
     main()
