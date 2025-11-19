@@ -2,460 +2,365 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SPY Trading Dashboard – SMA & Confluence Agent</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPY Puts & Calls Confluence Agent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #050816;
-      --bg-soft: #0b1220;
-      --bg-softer: #111827;
+      --bg: #020617;
+      --bg-alt: #030712;
+      --bg-card: #020617;
       --border-subtle: #1f2937;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.14);
-      --accent-warn: #f97316;
-      --accent-error: #f43f5e;
-      --accent-good: #22c55e;
+      --border-strong: #374151;
       --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --text-muted: #6b7280;
-      --radius-xl: 18px;
-      --radius-lg: 14px;
-      --radius-pill: 999px;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
-      --shadow-card: 0 14px 35px rgba(15, 23, 42, 0.7);
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
+      --text-muted: #9ca3af;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --accent-strong: #0ea5e9;
+      --danger: #f97373;
+      --success: #4ade80;
+      --warn: #facc15;
+      --chip-bg: rgba(15, 23, 42, 0.8);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 24px;
-      font-family: var(--font-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
       color: var(--text-main);
+      min-height: 100vh;
     }
 
     .page {
-      max-width: 1200px;
-      margin: 0 auto 80px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 24px;
-      margin-bottom: 24px;
+      align-items: baseline;
+      margin-bottom: 18px;
     }
 
     .title-block h1 {
-      margin: 0 0 6px;
-      font-size: 30px;
+      font-size: 22px;
       letter-spacing: 0.04em;
     }
 
-    .title-block p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .tag-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px;
-      border-radius: var(--radius-pill);
-      background: var(--accent-soft);
+    .title-block h1 span {
+      font-weight: 400;
       color: var(--accent);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
     }
 
-    .tag-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .meta {
-      text-align: right;
+    .subtitle {
+      margin-top: 2px;
       font-size: 11px;
       color: var(--text-muted);
     }
 
-    .meta a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .card {
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), #020617);
-      border-radius: var(--radius-xl);
-      padding: 16px 18px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      box-shadow: var(--shadow-card);
-    }
-
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 17px;
-      letter-spacing: 0.02em;
-    }
-
-    .card h3 {
-      margin: 0 0 6px;
-      font-size: 15px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      color: var(--text-soft);
-    }
-
-    .card-subtitle {
-      margin: 0 0 12px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
     .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3px 10px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148, 163, 184, 0.45);
       font-size: 11px;
-      color: var(--text-soft);
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.7);
     }
 
-    .pill-strong {
-      border-color: rgba(56, 189, 248, 0.5);
+    .pill strong {
       color: var(--accent);
-      background: linear-gradient(
-        120deg,
-        rgba(56, 189, 248, 0.13),
-        rgba(15, 23, 42, 0.4)
-      );
+      font-weight: 500;
     }
 
-    .pill-warn {
-      border-color: rgba(249, 115, 22, 0.5);
-      color: var(--accent-warn);
-      background: rgba(249, 115, 22, 0.12);
-    }
-
-    .pill-error {
-      border-color: rgba(244, 63, 94, 0.5);
-      color: var(--accent-error);
-      background: rgba(244, 63, 94, 0.12);
-    }
-
-    .pill-good {
-      border-color: rgba(34, 197, 94, 0.5);
-      color: var(--accent-good);
-      background: rgba(22, 163, 74, 0.12);
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
     }
 
     .cards-row {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
-      margin-bottom: 18px;
     }
 
     .summary-card {
-      background: radial-gradient(circle at top left, #111827 0, #020617 65%);
-      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, #0b1120 0, #020617 55%);
+      border-radius: 18px;
       padding: 10px 12px;
-      border: 1px solid rgba(31, 41, 55, 0.9);
+      border: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      min-height: 70px;
     }
 
     .summary-label {
       font-size: 11px;
       color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
 
     .summary-main {
       font-size: 18px;
       font-weight: 600;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .summary-main span {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
     }
 
     .summary-sub {
+      margin-top: 2px;
       font-size: 11px;
-      color: var(--text-soft);
+      color: var(--text-muted);
     }
 
-    .summary-badge {
-      font-size: 10px;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.12);
-      border-radius: var(--radius-pill);
-      padding: 2px 8px;
-      align-self: flex-start;
-    }
-
-    .layout-main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .chart-header h2 {
-      margin: 0;
-      font-size: 15px;
-    }
-
-    .chart-meta {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .chart-container {
-      background: radial-gradient(circle at top, #020617 0, #020617 70%, #000 100%);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      padding: 14px;
-      min-height: 260px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    canvas {
-      width: 100%;
-      height: 220px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      font-size: 11px;
-      margin-bottom: 6px;
-      color: var(--text-soft);
-    }
-
-    .controls label {
+    .summary-chip {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-
-    .controls input {
-      width: 44px;
-      padding: 2px 4px;
-      border-radius: 6px;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
       border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 11px;
+      background: rgba(15, 23, 42, 0.85);
     }
 
-    .btn {
-      border-radius: var(--radius-pill);
-      padding: 4px 10px;
-      border: 1px solid rgba(56, 189, 248, 0.7);
-      background: radial-gradient(circle at top left, #0f172a 0, #020617 65%);
-      color: var(--accent);
-      font-size: 11px;
-      cursor: pointer;
+    .summary-chip.call {
+      border-color: rgba(74, 222, 128, 0.8);
+      color: var(--success);
     }
 
-    .btn:hover {
-      background: radial-gradient(circle at top left, #020617 0, #020617 65%);
+    .summary-chip.put {
+      border-color: rgba(248, 113, 113, 0.8);
+      color: var(--danger);
+    }
+
+    .summary-chip.neutral {
+      border-color: rgba(148, 163, 184, 0.8);
+      color: var(--text-muted);
+    }
+
+    .summary-kpi {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .summary-kpi.positive {
+      color: var(--success);
+    }
+
+    .summary-kpi.negative {
+      color: var(--danger);
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    section.card {
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #000 140%);
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 10px;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.7);
+    }
+
+    section.card h2 {
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .price-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .price-chart-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chart-shell {
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      padding: 8px 8px 4px;
+    }
+
+    .chart-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    svg {
+      width: 100%;
+      height: 180px;
     }
 
     .backtest-grid {
       display: grid;
-      grid-template-columns: 140px minmax(0, 1fr);
-      gap: 10px;
-      font-size: 12px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 3px;
     }
 
-    .backtest-grid table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .backtest-grid th,
-    .backtest-grid td {
-      padding: 4px 0;
+    .backtest-row {
+      display: flex;
+      justify-content: space-between;
       font-size: 11px;
-    }
-
-    .backtest-grid th {
-      text-align: right;
       color: var(--text-muted);
-      font-weight: 400;
-      padding-right: 8px;
-      white-space: nowrap;
     }
 
-    .backtest-grid td {
+    .backtest-row span.value {
       color: var(--text-main);
+      font-weight: 500;
     }
 
-    .backtest-grid tr + tr td,
-    .backtest-grid tr + tr th {
-      border-top: 1px dashed rgba(31, 41, 55, 0.9);
+    .backtest-highlight {
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px dashed var(--border-strong);
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .backtest-highlight strong {
+      color: var(--accent);
+      font-weight: 500;
     }
 
     .table-card {
-      margin-top: 18px;
+      margin-top: 4px;
     }
 
     table.trade-log {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11px;
+      font-size: 10.5px;
+      margin-top: 6px;
+    }
+
+    table.trade-log thead {
+      background: rgba(15, 23, 42, 0.9);
     }
 
     table.trade-log th,
     table.trade-log td {
-      padding: 6px 6px;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
-    }
-
-    table.trade-log th {
-      text-align: left;
-      color: var(--text-muted);
-      font-weight: 500;
+      padding: 4px 6px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      text-align: right;
       white-space: nowrap;
     }
 
+    table.trade-log th:first-child,
+    table.trade-log td:first-child {
+      text-align: left;
+    }
+
+    table.trade-log th {
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    table.trade-log tbody tr:nth-child(2n) {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
     table.trade-log td.pnl-pos {
-      color: var(--accent-good);
+      color: var(--success);
     }
 
     table.trade-log td.pnl-neg {
-      color: var(--accent-error);
+      color: var(--danger);
     }
 
     .disclaimer {
-      margin-top: 14px;
+      margin-top: 7px;
       font-size: 10px;
       color: var(--text-muted);
     }
 
-    /* Setup cards */
-
-    .setup-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .setup-card {
-      background: radial-gradient(circle at top left, #0b1120 0, #020617 70%);
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      padding: 14px 16px 12px;
-      box-shadow: var(--shadow-card);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .setup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 4px;
-    }
-
-    .setup-title {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .setup-body {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px 14px;
-      font-size: 11px;
-    }
-
-    .setup-row-label {
-      color: var(--text-muted);
-      font-size: 11px;
-      margin-bottom: 2px;
-    }
-
-    .setup-row-main {
-      font-size: 12px;
-    }
-
-    .setup-footer {
-      margin-top: 4px;
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    .status-label {
-      font-size: 11px;
-      padding: 3px 10px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-    }
-
-    .status-active {
-      border-color: rgba(34, 197, 94, 0.8);
-      background: rgba(22, 163, 74, 0.13);
-      color: var(--accent-good);
-    }
-
-    .status-waiting {
-      border-color: rgba(56, 189, 248, 0.8);
-      background: rgba(56, 189, 248, 0.12);
+    .disclaimer strong {
       color: var(--accent);
+      font-weight: 500;
     }
 
-    .status-exited {
-      border-color: rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-soft);
+    /* tuning table re-use */
+    #tuning-table td,
+    #tuning-table th {
+      text-align: right;
     }
 
-    @media (max-width: 900px) {
-      body {
-        padding: 14px;
+    #tuning-table th:first-child,
+    #tuning-table td:first-child {
+      text-align: right;
+    }
+
+    #tuning-table th:nth-child(1),
+    #tuning-table td:nth-child(1) {
+      text-align: right;
+    }
+
+    #tuning-table th:nth-child(2),
+    #tuning-table td:nth-child(2) {
+      text-align: right;
+    }
+
+    .chip-muted {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 10px;
+      background: var(--chip-bg);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 880px) {
+      .cards-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      header {
-        flex-direction: column;
-        align-items: flex-start;
+      .grid-two {
+        grid-template-columns: minmax(0, 1fr);
       }
-      .grid,
-      .layout-main,
-      .setup-grid,
+    }
+
+    @media (max-width: 640px) {
       .cards-row {
         grid-template-columns: minmax(0, 1fr);
       }
@@ -466,657 +371,430 @@
   <div class="page">
     <header>
       <div class="title-block">
-        <div class="tag-pill">
-          <span class="tag-dot"></span>
-          SPY CALLS & PUTS CONFLUENCE AGENT
+        <h1>SPY Puts &amp; Calls <span>Confluence Agent</span></h1>
+        <div class="subtitle">
+          Geometry × φ × time windows. Signals are synthetic and for research only.
         </div>
-        <h1>SPY Trading Dashboard</h1>
-        <p>Powered by Tiingo data • SMA & geometry/φ/time confluence research</p>
       </div>
-      <div class="meta">
-        <div>DATA FILES: <code>web/data/SPY.csv</code>, <code>SPY_confluence.csv</code>, <code>portfolio_confluence.csv</code></div>
-        <div id="meta-date"></div>
+      <div class="pill">
+        Powered by <strong>Tiingo</strong> · Backtested locally on SPY closes
       </div>
     </header>
 
-    <!-- Setup cards -->
-    <div class="setup-grid">
-      <section class="setup-card" id="current-setup-card">
-        <div class="setup-header">
-          <div>
-            <div class="setup-title">Current confluence setup</div>
-            <div class="card-subtitle">
-              Shows the most recent setup that is still live or awaiting entry, based on geometry × φ × time counts.
-            </div>
+    <main>
+      <!-- Top summary metrics -->
+      <section class="cards-row">
+        <div class="summary-card">
+          <div class="summary-label">Latest close</div>
+          <div class="summary-main" id="summary-last-close">—</div>
+          <div class="summary-sub" id="summary-last-change">Awaiting data…</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Last confluence signal</div>
+          <div class="summary-main">
+            <span id="summary-last-signal">—</span>
+            <span id="summary-last-signal-date" style="font-size:11px;"></span>
           </div>
-          <div id="current-setup-status" class="status-label status-exited">Loading…</div>
+          <div class="summary-sub" id="summary-last-signal-detail">Bias and exit details will appear here.</div>
         </div>
-        <div class="setup-body" id="current-setup-body">
-          <!-- Filled by JS -->
+        <div class="summary-card">
+          <div class="summary-label">Win / loss (all confluence trades)</div>
+          <div class="summary-main">
+            <span class="summary-kpi" id="summary-win-loss">—</span>
+          </div>
+          <div class="summary-sub">
+            Calls: <span id="summary-calls">0</span> · Puts: <span id="summary-puts">0</span> ·
+            Avg R: <span id="summary-avg-r">—</span>
+          </div>
         </div>
-        <div class="setup-footer">
-          For research only. Use as a structured prompt for your own option selection and risk decisions.
+        <div class="summary-card">
+          <div class="summary-label">Confluence performance (3Y)</div>
+          <div class="summary-main" id="perf-win-rate">
+            —
+          </div>
+          <div class="summary-sub">
+            Trades: <span id="perf-total-trades">—</span> · Avg R:
+            <span id="perf-avg-r">—</span> · Max DD:
+            <span id="perf-max-dd">—</span> · SPY Buy &amp; Hold:
+            <span id="perf-bh">—</span>
+          </div>
         </div>
       </section>
 
-      <section class="setup-card" id="last-setup-card">
-        <div class="setup-header">
-          <div>
-            <div class="setup-title">Most recent completed setup</div>
-            <div class="card-subtitle">
-              Shows the outcome of the last fully resolved confluence playbook for P&L calibration.
+      <!-- Chart + backtest -->
+      <section class="grid-two">
+        <section class="card">
+          <div class="price-chart-header">
+            <h2>Price chart</h2>
+            <div class="price-chart-meta" id="chart-meta">Last 60 trading days of SPY</div>
+          </div>
+          <p class="card-subtitle">
+            SPY closes with a simple fast/slow bias underneath the geometry/φ/time confluence logic.
+          </p>
+          <div class="chart-shell">
+            <svg id="price-chart" viewBox="0 0 100 60" preserveAspectRatio="none">
+              <polyline id="price-path" fill="none" stroke="url(#gradLine)" stroke-width="0.7" />
+              <defs>
+                <linearGradient id="gradLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="chart-label-row">
+              <span id="chart-start-label">—</span>
+              <span id="chart-end-label">—</span>
             </div>
           </div>
-          <div id="last-setup-status" class="status-label status-exited">Loading…</div>
-        </div>
-        <div class="setup-body" id="last-setup-body">
-          <!-- Filled by JS -->
-        </div>
-        <div class="setup-footer">
-          Completed setups help calibrate expectations for similar future geometry/φ/time configurations.
-        </div>
-      </section>
-    </div>
+        </section>
 
-    <!-- Top summary -->
-    <div class="cards-row">
-      <div class="summary-card">
-        <div class="summary-label">Latest bias (SMA strategy)</div>
-        <div class="summary-main" id="latest-bias">—</div>
-        <div class="summary-sub" id="latest-bias-detail">Waiting for data…</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Confluence trades</div>
-        <div class="summary-main" id="confluence-trade-count">—</div>
-        <div class="summary-sub" id="confluence-trade-pnl">Cumulative P&L: —</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Win / loss (confluence)</div>
-        <div class="summary-main" id="confluence-winloss">—</div>
-        <div class="summary-sub" id="confluence-winrate">Win rate: —</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Time horizon</div>
-        <div class="summary-main"><span id="horizon-days">5</span> days</div>
-        <div class="summary-sub">Playbook hold window per setup</div>
-      </div>
-    </div>
-
-    <!-- Chart + backtest -->
-    <div class="layout-main">
-      <section class="card">
-        <div class="chart-header">
-          <div>
-            <h2>Price chart (SPY closes)</h2>
-            <div class="chart-meta" id="chart-meta">Last 60 trading days</div>
+        <section class="card">
+          <h2>Backtest summary</h2>
+          <p class="card-subtitle">
+            Simple rule: take a directional trade only when geometry/φ levels, time window, and SMA bias align.
+            Exit on the HOLD_DAYS time stop.
+          </p>
+          <div class="backtest-grid">
+            <div class="backtest-row">
+              <span>Total trades</span>
+              <span class="value" id="bt-trades">—</span>
+            </div>
+            <div class="backtest-row">
+              <span>Win rate</span>
+              <span class="value" id="bt-winrate">—</span>
+            </div>
+            <div class="backtest-row">
+              <span>Median P&amp;L per trade</span>
+              <span class="value" id="bt-median">—</span>
+            </div>
+            <div class="backtest-row">
+              <span>Max drawdown (pnl points)</span>
+              <span class="value" id="bt-dd">—</span>
+            </div>
           </div>
-        </div>
-        <div class="controls">
-          <label>Fast SMA <input type="number" id="fastSmaInput" value="5" min="2" max="60" /></label>
-          <label>Slow SMA <input type="number" id="slowSmaInput" value="20" min="5" max="120" /></label>
-          <label>Hold (days) <input type="number" id="holdDaysInput" value="5" min="1" max="15" /></label>
-          <button class="btn" id="recalcBtn">Recalculate SMA strategy</button>
-        </div>
-        <div class="chart-container">
-          <canvas id="priceChart"></canvas>
+          <div class="backtest-highlight" id="bt-highlight">
+            Waiting for data…
+          </div>
+        </section>
+      </section>
+
+      <!-- Log + tuning -->
+      <section class="card table-card">
+        <h2>Confluence trade log</h2>
+        <p class="card-subtitle">
+          Each row is a synthetic playbook built from a confluence bar (CALL/PUT bias + price confluence + time window).
+          Entry/stop/targets are derived from ATR; exits are time-based.
+        </p>
+        <div style="overflow-x:auto;">
+          <table class="trade-log" id="trade-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Side</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>P&amp;L</th>
+                <th>Entry band</th>
+                <th>Stop</th>
+                <th>T1</th>
+                <th>T2</th>
+                <th>Exit date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
         <div class="disclaimer">
-          SMA strategy and confluence strategy are research tools on the underlying SPY. They do not choose strikes or expiries and are not trading advice.
+          <strong>Important:</strong> this is a research tool only. Numbers are based purely on historical SPY closes with
+          simplified assumptions; they do not include slippage, commissions, margin or option pricing. Do not trade directly
+          from this page.
         </div>
       </section>
 
-      <section class="card">
-        <h2>Backtest summary (SMA strategy)</h2>
+      <section class="card table-card">
+        <h2>Parameter tuning sandbox</h2>
         <p class="card-subtitle">
-          Simple rule: Fast SMA crossing Slow SMA generates CALL / PUT, held for N days.
+          Precomputed grids for Light / Medium / Deep tuning. Use this to see how changes to entry band, stop distance,
+          hold days, and price tolerance affect win rate, average R-return, and trade frequency. The live playbook
+          continues to use the baseline parameters in <code>agent.py</code>.
         </p>
-        <div class="backtest-grid">
-          <div>
-            <table>
-              <tr><th>Trades</th><td id="sma-trades">—</td></tr>
-              <tr><th>Calls</th><td id="sma-calls">—</td></tr>
-              <tr><th>Puts</th><td id="sma-puts">—</td></tr>
-              <tr><th>Total P&amp;L</th><td id="sma-pnl">—</td></tr>
-            </table>
-          </div>
-          <div>
-            <table>
-              <tr><th>Win rate</th><td id="sma-winrate">—</td></tr>
-              <tr><th>Median P&amp;L</th><td id="sma-median">—</td></tr>
-              <tr><th>Max drawdown</th><td id="sma-dd">—</td></tr>
-            </table>
-          </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:8px;">
+          <span style="color:var(--text-muted);">Tuning mode:</span>
+          <select id="tuning-mode"
+            style="background:#020617;border:1px solid #374151;color:#e5e7eb;border-radius:999px;padding:3px 10px;font-size:11px;">
+            <option value="light">Light (fast)</option>
+            <option value="medium">Medium (balanced)</option>
+            <option value="deep">Deep (full sweep)</option>
+          </select>
+          <span class="chip-muted">No parameters are changed automatically.</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="trade-log" id="tuning-table">
+            <thead>
+              <tr>
+                <th>Entry ATR</th>
+                <th>Stop ATR</th>
+                <th>Hold (d)</th>
+                <th>Price tol</th>
+                <th>Trades</th>
+                <th>Win%</th>
+                <th>Avg R</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="disclaimer">
+          Tuning results are historical and based on SPY only. They are meant to guide thinking about robustness, not to
+          “optimize to the last decimal”.
         </div>
       </section>
-    </div>
-
-    <!-- Trade log -->
-    <section class="card table-card">
-      <h2>Confluence trade log (SPY underlying)</h2>
-      <p class="card-subtitle">
-        Generated from geometry × φ × Gann time windows. Uses fixed playbook: ATR-based entry band, 1.5 ATR guard rail, 2R/3R targets, and 5-day time stop.
-      </p>
-      <div style="overflow-x:auto;">
-        <table class="trade-log" id="confluence-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Signal</th>
-              <th>Entry zone</th>
-              <th>Stop</th>
-              <th>Target 1</th>
-              <th>Target 2</th>
-              <th>Exit date</th>
-              <th>Exit price</th>
-              <th>Status</th>
-              <th>P&amp;L</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Rows injected by JS -->
-          </tbody>
-        </table>
-      </div>
-      <div class="disclaimer">
-        Underlying P&amp;L is for calibration only. Option structures (strikes, expiries, sizing) require separate judgment, risk controls, and suitability checks.
-      </div>
-    </section>
+    </main>
   </div>
 
   <script>
-    // --- CSV helpers --------------------------------------------------------
-    function parseCSV(text) {
+    // --- tiny CSV parser ----------------------------------------------------
+    function parseCsv(text) {
       const lines = text.trim().split(/\r?\n/);
-      if (lines.length < 2) return [];
-      const headers = lines[0].split(",").map((h) => h.trim());
-      return lines.slice(1).map((line) => {
+      if (lines.length <= 1) return [];
+      const headers = lines[0].split(",");
+      return lines.slice(1).map(line => {
         const cols = line.split(",");
-        const row = {};
+        const obj = {};
         headers.forEach((h, i) => {
-          row[h] = (cols[i] ?? "").trim();
+          obj[h] = cols[i];
         });
-        return row;
+        return obj;
       });
     }
 
-    function toFloat(v) {
-      const x = parseFloat(v);
-      return isNaN(x) ? null : x;
+    function toNumber(v) {
+      const x = Number(v);
+      return Number.isFinite(x) ? x : NaN;
     }
 
-    function toDate(v) {
-      return v ? new Date(v) : null;
+    // --- load SPY CSV & draw chart -----------------------------------------
+    async function loadSpy() {
+      const res = await fetch("data/SPY.csv");
+      if (!res.ok) return null;
+      const text = await res.text();
+      const rows = parseCsv(text);
+      if (!rows.length) return null;
+
+      // enhance rows
+      rows.forEach(r => {
+        r._date = new Date(r.Date);
+        r._close = toNumber(r.Close);
+      });
+
+      // sort by date ascending
+      rows.sort((a, b) => a._date - b._date);
+
+      // summary
+      const last = rows[rows.length - 1];
+      const prev = rows[rows.length - 2] || last;
+      const lastClose = last._close;
+      const prevClose = prev._close;
+      const change = lastClose - prevClose;
+      const changePct = prevClose ? (change / prevClose) * 100 : 0;
+
+      const lastText = lastClose ? lastClose.toFixed(2) : "—";
+      const deltaText = `${change >= 0 ? "+" : ""}${change.toFixed(2)} (${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%)`;
+
+      document.getElementById("summary-last-close").textContent = lastText;
+      document.getElementById("summary-last-change").textContent =
+        `${deltaText} vs prior close on ${prev.Date}`;
+
+      // chart: use last 60 rows
+      const windowSize = 60;
+      const slice = rows.slice(-windowSize);
+      if (!slice.length) return rows;
+
+      const xs = slice.map((_, i) => i);
+      const ys = slice.map(r => r._close);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const spanY = maxY - minY || 1;
+
+      const pts = xs.map((x, i) => {
+        const px = (x / (xs.length - 1 || 1)) * 100;
+        const normY = (ys[i] - minY) / spanY;
+        const py = 60 - normY * 55; // pad at top/bottom
+        return `${px},${py}`;
+      }).join(" ");
+
+      document.getElementById("price-path").setAttribute("points", pts);
+      document.getElementById("chart-start-label").textContent = slice[0].Date;
+      document.getElementById("chart-end-label").textContent = slice[slice.length - 1].Date;
+
+      return rows;
     }
 
-    // --- SMA strategy (unchanged logic, simplified) ------------------------
-    function buildSmaSignals(prices, fastLen, slowLen, holdDays) {
-      const closes = prices.map((p) => p.Close);
-      const smaFast = smaSeries(closes, fastLen);
-      const smaSlow = smaSeries(closes, slowLen);
+    // --- load trade log -----------------------------------------------------
+    async function loadTrades() {
+      const res = await fetch("data/portfolio_confluence.csv");
+      if (!res.ok) return [];
+      const text = await res.text();
+      const rows = parseCsv(text);
+      if (!rows.length) return [];
 
-      const trades = [];
-      let lastSignal = null;
+      // sort by entry date ascending
+      rows.forEach(r => {
+        r._entryDate = new Date(r.EntryDate);
+        r._exitDate = new Date(r.ExitDate);
+        r._pnl = toNumber(r.PNL);
+      });
+      rows.sort((a, b) => a._entryDate - b._entryDate);
 
-      for (let i = 1; i < prices.length; i++) {
-        if (!isFinite(smaFast[i]) || !isFinite(smaSlow[i])) continue;
+      const tbody = document.querySelector("#trade-table tbody");
+      tbody.innerHTML = "";
 
-        const prevDiff = smaFast[i - 1] - smaSlow[i - 1];
-        const diff = smaFast[i] - smaSlow[i];
-
-        let signal = null;
-        if (prevDiff <= 0 && diff > 0) signal = "CALL";
-        else if (prevDiff >= 0 && diff < 0) signal = "PUT";
-
-        if (signal && signal !== lastSignal) {
-          const entryIdx = i;
-          const exitIdx = Math.min(prices.length - 1, entryIdx + holdDays);
-          const entry = prices[entryIdx];
-          const exit = prices[exitIdx];
-          const pnl =
-            signal === "CALL"
-              ? exit.Close - entry.Close
-              : entry.Close - exit.Close;
-
-          trades.push({
-            signal,
-            entryIdx,
-            exitIdx,
-            entry,
-            exit,
-            pnl
-          });
-          lastSignal = signal;
-        }
-      }
-
-      return { trades, smaFast, smaSlow };
-    }
-
-    function smaSeries(values, length) {
-      const out = new Array(values.length).fill(NaN);
-      if (length <= 0) return out;
-      let sum = 0;
-      for (let i = 0; i < values.length; i++) {
-        sum += values[i];
-        if (i >= length) sum -= values[i - length];
-        if (i >= length - 1) out[i] = sum / length;
-      }
-      return out;
-    }
-
-    function statsFromTrades(trades) {
-      if (!trades.length) {
-        return {
-          count: 0,
-          calls: 0,
-          puts: 0,
-          totalPnl: 0,
-          wins: 0,
-          losses: 0,
-          winRate: 0,
-          median: 0,
-          maxDD: 0
-        };
-      }
-      let calls = 0,
-        puts = 0,
-        totalPnl = 0,
-        wins = 0,
-        losses = 0;
+      let wins = 0;
+      let losses = 0;
+      let calls = 0;
+      let puts = 0;
       const pnls = [];
       let equity = 0;
       let peak = 0;
       let maxDD = 0;
 
-      for (const t of trades) {
-        if (t.signal === "CALL") calls++;
-        else puts++;
-        totalPnl += t.pnl;
-        pnls.push(t.pnl);
-        if (t.pnl > 0) wins++;
-        else if (t.pnl < 0) losses++;
-
-        equity += t.pnl;
+      rows.forEach(r => {
+        const pnl = r._pnl;
+        pnls.push(pnl);
+        equity += pnl;
         if (equity > peak) peak = equity;
         const dd = peak - equity;
         if (dd > maxDD) maxDD = dd;
-      }
 
-      pnls.sort((a, b) => a - b);
-      const mid = Math.floor(pnls.length / 2);
-      const median =
-        pnls.length % 2 ? pnls[mid] : (pnls[mid - 1] + pnls[mid]) / 2;
+        if (pnl > 0) wins++;
+        else if (pnl < 0) losses++;
 
-      const winRate = (wins / trades.length) * 100;
+        if (r.Signal === "CALL") calls++;
+        if (r.Signal === "PUT") puts++;
 
-      return {
-        count: trades.length,
-        calls,
-        puts,
-        totalPnl,
-        wins,
-        losses,
-        winRate,
-        median,
-        maxDD
-      };
-    }
-
-    // --- Chart (minimal, no external libs) ---------------------------------
-    function drawPriceChart(canvas, prices) {
-      if (!canvas || !prices.length) return;
-      const ctx = canvas.getContext("2d");
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.clearRect(0, 0, w, h);
-
-      const closes = prices.map((p) => p.Close);
-      const minP = Math.min(...closes);
-      const maxP = Math.max(...closes);
-      const pad = (maxP - minP) * 0.1 || 1;
-
-      const yMin = minP - pad;
-      const yMax = maxP + pad;
-
-      const toX = (i) =>
-        ((i / Math.max(1, prices.length - 1)) * (w - 40)) + 20;
-      const toY = (p) =>
-        h - 20 - ((p - yMin) / (yMax - yMin)) * (h - 40);
-
-      // grid
-      ctx.strokeStyle = "rgba(55,65,81,0.7)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(30, 10);
-      ctx.lineTo(30, h - 10);
-      ctx.lineTo(w - 10, h - 10);
-      ctx.stroke();
-
-      // price line
-      ctx.beginPath();
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 1.4;
-      prices.forEach((p, i) => {
-        const x = toX(i);
-        const y = toY(p.Close);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-    }
-
-    // --- Confluence helpers -------------------------------------------------
-    function parsePortfolioRows(rows) {
-      return rows.map((r) => ({
-        Symbol: r.Symbol,
-        Signal: r.Signal,
-        EntryDate: toDate(r.EntryDate),
-        EntryPrice: toFloat(r.EntryPrice),
-        ExitDate: toDate(r.ExitDate),
-        ExitPrice: toFloat(r.ExitPrice),
-        PNL: toFloat(r.PNL) ?? 0,
-        EntryLow: toFloat(r.EntryLow),
-        EntryHigh: toFloat(r.EntryHigh),
-        Stop: toFloat(r.Stop),
-        Target1: toFloat(r.Target1),
-        Target2: toFloat(r.Target2),
-        ExpiryDate: toDate(r.ExpiryDate),
-        Status: r.Status || ""
-      }));
-    }
-
-    function isActiveStatus(s) {
-      return s === "ACTIVE" || s === "WAITING";
-    }
-
-    function isCompletedStatus(s) {
-      return (
-        s.startsWith("EXITED_") ||
-        s === "EXPIRED_UNTRIGGERED" ||
-        s === "EXITED_TIME"
-      );
-    }
-
-    function formatPrice(p) {
-      if (p == null || !isFinite(p)) return "—";
-      return p.toFixed(2);
-    }
-
-    function formatDate(d) {
-      if (!d) return "—";
-      return d.toISOString().slice(0, 10);
-    }
-
-    // --- Render setup cards -------------------------------------------------
-    function renderSetupCard(elBody, elStatus, trade, emptyText) {
-      if (!trade) {
-        elBody.innerHTML =
-          '<div style="grid-column:1/-1;color:#9ca3af;font-size:11px;">' +
-          emptyText +
-          "</div>";
-        elStatus.textContent = "No setup";
-        elStatus.className = "status-label status-exited";
-        return;
-      }
-
-      const side =
-        trade.Signal === "CALL"
-          ? '<span class="pill-good">CALL bias</span>'
-          : '<span class="pill-error">PUT bias</span>';
-
-      elBody.innerHTML = `
-        <div>
-          <div class="setup-row-label">Side</div>
-          <div class="setup-row-main">${side}</div>
-        </div>
-        <div>
-          <div class="setup-row-label">Entry zone (underlying)</div>
-          <div class="setup-row-main">${formatPrice(
-            trade.EntryLow
-          )} – ${formatPrice(trade.EntryHigh)}</div>
-        </div>
-        <div>
-          <div class="setup-row-label">Guard-rail stop</div>
-          <div class="setup-row-main">${formatPrice(trade.Stop)}</div>
-        </div>
-        <div>
-          <div class="setup-row-label">Targets</div>
-          <div class="setup-row-main">T1: ${formatPrice(
-            trade.Target1
-          )} • T2: ${formatPrice(trade.Target2)}</div>
-        </div>
-        <div>
-          <div class="setup-row-label">Entry date</div>
-          <div class="setup-row-main">${formatDate(trade.EntryDate)}</div>
-        </div>
-        <div>
-          <div class="setup-row-label">Time stop (expiry)</div>
-          <div class="setup-row-main">${formatDate(trade.ExpiryDate)}</div>
-        </div>
-      `;
-
-      // status
-      let cls = "status-label status-exited";
-      let label = trade.Status || "Completed";
-
-      if (trade.Status === "WAITING") {
-        cls = "status-label status-waiting";
-        label = "Waiting for entry";
-      } else if (trade.Status === "ACTIVE") {
-        cls = "status-label status-active";
-        label = "Active (in zone)";
-      } else if (trade.Status.startsWith("EXITED_TP")) {
-        cls = "status-label status-exited";
-        label = "Completed – Target hit";
-      } else if (trade.Status === "EXITED_STOP") {
-        cls = "status-label status-exited";
-        label = "Completed – Guard rail hit";
-      } else if (trade.Status === "EXITED_TIME") {
-        cls = "status-label status-exited";
-        label = "Completed – Time stop";
-      } else if (trade.Status === "EXPIRED_UNTRIGGERED") {
-        cls = "status-label status-exited";
-        label = "Expired – never entered zone";
-      }
-
-      elStatus.textContent = label;
-      elStatus.className = cls;
-    }
-
-    // --- Render confluence trade table & summary ---------------------------
-    function renderConfluenceTable(tbody, trades) {
-      tbody.innerHTML = "";
-      for (const t of trades) {
         const tr = document.createElement("tr");
-        const pnlCls = t.PNL >= 0 ? "pnl-pos" : "pnl-neg";
+        const band = `${Number(r.EntryLow).toFixed(2)} – ${Number(r.EntryHigh).toFixed(2)}`;
         tr.innerHTML = `
-          <td>${formatDate(t.EntryDate)}</td>
-          <td>${t.Signal}</td>
-          <td>${formatPrice(t.EntryLow)} – ${formatPrice(t.EntryHigh)}</td>
-          <td>${formatPrice(t.Stop)}</td>
-          <td>${formatPrice(t.Target1)}</td>
-          <td>${formatPrice(t.Target2)}</td>
-          <td>${formatDate(t.ExitDate)}</td>
-          <td>${formatPrice(t.ExitPrice)}</td>
-          <td>${t.Status || "—"}</td>
-          <td class="${pnlCls}">${formatPrice(t.PNL)}</td>
+          <td>${r.EntryDate}</td>
+          <td>${r.Signal}</td>
+          <td>${Number(r.EntryPrice).toFixed(2)}</td>
+          <td>${Number(r.ExitPrice).toFixed(2)}</td>
+          <td class="${pnl > 0 ? "pnl-pos" : pnl < 0 ? "pnl-neg" : ""}">${pnl.toFixed(2)}</td>
+          <td>${band}</td>
+          <td>${Number(r.Stop).toFixed(2)}</td>
+          <td>${Number(r.Target1).toFixed(2)}</td>
+          <td>${Number(r.Target2).toFixed(2)}</td>
+          <td>${r.ExitDate}</td>
         `;
         tbody.appendChild(tr);
+      });
+
+      // simple stats
+      const total = rows.length;
+      const winRate = total ? (wins / total) * 100 : 0;
+      const medianPnl = pnls.length ? pnls.slice().sort((a, b) => a - b)[Math.floor(pnls.length / 2)] : 0;
+
+      document.getElementById("bt-trades").textContent = total;
+      document.getElementById("bt-winrate").textContent = total ? winRate.toFixed(1) + "%" : "—";
+      document.getElementById("bt-median").textContent = medianPnl.toFixed(2);
+      document.getElementById("bt-dd").textContent = maxDD.toFixed(2);
+
+      const highlight = document.getElementById("bt-highlight");
+      if (total) {
+        highlight.innerHTML =
+          `Over <strong>${total}</strong> confluence trades this configuration produced a ` +
+          `<strong>${winRate.toFixed(1)}%</strong> win rate with a maximum equity ` +
+          `drawdown of <strong>${maxDD.toFixed(2)}</strong> P&amp;L points.`;
+      } else {
+        highlight.textContent = "No confluence trades yet in the current lookback.";
       }
+
+      // summary cards
+      const last = rows[rows.length - 1];
+      if (last) {
+        const chip = document.createElement("span");
+        chip.className = "summary-chip " + (last.Signal === "CALL" ? "call" : "put");
+        chip.textContent = last.Signal;
+        const holder = document.getElementById("summary-last-signal");
+        holder.innerHTML = "";
+        holder.appendChild(chip);
+
+        document.getElementById("summary-last-signal-date").textContent =
+          `· entry ${last.EntryDate}, exit ${last.ExitDate}`;
+        document.getElementById("summary-last-signal-detail").textContent =
+          `Entry ${Number(last.EntryPrice).toFixed(2)}, time exit ${Number(last.ExitPrice).toFixed(2)}, ` +
+          `PNL ${Number(last.PNL).toFixed(2)}.`;
+      }
+
+      document.getElementById("summary-win-loss").textContent =
+        `${wins} won / ${losses} lost`;
+      document.getElementById("summary-calls").textContent = calls;
+      document.getElementById("summary-puts").textContent = puts;
+
+      return rows;
     }
 
-    function confluenceStats(trades) {
-      if (!trades.length) {
-        return {
-          count: 0,
-          totalPnl: 0,
-          wins: 0,
-          losses: 0,
-          winRate: 0
-        };
-      }
-      let totalPnl = 0,
-        wins = 0,
-        losses = 0;
-      for (const t of trades) {
-        totalPnl += t.PNL;
-        if (t.PNL > 0) wins++;
-        else if (t.PNL < 0) losses++;
-      }
-      return {
-        count: trades.length,
-        totalPnl,
-        wins,
-        losses,
-        winRate: wins ? (wins / trades.length) * 100 : 0
-      };
-    }
+    // --- load performance + tuning JSON ------------------------------------
+    async function loadPerformanceAndTuning() {
+      let perf = null;
+      let tuning = null;
+      try {
+        perf = await fetch("data/performance_confluence.json").then(r => r.ok ? r.json() : null);
+      } catch (e) { /* ignore */ }
 
-    // --- Main init ---------------------------------------------------------
-    async function init() {
-      const [spyRaw, portfolioRaw] = await Promise.all([
-        fetch("data/SPY.csv").then((r) => r.text()),
-        fetch("data/portfolio_confluence.csv").then((r) => r.text())
-      ]);
+      try {
+        tuning = await fetch("data/tuning_confluence.json").then(r => r.ok ? r.json() : null);
+      } catch (e) { /* ignore */ }
 
-      const spyRows = parseCSV(spyRaw).map((r) => ({
-        Date: toDate(r.Date),
-        Close: toFloat(r.Close)
-      }));
-      const prices = spyRows.slice(-60); // last 60 days for chart
-
-      const portRows = parsePortfolioRows(parseCSV(portfolioRaw));
-
-      // meta date
-      if (prices.length) {
-        const last = prices[prices.length - 1];
-        document.getElementById(
-          "meta-date"
-        ).textContent = `Last close: ${formatPrice(
-          last.Close
-        )} on ${formatDate(last.Date)}`;
-        document.getElementById(
-          "chart-meta"
-        ).textContent = `Last 60 trading days • Latest: ${formatPrice(
-          last.Close
-        )}`;
+      if (perf && perf.summary) {
+        const s = perf.summary;
+        const b = perf.benchmark || {};
+        document.getElementById("perf-total-trades").textContent = s.total_trades;
+        document.getElementById("perf-win-rate").textContent =
+          s.total_trades ? s.win_rate.toFixed(1) + "%" : "—";
+        document.getElementById("perf-avg-r").textContent =
+          s.total_trades ? s.avg_r.toFixed(2) : "—";
+        document.getElementById("perf-max-dd").textContent =
+          s.total_trades ? s.max_drawdown.toFixed(2) : "—";
+        document.getElementById("perf-bh").textContent =
+          b.spy_buy_hold_return != null ? b.spy_buy_hold_return.toFixed(1) + "%" : "—";
       }
 
-      // draw chart
-      const canvas = document.getElementById("priceChart");
-      // canvas backing size (for crispness)
-      canvas.width = canvas.clientWidth * 2;
-      canvas.height = canvas.clientHeight * 2;
-      drawPriceChart(canvas, prices);
+      if (tuning) {
+        const modeSelect = document.getElementById("tuning-mode");
+        const tbody = document.querySelector("#tuning-table tbody");
 
-      // SMA backtest default
-      const fastInput = document.getElementById("fastSmaInput");
-      const slowInput = document.getElementById("slowSmaInput");
-      const holdInput = document.getElementById("holdDaysInput");
-      const recalc = () => {
-        const fast = parseInt(fastInput.value, 10) || 5;
-        const slow = parseInt(slowInput.value, 10) || 20;
-        const hold = parseInt(holdInput.value, 10) || 5;
-        const { trades } = buildSmaSignals(spyRows, fast, slow, hold);
-        const stats = statsFromTrades(trades);
-        document.getElementById("sma-trades").textContent = stats.count;
-        document.getElementById("sma-calls").textContent = stats.calls;
-        document.getElementById("sma-puts").textContent = stats.puts;
-        document.getElementById("sma-pnl").textContent = stats.totalPnl.toFixed(2);
-        document.getElementById("sma-winrate").textContent =
-          stats.count > 0 ? stats.winRate.toFixed(1) + "%" : "—";
-        document.getElementById("sma-median").textContent =
-          stats.count > 0 ? stats.median.toFixed(2) : "—";
-        document.getElementById("sma-dd").textContent =
-          stats.count > 0 ? stats.maxDD.toFixed(2) : "—";
-
-        // simple latest bias
-        if (trades.length) {
-          const last = trades[trades.length - 1];
-          document.getElementById("latest-bias").textContent =
-            last.signal === "CALL" ? "CALL bias" : "PUT bias";
-          document.getElementById(
-            "latest-bias-detail"
-          ).textContent = `Last SMA cross on ${formatDate(
-            last.entry.Date
-          )}, entry ${formatPrice(last.entry.Close)}`;
-        } else {
-          document.getElementById("latest-bias").textContent = "—";
-          document.getElementById("latest-bias-detail").textContent =
-            "No SMA crosses in window.";
+        function renderMode(mode) {
+          const rows = tuning[mode] || [];
+          tbody.innerHTML = "";
+          rows.forEach(r => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${r.ENTRY_BAND_ATR}</td>
+              <td>${r.STOP_ATR}</td>
+              <td>${r.HOLD_DAYS}</td>
+              <td>${(r.PRICE_TOL_PCT * 100).toFixed(1)}%</td>
+              <td>${r.total_trades}</td>
+              <td>${r.total_trades ? r.win_rate.toFixed(1) + "%" : "—"}</td>
+              <td>${r.total_trades ? r.avg_r.toFixed(2) : "—"}</td>
+            `;
+            tbody.appendChild(tr);
+          });
         }
-      };
-      recalc();
-      document.getElementById("recalcBtn").addEventListener("click", recalc);
-      document.getElementById("horizon-days").textContent = "5";
 
-      // Confluence stats + table
-      const tbody = document.querySelector("#confluence-table tbody");
-      renderConfluenceTable(tbody, portRows);
-      const cStats = confluenceStats(portRows);
-      document.getElementById(
-        "confluence-trade-count"
-      ).textContent = cStats.count.toString();
-      document.getElementById(
-        "confluence-trade-pnl"
-      ).textContent = `Cumulative P&L: ${cStats.totalPnl.toFixed(2)}`;
-      document.getElementById("confluence-winloss").textContent =
-        cStats.count > 0 ? `${cStats.wins}/${cStats.losses} (wins/losses)` : "—";
-      document.getElementById("confluence-winrate").textContent =
-        cStats.count > 0 ? cStats.winRate.toFixed(1) + "%" : "—";
-
-      // Setup cards:
-      const currentBody = document.getElementById("current-setup-body");
-      const currentStatus = document.getElementById("current-setup-status");
-      const lastBody = document.getElementById("last-setup-body");
-      const lastStatus = document.getElementById("last-setup-status");
-
-      if (!portRows.length) {
-        renderSetupCard(
-          currentBody,
-          currentStatus,
-          null,
-          "No confluence setups in available data."
-        );
-        renderSetupCard(
-          lastBody,
-          lastStatus,
-          null,
-          "No completed setups yet."
-        );
-        return;
+        modeSelect.addEventListener("change", () => renderMode(modeSelect.value));
+        renderMode("light");
       }
-
-      const active = portRows.filter((t) => isActiveStatus(t.Status));
-      const completed = portRows.filter((t) => isCompletedStatus(t.Status));
-
-      const latestActive =
-        active.length > 0
-          ? active.sort((a, b) => a.EntryDate - b.EntryDate)[active.length - 1]
-          : null;
-
-      const latestCompleted =
-        completed.length > 0
-          ? completed.sort((a, b) => a.ExitDate - b.ExitDate)[
-              completed.length - 1
-            ]
-          : null;
-
-      renderSetupCard(
-        currentBody,
-        currentStatus,
-        latestActive,
-        "No active or waiting confluence setups right now."
-      );
-      renderSetupCard(
-        lastBody,
-        lastStatus,
-        latestCompleted,
-        "No completed setups yet."
-      );
     }
 
-    window.addEventListener("load", init);
+    // --- init ---------------------------------------------------------------
+    async function init() {
+      await loadSpy();
+      await loadTrades();
+      await loadPerformanceAndTuning();
+    }
+
+    init();
   </script>
 </body>
 </html>
