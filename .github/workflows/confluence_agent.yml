@@ -1,0 +1,34 @@
+name: Stock Agent Daily
+
+on:
+  # Manual trigger from the Actions tab
+  workflow_dispatch:
+  # Optional: uncomment this when everything is working to run on a schedule
+  # schedule:
+  #   - cron: "30 22 * * 1-5"   # Mon–Fri 22:30 UTC
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (none yet, safe no-op)
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run agent
+        env:
+          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
+          SYMBOLS: SPY
+        run: |
+          python agent.py
+Add confluence_agent workflow
