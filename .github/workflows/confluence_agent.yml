@@ -1,15 +1,22 @@
 name: Stock Agent Daily
 
 on:
-  # Manual trigger from the Actions tab
   workflow_dispatch:
-  # Optional: uncomment this when everything is working to run on a schedule
+  # optional, later:
   # schedule:
-  #   - cron: "30 22 * * 1-5"   # Mon–Fri 22:30 UTC
+  #   - cron: "30 22 * * 1-5"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run-agent:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repo
