@@ -53,8 +53,9 @@ jobs:
 
       - name: Copy CSVs for dashboard
         run: |
-          mkdir -p web/data
-          cp -f data/*.csv web/data/ || true
+            mkdir -p web/data
+            cp -f data/*.csv web/data/
+            cp -f reports/*.csv web/data/
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
