@@ -31,6 +31,7 @@ jobs:
           SYMBOLS: SPY
         run: |
           python agent.py
+
       - name: Commit data and reports
         run: |
           git config user.name "github-actions[bot]"
@@ -42,3 +43,20 @@ jobs:
           else
             echo "No changes to commit."
           fi
+
+      - name: Copy CSVs for dashboard
+        run: |
+          mkdir -p web/data
+          cp -f data/*.csv web/data/ || true
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
