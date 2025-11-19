@@ -31,3 +31,14 @@ jobs:
           SYMBOLS: SPY
         run: |
           python agent.py
+      - name: Commit data and reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add data reports
+            git commit -m "Update SPY data and trade summary"
+            git push
+          else
+            echo "No changes to commit."
+          fi
