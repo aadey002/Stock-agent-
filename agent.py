@@ -32,20 +32,48 @@ import os
 import pathlib
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from statistics import median
 from typing import List, Tuple
 
 import urllib.request
-import urllib.error
+
+# ---------------------------------------------------------------------------
+# Strategy modes & notifications (2.1)
+# ---------------------------------------------------------------------------
+
+# Which engine should the agent use when it builds playbooks?
+#   "BASE"          = your original geometry/φ/time SMA agent only
+#   "GANN_ELLIOTT"  = pure Gann–Elliott engine (no original geometry)
+#   "UNIFIED"       = require confluence of BOTH engines
+ACTIVE_STRATEGY_MODE = "UNIFIED"   # <- you can change this from the dashboard later
+
+# Minimum confidence/quality thresholds for the Gann–Elliott engine
+MIN_WAVE_CONFIDENCE = 70          # from your Wave_Confidence_Score spec
+MIN_TOTAL_CONFIDENCE = 75         # final combined score to allow a trade
+
+# Volatility / regime rules
+REQUIRE_NORMAL_VOL = True         # skip trades in extreme vol regimes
+INCREASE_CONF_IN_STRONG_TREND = 1.2   # multiplier for confidence in strong trends
+REDUCE_SIZE_IN_HIGH_VOL = 0.5         # position size factor in high vol
+
+# Alert / notification settings
+ENABLE_ALERTS = True              # master on/off
+ALERT_MIN_CONFIDENCE = 80         # only alert when confidence >= this
+ALERT_INCLUDE_DIRECTION = True    # include CALL/PUT + entry/stop/targets in text
+
+# Channels – these are placeholders that the HTML/JS or a future webhook/email
+# module can use; the core agent just writes into the reports.
+ALERT_CHANNELS = {
+    "console": True,              # always on (GitHub Actions log)
+    "webhook": False,             # set True once you wire a webhook URL
+    "email": False,               # set True when SMTP or service is configured
+}
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
-ROOT = pathlib.Path(__file__).resolve().parent
-DATA_DIR = ROOT / "data"
-REPORT_DIR = ROOT / "reports"
-
+DATA_DIR = pathlib.Path("data")
+REPORT_DIR = pathlib.Path("reports")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
