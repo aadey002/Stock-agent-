@@ -2,21 +2,21 @@ name: Stock Agent Daily
 
 on:
   workflow_dispatch:
-  # optional, later:
-  # schedule:
-  #   - cron: "30 22 * * 1-5"
+  schedule:
+    - cron: "30 22 * * 1-5"   # Mon–Fri 22:30 UTC
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   run-agent:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repo
@@ -27,10 +27,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies (none yet, safe no-op)
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
 
       - name: Run agent
         env:
@@ -39,62 +41,16 @@ jobs:
         run: |
           python agent.py
 
-      - name: Commit data and reports
-        continue-on-error: true
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/*.csv data/*.json reports/*.csv
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Update SPY data and trade summary" || echo "Commit failed, continuing"
-            git push origin HEAD:main || echo "Push rejected (branch moved); continuing without updating remote"
-          fi
-
       - name: Copy CSVs for dashboard
         run: |
-            mkdir -p web/data
-            cp -f data/*.csv web/data/
-            cp -f data/*.json web/data/
-            cp -f reports/*.csv web/data/
-
-      - name: Build confluence alert text
-        id: alert
-        run: |
-            mkdir -p alerts
-            # Run the alert script; if it prints nothing, alert.txt will be empty
-            python scripts/emit_alert.py > alerts/spy_confluence_alert.txt || true
-
-            if [ -s alerts/spy_confluence_alert.txt ]; then
-              echo "has_alert=true" >> "$GITHUB_OUTPUT"
-              echo "body<<EOF" >> "$GITHUB_OUTPUT"
-              cat alerts/spy_confluence_alert.txt >> "$GITHUB_OUTPUT"
-              echo "EOF" >> "$GITHUB_OUTPUT"
-            else
-              echo "has_alert=false" >> "$GITHUB_OUTPUT"
-            fi
-
-      - name: Email SPY confluence alert
-        if: steps.alert.outputs.has_alert == 'true'
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.ALERT_SMTP_SERVER }}
-          server_port: ${{ secrets.ALERT_SMTP_PORT }}
-          username: ${{ secrets.ALERT_SMTP_USERNAME }}
-          password: ${{ secrets.ALERT_SMTP_PASSWORD }}
-          subject: SPY confluence opportunity (research only)
-          to: ${{ secrets.ALERT_EMAIL_TO }}
-          from: ${{ secrets.ALERT_EMAIL_FROM }}
-          body: ${{ steps.alert.outputs.body }}
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+          mkdir -p web/data
+          cp -f data/*.csv web/data/ || true
+          cp -f reports/*.csv web/data/ || true
 
       - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: web
+          path: ./web
 
       - name: Deploy to GitHub Pages
         id: deployment
