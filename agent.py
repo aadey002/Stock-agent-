@@ -16,8 +16,8 @@ What this script does
    - 2R / 3R targets
    - Time stop in HOLD_DAYS bars
 5. Saves:
-   - data/SPY_confluence.csv       (bar-level enriched data)
-   - reports/portfolio_confluence.csv (base playbook trades)
+   - data/SPY_confluence.csv           (bar-level enriched data)
+   - reports/portfolio_confluence.csv  (base playbook trades)
 6. Gann–Elliott overlay:
    - Runs a separate Gann–Elliott strategy on the same bars.
    - Saves suggested plays to reports/portfolio_gann_elliott.csv.
@@ -48,7 +48,7 @@ import urllib.request
 # Strategy modes & thresholds
 # ---------------------------------------------------------------------------
 
-# Conceptual modes (you can extend this later from UI):
+# Conceptual modes:
 #   "BASE"          = geometry/φ/time SMA agent only
 #   "GANN_ELLIOTT"  = pure Gann–Elliott engine
 #   "UNIFIED"       = track both; highlight where both agree
@@ -964,14 +964,27 @@ def build_gann_and_super_confluence(
 ) -> None:
     """
     Produces:
-      - portfolio_gann_elliott.csv      (all valid Gann–Elliott signals)
-      - portfolio_super_confluence.csv  (only where Base and Gann agree)
+      - portfolio_gann_elliott.csv      (all valid Gann–Elliott signals or empty)
+      - portfolio_super_confluence.csv  (only where Base and Gann agree, or empty)
+    Always writes both files with headers, even if no rows.
     """
     if ACTIVE_STRATEGY_MODE not in ("GANN_ELLIOTT", "UNIFIED"):
         return
 
     df = bars_to_dataframe(bars)
     if df.empty:
+        log("[GANN-ELLIOTT] No bars; writing empty CSVs.")
+        base_cols = [
+            "Symbol", "Signal", "EntryDate", "ExitDate",
+            "EntryPrice", "ExitPrice", "PNL",
+            "EntryLow", "EntryHigh", "Stop",
+            "Target1", "Target2", "ExpiryDate", "Status",
+        ]
+        # Always create empty files
+        with (REPORT_DIR / "portfolio_gann_elliott.csv").open("w", newline="") as f:
+            csv.DictWriter(f, fieldnames=base_cols).writeheader()
+        with (REPORT_DIR / "portfolio_super_confluence.csv").open("w", newline="") as f:
+            csv.DictWriter(f, fieldnames=base_cols).writeheader()
         return
 
     ge = gann_elliott_strategy(df, account_balance=account_balance)
@@ -989,6 +1002,7 @@ def build_gann_and_super_confluence(
 
     # Gann–Elliott tracking row
     if ge is not NO_TRADE:
+        log("[GANN-ELLIOTT] Valid signal generated.")
         ge_row = {
             "Symbol": "SPY",
             "Signal": ge["direction"],
@@ -1009,6 +1023,8 @@ def build_gann_and_super_confluence(
             ),
         }
         gann_rows.append(ge_row)
+    else:
+        log("[GANN-ELLIOTT] NO_TRADE for latest bar; no qualifying signal.")
 
     # Super-Confluence row (Base + Gann agree on CALL/PUT)
     if (
@@ -1021,6 +1037,7 @@ def build_gann_and_super_confluence(
         gann_dir = ge["direction"].upper()
 
         if base_dir in ("CALL", "PUT") and base_dir == gann_dir:
+            log("[SUPER-CONFLUENCE] Base and Gann–Elliott agree on direction.")
             super_row = dict(base_last)
             super_row["Status"] = (
                 f"SUPER_CONFLUENCE ({base_dir}) | "
@@ -1028,21 +1045,30 @@ def build_gann_and_super_confluence(
                 f"regime {ge['regime'][0]}/{ge['regime'][1]}"
             )
             super_rows.append(super_row)
+        else:
+            log("[SUPER-CONFLUENCE] Directions differ or invalid; no super row.")
+    else:
+        if not base_trades:
+            log("[SUPER-CONFLUENCE] No base trades to compare with.")
+        if ge is NO_TRADE:
+            log("[SUPER-CONFLUENCE] No Gann–Elliott signal to compare with.")
 
-    # Save CSVs
-    if gann_rows:
-        with (REPORT_DIR / "portfolio_gann_elliott.csv").open("w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=base_cols)
-            writer.writeheader()
-            for r in gann_rows:
-                writer.writerow(r)
+    # Save CSVs: always write headers so files always exist
+    gann_path = REPORT_DIR / "portfolio_gann_elliott.csv"
+    with gann_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=base_cols)
+        writer.writeheader()
+        for r in gann_rows:
+            writer.writerow(r)
+    log(f"Wrote {len(gann_rows)} Gann–Elliott rows to {gann_path}")
 
-    if super_rows:
-        with (REPORT_DIR / "portfolio_super_confluence.csv").open("w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=base_cols)
-            writer.writeheader()
-            for r in super_rows:
-                writer.writerow(r)
+    super_path = REPORT_DIR / "portfolio_super_confluence.csv"
+    with super_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=base_cols)
+        writer.writeheader()
+        for r in super_rows:
+            writer.writerow(r)
+    log(f"Wrote {len(super_rows)} Super-Confluence rows to {super_path}")
 
 # ---------------------------------------------------------------------------
 # Main
