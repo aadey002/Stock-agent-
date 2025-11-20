@@ -979,6 +979,85 @@ def run_tuning_grid(bars: List[Bar], grid: List[dict]) -> List[dict]:
             }
         )
     return results
+# ---------------------------------------------------------------------------
+# Super-Confluence Layer: Base + Gann–Elliott
+# ---------------------------------------------------------------------------
+
+def save_csv(path, rows, columns):
+    import csv
+    if not rows:
+        return
+    with open(path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=columns)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(r)
+
+
+def build_gann_and_super_confluence(bars, base_trades, account_balance=100000.0):
+    """
+    bars        : enriched DataFrame (same as used for base confluence)
+    base_trades : list of dicts used to build portfolio_confluence.csv
+
+    Produces:
+      - portfolio_gann_elliott.csv (all valid Gann–Elliott signals)
+      - portfolio_super_confluence.csv (only where Base and Gann agree)
+    """
+    # 1. Gann–Elliott signal on full history
+    ge = gann_elliott_strategy(bars, account_balance=account_balance)
+    gann_rows = []
+    super_rows = []
+
+    # Base playbook uses these columns:
+    base_cols = [
+        "Symbol", "Signal", "EntryDate", "EntryPrice",
+        "ExitDate", "ExitPrice", "PNL",
+        "EntryLow", "EntryHigh", "Stop",
+        "Target1", "Target2", "ExpiryDate", "Status"
+    ]
+
+    today = bars.index[-1].date().isoformat()
+    price = float(bars['close'].iloc[-1])
+
+    # 2. Convert Gann–Elliott decision to same row format (for tracking)
+    if ge is not NO_TRADE:
+        ge_row = {
+            "Symbol": "SPY",
+            "Signal": ge["direction"],
+            "EntryDate": today,
+            "EntryPrice": round(ge["entry"], 2),
+            "ExitDate": "",        # this layer does not manage exits yet
+            "ExitPrice": "",
+            "PNL": "",
+            "EntryLow": round(min(ge["entry"], ge["stop"]), 2),
+            "EntryHigh": round(max(ge["entry"], ge["target1"]), 2),
+            "Stop": round(ge["stop"], 2),
+            "Target1": round(ge["target1"], 2),
+            "Target2": round(ge["target2"], 2),
+            "ExpiryDate": "",
+            "Status": f"GANN_ELLIOTT (conf {ge['confidence']:.1f})",
+        }
+        gann_rows.append(ge_row)
+
+    # 3. Super-Confluence (Base + Gann must agree on direction)
+    if base_trades and ge is not NO_TRADE:
+        base_last = base_trades[-1]
+        base_dir = base_last.get("Signal", "").upper()
+        gann_dir = ge["direction"].upper()
+
+        if base_dir in ("CALL", "PUT") and base_dir == gann_dir:
+            # Use Base playbook's price framework but tag with Gann confidence
+            super_row = dict(base_last)  # shallow copy
+            super_row["Status"] = (
+                f"SUPER_CONFLUENCE ({base_dir}) | "
+                f"Gann/Elliott conf {ge['confidence']:.1f}, "
+                f"regime {ge['regime'][0]}/{ge['regime'][1]}"
+            )
+            super_rows.append(super_row)
+
+    # 4. Save the new CSVs
+    save_csv(REPORT_DIR / "portfolio_gann_elliott.csv", gann_rows, base_cols)
+    save_csv(REPORT_DIR / "portfolio_super_confluence.csv", super_rows, base_cols)
 
 
 # ---------------------------------------------------------------------------
