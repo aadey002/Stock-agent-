@@ -27,18 +27,23 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          fi
-
+      # We keep this simple: always install what we need
       - name: Run agent
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
           SYMBOLS: SPY
         run: |
+          echo "[INFO] Python version:"
+          python --version
+
+          echo "[INFO] Upgrading pip and installing dependencies..."
+          python -m pip install --upgrade pip
+          pip install pandas numpy requests matplotlib python-dateutil
+
+          echo "[INFO] Showing pandas installation info..."
+          python -c "import pandas as pd; print('pandas version:', pd.__version__)"
+
+          echo "[INFO] Running agent.py..."
           python agent.py
 
       - name: Copy CSVs for dashboard
