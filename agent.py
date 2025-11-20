@@ -1059,13 +1059,15 @@ def build_gann_and_super_confluence(bars, base_trades, account_balance=100000.0)
     save_csv(REPORT_DIR / "portfolio_gann_elliott.csv", gann_rows, base_cols)
     save_csv(REPORT_DIR / "portfolio_super_confluence.csv", super_rows, base_cols)
 
-# ------------------------------------------------------------
-# Hybrid B + C unified Gann–Elliott–SuperConfluence Engine
-# ------------------------------------------------------------
-def build_gann_and_super_confluence(bars, playbook_trades, account_balance=100000):
-    # (I will generate this full function for you in the next message)
-    pass
-    build_gann_and_super_confluence(bars, playbook_trades, account_balance=100000.0)    
+# ---------------------------------------------------------------------------
+# Super-Confluence Layer: Base + Gann–Elliott
+# ---------------------------------------------------------------------------
+
+def save_csv(path, rows, columns):
+    ...
+
+def build_gann_and_super_confluence(bars, base_trades, account_balance=100000.0):
+    ...
 
 # ---------------------------------------------------------------------------
 # Main
@@ -1089,7 +1091,23 @@ def main() -> None:
         write_spy_csv(symbol, bars)
         write_spy_confluence_csv(symbol, bars)
 
-        trades = build_confluence_trades(
+    # build base trades
+    playbook_trades = build_confluence_playbook(bars)
+
+    # save portfolio_confluence.csv
+    with open(REPORT_DIR / "portfolio_confluence.csv", "w", newline="") as f:
+        # existing: save base playbook
+    with open(REPORT_DIR / "portfolio_confluence.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=cols)
+        writer.writeheader()
+        for row in playbook_trades:
+            writer.writerow(row)
+
+    # NEW: Gann–Elliott + Super-Confluence outputs
+    build_gann_and_super_confluence(bars, playbook_trades, account_balance=100000.0)
+
+    print("[INFO] Confluence agent run complete.")
+trades = build_confluence_trades(
             bars,
             entry_band_atr=ENTRY_BAND_ATR,
             stop_atr=STOP_ATR,
