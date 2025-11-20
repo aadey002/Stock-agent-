@@ -6,20 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #020617;
-      --bg-alt: #030712;
-      --bg-card: #020617;
-      --border-subtle: #1f2937;
-      --border-strong: #374151;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.15);
-      --accent-strong: #0ea5e9;
-      --danger: #f97373;
-      --success: #4ade80;
-      --warn: #facc15;
-      --chip-bg: rgba(15, 23, 42, 0.8);
+      --bg: #f5f7fb;
+      --bg-page: #eef2ff;
+      --bg-card: #ffffff;
+      --bg-chip: #f3f4f6;
+      --border-subtle: #e5e7eb;
+      --border-strong: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --accent-strong: #1d4ed8;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warn: #f59e0b;
     }
 
     * {
@@ -31,7 +31,7 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+      background: radial-gradient(circle at top, var(--bg-page) 0, #ffffff 60%, #e5e7eb 100%);
       color: var(--text-main);
       min-height: 100vh;
     }
@@ -55,7 +55,7 @@
     }
 
     .title-block h1 span {
-      font-weight: 400;
+      font-weight: 500;
       color: var(--accent);
     }
 
@@ -69,9 +69,12 @@
       font-size: 11px;
       border-radius: 999px;
       padding: 4px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      border: 1px solid var(--border-strong);
       color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.7);
+      background: var(--bg-chip);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .pill strong {
@@ -92,10 +95,11 @@
     }
 
     .summary-card {
-      background: radial-gradient(circle at top left, #0b1120 0, #020617 55%);
-      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0, #f9fafb 100%);
+      border-radius: 12px;
       padding: 10px 12px;
       border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -137,22 +141,22 @@
       font-size: 10px;
       padding: 2px 7px;
       border-radius: 999px;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-chip);
     }
 
     .summary-chip.call {
-      border-color: rgba(74, 222, 128, 0.8);
+      border-color: rgba(22, 163, 74, 0.8);
       color: var(--success);
     }
 
     .summary-chip.put {
-      border-color: rgba(248, 113, 113, 0.8);
+      border-color: rgba(220, 38, 38, 0.8);
       color: var(--danger);
     }
 
     .summary-chip.neutral {
-      border-color: rgba(148, 163, 184, 0.8);
+      border-color: var(--border-strong);
       color: var(--text-muted);
     }
 
@@ -176,18 +180,19 @@
     }
 
     section.card {
-      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #000 140%);
-      border-radius: 18px;
+      background: #ffffff;
+      border-radius: 12px;
       border: 1px solid var(--border-subtle);
       padding: 14px 14px 10px;
-      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.7);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
     }
 
     section.card h2 {
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       margin-bottom: 6px;
+      color: #111827;
     }
 
     .card-subtitle {
@@ -209,10 +214,17 @@
     }
 
     .chart-shell {
-      border-radius: 14px;
+      border-radius: 8px;
       border: 1px solid var(--border-subtle);
-      background: #020617;
+      background: #ffffff;
       padding: 8px 8px 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-grid line {
+      stroke: #e5e7eb;
+      stroke-width: 0.3;
     }
 
     .chart-label-row {
@@ -221,12 +233,12 @@
       align-items: center;
       font-size: 10px;
       color: var(--text-muted);
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     svg {
       width: 100%;
-      height: 180px;
+      height: 190px;
     }
 
     .backtest-grid {
@@ -250,12 +262,12 @@
 
     .backtest-highlight {
       padding: 6px 8px;
-      border-radius: 12px;
+      border-radius: 8px;
       border: 1px dashed var(--border-strong);
       margin-top: 6px;
       font-size: 11px;
       color: var(--text-muted);
-      background: rgba(15, 23, 42, 0.8);
+      background: #f9fafb;
     }
 
     .backtest-highlight strong {
@@ -275,13 +287,13 @@
     }
 
     table.trade-log thead {
-      background: rgba(15, 23, 42, 0.9);
+      background: #f3f4f6;
     }
 
     table.trade-log th,
     table.trade-log td {
       padding: 4px 6px;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      border-bottom: 1px solid #e5e7eb;
       text-align: right;
       white-space: nowrap;
     }
@@ -297,15 +309,17 @@
     }
 
     table.trade-log tbody tr:nth-child(2n) {
-      background: rgba(15, 23, 42, 0.7);
+      background: #f9fafb;
     }
 
     table.trade-log td.pnl-pos {
       color: var(--success);
+      font-weight: 500;
     }
 
     table.trade-log td.pnl-neg {
       color: var(--danger);
+      font-weight: 500;
     }
 
     .disclaimer {
@@ -319,7 +333,6 @@
       font-weight: 500;
     }
 
-    /* tuning table re-use */
     #tuning-table td,
     #tuning-table th {
       text-align: right;
@@ -330,25 +343,32 @@
       text-align: right;
     }
 
-    #tuning-table th:nth-child(1),
-    #tuning-table td:nth-child(1) {
-      text-align: right;
-    }
-
-    #tuning-table th:nth-child(2),
-    #tuning-table td:nth-child(2) {
-      text-align: right;
-    }
-
     .chip-muted {
       display: inline-flex;
       align-items: center;
       border-radius: 999px;
       padding: 2px 7px;
       font-size: 10px;
-      background: var(--chip-bg);
+      background: var(--bg-chip);
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
+    }
+
+    select {
+      background: #ffffff;
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 11px;
+    }
+
+    code {
+      font-size: 11px;
+      background: #f9fafb;
+      padding: 1px 4px;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
     }
 
     @media (max-width: 880px) {
@@ -377,7 +397,8 @@
         </div>
       </div>
       <div class="pill">
-        Powered by <strong>Tiingo</strong> · Backtested locally on SPY closes
+        Powered by <strong>Tiingo</strong>
+        <span>· Backtested locally on SPY closes</span>
       </div>
     </header>
 
@@ -433,13 +454,15 @@
           </p>
           <div class="chart-shell">
             <svg id="price-chart" viewBox="0 0 100 60" preserveAspectRatio="none">
-              <polyline id="price-path" fill="none" stroke="url(#gradLine)" stroke-width="0.7" />
-              <defs>
-                <linearGradient id="gradLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#38bdf8" />
-                  <stop offset="100%" stop-color="#a855f7" />
-                </linearGradient>
-              </defs>
+              <!-- grid -->
+              <g class="chart-grid">
+                <line x1="0" y1="10" x2="100" y2="10"></line>
+                <line x1="0" y1="20" x2="100" y2="20"></line>
+                <line x1="0" y1="30" x2="100" y2="30"></line>
+                <line x1="0" y1="40" x2="100" y2="40"></line>
+                <line x1="0" y1="50" x2="100" y2="50"></line>
+              </g>
+              <polyline id="price-path" fill="none" stroke="#2563eb" stroke-width="0.7" />
             </svg>
             <div class="chart-label-row">
               <span id="chart-start-label">—</span>
@@ -520,8 +543,7 @@
         </p>
         <div style="display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:8px;">
           <span style="color:var(--text-muted);">Tuning mode:</span>
-          <select id="tuning-mode"
-            style="background:#020617;border:1px solid #374151;color:#e5e7eb;border-radius:999px;padding:3px 10px;font-size:11px;">
+          <select id="tuning-mode">
             <option value="light">Light (fast)</option>
             <option value="medium">Medium (balanced)</option>
             <option value="deep">Deep (full sweep)</option>
@@ -581,16 +603,13 @@
       const rows = parseCsv(text);
       if (!rows.length) return null;
 
-      // enhance rows
       rows.forEach(r => {
         r._date = new Date(r.Date);
         r._close = toNumber(r.Close);
       });
 
-      // sort by date ascending
       rows.sort((a, b) => a._date - b._date);
 
-      // summary
       const last = rows[rows.length - 1];
       const prev = rows[rows.length - 2] || last;
       const lastClose = last._close;
@@ -605,7 +624,7 @@
       document.getElementById("summary-last-change").textContent =
         `${deltaText} vs prior close on ${prev.Date}`;
 
-      // chart: use last 60 rows
+      // chart: last 60 rows
       const windowSize = 60;
       const slice = rows.slice(-windowSize);
       if (!slice.length) return rows;
@@ -619,7 +638,7 @@
       const pts = xs.map((x, i) => {
         const px = (x / (xs.length - 1 || 1)) * 100;
         const normY = (ys[i] - minY) / spanY;
-        const py = 60 - normY * 55; // pad at top/bottom
+        const py = 60 - normY * 48 - 2; // pad inside chart
         return `${px},${py}`;
       }).join(" ");
 
@@ -638,7 +657,6 @@
       const rows = parseCsv(text);
       if (!rows.length) return [];
 
-      // sort by entry date ascending
       rows.forEach(r => {
         r._entryDate = new Date(r.EntryDate);
         r._exitDate = new Date(r.ExitDate);
@@ -689,7 +707,6 @@
         tbody.appendChild(tr);
       });
 
-      // simple stats
       const total = rows.length;
       const winRate = total ? (wins / total) * 100 : 0;
       const medianPnl = pnls.length ? pnls.slice().sort((a, b) => a - b)[Math.floor(pnls.length / 2)] : 0;
@@ -709,7 +726,6 @@
         highlight.textContent = "No confluence trades yet in the current lookback.";
       }
 
-      // summary cards
       const last = rows[rows.length - 1];
       if (last) {
         const chip = document.createElement("span");
@@ -740,11 +756,11 @@
       let tuning = null;
       try {
         perf = await fetch("data/performance_confluence.json").then(r => r.ok ? r.json() : null);
-      } catch (e) { /* ignore */ }
+      } catch (e) {}
 
       try {
         tuning = await fetch("data/tuning_confluence.json").then(r => r.ok ? r.json() : null);
-      } catch (e) { /* ignore */ }
+      } catch (e) {}
 
       if (perf && perf.summary) {
         const s = perf.summary;
