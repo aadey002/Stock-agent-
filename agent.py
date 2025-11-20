@@ -1059,6 +1059,10 @@ def build_gann_and_super_confluence(bars, base_trades, account_balance=100000.0)
     save_csv(REPORT_DIR / "portfolio_gann_elliott.csv", gann_rows, base_cols)
     save_csv(REPORT_DIR / "portfolio_super_confluence.csv", super_rows, base_cols)
 
+# -----------------------------------------------------------------------
+# Hybrid B + C: Gann–Elliott tracking + Super-Confluence
+# -----------------------------------------------------------------------
+    build_gann_and_super_confluence(bars, playbook_trades, account_balance=100000.0)    
 
 # ---------------------------------------------------------------------------
 # Main
