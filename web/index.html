@@ -501,6 +501,32 @@
         </section>
       </section>
 
+      <!-- Today’s playbook -->
+      <section class="card">
+        <h2>Today’s confluence playbook</h2>
+        <p class="card-subtitle">
+          Latest confluence bar translated into a simple options/stock plan: side, entry band, guard-rail stop,
+          targets and time window status.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:12px;">
+          <div>
+            <div class="summary-label" style="margin-bottom:2px;">Side &amp; bias</div>
+            <div id="playbook-side" style="font-weight:600;">—</div>
+            <div id="playbook-status" style="font-size:11px;color:var(--text-muted);margin-top:2px;">Waiting for data…</div>
+          </div>
+          <div>
+            <div class="summary-label" style="margin-bottom:2px;">Entry band &amp; stop</div>
+            <div id="playbook-band" style="font-weight:500;">—</div>
+            <div id="playbook-stop" style="font-size:11px;color:var(--text-muted);margin-top:2px;">—</div>
+          </div>
+          <div>
+            <div class="summary-label" style="margin-bottom:2px;">Targets &amp; expiry</div>
+            <div id="playbook-targets" style="font-weight:500;">—</div>
+            <div id="playbook-expiry" style="font-size:11px;color:var(--text-muted);margin-top:2px;">—</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Log + tuning -->
       <section class="card table-card">
         <h2>Confluence trade log</h2>
@@ -728,6 +754,7 @@
 
       const last = rows[rows.length - 1];
       if (last) {
+        // === Top summary chip ===
         const chip = document.createElement("span");
         chip.className = "summary-chip " + (last.Signal === "CALL" ? "call" : "put");
         chip.textContent = last.Signal;
@@ -740,6 +767,51 @@
         document.getElementById("summary-last-signal-detail").textContent =
           `Entry ${Number(last.EntryPrice).toFixed(2)}, time exit ${Number(last.ExitPrice).toFixed(2)}, ` +
           `PNL ${Number(last.PNL).toFixed(2)}.`;
+
+        // === Today’s playbook panel ===
+        const pbSide   = document.getElementById("playbook-side");
+        const pbBand   = document.getElementById("playbook-band");
+        const pbStop   = document.getElementById("playbook-stop");
+        const pbTgts   = document.getElementById("playbook-targets");
+        const pbExpiry = document.getElementById("playbook-expiry");
+        const pbStatus = document.getElementById("playbook-status");
+
+        if (pbSide && pbBand && pbStop && pbTgts && pbExpiry && pbStatus) {
+          const sideText = last.Signal === "CALL" ? "Call (bullish)" :
+                           last.Signal === "PUT"  ? "Put (bearish)"  : last.Signal;
+
+          const entryLow  = Number(last.EntryLow);
+          const entryHigh = Number(last.EntryHigh);
+          const stop      = Number(last.Stop);
+          const t1        = Number(last.Target1);
+          const t2        = Number(last.Target2);
+
+          pbSide.textContent = `${last.Signal} – ${sideText}`;
+          pbBand.textContent = isFinite(entryLow) && isFinite(entryHigh)
+            ? `${entryLow.toFixed(2)} – ${entryHigh.toFixed(2)}`
+            : "—";
+
+          pbStop.textContent = isFinite(stop)
+            ? `Guard-rail stop: ${stop.toFixed(2)}`
+            : "Guard-rail stop: —";
+
+          pbTgts.textContent = (isFinite(t1) && isFinite(t2))
+            ? `Targets: T1 ${t1.toFixed(2)}, T2 ${t2.toFixed(2)}`
+            : "Targets: —";
+
+          pbExpiry.textContent = `Time window: exit on ${last.ExitDate} (HOLD_DAYS time stop)`;
+
+          const today = new Date();
+          let statusText = "Historical backtest playbook";
+
+          if (last._entryDate > today) {
+            statusText = "Upcoming window – monitor for entry near the band.";
+          } else if (last._entryDate <= today && last._exitDate >= today) {
+            statusText = "Active window – trade is currently within its time window.";
+          }
+
+          pbStatus.textContent = statusText;
+        }
       }
 
       document.getElementById("summary-win-loss").textContent =
