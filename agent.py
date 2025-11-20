@@ -78,6 +78,355 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
+# Elliott Wave Engine (Detection + Confidence Model)
+# ---------------------------------------------------------------------------
+
+def zigzag(df, threshold=0.05):
+    """
+    Simple ZigZag pivot detector used for wave structure.
+    Identifies percent-based pivots.
+    """
+    pivots = []
+    last_pivot_price = df['close'].iloc[0]
+    last_pivot_type = None  # "high" or "low"
+
+    for i in range(1, len(df)):
+        price = df['close'].iloc[i]
+        change = (price - last_pivot_price) / last_pivot_price
+
+        if last_pivot_type != "high" and change >= threshold:
+            pivots.append(("low", last_pivot_price, df.index[i-1]))
+            last_pivot_price = price
+            last_pivot_type = "high"
+
+        elif last_pivot_type != "low" and change <= -threshold:
+            pivots.append(("high", last_pivot_price, df.index[i-1]))
+            last_pivot_price = price
+            last_pivot_type = "low"
+
+    return pivots
+
+
+def detect_elliott_waves(df):
+    """
+    Attempts to detect 1-5 impulsive structure and compute wave confidence.
+    Produces:
+        - wave labels
+        - prices of wave pivots
+        - confidence score (0-100)
+        - current market phase ('wave_2_complete', 'wave_5_complete', etc.)
+    """
+
+    pivots = zigzag(df, threshold=0.05)
+    if len(pivots) < 6:
+        return None  # insufficient pivots to identify waves
+
+    # Use latest 6 pivots as potential Wave 0-5
+    candidate = pivots[-6:]
+    labels = ["W0", "W1", "W2", "W3", "W4", "W5"]
+    waves = {labels[i]: candidate[i][1] for i in range(6)}
+    times = {labels[i]: candidate[i][2] for i in range(6)}
+
+    # ---- HARD RULE CHECKS ----
+    score = 0
+
+    # Wave 2 cannot break below Wave 0
+    if waves["W2"] > waves["W0"]:
+        score += 20
+
+    # Wave 3 must NOT be shortest among 1,3,5
+    len1 = abs(waves["W1"] - waves["W0"])
+    len3 = abs(waves["W3"] - waves["W2"])
+    len5 = abs(waves["W5"] - waves["W4"])
+    if len3 > len1 and len3 > len5:
+        score += 20
+
+    # Fibonacci checks
+    retr2 = abs(waves["W1"] - waves["W2"]) / len1
+    retr4 = abs(waves["W3"] - waves["W4"]) / len3
+
+    if 0.382 <= retr2 <= 0.618:
+        score += 15
+
+    if 0.236 <= retr4 <= 0.50:
+        score += 15
+
+    # Time proportionality
+    t1 = (times["W1"] - times["W0"]).days
+    t3 = (times["W3"] - times["W2"]).days
+    if t3 > t1:
+        score += 15
+
+    # Alternation (sharp Wave 2, sideways Wave 4)
+    if (retr2 > 0.45 and retr4 < 0.35) or (retr2 < 0.45 and retr4 > 0.35):
+        score += 15
+
+    phase = None
+    close = df['close'].iloc[-1]
+
+    if close > waves["W2"] and close < waves["W3"]:
+        phase = "wave_2_complete"
+    elif close > waves["W4"]:
+        phase = "wave_5_complete"
+
+    return {
+        "confidence": score,
+        "waves": waves,
+        "times": times,
+        "current": phase,
+        "wave_1_low": waves["W0"],
+        "wave_5_high": waves["W5"]
+    }
+# ---------------------------------------------------------------------------
+# Gann Square of 9 Engine
+# ---------------------------------------------------------------------------
+
+def gann_square_of_9(price, increments=5):
+    import math
+    sqrtp = math.sqrt(price)
+
+    res = []
+    sup = []
+
+    for k in range(1, increments + 1):
+        deg = k * 45
+        inc = deg / 180.0
+        res.append( round((sqrtp + inc)**2, 2) )
+        if sqrtp > inc:
+            sup.append( round((sqrtp - inc)**2, 2) )
+
+    return {"resistance": res, "support": sup}
+
+
+def nearest_gann_levels(price, gann):
+    r = gann["resistance"]
+    s = gann["support"]
+
+    nearest_r = min(r, key=lambda x: abs(x - price))
+    nearest_s = min(s, key=lambda x: abs(x - price))
+
+    return nearest_s, nearest_r
+# ---------------------------------------------------------------------------
+# Regime Filters, Time Cycles, Position Sizing, and Gann–Elliott Strategy
+# ---------------------------------------------------------------------------
+
+NO_TRADE = None  # simple sentinel
+
+
+def detect_trend_regime(df):
+    """
+    Returns: 'strong_uptrend', 'weak_uptrend', 'sideways',
+             'weak_downtrend', 'strong_downtrend'
+    """
+    if len(df) < 220:
+        return "unknown"
+
+    sma50 = df['close'].rolling(50).mean()
+    sma200 = df['close'].rolling(200).mean()
+
+    sma50_last = sma50.iloc[-1]
+    sma200_last = sma200.iloc[-1]
+    price = df['close'].iloc[-1]
+
+    # simple slope proxies (10 bars and 20 bars)
+    sma50_prev = sma50.iloc[-10]
+    sma200_prev = sma200.iloc[-20]
+    slope50 = (sma50_last - sma50_prev) / 10.0
+    slope200 = (sma200_last - sma200_prev) / 20.0
+
+    if price > sma50_last > sma200_last and slope50 > 0 and slope200 > 0:
+        return "strong_uptrend"
+    if price > sma50_last > sma200_last:
+        return "weak_uptrend"
+    if abs(sma50_last - sma200_last) / max(1e-9, sma200_last) < 0.02:
+        return "sideways"
+    if price < sma50_last < sma200_last and slope50 < 0 and slope200 < 0:
+        return "strong_downtrend"
+    if price < sma50_last < sma200_last:
+        return "weak_downtrend"
+    return "unknown"
+
+
+def detect_vol_regime(df, lookback=20):
+    """
+    Returns: 'low_vol', 'normal_vol', 'high_vol'
+    """
+    if len(df) < 260:
+        return "normal_vol"
+
+    daily_ret = df['close'].pct_change()
+
+    realized = daily_ret.rolling(lookback).std().iloc[-1] * (252 ** 0.5)
+    hist = daily_ret.rolling(252).std().iloc[-1] * (252 ** 0.5)
+
+    if realized < hist * 0.7:
+        return "low_vol"
+    if realized > hist * 1.3:
+        return "high_vol"
+    return "normal_vol"
+
+
+def identify_cycle_start_pivot(df, lookback=90):
+    """
+    Choose a recent significant pivot using volume and swing magnitude.
+    Returns a timestamp; if not found, falls back to 90 bars ago.
+    """
+    if len(df) < lookback + 5:
+        return df.index.max()
+
+    window = df.iloc[-lookback:].copy()
+    # simple swing magnitude vs 20-bar rolling mean
+    window['roll_max'] = window['close'].rolling(20).max()
+    window['roll_min'] = window['close'].rolling(20).min()
+    window['swing_mag'] = (window['roll_max'] - window['roll_min']) / window['roll_min']
+    window['vol_score'] = window['volume'] / window['volume'].rolling(20).mean()
+
+    # high volume & big swing
+    pivots = window[(window['swing_mag'] > 0.05) & (window['vol_score'] > 1.5)]
+    if len(pivots) == 0:
+        return df.index[-lookback]
+
+    return pivots.index[-1]
+
+
+GANN_CYCLES_TRADING_DAYS = [11, 22, 34, 45, 56, 67, 78, 90]
+
+
+def cycle_confidence(days_from_pivot):
+    """
+    Higher when we are near standard Gann cycle counts.
+    Returns 0.3 (weak), 0.7 (good), 1.0 (strong)
+    """
+    best = 0.3
+    for c in GANN_CYCLES_TRADING_DAYS:
+        diff = abs(days_from_pivot - c)
+        if diff <= 2:
+            return 1.0
+        if diff <= 4:
+            best = max(best, 0.7)
+    return best
+
+
+# --- Position sizing / R:R helpers ------------------------------------------
+
+RISK_PER_TRADE = 1.0        # % of equity
+MAX_PORTFOLIO_RISK = 6.0    # not enforced here, but kept for future use
+
+
+def calculate_position_size(account_balance, entry_price, stop_price):
+    risk_amount = account_balance * (RISK_PER_TRADE / 100.0)
+    price_risk = abs(entry_price - stop_price)
+    if price_risk <= 0:
+        return 0
+    size = int(risk_amount / price_risk)
+    return max(size, 0)
+
+
+# --- Gann–Elliott unified decision engine -----------------------------------
+
+def gann_elliott_strategy(df, account_balance=100000.0):
+    """
+    Returns either NO_TRADE or a dict:
+      {
+        'direction': 'CALL' or 'PUT',
+        'entry': float,
+        'stop': float,
+        'target1': float,
+        'target2': float,
+        'confidence': float (0-100),
+        'regime': (trend, vol)
+      }
+    """
+    if len(df) < 220:
+        return NO_TRADE
+
+    trend = detect_trend_regime(df)
+    vol = detect_vol_regime(df)
+
+    # 1. Regime filter
+    if trend == "sideways":
+        return NO_TRADE
+
+    # 2. Wave structure
+    waves = detect_elliott_waves(df)
+    if not waves:
+        return NO_TRADE
+
+    wave_conf = waves["confidence"]
+    if wave_conf < MIN_WAVE_CONFIDENCE:
+        return NO_TRADE
+
+    # 3. Gann levels near current price
+    price = df['close'].iloc[-1]
+    gann = gann_square_of_9(price, increments=5)
+    nearest_support, nearest_resistance = nearest_gann_levels(price, gann)
+
+    # 4. Time cycles
+    pivot_date = identify_cycle_start_pivot(df)
+    days_from_pivot = (df.index[-1] - pivot_date).days
+    cyc = cycle_confidence(days_from_pivot)
+    if cyc < 0.7:
+        return NO_TRADE
+
+    # 5. Directional logic: bullish vs bearish phase
+    direction = None
+    entry = price
+    stop = None
+    t1 = None
+    t2 = None
+
+    # wave_2_complete => looking for Wave 3 up
+    if waves["current"] == "wave_2_complete" and price <= nearest_support * 1.0075:
+        direction = "CALL"
+        stop = waves["wave_1_low"] * 0.99
+        t1 = nearest_resistance
+        t2 = nearest_resistance * 1.01  # simple extension
+
+    # wave_5_complete => looking for A/C down
+    elif waves["current"] == "wave_5_complete" and price >= nearest_resistance * 0.9925:
+        direction = "PUT"
+        stop = waves["wave_5_high"] * 1.01
+        t1 = nearest_support
+        t2 = nearest_support * 0.99
+
+    if direction is None or stop is None or t1 is None:
+        return NO_TRADE
+
+    # 6. Position size + R:R
+    size = calculate_position_size(account_balance, entry, stop)
+    reward = abs(t1 - entry)
+    risk = abs(entry - stop)
+    if risk <= 0 or reward / risk < 2.0:
+        return NO_TRADE
+
+    # 7. Final confidence score (0-100)
+    at_level = (abs(price - nearest_support) / price < 0.0075) or (
+        abs(price - nearest_resistance) / price < 0.0075
+    )
+    level_score = 100 if at_level else 0
+
+    total_conf = (
+        waves["confidence"] * 0.4 +
+        cyc * 100 * 0.3 +
+        level_score * 0.3
+    )
+
+    if total_conf < MIN_TOTAL_CONFIDENCE:
+        return NO_TRADE
+
+    return {
+        "direction": direction,
+        "entry": float(entry),
+        "stop": float(stop),
+        "target1": float(t1),
+        "target2": float(t2),
+        "size": size,
+        "confidence": total_conf,
+        "regime": (trend, vol),
+        "gann_support": float(nearest_support),
+        "gann_resistance": float(nearest_resistance),
+    }
+# ---------------------------------------------------------------------------
 # Config (core parameters)
 # ---------------------------------------------------------------------------
 
