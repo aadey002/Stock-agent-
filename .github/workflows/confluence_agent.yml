@@ -59,6 +59,35 @@ jobs:
             cp -f data/*.json web/data/
             cp -f reports/*.csv web/data/
 
+      - name: Build confluence alert text
+        id: alert
+        run: |
+            mkdir -p alerts
+            # Run the alert script; if it prints nothing, alert.txt will be empty
+            python scripts/emit_alert.py > alerts/spy_confluence_alert.txt || true
+
+            if [ -s alerts/spy_confluence_alert.txt ]; then
+              echo "has_alert=true" >> "$GITHUB_OUTPUT"
+              echo "body<<EOF" >> "$GITHUB_OUTPUT"
+              cat alerts/spy_confluence_alert.txt >> "$GITHUB_OUTPUT"
+              echo "EOF" >> "$GITHUB_OUTPUT"
+            else
+              echo "has_alert=false" >> "$GITHUB_OUTPUT"
+            fi
+
+      - name: Email SPY confluence alert
+        if: steps.alert.outputs.has_alert == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.ALERT_SMTP_SERVER }}
+          server_port: ${{ secrets.ALERT_SMTP_PORT }}
+          username: ${{ secrets.ALERT_SMTP_USERNAME }}
+          password: ${{ secrets.ALERT_SMTP_PASSWORD }}
+          subject: SPY confluence opportunity (research only)
+          to: ${{ secrets.ALERT_EMAIL_TO }}
+          from: ${{ secrets.ALERT_EMAIL_FROM }}
+          body: ${{ steps.alert.outputs.body }}
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
