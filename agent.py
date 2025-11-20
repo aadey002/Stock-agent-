@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SPY Confluence Agent with Playbook + Tuning + Gann–Elliott Super-Confluence
+SPY Confluence Agent with Playbook, Tuning, and Gann–Elliott Super-Confluence
 
 What this script does
 ---------------------
@@ -16,11 +16,15 @@ What this script does
    - 2R / 3R targets
    - Time stop in HOLD_DAYS bars
 5. Saves:
-   - data/SPY_confluence.csv (bar-level enriched data)
-   - reports/portfolio_confluence.csv (playbook trades)
-   - reports/portfolio_gann_elliott.csv (Gann–Elliott tracking)
-   - reports/portfolio_super_confluence.csv (Base + Gann agree)
-6. Computes performance metrics + tuning grids:
+   - data/SPY_confluence.csv       (bar-level enriched data)
+   - reports/portfolio_confluence.csv (base playbook trades)
+6. Gann–Elliott overlay:
+   - Runs a separate Gann–Elliott strategy on the same bars.
+   - Saves suggested plays to reports/portfolio_gann_elliott.csv.
+7. Hybrid B + C:
+   - Super-Confluence = only where Base and Gann–Elliott agree on direction.
+   - Saves those to reports/portfolio_super_confluence.csv.
+8. Computes performance metrics + tuning grids:
    - data/performance_confluence.json
    - data/tuning_confluence.json
 
@@ -34,25 +38,25 @@ import os
 import pathlib
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from statistics import median
 import pandas as pd
 import urllib.request
 
 # ---------------------------------------------------------------------------
-# Strategy modes & notification knobs (not all used yet)
+# Strategy modes & thresholds
 # ---------------------------------------------------------------------------
 
-# Which engine should the agent use conceptually?
+# Conceptual modes (you can extend this later from UI):
 #   "BASE"          = geometry/φ/time SMA agent only
 #   "GANN_ELLIOTT"  = pure Gann–Elliott engine
 #   "UNIFIED"       = track both; highlight where both agree
 ACTIVE_STRATEGY_MODE = "UNIFIED"
 
-# Minimum confidence/quality thresholds for the Gann–Elliott engine
-MIN_WAVE_CONFIDENCE = 70          # from your Wave_Confidence_Score spec
-MIN_TOTAL_CONFIDENCE = 75         # final combined score to allow a trade
+# Gann–Elliott confidence thresholds
+MIN_WAVE_CONFIDENCE = 70       # wave structure minimum score
+MIN_TOTAL_CONFIDENCE = 75      # final combined score to allow a trade
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -64,10 +68,10 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# Elliott Wave Engine (Detection + Confidence Model)
+# Elliott Wave Engine (lite quantitative implementation)
 # ---------------------------------------------------------------------------
 
-def zigzag(df, threshold=0.05):
+def zigzag(df: pd.DataFrame, threshold: float = 0.05):
     """
     Simple ZigZag pivot detector used for wave structure.
     Identifies percent-based pivots.
@@ -93,14 +97,15 @@ def zigzag(df, threshold=0.05):
     return pivots
 
 
-def detect_elliott_waves(df):
+def detect_elliott_waves(df: pd.DataFrame) -> Optional[dict]:
     """
-    Attempts to detect 1-5 impulsive structure and compute wave confidence.
-    Produces:
-        - wave labels
-        - prices of wave pivots
-        - confidence score (0-100)
-        - current market phase ('wave_2_complete', 'wave_5_complete', etc.)
+    Attempts to detect a 1-5 impulsive structure and compute wave confidence.
+    Returns dict with:
+        - waves / times
+        - confidence (0-100)
+        - current phase ('wave_2_complete', 'wave_5_complete', etc.)
+        - wave_1_low, wave_5_high
+    or None if insufficient structure.
     """
     pivots = zigzag(df, threshold=0.05)
     if len(pivots) < 6:
@@ -115,7 +120,7 @@ def detect_elliott_waves(df):
     # ---- HARD RULE CHECKS ----
     score = 0
 
-    # Wave 2 cannot break below Wave 0
+    # Wave 2 cannot break below Wave 0 (for bullish template)
     if waves["W2"] > waves["W0"]:
         score += 20
 
@@ -126,7 +131,7 @@ def detect_elliott_waves(df):
     if len3 > len1 and len3 > len5:
         score += 20
 
-    # Fibonacci checks
+    # Fibonacci retracements
     retr2 = abs(waves["W1"] - waves["W2"]) / max(len1, 1e-9)
     retr4 = abs(waves["W3"] - waves["W4"]) / max(len3, 1e-9)
 
@@ -166,7 +171,7 @@ def detect_elliott_waves(df):
 # Gann Square of 9 Engine
 # ---------------------------------------------------------------------------
 
-def gann_square_of_9(price, increments=5):
+def gann_square_of_9(price: float, increments: int = 5) -> dict:
     sqrtp = math.sqrt(price)
     res = []
     sup = []
@@ -179,7 +184,7 @@ def gann_square_of_9(price, increments=5):
     return {"resistance": res, "support": sup}
 
 
-def nearest_gann_levels(price, gann):
+def nearest_gann_levels(price: float, gann: dict) -> Tuple[float, float]:
     r = gann["resistance"]
     s = gann["support"]
     nearest_r = min(r, key=lambda x: abs(x - price))
@@ -193,7 +198,7 @@ def nearest_gann_levels(price, gann):
 NO_TRADE = None  # sentinel
 
 
-def detect_trend_regime(df):
+def detect_trend_regime(df: pd.DataFrame) -> str:
     """
     Returns: 'strong_uptrend', 'weak_uptrend', 'sideways',
              'weak_downtrend', 'strong_downtrend', 'unknown'
@@ -227,7 +232,7 @@ def detect_trend_regime(df):
     return "unknown"
 
 
-def detect_vol_regime(df, lookback=20):
+def detect_vol_regime(df: pd.DataFrame, lookback: int = 20) -> str:
     """
     Returns: 'low_vol', 'normal_vol', 'high_vol'
     """
@@ -245,7 +250,7 @@ def detect_vol_regime(df, lookback=20):
     return "normal_vol"
 
 
-def identify_cycle_start_pivot(df, lookback=90):
+def identify_cycle_start_pivot(df: pd.DataFrame, lookback: int = 90):
     """
     Choose a recent significant pivot using volume and swing magnitude.
     Returns a timestamp; if not found, falls back to 90 bars ago.
@@ -269,7 +274,7 @@ def identify_cycle_start_pivot(df, lookback=90):
 GANN_CYCLES_TRADING_DAYS = [11, 22, 34, 45, 56, 67, 78, 90]
 
 
-def cycle_confidence(days_from_pivot):
+def cycle_confidence(days_from_pivot: int) -> float:
     """
     Higher when we are near standard Gann cycle counts.
     Returns 0.3 (weak), 0.7 (good), 1.0 (strong)
@@ -288,7 +293,7 @@ RISK_PER_TRADE = 1.0        # % of equity
 MAX_PORTFOLIO_RISK = 6.0    # placeholder, not enforced yet
 
 
-def calculate_position_size(account_balance, entry_price, stop_price):
+def calculate_position_size(account_balance: float, entry_price: float, stop_price: float) -> int:
     risk_amount = account_balance * (RISK_PER_TRADE / 100.0)
     price_risk = abs(entry_price - stop_price)
     if price_risk <= 0:
@@ -297,7 +302,7 @@ def calculate_position_size(account_balance, entry_price, stop_price):
     return max(size, 0)
 
 
-def gann_elliott_strategy(df, account_balance=100000.0):
+def gann_elliott_strategy(df: pd.DataFrame, account_balance: float = 100000.0) -> Optional[dict]:
     """
     Returns either NO_TRADE or a dict:
       {
@@ -328,8 +333,7 @@ def gann_elliott_strategy(df, account_balance=100000.0):
     if not waves:
         return NO_TRADE
 
-    wave_conf = waves["confidence"]
-    if wave_conf < MIN_WAVE_CONFIDENCE:
+    if waves["confidence"] < MIN_WAVE_CONFIDENCE:
         return NO_TRADE
 
     # 3. Gann levels near current price
@@ -552,7 +556,7 @@ def write_spy_confluence_csv(symbol: str, bars: List[Bar]) -> None:
     log(f"Saved enriched confluence dataset to {path}")
 
 # ---------------------------------------------------------------------------
-# Indicators & confluence logic
+# Indicators & confluence logic (Base)
 # ---------------------------------------------------------------------------
 
 def compute_atr(bars: List[Bar], length: int) -> None:
@@ -650,7 +654,7 @@ def tag_confluence(bars: List[Bar], price_tol_pct: float) -> None:
 
     log(
         f"Last swing low {swing_low:.2f} on {bars[swing_idx].d}, "
-        f"high {swing_high:.2f} on {max(b.high for b in bars):.2f}"
+        f"high {swing_high:.2f}"
     )
     log(
         f"Geometry levels: {len(geo_levels)}, "
@@ -783,7 +787,7 @@ def write_portfolio_confluence(trades: List[dict]) -> None:
 # Performance & tuning helpers
 # ---------------------------------------------------------------------------
 
-def trade_r_multiple(trade: dict) -> float | None:
+def trade_r_multiple(trade: dict) -> Optional[float]:
     entry_low = trade.get("EntryLow")
     entry_high = trade.get("EntryHigh")
     stop = trade.get("Stop")
@@ -910,7 +914,7 @@ def run_tuning_grid(bars: List[Bar], grid: List[dict]) -> List[dict]:
         )
     return results
 
-# Tuning grids (unchanged)
+
 LIGHT_GRID = [
     {"ENTRY_BAND_ATR": 0.5, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
     {"ENTRY_BAND_ATR": 0.4, "STOP_ATR": 1.5, "HOLD_DAYS": 5, "PRICE_TOL_PCT": 0.008},
@@ -960,11 +964,10 @@ def build_gann_and_super_confluence(
 ) -> None:
     """
     Produces:
-      - portfolio_gann_elliott.csv   (all valid Gann–Elliott signals)
-      - portfolio_super_confluence.csv (only where Base and Gann agree)
+      - portfolio_gann_elliott.csv      (all valid Gann–Elliott signals)
+      - portfolio_super_confluence.csv  (only where Base and Gann agree)
     """
     if ACTIVE_STRATEGY_MODE not in ("GANN_ELLIOTT", "UNIFIED"):
-        # tracking only base agent; nothing to do
         return
 
     df = bars_to_dataframe(bars)
@@ -984,6 +987,7 @@ def build_gann_and_super_confluence(
 
     today = df.index[-1].date().isoformat()
 
+    # Gann–Elliott tracking row
     if ge is not NO_TRADE:
         ge_row = {
             "Symbol": "SPY",
@@ -999,11 +1003,14 @@ def build_gann_and_super_confluence(
             "Target1": round(ge["target1"], 2),
             "Target2": round(ge["target2"], 2),
             "ExpiryDate": "",
-            "Status": f"GANN_ELLIOTT (conf {ge['confidence']:.1f}, "
-                      f"regime {ge['regime'][0]}/{ge['regime'][1]})",
+            "Status": (
+                f"GANN_ELLIOTT (conf {ge['confidence']:.1f}, "
+                f"regime {ge['regime'][0]}/{ge['regime'][1]})"
+            ),
         }
         gann_rows.append(ge_row)
 
+    # Super-Confluence row (Base + Gann agree on CALL/PUT)
     if (
         ACTIVE_STRATEGY_MODE == "UNIFIED"
         and base_trades
@@ -1048,7 +1055,7 @@ def main() -> None:
     for symbol in SYMBOLS:
         bars = fetch_tiingo_daily(symbol, START_DATE)
 
-        # base indicators + confluence tagging
+        # Base indicators + confluence tagging
         compute_atr(bars, ATR_LENGTH)
         fast = compute_sma(bars, FAST_SMA_LEN)
         slow = compute_sma(bars, SLOW_SMA_LEN)
