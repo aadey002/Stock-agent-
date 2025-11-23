@@ -43,6 +43,9 @@ jobs:
           echo "[INFO] Showing pandas installation info..."
           python -c "import pandas as pd; print('pandas version:', pd.__version__)"
 
+	  echo "[INFO] Running health check..."
+    	  python monitoring/health_monitor.py || echo "[WARNING] Health check failed, 	 	  continuing anyway"
+
           echo "[INFO] Running agent.py..."
           python agent.py
 
