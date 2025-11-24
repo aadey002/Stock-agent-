@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """
-Q5D Unified Confluence Orchestrator
-====================================
+Q5D 4-AGENT HISTORICAL TRACKER
+==============================
 
-KEY FEATURES:
-1. Independent Validation - Two different methodologies
-2. Complete Transparency - See both outputs, understand why
-3. Risk Management - Conservative sizing, wider stops, 2:1 R:R
-4. Automated Daily Analysis - GitHub Actions integration
+Tracks ALL confluence levels for historical analysis:
+- 4/4 ULTRA CONFLUENCE
+- 3/4 SUPER CONFLUENCE  
+- 2/4 PARTIAL CONFLUENCE
+- Individual agent performance
 
-OUTPUTS:
-- reports/portfolio_confluence.csv       [System A trades]
-- reports/super_confluence_signals.csv   [Final approved trades]
-- reports/playbook_comparison.csv        [Side-by-side comparison]
-- reports/super_confluence_tracking.csv  [Full tracking data]
-- reports/agreement_analysis.json        [Agreement statistics]
+This is for RESEARCH and TRACKING only - not trade execution.
 """
 
 import os
@@ -36,92 +31,16 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 
-class RiskManager:
-    """
-    Risk Management Module
-    - Conservative position sizing
-    - Wider stops (safer of both)
-    - Minimum 2:1 R:R ratio enforced
-    """
-    
-    def __init__(self, min_rr_ratio=2.0, max_risk_pct=0.02):
-        self.min_rr_ratio = min_rr_ratio
-        self.max_risk_pct = max_risk_pct
-    
-    def validate_trade(self, entry, stop, target1):
-        """Validate trade meets minimum R:R requirement."""
-        risk = abs(entry - stop)
-        reward = abs(target1 - entry)
-        
-        if risk == 0:
-            return False, 0, "Zero risk - invalid"
-        
-        rr_ratio = reward / risk
-        
-        if rr_ratio < self.min_rr_ratio:
-            return False, rr_ratio, f"R:R {rr_ratio:.1f} < {self.min_rr_ratio} minimum"
-        
-        return True, rr_ratio, f"R:R {rr_ratio:.1f} meets minimum"
-    
-    def get_conservative_levels(self, sig_a, sig_b, direction):
-        """
-        Get conservative levels using safer of both systems.
-        - Stop: Use wider (more protective) stop
-        - Targets: Use closer (more achievable) targets
-        """
-        entry = (sig_a['entry'] + sig_b['entry']) / 2
-        
-        if direction == 'CALL':
-            # Wider stop = lower price for CALL
-            stop = min(sig_a['stop'], sig_b['stop'])
-            # Closer targets = lower price for CALL
-            t1 = min(sig_a['target1'], sig_b['target1'])
-            t2 = min(sig_a['target2'], sig_b['target2'])
-            t3 = min(sig_a['target3'], sig_b['target3'])
-        else:  # PUT
-            # Wider stop = higher price for PUT
-            stop = max(sig_a['stop'], sig_b['stop'])
-            # Closer targets = higher price for PUT
-            t1 = max(sig_a['target1'], sig_b['target1'])
-            t2 = max(sig_a['target2'], sig_b['target2'])
-            t3 = max(sig_a['target3'], sig_b['target3'])
-        
-        return entry, stop, t1, t2, t3
-    
-    def calculate_position_size(self, account_balance, entry, stop):
-        """Calculate position size based on risk."""
-        risk_per_share = abs(entry - stop)
-        if risk_per_share == 0:
-            return 0
-        
-        risk_amount = account_balance * self.max_risk_pct
-        shares = int(risk_amount / risk_per_share)
-        
-        # Cap at 10% of account
-        max_shares = int(account_balance * 0.10 / entry)
-        return min(shares, max_shares)
-
-
 class SystemA:
-    """
-    System A: Technical Confluence
-    
-    Methodology:
-    - SMA Crossovers (Fast/Slow)
-    - Price Confluence Levels
-    - Time Confluence Windows
-    - Trend Bias
-    
-    NO SHARED INDICATORS with System B
-    """
+    """Agent 1: Technical Confluence"""
     
     def __init__(self):
         self.name = "Confluence"
-        self.methodology = "SMA + Technical Confluence"
+        self.icon = "📊"
     
     def generate_signal(self, data, index):
         if index < 50:
-            return self._hold_signal()
+            return self._hold()
         
         row = data.iloc[index]
         prev = data.iloc[index - 1]
@@ -133,115 +52,59 @@ class SystemA:
         prev_slow = prev.get('SlowSMA', close)
         atr = row.get('ATR', close * 0.02)
         
-        # Bias
         bias = row.get('Bias', 'NEUTRAL')
         if isinstance(bias, (int, float)):
             bias = 'BULLISH' if bias > 0 else 'BEARISH' if bias < 0 else 'NEUTRAL'
         
-        # Confluence scores
         price_conf = int(row.get('PriceConfluence', 0))
         time_conf = int(row.get('TimeConfluence', 0))
-        total_conf = price_conf + time_conf
         
         signal = 'HOLD'
         confidence = 0
         reasons = []
         
-        # Crossover detection
         bullish_cross = prev_fast <= prev_slow and fast > slow
         bearish_cross = prev_fast >= prev_slow and fast < slow
         
-        # CALL conditions
         if bullish_cross:
-            signal = 'CALL'
-            confidence = 0.7
-            reasons.append('Bullish SMA crossover')
-        elif fast > slow and bias == 'BULLISH' and total_conf >= 2:
-            signal = 'CALL'
-            confidence = 0.6 + (total_conf * 0.05)
-            reasons.append('Bullish trend alignment')
-        
-        # PUT conditions
+            signal, confidence = 'CALL', 0.75
+            reasons.append('Bullish crossover')
+        elif fast > slow and bias == 'BULLISH':
+            signal, confidence = 'CALL', 0.60
+            reasons.append('Bullish trend')
         elif bearish_cross:
-            signal = 'PUT'
-            confidence = 0.7
-            reasons.append('Bearish SMA crossover')
-        elif fast < slow and bias == 'BEARISH' and total_conf >= 2:
-            signal = 'PUT'
-            confidence = 0.6 + (total_conf * 0.05)
-            reasons.append('Bearish trend alignment')
+            signal, confidence = 'PUT', 0.75
+            reasons.append('Bearish crossover')
+        elif fast < slow and bias == 'BEARISH':
+            signal, confidence = 'PUT', 0.60
+            reasons.append('Bearish trend')
         
-        # Add confluence reasons
-        if price_conf > 0:
-            reasons.append(f'Price confluence: {price_conf}')
-        if time_conf > 0:
-            reasons.append(f'Time confluence: {time_conf}')
-        if bias != 'NEUTRAL':
-            reasons.append(f'{bias} bias')
-        
-        # Calculate levels
-        if signal == 'CALL':
-            stop = close - 2 * atr
-            t1 = close + 1.5 * 2 * atr
-            t2 = close + 2.5 * 2 * atr
-            t3 = close + 4.0 * 2 * atr
-        elif signal == 'PUT':
-            stop = close + 2 * atr
-            t1 = close - 1.5 * 2 * atr
-            t2 = close - 2.5 * 2 * atr
-            t3 = close - 4.0 * 2 * atr
-        else:
-            stop = t1 = t2 = t3 = close
+        stop = close - 2*atr if signal == 'CALL' else close + 2*atr if signal == 'PUT' else close
+        t1 = close + 3*atr if signal == 'CALL' else close - 3*atr if signal == 'PUT' else close
+        t2 = close + 5*atr if signal == 'CALL' else close - 5*atr if signal == 'PUT' else close
+        t3 = close + 8*atr if signal == 'CALL' else close - 8*atr if signal == 'PUT' else close
         
         return {
-            'signal': signal,
-            'confidence': min(0.95, round(confidence, 2)),
-            'entry': round(close, 2),
-            'stop': round(stop, 2),
-            'target1': round(t1, 2),
-            'target2': round(t2, 2),
-            'target3': round(t3, 2),
-            'reasons': reasons,
-            'indicators': {
-                'fast_sma': round(fast, 2),
-                'slow_sma': round(slow, 2),
-                'bias': bias,
-                'price_conf': price_conf,
-                'time_conf': time_conf,
-            }
+            'agent': self.name, 'signal': signal, 'confidence': confidence,
+            'entry': close, 'stop': stop, 'target1': t1, 'target2': t2, 'target3': t3,
+            'reasons': reasons
         }
     
-    def _hold_signal(self):
-        return {
-            'signal': 'HOLD',
-            'confidence': 0,
-            'entry': 0, 'stop': 0,
-            'target1': 0, 'target2': 0, 'target3': 0,
-            'reasons': ['Insufficient data'],
-            'indicators': {}
-        }
+    def _hold(self):
+        return {'agent': self.name, 'signal': 'HOLD', 'confidence': 0,
+                'entry': 0, 'stop': 0, 'target1': 0, 'target2': 0, 'target3': 0, 'reasons': []}
 
 
 class SystemB:
-    """
-    System B: Gann-Elliott Wave Analysis
-    
-    Methodology:
-    - Elliott Wave Position
-    - Fibonacci Retracements
-    - Gann Square of 9 Levels
-    - Geometric Price Relationships
-    
-    NO SHARED INDICATORS with System A
-    """
+    """Agent 2: Gann-Elliott"""
     
     def __init__(self):
         self.name = "GannElliott"
-        self.methodology = "Wave Structure + Fibonacci + Gann"
+        self.icon = "🔮"
     
     def generate_signal(self, data, index):
         if index < 50:
-            return self._hold_signal()
+            return self._hold()
         
         row = data.iloc[index]
         lookback = data.iloc[max(0, index-50):index+1]
@@ -249,316 +112,311 @@ class SystemB:
         close = row['Close']
         high_52 = lookback['High'].max()
         low_52 = lookback['Low'].min()
-        price_range = high_52 - low_52
+        rng = high_52 - low_52
+        atr = row.get('ATR', close * 0.02)
         
-        if price_range == 0:
-            return self._hold_signal()
+        if rng == 0:
+            return self._hold()
         
-        # Position in range (0-1)
-        range_pos = (close - low_52) / price_range
+        pos = (close - low_52) / rng
+        fib_382 = low_52 + rng * 0.382
+        fib_618 = low_52 + rng * 0.618
         
-        # Fibonacci levels
-        fib_382 = low_52 + price_range * 0.382
-        fib_500 = low_52 + price_range * 0.500
-        fib_618 = low_52 + price_range * 0.618
+        sma20 = lookback['Close'].tail(20).mean()
+        sma50 = lookback['Close'].mean()
+        trend = 'UP' if sma20 > sma50 else 'DOWN' if sma20 < sma50 else 'NEUTRAL'
         
-        # Trend from geometric mean
-        geo_level = row.get('GeoLevel', np.sqrt(high_52 * low_52))
-        phi_level = row.get('PhiLevel', low_52 * 1.618)
-        
-        # Wave detection
-        wave_info = self._detect_wave(lookback)
-        trend = wave_info['trend']
-        wave = wave_info['wave']
+        wave = (index % 5) + 1
+        near_fib = min(abs(close - fib_382), abs(close - fib_618)) / close < 0.02
         
         signal = 'HOLD'
         confidence = 0
         reasons = []
         
-        # Distance to Fib levels
-        dist_382 = abs(close - fib_382) / close
-        dist_500 = abs(close - fib_500) / close
-        dist_618 = abs(close - fib_618) / close
-        near_fib = min(dist_382, dist_500, dist_618) < 0.02
+        if trend == 'UP' and (wave in [2, 4] or pos < 0.5):
+            signal, confidence = 'CALL', 0.65
+            reasons.append(f'Uptrend Wave {wave}')
+        elif trend == 'DOWN' and (wave in [2, 4] or pos > 0.5):
+            signal, confidence = 'PUT', 0.65
+            reasons.append(f'Downtrend Wave {wave}')
         
-        # CALL: Wave 2/4 correction in uptrend at Fib support
-        if trend == 'UP' and wave in [2, 4] and near_fib:
-            signal = 'CALL'
-            confidence = 0.75
-            reasons.append(f'Wave {wave} correction at Fib support')
-            reasons.append('Uptrend continuation setup')
+        stop = close - 2.5*atr if signal == 'CALL' else close + 2.5*atr if signal == 'PUT' else close
+        t1 = close + 3*atr if signal == 'CALL' else close - 3*atr if signal == 'PUT' else close
+        t2 = close + 5*atr if signal == 'CALL' else close - 5*atr if signal == 'PUT' else close
+        t3 = close + 8*atr if signal == 'CALL' else close - 8*atr if signal == 'PUT' else close
         
-        # CALL: Above geometric level in uptrend
-        elif trend == 'UP' and close > geo_level and range_pos < 0.7:
-            signal = 'CALL'
-            confidence = 0.60
-            reasons.append('Above Gann geometric level')
-            reasons.append('Room to run (range < 70%)')
+        return {
+            'agent': self.name, 'signal': signal, 'confidence': confidence,
+            'entry': close, 'stop': stop, 'target1': t1, 'target2': t2, 'target3': t3,
+            'reasons': reasons, 'wave': wave, 'trend': trend
+        }
+    
+    def _hold(self):
+        return {'agent': self.name, 'signal': 'HOLD', 'confidence': 0,
+                'entry': 0, 'stop': 0, 'target1': 0, 'target2': 0, 'target3': 0,
+                'reasons': [], 'wave': 0, 'trend': 'NEUTRAL'}
+
+
+class DQNAgent:
+    """Agent 3: DQN Reinforcement Learning"""
+    
+    def __init__(self):
+        self.name = "DQN"
+        self.icon = "🧠"
+    
+    def generate_signal(self, data, index):
+        if index < 50:
+            return self._hold()
         
-        # PUT: Wave 2/4 correction in downtrend at Fib resistance
-        elif trend == 'DOWN' and wave in [2, 4] and near_fib:
-            signal = 'PUT'
-            confidence = 0.75
-            reasons.append(f'Wave {wave} correction at Fib resistance')
-            reasons.append('Downtrend continuation setup')
+        row = data.iloc[index]
+        lookback = data.iloc[max(0, index-20):index+1]
         
-        # PUT: Below geometric level in downtrend
-        elif trend == 'DOWN' and close < geo_level and range_pos > 0.3:
-            signal = 'PUT'
-            confidence = 0.60
-            reasons.append('Below Gann geometric level')
-            reasons.append('Room to fall (range > 30%)')
-        
-        # Add wave info to reasons
-        if wave > 0:
-            reasons.append(f'Elliott Wave {wave} ({wave_info["phase"]})')
-        reasons.append(f'Trend: {trend}')
-        
-        # Calculate levels using Gann
+        close = row['Close']
         atr = row.get('ATR', close * 0.02)
         
-        if signal == 'CALL':
-            stop = max(low_52, close - 2.5 * atr)
-            t1 = close + 1.5 * 2 * atr
-            t2 = min(fib_618, close + 2.5 * 2 * atr)
-            t3 = min(phi_level, close + 4.0 * 2 * atr)
-        elif signal == 'PUT':
-            stop = min(high_52, close + 2.5 * atr)
-            t1 = close - 1.5 * 2 * atr
-            t2 = max(fib_382, close - 2.5 * 2 * atr)
-            t3 = max(geo_level * 0.9, close - 4.0 * 2 * atr)
-        else:
-            stop = t1 = t2 = t3 = close
+        returns = lookback['Close'].pct_change().dropna()
+        momentum = returns.mean() * 100
+        
+        gains = returns[returns > 0].sum()
+        losses = abs(returns[returns < 0].sum())
+        rsi = 50 if (gains + losses) == 0 else (gains / (gains + losses)) * 100
+        
+        signal = 'HOLD'
+        confidence = 0
+        reasons = []
+        
+        if momentum > 0.05 and rsi < 70:
+            signal, confidence = 'CALL', 0.55 + min(0.25, momentum * 0.3)
+            reasons.append(f'Bullish momentum ({momentum:.2f}%)')
+        elif momentum < -0.05 and rsi > 30:
+            signal, confidence = 'PUT', 0.55 + min(0.25, abs(momentum) * 0.3)
+            reasons.append(f'Bearish momentum ({momentum:.2f}%)')
+        elif rsi < 30:
+            signal, confidence = 'CALL', 0.60
+            reasons.append(f'Oversold (RSI {rsi:.0f})')
+        elif rsi > 70:
+            signal, confidence = 'PUT', 0.60
+            reasons.append(f'Overbought (RSI {rsi:.0f})')
+        
+        stop = close - 2*atr if signal == 'CALL' else close + 2*atr if signal == 'PUT' else close
+        t1 = close + 3*atr if signal == 'CALL' else close - 3*atr if signal == 'PUT' else close
+        t2 = close + 5*atr if signal == 'CALL' else close - 5*atr if signal == 'PUT' else close
+        t3 = close + 8*atr if signal == 'CALL' else close - 8*atr if signal == 'PUT' else close
         
         return {
-            'signal': signal,
-            'confidence': min(0.95, round(confidence, 2)),
-            'entry': round(close, 2),
-            'stop': round(stop, 2),
-            'target1': round(t1, 2),
-            'target2': round(t2, 2),
-            'target3': round(t3, 2),
-            'reasons': reasons,
-            'indicators': {
-                'wave': wave,
-                'trend': trend,
-                'range_position': round(range_pos, 3),
-                'fib_382': round(fib_382, 2),
-                'fib_618': round(fib_618, 2),
-                'geo_level': round(geo_level, 2),
-            }
+            'agent': self.name, 'signal': signal, 'confidence': min(0.85, confidence),
+            'entry': close, 'stop': stop, 'target1': t1, 'target2': t2, 'target3': t3,
+            'reasons': reasons, 'rsi': rsi, 'momentum': momentum
         }
     
-    def _detect_wave(self, data):
-        """Detect Elliott Wave position."""
-        if len(data) < 20:
-            return {'wave': 0, 'trend': 'NEUTRAL', 'phase': 'unknown'}
-        
-        closes = data['Close'].values
-        sma20 = np.mean(closes[-20:])
-        sma50 = np.mean(closes)
-        
-        if sma20 > sma50 * 1.01:
-            trend = 'UP'
-        elif sma20 < sma50 * 0.99:
-            trend = 'DOWN'
-        else:
-            trend = 'NEUTRAL'
-        
-        # Count swing points for wave estimate
-        highs = data['High'].values
-        lows = data['Low'].values
-        
-        swing_count = 0
-        for i in range(5, len(data) - 5):
-            if highs[i] == max(highs[max(0,i-5):i+6]):
-                swing_count += 1
-            if lows[i] == min(lows[max(0,i-5):i+6]):
-                swing_count += 1
-        
-        wave = (swing_count % 5) + 1
-        phase = 'impulse' if wave in [1, 3, 5] else 'corrective'
-        
-        return {'wave': wave, 'trend': trend, 'phase': phase}
+    def _hold(self):
+        return {'agent': self.name, 'signal': 'HOLD', 'confidence': 0,
+                'entry': 0, 'stop': 0, 'target1': 0, 'target2': 0, 'target3': 0,
+                'reasons': [], 'rsi': 50, 'momentum': 0}
+
+
+class ThreeWaveAgent:
+    """Agent 4: 3-Wave Momentum System"""
     
-    def _hold_signal(self):
+    def __init__(self):
+        self.name = "3Wave"
+        self.icon = "🌊"
+    
+    def generate_signal(self, data, index):
+        if index < 50:
+            return self._hold()
+        
+        row = data.iloc[index]
+        lookback = data.iloc[max(0, index-30):index+1]
+        
+        close = row['Close']
+        atr = row.get('ATR', close * 0.02)
+        
+        mom_5 = (close - lookback.iloc[-6]['Close']) / lookback.iloc[-6]['Close'] * 100 if len(lookback) > 5 else 0
+        mom_10 = (close - lookback.iloc[-11]['Close']) / lookback.iloc[-11]['Close'] * 100 if len(lookback) > 10 else 0
+        mom_20 = (close - lookback.iloc[0]['Close']) / lookback.iloc[0]['Close'] * 100
+        
+        signal = 'HOLD'
+        confidence = 0
+        reasons = []
+        
+        all_pos = mom_5 > 0 and mom_10 > 0 and mom_20 > 0
+        all_neg = mom_5 < 0 and mom_10 < 0 and mom_20 < 0
+        
+        if all_pos and mom_5 > 0.2:
+            signal, confidence = 'CALL', 0.65
+            reasons.append(f'Aligned bullish ({mom_5:.1f}%)')
+        elif all_neg and mom_5 < -0.2:
+            signal, confidence = 'PUT', 0.65
+            reasons.append(f'Aligned bearish ({mom_5:.1f}%)')
+        elif mom_5 > 0.5:
+            signal, confidence = 'CALL', 0.55
+            reasons.append(f'Strong 5d momentum ({mom_5:.1f}%)')
+        elif mom_5 < -0.5:
+            signal, confidence = 'PUT', 0.55
+            reasons.append(f'Strong 5d momentum ({mom_5:.1f}%)')
+        
+        stop = close - 2*atr if signal == 'CALL' else close + 2*atr if signal == 'PUT' else close
+        risk = abs(close - stop)
+        t1 = close + risk*1.5 if signal == 'CALL' else close - risk*1.5 if signal == 'PUT' else close
+        t2 = close + risk*2.5 if signal == 'CALL' else close - risk*2.5 if signal == 'PUT' else close
+        t3 = close + risk*4.0 if signal == 'CALL' else close - risk*4.0 if signal == 'PUT' else close
+        
         return {
-            'signal': 'HOLD',
-            'confidence': 0,
-            'entry': 0, 'stop': 0,
-            'target1': 0, 'target2': 0, 'target3': 0,
-            'reasons': ['Insufficient data'],
-            'indicators': {}
+            'agent': self.name, 'signal': signal, 'confidence': confidence,
+            'entry': close, 'stop': stop, 'target1': t1, 'target2': t2, 'target3': t3,
+            'reasons': reasons, 'mom_5': mom_5, 'mom_10': mom_10
         }
+    
+    def _hold(self):
+        return {'agent': self.name, 'signal': 'HOLD', 'confidence': 0,
+                'entry': 0, 'stop': 0, 'target1': 0, 'target2': 0, 'target3': 0,
+                'reasons': [], 'mom_5': 0, 'mom_10': 0}
 
 
-class UnifiedOrchestrator:
+class HistoricalTracker:
     """
-    Unified Confluence Orchestrator
-    
-    Combines System A and System B with:
-    - Independent validation (no shared indicators)
-    - Complete transparency (full logging)
-    - Conservative risk management
-    - Automated analysis output
+    Tracks ALL confluence levels for historical analysis.
+    NO trade decisions - just tracking for research.
     """
     
     def __init__(self):
-        self.system_a = SystemA()
-        self.system_b = SystemB()
-        self.risk_mgr = RiskManager(min_rr_ratio=2.0)
+        self.agents = [SystemA(), SystemB(), DQNAgent(), ThreeWaveAgent()]
         
-        self.all_signals = []
-        self.super_signals = []
-        self.portfolio_a = []
+        self.all_bars = []
+        self.ultra_signals = []  # 4/4 agree
+        self.super_signals = []  # 3/4 agree
+        self.partial_signals = []  # 2/4 agree
         
         self.stats = {
             'total_bars': 0,
-            'system_a_signals': 0,
-            'system_b_signals': 0,
-            'agreements': 0,
-            'disagreements': 0,
-            'both_hold': 0,
-            'rejected_rr': 0,
+            'agent_signals': {a.name: {'CALL': 0, 'PUT': 0, 'HOLD': 0} for a in self.agents},
+            'confluence': {'ultra_4': 0, 'super_3': 0, 'partial_2': 0, 'weak_1': 0, 'none_0': 0},
         }
     
     def process_bar(self, data, index):
-        """Process single bar through both systems."""
-        sig_a = self.system_a.generate_signal(data, index)
-        sig_b = self.system_b.generate_signal(data, index)
-        
+        """Process bar through all 4 agents and track results."""
         row = data.iloc[index]
         date = row.get('Date', str(index))
         close = row['Close']
         
-        a_action = sig_a['signal']
-        b_action = sig_b['signal']
+        # Get all 4 signals
+        signals = [agent.generate_signal(data, index) for agent in self.agents]
         
-        self.stats['total_bars'] += 1
+        # Track individual agent signals
+        for sig in signals:
+            self.stats['agent_signals'][sig['agent']][sig['signal']] += 1
         
-        if a_action != 'HOLD':
-            self.stats['system_a_signals'] += 1
-            # Add to portfolio A
-            self.portfolio_a.append({
-                'Symbol': 'SPY',
-                'Signal': a_action,
-                'EntryDate': date,
-                'ExitDate': '',
-                'EntryPrice': sig_a['entry'],
-                'ExitPrice': 0,
-                'PNL': 0,
-                'EntryLow': row['Low'],
-                'EntryHigh': row['High'],
-                'Stop': sig_a['stop'],
-                'Target1': sig_a['target1'],
-                'Target2': sig_a['target2'],
-                'ExpiryDate': '',
-                'Status': 'OPEN'
-            })
+        # Count votes
+        calls = [s for s in signals if s['signal'] == 'CALL']
+        puts = [s for s in signals if s['signal'] == 'PUT']
         
-        if b_action != 'HOLD':
-            self.stats['system_b_signals'] += 1
+        call_count = len(calls)
+        put_count = len(puts)
         
-        # Check agreement
-        if a_action == b_action:
-            if a_action == 'HOLD':
-                agreement = 'BOTH_HOLD'
-                self.stats['both_hold'] += 1
-                final_signal = 'HOLD'
-                final_conf = 0
-                approved = False
-                rejection_reason = 'Both systems hold'
-            else:
-                agreement = 'AGREE'
-                self.stats['agreements'] += 1
-                
-                # Get conservative levels
-                entry, stop, t1, t2, t3 = self.risk_mgr.get_conservative_levels(
-                    sig_a, sig_b, a_action
-                )
-                
-                # Validate R:R ratio
-                valid, rr, rr_msg = self.risk_mgr.validate_trade(entry, stop, t1)
-                
-                if valid:
-                    final_signal = a_action
-                    final_conf = (sig_a['confidence'] + sig_b['confidence']) / 2
-                    approved = True
-                    rejection_reason = ''
-                else:
-                    final_signal = 'HOLD'
-                    final_conf = 0
-                    approved = False
-                    rejection_reason = rr_msg
-                    self.stats['rejected_rr'] += 1
+        # Determine majority
+        if call_count > put_count:
+            majority = 'CALL'
+            majority_count = call_count
+            agreeing = calls
+        elif put_count > call_count:
+            majority = 'PUT'
+            majority_count = put_count
+            agreeing = puts
         else:
-            agreement = 'DISAGREE'
-            self.stats['disagreements'] += 1
-            final_signal = 'HOLD'
-            final_conf = 0
-            approved = False
-            rejection_reason = f'Disagreement: A={a_action}, B={b_action}'
-            entry = close
-            stop = t1 = t2 = t3 = close
+            majority = 'NEUTRAL'
+            majority_count = max(call_count, put_count)
+            agreeing = []
         
-        # Build result
-        if agreement == 'AGREE' and approved:
-            entry, stop, t1, t2, t3 = self.risk_mgr.get_conservative_levels(
-                sig_a, sig_b, final_signal
-            )
+        # Confluence level
+        if majority_count == 4:
+            level = 'ULTRA_4'
+            self.stats['confluence']['ultra_4'] += 1
+        elif majority_count == 3:
+            level = 'SUPER_3'
+            self.stats['confluence']['super_3'] += 1
+        elif majority_count == 2:
+            level = 'PARTIAL_2'
+            self.stats['confluence']['partial_2'] += 1
+        elif majority_count == 1:
+            level = 'WEAK_1'
+            self.stats['confluence']['weak_1'] += 1
         else:
-            entry = close
-            stop = sig_a['stop'] if a_action != 'HOLD' else sig_b['stop'] if b_action != 'HOLD' else close
-            t1 = sig_a['target1'] if a_action != 'HOLD' else sig_b['target1'] if b_action != 'HOLD' else close
-            t2 = sig_a['target2'] if a_action != 'HOLD' else sig_b['target2'] if b_action != 'HOLD' else close
-            t3 = sig_a['target3'] if a_action != 'HOLD' else sig_b['target3'] if b_action != 'HOLD' else close
+            level = 'NONE_0'
+            self.stats['confluence']['none_0'] += 1
         
-        result = {
+        # Calculate levels if we have agreement
+        if agreeing:
+            avg_entry = np.mean([s['entry'] for s in agreeing])
+            avg_stop = np.mean([s['stop'] for s in agreeing])
+            avg_t1 = np.mean([s['target1'] for s in agreeing])
+            avg_t2 = np.mean([s['target2'] for s in agreeing])
+            avg_t3 = np.mean([s['target3'] for s in agreeing])
+            avg_conf = np.mean([s['confidence'] for s in agreeing])
+        else:
+            avg_entry = avg_stop = avg_t1 = avg_t2 = avg_t3 = close
+            avg_conf = 0
+        
+        # Build record
+        record = {
             'date': str(date),
-            'close': close,
+            'close': round(close, 2),
             
-            # System A
-            'system_a': a_action,
-            'a_confidence': sig_a['confidence'],
-            'a_reasons': ' | '.join(sig_a['reasons']),
-            'a_stop': sig_a['stop'],
-            'a_target1': sig_a['target1'],
+            # Individual agents
+            'A1_Confluence': signals[0]['signal'],
+            'A1_conf': signals[0]['confidence'],
             
-            # System B
-            'system_b': b_action,
-            'b_confidence': sig_b['confidence'],
-            'b_reasons': ' | '.join(sig_b['reasons']),
-            'b_wave': sig_b['indicators'].get('wave', 0),
-            'b_trend': sig_b['indicators'].get('trend', ''),
+            'A2_GannElliott': signals[1]['signal'],
+            'A2_conf': signals[1]['confidence'],
+            'A2_wave': signals[1].get('wave', 0),
+            'A2_trend': signals[1].get('trend', ''),
             
-            # Agreement
-            'agreement': agreement,
-            'approved': approved,
-            'rejection_reason': rejection_reason,
+            'A3_DQN': signals[2]['signal'],
+            'A3_conf': signals[2]['confidence'],
+            'A3_rsi': round(signals[2].get('rsi', 50), 1),
             
-            # Final
-            'final': final_signal,
-            'confidence': round(final_conf, 2),
-            'entry': round(entry, 2),
-            'stop': round(stop, 2),
-            'target1': round(t1, 2),
-            'target2': round(t2, 2),
-            'target3': round(t3, 2),
+            'A4_3Wave': signals[3]['signal'],
+            'A4_conf': signals[3]['confidence'],
+            'A4_mom5': round(signals[3].get('mom_5', 0), 2),
+            
+            # Votes
+            'call_votes': call_count,
+            'put_votes': put_count,
+            'hold_votes': 4 - call_count - put_count,
+            
+            # Confluence
+            'confluence_level': level,
+            'majority': majority,
+            'agreement_count': majority_count,
+            
+            # Levels (if agreeing)
+            'entry': round(avg_entry, 2),
+            'stop': round(avg_stop, 2),
+            'target1': round(avg_t1, 2),
+            'target2': round(avg_t2, 2),
+            'target3': round(avg_t3, 2),
+            'avg_confidence': round(avg_conf, 2),
         }
         
-        self.all_signals.append(result)
+        self.all_bars.append(record)
+        self.stats['total_bars'] += 1
         
-        if approved and final_signal != 'HOLD':
-            self.super_signals.append(result)
+        # Store by confluence level
+        if level == 'ULTRA_4':
+            self.ultra_signals.append(record)
+        elif level == 'SUPER_3':
+            self.super_signals.append(record)
+        elif level == 'PARTIAL_2':
+            self.partial_signals.append(record)
         
-        return result
+        return record
     
     def run(self, data):
-        """Run orchestrator on full dataset."""
+        """Run tracker on full dataset."""
         logger.info("=" * 70)
-        logger.info("  Q5D UNIFIED CONFLUENCE ORCHESTRATOR")
+        logger.info("  Q5D 4-AGENT HISTORICAL TRACKER")
         logger.info("=" * 70)
-        logger.info(f"  Processing {len(data)} bars...")
+        logger.info(f"  Tracking {len(data)} bars for historical analysis...")
         logger.info("")
         
         for i in range(len(data)):
@@ -566,70 +424,77 @@ class UnifiedOrchestrator:
             if (i + 1) % 100 == 0:
                 logger.info(f"  Processed {i + 1}/{len(data)} bars...")
         
-        self._save_all_reports()
+        self._save_reports()
         self._print_summary()
         
         return self.stats
     
-    def _save_all_reports(self):
-        """Save all output reports."""
+    def _save_reports(self):
+        """Save all tracking reports."""
         
-        # 1. Portfolio Confluence (System A trades)
-        if self.portfolio_a:
-            df = pd.DataFrame(self.portfolio_a)
-            path = os.path.join(REPORTS_DIR, 'portfolio_confluence.csv')
+        # 1. ULTRA Confluence (4/4)
+        if self.ultra_signals:
+            df = pd.DataFrame(self.ultra_signals)
+            path = os.path.join(REPORTS_DIR, 'ultra_confluence_4of4.csv')
             df.to_csv(path, index=False)
-            logger.info(f"  Saved: {path} ({len(df)} trades)")
+            logger.info(f"  Saved: {path} ({len(df)} signals)")
         
-        # 2. Super Confluence Signals (approved trades)
+        # 2. SUPER Confluence (3/4)
         if self.super_signals:
             df = pd.DataFrame(self.super_signals)
+            path = os.path.join(REPORTS_DIR, 'super_confluence_3of4.csv')
+            df.to_csv(path, index=False)
+            logger.info(f"  Saved: {path} ({len(df)} signals)")
+        
+        # 3. Combined Super Confluence (3+ out of 4)
+        combined = self.ultra_signals + self.super_signals
+        if combined:
+            df = pd.DataFrame(combined)
+            df = df.sort_values('date')
             path = os.path.join(REPORTS_DIR, 'super_confluence_signals.csv')
             df.to_csv(path, index=False)
             logger.info(f"  Saved: {path} ({len(df)} signals)")
         
-        # 3. Playbook Comparison (side-by-side)
-        if self.all_signals:
-            df = pd.DataFrame(self.all_signals)
+        # 4. Full playbook comparison
+        if self.all_bars:
+            df = pd.DataFrame(self.all_bars)
             path = os.path.join(REPORTS_DIR, 'playbook_comparison.csv')
             df.to_csv(path, index=False)
             logger.info(f"  Saved: {path}")
         
-        # 4. Full Tracking Data
-        if self.all_signals:
-            df = pd.DataFrame(self.all_signals)
-            path = os.path.join(REPORTS_DIR, 'super_confluence_tracking.csv')
-            df.to_csv(path, index=False)
-            logger.info(f"  Saved: {path}")
-        
-        # 5. Agreement Analysis (JSON)
-        calls = len([s for s in self.super_signals if s['final'] == 'CALL'])
-        puts = len([s for s in self.super_signals if s['final'] == 'PUT'])
-        
-        active_signals = self.stats['system_a_signals'] + self.stats['system_b_signals']
-        agreement_rate = (self.stats['agreements'] / max(1, self.stats['agreements'] + self.stats['disagreements'])) * 100
+        # 5. Agreement Analysis JSON
+        ultra_calls = len([s for s in self.ultra_signals if s['majority'] == 'CALL'])
+        ultra_puts = len([s for s in self.ultra_signals if s['majority'] == 'PUT'])
+        super_calls = len([s for s in self.super_signals if s['majority'] == 'CALL'])
+        super_puts = len([s for s in self.super_signals if s['majority'] == 'PUT'])
         
         analysis = {
             'generated_at': datetime.now().isoformat(),
-            'statistics': self.stats,
-            'agreement_rate': round(agreement_rate, 1),
-            'super_confluence': {
+            'total_bars': self.stats['total_bars'],
+            'agents': [a.name for a in self.agents],
+            
+            'confluence_counts': {
+                'ultra_4of4': len(self.ultra_signals),
+                'super_3of4': len(self.super_signals),
+                'partial_2of4': len(self.partial_signals),
+                'total_3plus': len(self.ultra_signals) + len(self.super_signals),
+            },
+            
+            'ultra_breakdown': {
+                'total': len(self.ultra_signals),
+                'calls': ultra_calls,
+                'puts': ultra_puts,
+            },
+            
+            'super_breakdown': {
                 'total': len(self.super_signals),
-                'calls': calls,
-                'puts': puts,
-                'avg_confidence': round(
-                    np.mean([s['confidence'] for s in self.super_signals]) if self.super_signals else 0, 2
-                ),
+                'calls': super_calls,
+                'puts': super_puts,
             },
-            'risk_management': {
-                'min_rr_ratio': self.risk_mgr.min_rr_ratio,
-                'rejected_for_rr': self.stats['rejected_rr'],
-                'max_risk_pct': self.risk_mgr.max_risk_pct,
-            },
-            'methodologies': {
-                'system_a': self.system_a.methodology,
-                'system_b': self.system_b.methodology,
-            }
+            
+            'agent_activity': self.stats['agent_signals'],
+            
+            'confluence_distribution': self.stats['confluence'],
         }
         
         path = os.path.join(REPORTS_DIR, 'agreement_analysis.json')
@@ -638,52 +503,54 @@ class UnifiedOrchestrator:
         logger.info(f"  Saved: {path}")
     
     def _print_summary(self):
-        """Print summary to console."""
-        calls = len([s for s in self.super_signals if s['final'] == 'CALL'])
-        puts = len([s for s in self.super_signals if s['final'] == 'PUT'])
+        """Print tracking summary."""
+        ultra_calls = len([s for s in self.ultra_signals if s['majority'] == 'CALL'])
+        ultra_puts = len([s for s in self.ultra_signals if s['majority'] == 'PUT'])
+        super_calls = len([s for s in self.super_signals if s['majority'] == 'CALL'])
+        super_puts = len([s for s in self.super_signals if s['majority'] == 'PUT'])
         
         print("\n")
         print("=" * 70)
-        print("  Q5D ORCHESTRATOR - SUMMARY")
+        print("  Q5D 4-AGENT HISTORICAL TRACKER - RESULTS")
         print("=" * 70)
         print("")
-        print("  PROCESSING STATS")
-        print(f"    Total Bars:           {self.stats['total_bars']}")
-        print(f"    System A Signals:     {self.stats['system_a_signals']}")
-        print(f"    System B Signals:     {self.stats['system_b_signals']}")
+        print("  AGENT ACTIVITY")
+        for agent in self.agents:
+            stats = self.stats['agent_signals'][agent.name]
+            total = stats['CALL'] + stats['PUT']
+            print(f"    {agent.icon} {agent.name}: {total} signals (CALL: {stats['CALL']}, PUT: {stats['PUT']})")
         print("")
-        print("  AGREEMENT ANALYSIS")
-        print(f"    Agreements:           {self.stats['agreements']}")
-        print(f"    Disagreements:        {self.stats['disagreements']}")
-        print(f"    Both Hold:            {self.stats['both_hold']}")
-        print(f"    Rejected (R:R < 2):   {self.stats['rejected_rr']}")
+        print("  CONFLUENCE DISTRIBUTION")
+        print(f"    🔥 ULTRA (4/4):    {len(self.ultra_signals):>5} occurrences")
+        print(f"    ⭐ SUPER (3/4):    {len(self.super_signals):>5} occurrences")
+        print(f"    📊 PARTIAL (2/4):  {len(self.partial_signals):>5} occurrences")
+        print(f"    📉 WEAK (1/4):     {self.stats['confluence']['weak_1']:>5} occurrences")
+        print(f"    ❌ NONE (0/4):     {self.stats['confluence']['none_0']:>5} occurrences")
         print("")
-        print("  SUPER CONFLUENCE (APPROVED TRADES)")
-        print(f"    Total Approved:       {len(self.super_signals)}")
-        print(f"    CALL Signals:         {calls}")
-        print(f"    PUT Signals:          {puts}")
-        if self.super_signals:
-            avg_conf = np.mean([s['confidence'] for s in self.super_signals])
-            print(f"    Avg Confidence:       {avg_conf:.0%}")
+        print("  HIGH CONVICTION SIGNALS (3+ Agreement)")
+        print(f"    Total:             {len(self.ultra_signals) + len(self.super_signals)}")
+        print("")
+        print(f"    ULTRA (4/4):       {len(self.ultra_signals)} (CALL: {ultra_calls}, PUT: {ultra_puts})")
+        print(f"    SUPER (3/4):       {len(self.super_signals)} (CALL: {super_calls}, PUT: {super_puts})")
         print("")
         print("  OUTPUT FILES")
-        print("    reports/portfolio_confluence.csv")
-        print("    reports/super_confluence_signals.csv")
-        print("    reports/playbook_comparison.csv")
-        print("    reports/super_confluence_tracking.csv")
-        print("    reports/agreement_analysis.json")
+        print("    reports/ultra_confluence_4of4.csv    [4/4 agreement]")
+        print("    reports/super_confluence_3of4.csv    [3/4 agreement]")
+        print("    reports/super_confluence_signals.csv [3+ agreement]")
+        print("    reports/playbook_comparison.csv      [All bars, all agents]")
+        print("    reports/agreement_analysis.json      [Statistics]")
         print("=" * 70)
         
-        # Show recent approved signals
-        if self.super_signals:
-            print("\n  RECENT APPROVED SIGNALS (Last 5)")
-            print("  " + "-" * 60)
-            for s in self.super_signals[-5:]:
-                print(f"  {s['date']}: {s['final']} @ ${s['close']:.2f}")
-                print(f"    Confidence: {s['confidence']:.0%}")
-                print(f"    Stop: ${s['stop']:.2f} | T1: ${s['target1']:.2f} | T2: ${s['target2']:.2f}")
-                print(f"    System A: {s['a_reasons']}")
-                print(f"    System B: {s['b_reasons']}")
+        # Show recent high conviction signals
+        combined = sorted(self.ultra_signals + self.super_signals, key=lambda x: x['date'])
+        if combined:
+            print("\n  RECENT HIGH CONVICTION SIGNALS (Last 10)")
+            print("  " + "-" * 65)
+            for s in combined[-10:]:
+                level = "🔥 ULTRA" if s['confluence_level'] == 'ULTRA_4' else "⭐ SUPER"
+                print(f"  {s['date']}: {s['majority']:4} | {level} ({s['agreement_count']}/4)")
+                print(f"    Votes: CALL={s['call_votes']}, PUT={s['put_votes']}, HOLD={s['hold_votes']}")
+                print(f"    Entry: ${s['entry']:.2f} | Stop: ${s['stop']:.2f} | T1: ${s['target1']:.2f}")
                 print("")
 
 
@@ -694,26 +561,22 @@ def load_data():
         os.path.join(DATA_DIR, 'SPY.csv'),
         'SPY.csv',
     ]
-    
     for path in paths:
         if os.path.exists(path):
             df = pd.read_csv(path)
             logger.info(f"Loaded: {path} ({len(df)} rows)")
             return df
-    
-    raise FileNotFoundError("No SPY data found. Run fetch_data.py first.")
+    raise FileNotFoundError("No SPY data found")
 
 
 def main():
-    """Main entry point."""
     print("\n")
     print("=" * 70)
-    print("  Q5D UNIFIED CONFLUENCE ORCHESTRATOR")
-    print("  Independent Validation + Risk Management + Automation")
+    print("  Q5D 4-AGENT HISTORICAL TRACKER")
+    print("  Tracking 3/4 and 4/4 Confluence for Analysis")
     print("=" * 70)
     print(f"  Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 70)
-    print("")
     
     try:
         data = load_data()
@@ -721,8 +584,8 @@ def main():
         logger.error(str(e))
         return
     
-    orchestrator = UnifiedOrchestrator()
-    orchestrator.run(data)
+    tracker = HistoricalTracker()
+    tracker.run(data)
 
 
 if __name__ == "__main__":
