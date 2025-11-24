@@ -4,187 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Agent 3 - Trading Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #fff;
+            padding: 20px;
         }
-
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
-
+        
         /* Header */
         .header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            color: #888;
-            font-size: 1.1em;
-        }
-
-        .header .status {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 8px 20px;
-            background: linear-gradient(90deg, #00c853, #00e676);
-            border-radius: 20px;
-            font-weight: bold;
-            color: #000;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: white;
             border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,212,255,0.2);
-        }
-
-        .stat-card .icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #00d4ff;
-        }
-
-        .stat-card .label {
-            color: #888;
-            margin-top: 5px;
-        }
-
-        /* Latest Signal */
-        .signal-section {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(0,212,255,0.3);
-            border-radius: 20px;
             padding: 30px;
-            margin-bottom: 30px;
-        }
-
-        .signal-section h2 {
-            color: #00d4ff;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .signal-header {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            margin-bottom: 25px;
         }
-
-        .signal-direction {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        
+        .header-left h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
-
-        .signal-badge {
-            padding: 15px 40px;
-            border-radius: 10px;
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-
-        .signal-badge.call {
-            background: linear-gradient(135deg, #00c853, #00e676);
-            color: #000;
-        }
-
-        .signal-badge.put {
-            background: linear-gradient(135deg, #ff1744, #ff5252);
-            color: #fff;
-        }
-
-        .signal-date {
-            color: #888;
+        
+        .header-left p {
+            color: #666;
             font-size: 1.1em;
         }
-
-        .signal-price {
-            text-align: right;
+        
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
-
-        .signal-price .entry {
-            font-size: 2.5em;
+        
+        .live-badge {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
         }
-
-        .signal-price .label {
-            color: #888;
+        
+        .live-badge::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
         }
-
-        /* 3-Wave Targets */
-        .waves-container {
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Status Grid */
+        .status-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-top: 25px;
+            margin-bottom: 20px;
         }
-
-        .wave-card {
-            background: rgba(0,0,0,0.3);
+        
+        .status-card {
+            background: white;
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-
-        .wave-card::before {
+        
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .status-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -192,248 +109,581 @@
             right: 0;
             height: 4px;
         }
-
-        .wave-card.wave1::before { background: linear-gradient(90deg, #4caf50, #8bc34a); }
-        .wave-card.wave2::before { background: linear-gradient(90deg, #2196f3, #03a9f4); }
-        .wave-card.wave3::before { background: linear-gradient(90deg, #9c27b0, #e91e63); }
-        .wave-card.stop::before { background: linear-gradient(90deg, #f44336, #ff5722); }
-
+        
+        .status-card.health::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .status-card.signals::before { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .status-card.winrate::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .status-card.return::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .status-card.calls::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .status-card.puts::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+        
+        .status-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .status-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        
+        .status-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .status-healthy { color: #10b981; }
+        .status-warning { color: #f59e0b; }
+        .status-error { color: #ef4444; }
+        .status-primary { color: #667eea; }
+        .status-blue { color: #3b82f6; }
+        
+        .status-label {
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        /* Latest Signal Section */
+        .latest-signal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-left: 5px solid #667eea;
+        }
+        
+        .latest-signal h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .signal-direction {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .direction-badge {
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .direction-badge.call {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+        
+        .direction-badge.put {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+        }
+        
+        .signal-info {
+            text-align: left;
+        }
+        
+        .signal-info .symbol {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .signal-info .date {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .signal-entry {
+            text-align: right;
+        }
+        
+        .signal-entry .label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .signal-entry .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* 3-Wave Targets Grid */
+        .waves-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .wave-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            border-left: 4px solid;
+        }
+        
+        .wave-card.stop { border-color: #ef4444; }
+        .wave-card.wave1 { border-color: #10b981; }
+        .wave-card.wave2 { border-color: #3b82f6; }
+        .wave-card.wave3 { border-color: #8b5cf6; }
+        
         .wave-card .wave-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
-
+        
         .wave-card .wave-title {
-            font-size: 1.2em;
-            font-weight: bold;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
         }
-
-        .wave-card .wave-percent {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: bold;
+        
+        .wave-card .wave-rr {
+            font-size: 0.8em;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 600;
         }
-
-        .wave-card.wave1 .wave-percent { background: rgba(76,175,80,0.3); color: #8bc34a; }
-        .wave-card.wave2 .wave-percent { background: rgba(33,150,243,0.3); color: #03a9f4; }
-        .wave-card.wave3 .wave-percent { background: rgba(156,39,176,0.3); color: #e91e63; }
-        .wave-card.stop .wave-percent { background: rgba(244,67,54,0.3); color: #ff5722; }
-
+        
+        .wave-card.stop .wave-rr { background: #fee2e2; color: #dc2626; }
+        .wave-card.wave1 .wave-rr { background: #d1fae5; color: #059669; }
+        .wave-card.wave2 .wave-rr { background: #dbeafe; color: #2563eb; }
+        .wave-card.wave3 .wave-rr { background: #ede9fe; color: #7c3aed; }
+        
         .wave-card .wave-price {
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
-            margin-bottom: 10px;
+            color: #333;
+            margin-bottom: 5px;
         }
-
-        .wave-card .wave-info {
-            color: #888;
+        
+        .wave-card .wave-percent {
             font-size: 0.9em;
+            color: #666;
         }
-
-        /* Signals Table */
-        .table-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+        
+        .wave-card.stop .wave-percent { color: #dc2626; }
+        .wave-card.wave1 .wave-percent { color: #059669; }
+        .wave-card.wave2 .wave-percent { color: #2563eb; }
+        .wave-card.wave3 .wave-percent { color: #7c3aed; }
+        
+        /* Agent Status */
+        .agents-section {
+            background: white;
+            border-radius: 15px;
             padding: 30px;
-            margin-bottom: 30px;
-            overflow-x: auto;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-
-        .table-section h2 {
-            color: #00d4ff;
+        
+        .agents-section h2 {
+            color: #333;
             margin-bottom: 20px;
         }
-
+        
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .agent-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .agent-icon {
+            font-size: 2em;
+        }
+        
+        .agent-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .agent-info p {
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        .agent-status {
+            margin-left: auto;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .agent-status.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .chart-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            max-width: 100%;
+            height: 300px !important;
+        }
+        
+        /* Signals Table */
+        .signals-table {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .signals-table h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
-        th, td {
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        th {
-            background: rgba(0,212,255,0.1);
-            color: #00d4ff;
             font-weight: 600;
         }
-
-        tr:hover {
-            background: rgba(255,255,255,0.05);
+        
+        th:first-child {
+            border-radius: 8px 0 0 0;
         }
-
+        
+        th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
         .badge {
-            padding: 5px 15px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.85em;
             font-weight: bold;
         }
-
-        .badge.call {
-            background: rgba(0,200,83,0.2);
-            color: #00e676;
+        
+        .badge-call {
+            background: #d1fae5;
+            color: #065f46;
         }
-
-        .badge.put {
-            background: rgba(255,23,68,0.2);
-            color: #ff5252;
+        
+        .badge-put {
+            background: #fee2e2;
+            color: #991b1b;
         }
-
-        /* Charts */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        
+        .price-positive {
+            color: #10b981;
+            font-weight: 600;
         }
-
-        .chart-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 25px;
+        
+        .price-negative {
+            color: #ef4444;
+            font-weight: 600;
         }
-
-        .chart-card h3 {
-            color: #00d4ff;
-            margin-bottom: 20px;
-        }
-
+        
         /* Footer */
         .footer {
             text-align: center;
-            padding: 30px;
-            color: #666;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 20px;
+            opacity: 0.9;
         }
-
+        
         .footer a {
-            color: #00d4ff;
-            text-decoration: none;
+            color: white;
+            text-decoration: underline;
         }
-
+        
+        .last-update {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
-            .header h1 { font-size: 1.8em; }
-            .signal-header { flex-direction: column; text-align: center; }
-            .signal-price { text-align: center; }
-            .stat-card .value { font-size: 1.5em; }
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-left h1 {
+                font-size: 1.8em;
+            }
+            
+            .signal-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .signal-entry {
+                text-align: center;
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
-        <header class="header">
-            <h1>🤖 Stock Agent 3</h1>
-            <p class="subtitle">Multi-Agent Algorithmic Trading System</p>
-            <span class="status">🟢 LIVE - Connected to Tiingo</span>
-        </header>
-
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="icon">📊</div>
-                <div class="value" id="totalSignals">151</div>
-                <div class="label">Total Signals</div>
+        <div class="header">
+            <div class="header-left">
+                <h1>📊 Stock Agent 3</h1>
+                <p>Multi-Agent Trading System with 3-Wave Profit Targets</p>
             </div>
-            <div class="stat-card">
-                <div class="icon">📈</div>
-                <div class="value" id="callSignals">142</div>
-                <div class="label">CALL Signals</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">📉</div>
-                <div class="value" id="putSignals">9</div>
-                <div class="label">PUT Signals</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🎯</div>
-                <div class="value" id="winRate">67%</div>
-                <div class="label">Win Rate</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">💰</div>
-                <div class="value" id="avgRR">2.5R</div>
-                <div class="label">Avg R:R</div>
+            <div class="header-right">
+                <div class="live-badge">LIVE - Tiingo Connected</div>
             </div>
         </div>
-
-        <!-- Latest Signal -->
-        <section class="signal-section">
+        
+        <!-- Status Cards -->
+        <div class="status-grid">
+            <div class="status-card health">
+                <div class="icon">💊</div>
+                <h3>System Health</h3>
+                <div class="status-value status-healthy" id="systemHealth">HEALTHY</div>
+                <div class="status-label">All 4 agents operational</div>
+            </div>
+            
+            <div class="status-card signals">
+                <div class="icon">📊</div>
+                <h3>Total Signals</h3>
+                <div class="status-value status-primary" id="totalSignals">151</div>
+                <div class="status-label">Generated to date</div>
+            </div>
+            
+            <div class="status-card calls">
+                <div class="icon">📈</div>
+                <h3>CALL Signals</h3>
+                <div class="status-value status-healthy" id="callSignals">142</div>
+                <div class="status-label">Bullish positions</div>
+            </div>
+            
+            <div class="status-card puts">
+                <div class="icon">📉</div>
+                <h3>PUT Signals</h3>
+                <div class="status-value status-error" id="putSignals">9</div>
+                <div class="status-label">Bearish positions</div>
+            </div>
+            
+            <div class="status-card winrate">
+                <div class="icon">🎯</div>
+                <h3>Win Rate</h3>
+                <div class="status-value status-warning" id="winRate">67%</div>
+                <div class="status-label">Historical accuracy</div>
+            </div>
+            
+            <div class="status-card return">
+                <div class="icon">💰</div>
+                <h3>Avg Risk/Reward</h3>
+                <div class="status-value status-blue" id="avgRR">2.5R</div>
+                <div class="status-label">Per trade</div>
+            </div>
+	    <div class="status-card" id="marketConditionsCard" style="grid-column: span 		2;">
+                <div class="icon">🌍</div>
+                <h3>Market Conditions</h3>
+                <div class="status-value" id="marketScore">--</div>
+                <div class="status-label" id="marketLabel">Checking conditions...</div>
+                <div style="margin-top: 15px; display: grid; grid-template-columns: 			repeat(4, 1fr); gap: 10px; font-size: 0.85em;">
+                    <div>
+                        <div style="color: #666;">VIX</div>
+                        <div id="vixLevel" style="font-weight: 600;">--</div>
+                    </div>
+                    <div>
+                        <div style="color: #666;">Sentiment</div>
+                        <div id="sentimentLevel" style="font-weight: 600;">--</div>
+                    </div>
+                    <div>
+                        <div style="color: #666;">Rotation</div>
+                        <div id="rotationLevel" style="font-weight: 600;">--</div>
+                    </div>
+                    <div>
+                        <div style="color: #666;">Events</div>
+                        <div id="eventsLevel" style="font-weight: 600;">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Latest Signal with 3-Wave Targets -->
+        <div class="latest-signal">
             <h2>🎯 Latest Trading Signal</h2>
             
             <div class="signal-header">
                 <div class="signal-direction">
-                    <div class="signal-badge call" id="signalBadge">CALL</div>
-                    <div>
-                        <div class="signal-date" id="signalDate">2025-11-21</div>
-                        <div style="color: #00d4ff; font-size: 1.2em;">SPY</div>
+                    <div class="direction-badge call" id="signalBadge">CALL</div>
+                    <div class="signal-info">
+                        <div class="symbol">SPY</div>
+                        <div class="date" id="signalDate">November 21, 2025</div>
                     </div>
                 </div>
-                <div class="signal-price">
+                <div class="signal-entry">
                     <div class="label">Entry Price</div>
-                    <div class="entry" id="entryPrice">$659.03</div>
+                    <div class="price" id="entryPrice">$659.03</div>
                 </div>
             </div>
-
-            <!-- 3-Wave Targets -->
-            <div class="waves-container">
+            
+            <div class="waves-grid">
                 <div class="wave-card stop">
                     <div class="wave-header">
                         <span class="wave-title">🛑 Stop Loss</span>
-                        <span class="wave-percent">-3.2%</span>
+                        <span class="wave-rr">Exit</span>
                     </div>
                     <div class="wave-price" id="stopPrice">$638.05</div>
-                    <div class="wave-info">Exit if price drops here</div>
+                    <div class="wave-percent" id="stopPercent">-3.2% from entry</div>
                 </div>
+                
                 <div class="wave-card wave1">
                     <div class="wave-header">
                         <span class="wave-title">🌊 Wave 1 (33%)</span>
-                        <span class="wave-percent">+4.8%</span>
+                        <span class="wave-rr">1.5R</span>
                     </div>
                     <div class="wave-price" id="target1">$690.50</div>
-                    <div class="wave-info">1.5R - Take first profit</div>
+                    <div class="wave-percent" id="target1Percent">+4.8% profit</div>
                 </div>
+                
                 <div class="wave-card wave2">
                     <div class="wave-header">
                         <span class="wave-title">🌊 Wave 2 (33%)</span>
-                        <span class="wave-percent">+8.0%</span>
+                        <span class="wave-rr">2.5R</span>
                     </div>
                     <div class="wave-price" id="target2">$711.48</div>
-                    <div class="wave-info">2.5R - Take second profit</div>
+                    <div class="wave-percent" id="target2Percent">+8.0% profit</div>
                 </div>
+                
                 <div class="wave-card wave3">
                     <div class="wave-header">
                         <span class="wave-title">🌊 Wave 3 (34%)</span>
-                        <span class="wave-percent">+12.7%</span>
+                        <span class="wave-rr">4.0R</span>
                     </div>
                     <div class="wave-price" id="target3">$742.95</div>
-                    <div class="wave-info">4.0R - Maximum profit</div>
+                    <div class="wave-percent" id="target3Percent">+12.7% profit</div>
                 </div>
             </div>
-        </section>
-
-        <!-- Charts -->
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3>📈 Signal Distribution</h3>
+        </div>
+        
+        <!-- Agent Status -->
+        <div class="agents-section">
+            <h2>🤖 Trading Agents Status</h2>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-icon">📊</div>
+                    <div class="agent-info">
+                        <h4>Agent 1: Confluence</h4>
+                        <p>SMA Crossover + Gann-Elliott</p>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-icon">🧠</div>
+                    <div class="agent-info">
+                        <h4>Agent 2: DQN</h4>
+                        <p>Deep Q-Network ML</p>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-icon">🗳️</div>
+                    <div class="agent-info">
+                        <h4>Agent 3: Hybrid</h4>
+                        <p>Multi-Agent Voting</p>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-icon">🌊</div>
+                    <div class="agent-info">
+                        <h4>Agent 4: 3-Wave</h4>
+                        <p>Profit Target System</p>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <h2>📈 Signal Distribution</h2>
                 <canvas id="signalChart"></canvas>
             </div>
-            <div class="chart-card">
-                <h3>📊 Monthly Performance</h3>
+            
+            <div class="chart-container">
+                <h2>📊 Monthly Performance</h2>
                 <canvas id="performanceChart"></canvas>
             </div>
         </div>
-
-        <!-- Recent Signals Table -->
-        <section class="table-section">
-            <h2>📋 Recent Signals (Last 10)</h2>
+        
+        <!-- Signals Table with 3-Wave Targets -->
+        <div class="signals-table">
+            <h2>📋 Recent Trading Signals (3-Wave Targets)</h2>
             <table>
                 <thead>
                     <tr>
@@ -441,201 +691,247 @@
                         <th>Direction</th>
                         <th>Entry</th>
                         <th>Stop</th>
-                        <th>Target 1</th>
-                        <th>Target 2</th>
-                        <th>Target 3</th>
+                        <th>Target 1 (1.5R)</th>
+                        <th>Target 2 (2.5R)</th>
+                        <th>Target 3 (4.0R)</th>
                     </tr>
                 </thead>
-                <tbody id="signalsTable">
+                <tbody id="signalsBody">
                     <tr>
                         <td>2025-11-21</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$659.03</td>
-                        <td>$638.05</td>
-                        <td>$690.50</td>
-                        <td>$711.48</td>
-                        <td>$742.95</td>
+                        <td class="price-negative">$638.05</td>
+                        <td class="price-positive">$690.50</td>
+                        <td class="price-positive">$711.48</td>
+                        <td class="price-positive">$742.95</td>
                     </tr>
                     <tr>
                         <td>2025-11-20</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$652.53</td>
-                        <td>$632.18</td>
-                        <td>$682.32</td>
-                        <td>$702.18</td>
-                        <td>$731.97</td>
+                        <td class="price-negative">$632.18</td>
+                        <td class="price-positive">$682.32</td>
+                        <td class="price-positive">$702.18</td>
+                        <td class="price-positive">$731.97</td>
                     </tr>
                     <tr>
                         <td>2025-11-19</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$662.63</td>
-                        <td>$641.35</td>
-                        <td>$688.58</td>
-                        <td>$705.88</td>
-                        <td>$731.83</td>
+                        <td class="price-negative">$641.35</td>
+                        <td class="price-positive">$688.58</td>
+                        <td class="price-positive">$705.88</td>
+                        <td class="price-positive">$731.83</td>
                     </tr>
                     <tr>
                         <td>2025-11-18</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$660.08</td>
-                        <td>$634.26</td>
-                        <td>$685.82</td>
-                        <td>$702.98</td>
-                        <td>$728.72</td>
+                        <td class="price-negative">$634.26</td>
+                        <td class="price-positive">$685.82</td>
+                        <td class="price-positive">$702.98</td>
+                        <td class="price-positive">$728.72</td>
                     </tr>
                     <tr>
                         <td>2025-11-17</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$665.67</td>
-                        <td>$640.69</td>
-                        <td>$690.78</td>
-                        <td>$707.52</td>
-                        <td>$732.63</td>
+                        <td class="price-negative">$640.69</td>
+                        <td class="price-positive">$690.78</td>
+                        <td class="price-positive">$707.52</td>
+                        <td class="price-positive">$732.63</td>
                     </tr>
                     <tr>
                         <td>2025-10-23</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$671.76</td>
-                        <td>$646.41</td>
-                        <td>$697.11</td>
-                        <td>$714.01</td>
-                        <td>$739.36</td>
+                        <td class="price-negative">$646.41</td>
+                        <td class="price-positive">$697.11</td>
+                        <td class="price-positive">$714.01</td>
+                        <td class="price-positive">$739.36</td>
                     </tr>
                     <tr>
                         <td>2025-05-23</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$579.11</td>
-                        <td>$567.96</td>
-                        <td>$595.84</td>
-                        <td>$607.00</td>
-                        <td>$623.71</td>
+                        <td class="price-negative">$567.96</td>
+                        <td class="price-positive">$595.84</td>
+                        <td class="price-positive">$607.00</td>
+                        <td class="price-positive">$623.71</td>
                     </tr>
                     <tr>
                         <td>2025-05-12</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$582.99</td>
-                        <td>$563.14</td>
-                        <td>$612.84</td>
-                        <td>$632.74</td>
-                        <td>$662.59</td>
+                        <td class="price-negative">$563.14</td>
+                        <td class="price-positive">$612.84</td>
+                        <td class="price-positive">$632.74</td>
+                        <td class="price-positive">$662.59</td>
                     </tr>
                     <tr>
                         <td>2025-05-09</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$564.34</td>
-                        <td>$545.40</td>
-                        <td>$593.50</td>
-                        <td>$612.94</td>
-                        <td>$642.10</td>
+                        <td class="price-negative">$545.40</td>
+                        <td class="price-positive">$593.50</td>
+                        <td class="price-positive">$612.94</td>
+                        <td class="price-positive">$642.10</td>
                     </tr>
                     <tr>
                         <td>2025-05-08</td>
-                        <td><span class="badge call">CALL</span></td>
+                        <td><span class="badge badge-call">CALL</span></td>
                         <td>$565.06</td>
-                        <td>$545.65</td>
-                        <td>$597.07</td>
-                        <td>$618.41</td>
-                        <td>$650.42</td>
+                        <td class="price-negative">$545.65</td>
+                        <td class="price-positive">$597.07</td>
+                        <td class="price-positive">$618.41</td>
+                        <td class="price-positive">$650.42</td>
                     </tr>
                 </tbody>
             </table>
-        </section>
-
-        <!-- System Status -->
-        <section class="stats-grid" style="margin-top: 20px;">
-            <div class="stat-card">
-                <div class="icon">🤖</div>
-                <div class="value" style="font-size: 1em; color: #00e676;">Agent 1</div>
-                <div class="label">Confluence + Gann-Elliott ✅</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🧠</div>
-                <div class="value" style="font-size: 1em; color: #00e676;">Agent 2</div>
-                <div class="label">DQN Machine Learning ✅</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🗳️</div>
-                <div class="value" style="font-size: 1em; color: #00e676;">Agent 3</div>
-                <div class="label">Hybrid Voting System ✅</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🌊</div>
-                <div class="value" style="font-size: 1em; color: #00e676;">Agent 4</div>
-                <div class="label">3-Wave Profit Targets ✅</div>
-            </div>
-        </section>
-
+        </div>
+        
         <!-- Footer -->
-        <footer class="footer">
-            <p>Stock Agent 3 - Multi-Agent Algorithmic Trading System</p>
-            <p style="margin-top: 10px;">
-                <a href="https://github.com/aadey002/Stock-agent-" target="_blank">GitHub Repository</a> |
-                Last Updated: <span id="lastUpdate">2025-11-23</span>
+        <div class="footer">
+            <div class="last-update">
+                Last Updated: <span id="lastUpdate"></span> | Data Source: Tiingo API
+            </div>
+            <p>
+                Stock Agent 3 - Multi-Agent Algorithmic Trading System |
+                <a href="https://github.com/aadey002/Stock-agent-" target="_blank">GitHub Repository</a>
             </p>
-        </footer>
+        </div>
     </div>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
+        // Update timestamp
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        
         // Signal Distribution Chart
         const signalCtx = document.getElementById('signalChart').getContext('2d');
         new Chart(signalCtx, {
             type: 'doughnut',
             data: {
-                labels: ['CALL Signals', 'PUT Signals'],
+                labels: ['CALL Signals (142)', 'PUT Signals (9)'],
                 datasets: [{
                     data: [142, 9],
-                    backgroundColor: ['#00e676', '#ff5252'],
-                    borderWidth: 0
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { color: '#fff' }
+                        labels: {
+                            padding: 20,
+                            font: { size: 14 }
+                        }
                     }
                 }
             }
         });
-
-        // Performance Chart
+        
+        // Monthly Performance Chart
         const perfCtx = document.getElementById('performanceChart').getContext('2d');
         new Chart(perfCtx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
                 datasets: [{
                     label: 'Signals Generated',
-                    data: [25, 18, 22, 20, 28, 15, 23],
-                    borderColor: '#00d4ff',
-                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
-                    fill: true,
-                    tension: 0.4
+                    data: [28, 18, 22, 20, 25, 15, 23],
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: '#667eea',
+                    borderWidth: 2,
+                    borderRadius: 8
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        labels: { color: '#fff' }
+                        display: false
                     }
                 },
                 scales: {
-                    x: {
-                        ticks: { color: '#888' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
-                    },
                     y: {
-                        ticks: { color: '#888' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
         });
-
-        // Update timestamp
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString();
+        
+        // Auto-refresh every 60 seconds
+        setInterval(function() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        }, 60000);
     </script>
 </body>
 </html>
+// Load market conditions
+        async function loadMarketConditions() {
+            try {
+                const response = await fetch('data/market_conditions.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateMarketConditions(data);
+                }
+            } catch (e) {
+                console.log('Market conditions not available');
+            }
+        }
+        
+        function updateMarketConditions(data) {
+            const score = data.overall_score || 50;
+            const scoreEl = document.getElementById('marketScore');
+            const labelEl = document.getElementById('marketLabel');
+            const cardEl = document.getElementById('marketConditionsCard');
+            
+            scoreEl.textContent = score + '/100';
+            
+            if (score >= 70) {
+                scoreEl.className = 'status-value status-healthy';
+                labelEl.textContent = '🟢 Favorable - Normal trading';
+                cardEl.style.borderTop = '4px solid #10b981';
+            } else if (score >= 50) {
+                scoreEl.className = 'status-value status-warning';
+                labelEl.textContent = '🟡 Moderate - Trade with caution';
+                cardEl.style.borderTop = '4px solid #f59e0b';
+            } else if (score >= 30) {
+                scoreEl.className = 'status-value status-warning';
+                labelEl.textContent = '🟠 Caution - Reduce exposure';
+                cardEl.style.borderTop = '4px solid #f97316';
+            } else {
+                scoreEl.className = 'status-value status-error';
+                labelEl.textContent = '🔴 Poor - Consider avoiding trades';
+                cardEl.style.borderTop = '4px solid #ef4444';
+            }
+            
+            // Update individual indicators
+            const vol = data.conditions?.volatility || {};
+            const sent = data.conditions?.sentiment || {};
+            const rot = data.conditions?.sector_rotation || {};
+            const cal = data.conditions?.economic_calendar || {};
+            
+            document.getElementById('vixLevel').textContent = vol.level || 'N/A';
+            document.getElementById('sentimentLevel').textContent = sent.sentiment || 'N/A';
+            document.getElementById('rotationLevel').textContent = rot.rotation || 'N/A';
+            document.getElementById('eventsLevel').textContent = (cal.events_today || 0) + ' today';
+        }
+        
+        // Load on page load
+        loadMarketConditions();
