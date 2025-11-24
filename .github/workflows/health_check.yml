@@ -35,3 +35,29 @@ jobs:
         name: health-report-${{ github.run_number }}
         path: monitoring/
         retention-days: 30
+- name: Create issue on failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🚨 Health Check Failed - ' + new Date().toISOString().split('T')[0],
+            body: `## Health Check Failure Alert
+            
+            The daily health check has failed!
+            
+            **Run:** [Workflow Run #${context.runNumber}](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            **Time:** ${new Date().toISOString()}
+            **Status:** FAILED
+            
+            ### Action Required
+            - [ ] Review workflow logs
+            - [ ] Check system health
+            - [ ] Verify API connectivity
+            - [ ] Fix identified issues
+            
+            This issue was automatically created by the health monitoring system.`,
+            labels: ['health-check', 'automated', 'urgent']
+          })
