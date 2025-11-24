@@ -28,6 +28,31 @@ jobs:
       run: |
         python monitoring/health_monitor.py
     
+    - name: Send health notification
+      if: always()
+      env:
+        DISCORD_ENABLED: ${{ secrets.DISCORD_ENABLED }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        python -c "
+        import sys
+        import os
+        sys.path.append('notifications')
+        from notifier import Notifier
+        import json
+        
+        notifier = Notifier()
+        
+        try:
+            with open('monitoring/health_report.json') as f:
+                health_data = json.load(f)
+            notifier.send_health_alert(health_data)
+        except Exception as e:
+            print(f'Notification failed: {e}')
+            notifier.send_alert('Health Check', 'Health check completed', 'INFO')
+        "
+      continue-on-error: true
+    
     - name: Upload health report
       uses: actions/upload-artifact@v4
       if: always()
@@ -35,29 +60,3 @@ jobs:
         name: health-report-${{ github.run_number }}
         path: monitoring/
         retention-days: 30
-- name: Create issue on failure
-      if: failure()
-      uses: actions/github-script@v7
-      with:
-        script: |
-          github.rest.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: '🚨 Health Check Failed - ' + new Date().toISOString().split('T')[0],
-            body: `## Health Check Failure Alert
-            
-            The daily health check has failed!
-            
-            **Run:** [Workflow Run #${context.runNumber}](${context.payload.repository.html_url}/actions/runs/${context.runId})
-            **Time:** ${new Date().toISOString()}
-            **Status:** FAILED
-            
-            ### Action Required
-            - [ ] Review workflow logs
-            - [ ] Check system health
-            - [ ] Verify API connectivity
-            - [ ] Fix identified issues
-            
-            This issue was automatically created by the health monitoring system.`,
-            labels: ['health-check', 'automated', 'urgent']
-          })
