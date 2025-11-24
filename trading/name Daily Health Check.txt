@@ -1,0 +1,62 @@
+name: Daily Health Check
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests pandas numpy
+    
+    - name: Run health monitor
+      env:
+        TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
+      run: |
+        python monitoring/health_monitor.py
+    
+    - name: Send health notification
+      if: always()
+      env:
+        DISCORD_ENABLED: ${{ secrets.DISCORD_ENABLED }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        python -c "
+        import sys
+        import os
+        sys.path.append('notifications')
+        from notifier import Notifier
+        import json
+        
+        notifier = Notifier()
+        
+        try:
+            with open('monitoring/health_report.json') as f:
+                health_data = json.load(f)
+            notifier.send_health_alert(health_data)
+        except Exception as e:
+            print(f'Notification error: {e}')
+            notifier.send_alert('Health Check', 'Health check completed', 'INFO')
+        "
+      continue-on-error: true
+    
+    - name: Upload health report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: health-report-${{ github.run_number }}
+        path: monitoring/
+        retention-days: 30

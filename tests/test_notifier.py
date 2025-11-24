@@ -1,4 +1,3 @@
-notepad test_notifier.py
 #!/usr/bin/env python3
 """
 Unit Tests for Notification System
