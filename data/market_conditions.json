@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-11-24T01:30:05.481769",
+  "trade_allowed": true,
+  "position_size_multiplier": 0.25,
+  "conditions": {
+    "volatility": {
+      "vix_estimate": 48.5,
+      "uvxy_price": 60.63,
+      "level": "EXTREME",
+      "status": "OK",
+      "recommendation": "AVOID_TRADING"
+    },
+    "economic_calendar": {
+      "events_today": 0,
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
+    },
+    "sentiment": {
+      "sentiment": "NEUTRAL",
+      "sentiment_score": 50,
+      "fear_greed": "FEAR",
+      "fear_greed_score": 30,
+      "momentum_5d": -1.0,
+      "momentum_20d": -3.82,
+      "status": "OK"
+    },
+    "sector_rotation": {
+      "rotation": "RISK_OFF",
+      "rotation_strength": 3.3,
+      "cyclical_avg": -2.65,
+      "defensive_avg": 0.66,
+      "strongest": "Healthcare (+1.83%)",
+      "weakest": "Technology (-5.19%)",
+      "status": "OK"
+    }
+  },
+  "warnings": [
+    "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT",
+    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+  ],
+  "overall_score": 0
+}
