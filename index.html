@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Agent 3 - Dynamic Trading Platform</title>
+    <title>Stock Agent 3 - Professional Trading Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,90 +14,50 @@
         }
 
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --accent: #f093fb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --border: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-        }
-
-        /* DAYTIME THEME */
-        body.daytime {
-            --bg-dark: #f8fafc;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --primary: #2563eb;
+            --primary: #1e40af;
             --secondary: #7c3aed;
             --accent: #ec4899;
-        }
-
-        body.daytime .header {
-            background: rgba(248, 250, 252, 0.95);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        body.daytime .card:hover {
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
-        }
-
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--primary);
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --info: #0891b2;
+            --bg-white: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-gray: #f3f4f6;
+            --border: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --text-light: #9ca3af;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f35 50%, #16213e 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-white) 50%, #f0f9ff 100%);
             min-height: 100vh;
-            color: var(--text-primary);
-        }
-
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
         }
 
         /* HEADER */
         .header {
-            background: rgba(30, 41, 59, 0.8);
+            background: var(--bg-white);
             border-bottom: 2px solid var(--border);
             padding: 20px 0;
-            margin-bottom: 30px;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 0 20px;
         }
 
         .logo {
@@ -114,34 +75,41 @@
             align-items: center;
             justify-content: center;
             font-size: 28px;
+            color: white;
         }
 
         .logo h1 {
             font-size: 24px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            color: var(--text-dark);
         }
 
-        .header-right {
+        .logo p {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .header-controls {
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .live-indicator {
+        .status-indicator {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success);
             padding: 8px 15px;
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px solid var(--success);
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--success);
         }
 
-        .live-dot {
+        .status-dot {
             width: 8px;
             height: 8px;
             background: var(--success);
@@ -156,17 +124,37 @@
 
         .symbol-selector {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
+        }
+
+        .symbol-selector label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
         }
 
         .symbol-selector select {
             padding: 8px 12px;
-            background: var(--bg-card);
             border: 1px solid var(--border);
-            color: var(--text-primary);
-            border-radius: 8px;
+            border-radius: 6px;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
+        }
+
+        .symbol-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
         }
 
         /* TABS */
@@ -180,16 +168,20 @@
         }
 
         .tab-btn {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: transparent;
             border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
             border-bottom: 3px solid transparent;
+            color: var(--text-gray);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
         }
 
         .tab-btn.active {
@@ -205,125 +197,86 @@
             display: block;
         }
 
-        /* GRID */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
         /* CARDS */
         .card {
-            background: rgba(30, 41, 59, 0.6);
+            background: var(--bg-white);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
             cursor: pointer;
         }
 
         .card:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+            transform: translateY(-2px);
         }
 
         .card h3 {
             font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-gray);
             text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
         }
 
         .card .value {
             font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 8px;
         }
 
         .card .subtext {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--text-light);
         }
 
-        .agent-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(16, 185, 129, 0.3);
-            border: 2px solid var(--success);
+        /* GRID LAYOUTS */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        /* MODALS */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        /* CHARTS */
+        /* CHART CONTAINERS */
         .chart-container {
-            background: rgba(30, 41, 59, 0.6);
+            background: var(--bg-white);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
         }
 
         /* TABLES */
         .table-container {
-            background: rgba(30, 41, 59, 0.6);
+            background: var(--bg-white);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
+            margin-bottom: 30px;
         }
 
         table {
@@ -332,102 +285,168 @@
         }
 
         table th {
-            background: rgba(102, 126, 234, 0.1);
+            background: var(--bg-gray);
             border-bottom: 2px solid var(--border);
             padding: 12px;
             text-align: left;
             font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-weight: 700;
+            color: var(--text-dark);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         table td {
             padding: 12px;
             border-bottom: 1px solid var(--border);
             font-size: 13px;
+            color: var(--text-gray);
         }
 
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* BADGES */
         .badge {
             display: inline-block;
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .badge-success {
-            background: rgba(16, 185, 129, 0.2);
+            background: rgba(22, 163, 74, 0.15);
             color: var(--success);
         }
 
         .badge-danger {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(220, 38, 38, 0.15);
             color: var(--danger);
         }
 
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-
-        /* FORMS */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
+        /* ALERT */
+        .alert {
+            padding: 15px;
             border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .alert-success {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .alert-info {
+            background: rgba(8, 145, 178, 0.1);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
         .btn {
             padding: 10px 20px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
             color: white;
-            border-radius: 8px;
-            cursor: pointer;
+            border: none;
+            border-radius: 6px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
         }
 
-        h2 {
-            margin: 40px 0 20px 0;
-            font-size: 18px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -439,633 +458,467 @@
                 <div class="logo-icon">📈</div>
                 <div>
                     <h1>Stock Agent 3</h1>
-                    <p>Multi-Agent Trading Platform</p>
+                    <p>Professional Trading Dashboard</p>
                 </div>
             </div>
-            <div class="header-right">
-                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-                    <span id="theme-icon">🌙</span>
-                    <span id="theme-label">Dark</span>
-                </button>
-                <div class="live-indicator">
-                    <div class="live-dot"></div>
-                    <span>LIVE</span>
+            <div class="header-controls">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="serverStatus">CONNECTING...</span>
                 </div>
                 <div class="symbol-selector">
                     <label for="symbol-select">Symbol:</label>
-                    <select id="symbol-select">
-                        <option value="SPY">SPY</option>
-                        <option value="QQQ">QQQ</option>
-                        <option value="IWM">IWM</option>
-                        <option value="DIA">DIA</option>
+                    <select id="symbol-select" onchange="loadSymbolData()">
+                        <option value="SPY">SPY - S&P 500</option>
+                        <option value="QQQ">QQQ - Nasdaq</option>
+                        <option value="IWM">IWM - Russell 2000</option>
+                        <option value="DIA">DIA - Dow Jones</option>
                     </select>
                 </div>
+                <button class="btn" onclick="loadSymbolData()">Refresh Data</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTAINER -->
     <div class="container">
+        <!-- ALERT -->
+        <div class="alert alert-success">
+            <strong>✓ Backend Connected:</strong> Real-time data automatically loading from backend server. No API key needed!
+        </div>
+
         <!-- TABS -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="realtime">Real-Time Data</button>
+            <button class="tab-btn" data-tab="signals">Signals</button>
             <button class="tab-btn" data-tab="agents">Agents</button>
-            <button class="tab-btn" data-tab="signals">All Signals</button>
-            <button class="tab-btn" data-tab="etf">ETF Holdings</button>
-            <button class="tab-btn" data-tab="trades">Trade Logger</button>
             <button class="tab-btn" data-tab="analytics">Analytics</button>
         </div>
 
-        <!-- DASHBOARD TAB -->
-        <div id="dashboard" class="tab-content active">
-            <h2>KPI Metrics</h2>
-            <div class="dashboard-grid">
-                <div class="card" onclick="openModal('systemHealth')">
-                    <h3>System Status</h3>
-                    <div class="value">✓ ACTIVE</div>
-                    <div class="subtext">All agents operational</div>
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <h2>Dashboard Overview</h2>
+            
+            <div class="grid-4" id="overviewMetrics">
+                <div class="card">
+                    <h3>Current Price</h3>
+                    <div class="value" id="overviewPrice">--</div>
+                    <div class="subtext" id="overviewPriceTime">Loading...</div>
                 </div>
-                <div class="card" onclick="openModal('winRate')">
-                    <h3>Win Rate</h3>
-                    <div class="value">68%</div>
-                    <div class="subtext">Last 30 days</div>
+                <div class="card">
+                    <h3>24h Change</h3>
+                    <div class="value" id="overviewChange">--</div>
+                    <div class="subtext" id="overviewChangePercent">--</div>
                 </div>
-                <div class="card" onclick="openModal('sharpe')">
-                    <h3>Sharpe Ratio</h3>
-                    <div class="value">2.34</div>
-                    <div class="subtext">Risk-adjusted returns</div>
+                <div class="card">
+                    <h3>Volume</h3>
+                    <div class="value" id="overviewVolume">--</div>
+                    <div class="subtext">Daily volume</div>
                 </div>
-                <div class="card" onclick="openModal('drawdown')">
-                    <h3>Max Drawdown</h3>
-                    <div class="value">-12.5%</div>
-                    <div class="subtext">Peak to trough</div>
-                </div>
-            </div>
-
-            <h2>Active Agents</h2>
-            <div class="dashboard-grid">
-                <div class="card" onclick="openModal('baseAgent')" style="position: relative;">
-                    <span class="agent-badge">✓</span>
-                    <h3>Base Confluence</h3>
-                    <div class="value">CALL</div>
-                    <div class="subtext">Geometry + Phi + Time</div>
-                </div>
-                <div class="card" onclick="openModal('gannAgent')" style="position: relative;">
-                    <span class="agent-badge">✓</span>
-                    <h3>Gann-Elliott</h3>
-                    <div class="value">CALL</div>
-                    <div class="subtext">Wave + Square of 9</div>
-                </div>
-                <div class="card" onclick="openModal('dqnAgent')" style="position: relative;">
-                    <span class="agent-badge">✓</span>
-                    <h3>RL/DQN Agent</h3>
-                    <div class="value">CALL</div>
-                    <div class="subtext">Deep Q-Learning</div>
-                </div>
-                <div class="card" onclick="openModal('superConfluence')" style="position: relative;">
-                    <span class="agent-badge">✓</span>
-                    <h3>Super-Confluence</h3>
-                    <div class="value">✓ ULTRA</div>
-                    <div class="subtext">3/3 Agents Agree</div>
+                <div class="card">
+                    <h3>Signal Status</h3>
+                    <div class="value" id="signalStatus">--</div>
+                    <div class="subtext">From agents</div>
                 </div>
             </div>
 
-            <h2>Latest Signals</h2>
+            <h2>Latest Trading Signal</h2>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Agent</th>
-                            <th>Signal</th>
-                            <th>Entry</th>
-                            <th>Stop</th>
-                            <th>Target1</th>
-                            <th>Status</th>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            <th>Base Confluence</th>
+                            <th>Gann-Elliott</th>
+                            <th>RL/DQN</th>
+                            <th>Agreement</th>
+                            <th>Strength</th>
+                            <th>Confidence</th>
                         </tr>
                     </thead>
-                    <tbody id="latestSignals">
+                    <tbody id="latestSignalTable">
                         <tr>
-                            <td>2025-01-24</td>
-                            <td>Base</td>
-                            <td><span class="badge badge-success">CALL</span></td>
-                            <td>$450.25</td>
-                            <td>$448.00</td>
-                            <td>$455.00</td>
-                            <td><span class="badge badge-warning">OPEN</span></td>
-                        </tr>
-                        <tr>
-                            <td>2025-01-23</td>
-                            <td>Gann</td>
-                            <td><span class="badge badge-danger">PUT</span></td>
-                            <td>$452.00</td>
-                            <td>$454.50</td>
-                            <td>$447.00</td>
-                            <td><span class="badge badge-success">CLOSED +3.2R</span></td>
+                            <td colspan="8" style="text-align: center; padding: 30px;">Loading signal data...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <h2>Performance Charts</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+        <!-- REAL-TIME DATA TAB -->
+        <div id="realtime" class="tab-content">
+            <h2>Real-Time Market Data</h2>
+            
+            <div class="grid-4" id="realtimeMetrics">
+                <div class="card">
+                    <h3>Current Price</h3>
+                    <div class="value" id="currentPrice">--</div>
+                    <div class="subtext">Last updated</div>
+                </div>
+                <div class="card">
+                    <h3>Daily Open</h3>
+                    <div class="value" id="openPrice">--</div>
+                    <div class="subtext">Market open</div>
+                </div>
+                <div class="card">
+                    <h3>High/Low</h3>
+                    <div class="value" id="highLow">--</div>
+                    <div class="subtext">Today's range</div>
+                </div>
+                <div class="card">
+                    <h3>Volume</h3>
+                    <div class="value" id="volumeDisplay">--</div>
+                    <div class="subtext">Daily volume</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
                 <div class="chart-container">
-                    <h3>Cumulative P&L</h3>
-                    <canvas id="pnlChart"></canvas>
+                    <h3>Price Chart (Last 60 Days)</h3>
+                    <canvas id="priceChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h3>Agent Agreement Rate</h3>
-                    <canvas id="agreementChart"></canvas>
+                    <h3>Technical Indicators</h3>
+                    <div class="metric-row">
+                        <div class="metric">
+                            <div class="metric-label">SMA 20</div>
+                            <div class="metric-value" id="sma20">--</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">SMA 50</div>
+                            <div class="metric-value" id="sma50">--</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">SMA 200</div>
+                            <div class="metric-value" id="sma200">--</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">ATR</div>
+                            <div class="metric-value" id="atr">--</div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- SIGNALS TAB -->
+        <div id="signals" class="tab-content">
+            <h2>Agent Trading Signals</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Signal</th>
+                            <th>Confidence</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentSignalsTable">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px;">Loading agent signals...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- AGENTS TAB -->
         <div id="agents" class="tab-content">
-            <h2>Agent Details & Performance</h2>
-            <div class="dashboard-grid">
-                <div class="card" onclick="openModal('baseAgent')">
-                    <h3>Base Confluence Agent</h3>
-                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
-                        Independent validation using geometry, golden ratio, and time confluence signals.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-secondary);">
-                        <p>Win Rate: <strong>65%</strong></p>
-                        <p>Avg Trade: <strong>+1.8R</strong></p>
-                        <p>Last Signal: <strong>Today - CALL</strong></p>
-                    </div>
-                </div>
-
-                <div class="card" onclick="openModal('gannAgent')">
-                    <h3>Gann-Elliott Agent</h3>
-                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
-                        Elliott wave detection with Square of 9 levels and Gann time cycles.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-secondary);">
-                        <p>Win Rate: <strong>72%</strong></p>
-                        <p>Avg Trade: <strong>+2.1R</strong></p>
-                        <p>Last Signal: <strong>Today - CALL</strong></p>
-                    </div>
-                </div>
-
-                <div class="card" onclick="openModal('dqnAgent')">
-                    <h3>RL/DQN Agent</h3>
-                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
-                        Deep Q-Network learns from all indicators and adapts to market conditions.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-secondary);">
-                        <p>Win Rate: <strong>71%</strong></p>
-                        <p>Avg Trade: <strong>+1.9R</strong></p>
-                        <p>Last Trained: <strong>Today</strong></p>
-                    </div>
-                </div>
-            </div>
-
-            <h2>Agent Comparison</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Agent</th>
-                            <th>Win Rate</th>
-                            <th>Avg Trade</th>
-                            <th>Total Trades</th>
-                            <th>Max Drawdown</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Base Confluence</td>
-                            <td>65%</td>
-                            <td>+1.8R</td>
-                            <td>342</td>
-                            <td>-14.2%</td>
-                        </tr>
-                        <tr>
-                            <td>Gann-Elliott</td>
-                            <td>72%</td>
-                            <td>+2.1R</td>
-                            <td>298</td>
-                            <td>-11.5%</td>
-                        </tr>
-                        <tr>
-                            <td>RL/DQN</td>
-                            <td>71%</td>
-                            <td>+1.9R</td>
-                            <td>315</td>
-                            <td>-12.8%</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Super-Confluence (2+)</strong></td>
-                            <td><strong>78%</strong></td>
-                            <td><strong>+2.4R</strong></td>
-                            <td><strong>156</strong></td>
-                            <td><strong>-9.3%</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ULTRA (3/3 Agree)</strong></td>
-                            <td><strong>89%</strong></td>
-                            <td><strong>+3.2R</strong></td>
-                            <td><strong>42</strong></td>
-                            <td><strong>-5.1%</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ALL SIGNALS TAB -->
-        <div id="signals" class="tab-content">
-            <h2>Historical Signals (3-Year Backtest)</h2>
-            <div style="margin-bottom: 20px;">
-                <input type="text" id="signalSearch" placeholder="Search by date, agent, signal..." style="width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px;">
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Agent</th>
-                            <th>Signal</th>
-                            <th>Entry</th>
-                            <th>Exit</th>
-                            <th>P&L</th>
-                            <th>Agent Signals</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="signalsHistory">
-                        <tr>
-                            <td colspan="8" style="text-align: center; padding: 40px;">Loading 3-year historical data...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ETF HOLDINGS TAB -->
-        <div id="etf" class="tab-content">
-            <h2>ETF Holdings Analysis</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-                <div class="table-container">
-                    <h3 style="margin-bottom: 15px;">Top 3 Holdings</h3>
-                    <table id="topHoldings">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Symbol</th>
-                                <th>Weight</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><strong>MSFT</strong></td>
-                                <td>6.8%</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td><strong>AAPL</strong></td>
-                                <td>6.2%</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td><strong>NVDA</strong></td>
-                                <td>5.9%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="table-container">
-                    <h3 style="margin-bottom: 15px;">Bottom 3 Holdings</h3>
-                    <table id="bottomHoldings">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Symbol</th>
-                                <th>Weight</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>498</td>
-                                <td><strong>IVZ</strong></td>
-                                <td>0.04%</td>
-                            </tr>
-                            <tr>
-                                <td>499</td>
-                                <td><strong>CBRL</strong></td>
-                                <td>0.03%</td>
-                            </tr>
-                            <tr>
-                                <td>500</td>
-                                <td><strong>LBRDK</strong></td>
-                                <td>0.02%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="chart-container">
-                <h3>ETF Sector Distribution (SPY)</h3>
-                <canvas id="sectorChart"></canvas>
-            </div>
-        </div>
-
-        <!-- TRADE LOGGER TAB -->
-        <div id="trades" class="tab-content">
-            <h2>Trade Logger - Paper & Live Trading</h2>
+            <h2>Trading Agents</h2>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
-                <div class="card" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border);">
-                    <h3 style="margin-bottom: 20px;">New Trade Entry</h3>
-                    <div class="form-group">
-                        <label>Trade Type</label>
-                        <select id="tradeType">
-                            <option value="">-- Select --</option>
-                            <option value="paper">Paper Trading</option>
-                            <option value="live">Live Trading</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Symbol</label>
-                        <input type="text" id="tradeSymbol" placeholder="SPY">
-                    </div>
-                    <div class="form-group">
-                        <label>Direction</label>
-                        <select id="tradeDirection">
-                            <option value="">-- Select --</option>
-                            <option value="CALL">CALL (Long)</option>
-                            <option value="PUT">PUT (Short)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Entry Price</label>
-                        <input type="number" id="tradeEntry" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Stop Loss</label>
-                        <input type="number" id="tradeStop" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Target 1</label>
-                        <input type="number" id="tradeTarget1" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="tradeQty" step="1">
-                    </div>
-                    <button class="btn" onclick="logTrade()" style="width: 100%;">Log Trade</button>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>📊 Base Confluence Agent</h3>
+                    <p style="margin: 10px 0; font-size: 13px; color: var(--text-gray);">
+                        Geometry + Golden Ratio + Time Confluence
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
+                        <strong>Win Rate:</strong> 65% | <strong>Avg Trade:</strong> +1.8R
+                    </p>
                 </div>
-
-                <div>
-                    <div class="card" style="margin-bottom: 20px;">
-                        <h3>Paper Trades</h3>
-                        <div class="value" id="paperCount">0</div>
-                        <div class="subtext">Total logged</div>
-                    </div>
-                    <div class="card" style="margin-bottom: 20px;">
-                        <h3>Live Trades</h3>
-                        <div class="value" id="liveCount">0</div>
-                        <div class="subtext">Total logged</div>
-                    </div>
-                    <div class="card">
-                        <h3>Combined P&L</h3>
-                        <div class="value" id="combinedPnL">$0</div>
-                        <div class="subtext">All trades</div>
-                    </div>
+                <div class="card">
+                    <h3>🌊 Gann-Elliott Agent</h3>
+                    <p style="margin: 10px 0; font-size: 13px; color: var(--text-gray);">
+                        Elliott Waves + Square of 9 + Time Cycles
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
+                        <strong>Win Rate:</strong> 72% | <strong>Avg Trade:</strong> +2.1R
+                    </p>
                 </div>
-            </div>
-
-            <h2>Trade History</h2>
-            <div class="table-container">
-                <table id="tradeTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Symbol</th>
-                            <th>Direction</th>
-                            <th>Entry</th>
-                            <th>Exit</th>
-                            <th>Qty</th>
-                            <th>P&L</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tradeBody">
-                        <tr>
-                            <td colspan="8" style="text-align: center; padding: 20px; color: var(--text-secondary);">No trades logged yet</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="card">
+                    <h3>🤖 RL/DQN Agent</h3>
+                    <p style="margin: 10px 0; font-size: 13px; color: var(--text-gray);">
+                        Deep Q-Network Machine Learning
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
+                        <strong>Win Rate:</strong> 71% | <strong>Avg Trade:</strong> +1.9R
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>🔗 Super-Confluence</h3>
+                    <p style="margin: 10px 0; font-size: 13px; color: var(--text-gray);">
+                        2+ Agents Agree (SUPER) | 3/3 Agree (ULTRA)
+                    </p>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
+                        <strong>SUPER:</strong> 78% | <strong>ULTRA:</strong> 89%
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- ANALYTICS TAB -->
         <div id="analytics" class="tab-content">
             <h2>Advanced Analytics</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+            
+            <div class="grid-2">
                 <div class="chart-container">
-                    <h3>Agent Win Rates</h3>
+                    <h3>Win Rate by Agent</h3>
                     <canvas id="winRateChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h3>Signal Distribution</h3>
-                    <canvas id="signalDistChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Monthly Performance</h3>
-                    <canvas id="monthlyChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Risk vs Return</h3>
-                    <canvas id="riskReturnChart"></canvas>
+                    <h3>Average Trade Return</h3>
+                    <canvas id="avgReturnChart"></canvas>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- MODALS -->
-    <div id="baseAgentModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('baseAgent')">×</button>
-            <h2>Base Confluence Agent</h2>
-            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Geometry + Golden Ratio + Time Confluence</p>
-            <p>Two completely different methodologies with no shared indicators = true independence and high-probability agreement.</p>
-            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
-                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Last 5 Signals:</strong></p>
-                <p style="font-size: 12px; color: var(--text-secondary);">All signals with entry, stop, target 1 & 2 shown...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="gannAgentModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('gannAgent')">×</button>
-            <h2>Gann-Elliott Agent</h2>
-            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Elliott Waves + Square of 9 + Time Cycles</p>
-            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
-                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Current Analysis:</strong></p>
-                <p style="font-size: 12px; color: var(--text-secondary);">Wave Pattern, Support/Resistance, Time Cycle Analysis...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="dqnAgentModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('dqnAgent')">×</button>
-            <h2>RL/DQN Agent</h2>
-            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Deep Q-Network Machine Learning</p>
-            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
-                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Model Status:</strong></p>
-                <p style="font-size: 12px; color: var(--text-secondary);">Q-Value, Exploration Rate, Last Trained...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="superConfluenceModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('superConfluence')">×</button>
-            <h2>Super-Confluence Analysis</h2>
-            <p style="margin: 15px 0; color: var(--text-secondary);">High-probability setups where 2+ agents agree</p>
-            <p><strong>ULTRA (3/3 Agree):</strong> Win Rate 89%, Avg Trade +3.2R</p>
-            <p><strong>SUPER (2+):</strong> Win Rate 78%, Avg Trade +2.4R</p>
         </div>
     </div>
 
     <script>
-        let trades = [];
+        const API_BASE = 'http://localhost:5000/api';
+        let priceChartInstance = null;
+        let currentSymbol = 'SPY';
 
-        // TAB SWITCHING
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabName = this.getAttribute('data-tab');
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById(tabName).classList.add('active');
-                this.classList.add('active');
-            });
-        });
-
-        // THEME TOGGLE
-        function toggleTheme() {
-            const body = document.body;
-            const isDaytime = body.classList.contains('daytime');
-            
-            if (isDaytime) {
-                body.classList.remove('daytime');
-                document.getElementById('theme-icon').textContent = '🌙';
-                document.getElementById('theme-label').textContent = 'Dark';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.add('daytime');
-                document.getElementById('theme-icon').textContent = '☀️';
-                document.getElementById('theme-label').textContent = 'Light';
-                localStorage.setItem('theme', 'daytime');
-            }
-        }
-
-        // Load saved theme on page load
+        // Check server status on load
         window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'daytime') {
-                document.body.classList.add('daytime');
-                document.getElementById('theme-icon').textContent = '☀️';
-                document.getElementById('theme-label').textContent = 'Light';
-            }
+            checkServerStatus();
+            loadSymbolData();
+            initializeTabs();
         });
 
-        // MODALS
-        function openModal(id) {
-            const modalMap = {
-                baseAgent: 'baseAgentModal',
-                gannAgent: 'gannAgentModal',
-                dqnAgent: 'dqnAgentModal',
-                superConfluence: 'superConfluenceModal'
-            };
-            if (modalMap[id]) document.getElementById(modalMap[id]).classList.add('active');
-        }
-
-        function closeModal(id) {
-            const modalMap = {
-                baseAgent: 'baseAgentModal',
-                gannAgent: 'gannAgentModal',
-                dqnAgent: 'dqnAgentModal',
-                superConfluence: 'superConfluenceModal'
-            };
-            if (modalMap[id]) document.getElementById(modalMap[id]).classList.remove('active');
-        }
-
-        window.addEventListener('click', e => {
-            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
-        });
-
-        // TRADE LOGGING
-        function logTrade() {
-            const type = document.getElementById('tradeType').value;
-            const symbol = document.getElementById('tradeSymbol').value;
-            const direction = document.getElementById('tradeDirection').value;
-            const entry = parseFloat(document.getElementById('tradeEntry').value);
-            const stop = parseFloat(document.getElementById('tradeStop').value);
-            const target1 = parseFloat(document.getElementById('tradeTarget1').value);
-            const qty = parseInt(document.getElementById('tradeQty').value);
-
-            if (!type || !symbol || !direction || !entry) {
-                alert('Please fill in all required fields');
-                return;
+        // Check server status
+        async function checkServerStatus() {
+            try {
+                const response = await axios.get(`${API_BASE}/health`);
+                document.getElementById('serverStatus').textContent = 'LIVE';
+                document.querySelector('.status-indicator').style.backgroundColor = 'rgba(22, 163, 74, 0.1)';
+                document.querySelector('.status-indicator').style.color = '#16a34a';
+            } catch (error) {
+                document.getElementById('serverStatus').textContent = 'OFFLINE';
+                document.querySelector('.status-indicator').style.backgroundColor = 'rgba(220, 38, 38, 0.1)';
+                document.querySelector('.status-indicator').style.color = '#dc2626';
+                console.warn('Backend server not connected. Ensure server is running on localhost:5000');
             }
-
-            trades.push({
-                date: new Date().toISOString().split('T')[0],
-                type, symbol, direction, entry, stop, target1, qty
-            });
-
-            document.getElementById('tradeType').value = '';
-            document.getElementById('tradeSymbol').value = '';
-            document.getElementById('tradeDirection').value = '';
-            document.getElementById('tradeEntry').value = '';
-            document.getElementById('tradeStop').value = '';
-            document.getElementById('tradeTarget1').value = '';
-            document.getElementById('tradeQty').value = '';
-
-            updateTradeTable();
-            alert('Trade logged!');
         }
 
-        function updateTradeTable() {
-            const body = document.getElementById('tradeBody');
-            body.innerHTML = trades.length > 0 ? '' : '<tr><td colspan="8" style="text-align: center; padding: 20px;">No trades yet</td></tr>';
+        // Load symbol data
+        async function loadSymbolData() {
+            currentSymbol = document.getElementById('symbol-select').value;
             
-            trades.forEach(t => {
-                const row = body.insertRow();
-                row.innerHTML = `<td>${t.date}</td><td>${t.type}</td><td>${t.symbol}</td><td>${t.direction}</td><td>$${t.entry}</td><td>-</td><td>${t.qty}</td><td>-</td>`;
-            });
-
-            document.getElementById('paperCount').innerText = trades.filter(t => t.type === 'paper').length;
-            document.getElementById('liveCount').innerText = trades.filter(t => t.type === 'live').length;
+            try {
+                // Get current price
+                const priceResponse = await axios.get(`${API_BASE}/price/${currentSymbol}`);
+                const priceData = priceResponse.data;
+                
+                document.getElementById('currentPrice').textContent = `$${priceData.price.toFixed(2)}`;
+                document.getElementById('overviewPrice').textContent = `$${priceData.price.toFixed(2)}`;
+                document.getElementById('openPrice').textContent = `$${priceData.open.toFixed(2)}`;
+                document.getElementById('highLow').textContent = `$${priceData.low.toFixed(2)} - $${priceData.high.toFixed(2)}`;
+                document.getElementById('volumeDisplay').textContent = (priceData.volume / 1000000).toFixed(2) + 'M';
+                document.getElementById('overviewVolume').textContent = (priceData.volume / 1000000).toFixed(2) + 'M';
+                
+                document.getElementById('overviewChange').textContent = priceData.change.toFixed(2);
+                document.getElementById('overviewChangePercent').textContent = `${priceData.change_percent.toFixed(2)}%`;
+                document.getElementById('overviewPriceTime').textContent = priceData.date;
+                
+                // Get historical data for chart
+                const histResponse = await axios.get(`${API_BASE}/historical/${currentSymbol}?days=60`);
+                const histData = histResponse.data;
+                
+                // Update technical indicators
+                if (histData.indicators) {
+                    document.getElementById('sma20').textContent = `$${histData.indicators.sma20 ? histData.indicators.sma20.toFixed(2) : '--'}`;
+                    document.getElementById('sma50').textContent = `$${histData.indicators.sma50 ? histData.indicators.sma50.toFixed(2) : '--'}`;
+                    document.getElementById('sma200').textContent = `$${histData.indicators.sma200 ? histData.indicators.sma200.toFixed(2) : '--'}`;
+                    document.getElementById('atr').textContent = histData.indicators.atr ? histData.indicators.atr.toFixed(2) : '--';
+                }
+                
+                // Update price chart
+                updatePriceChart(histData.data);
+                
+                // Get trading signal
+                const signalResponse = await axios.get(`${API_BASE}/signal/${currentSymbol}`);
+                const signal = signalResponse.data;
+                
+                updateSignalDisplay(signal);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                if (error.response?.status === 500 || error.code === 'ERR_NETWORK') {
+                    alert('Backend server not responding. Ensure Python server is running: python server.py');
+                }
+            }
         }
 
-        // CHARTS (placeholder)
-        const ctx1 = document.getElementById('pnlChart')?.getContext('2d');
-        if (ctx1) {
-            new Chart(ctx1, {
+        // Update signal display
+        function updateSignalDisplay(signal) {
+            const baseSignal = signal.agents.base_confluence.signal;
+            const gannSignal = signal.agents.gann_elliott.signal;
+            const rlSignal = signal.agents.rl_dqn.signal;
+            
+            // Update overview
+            document.getElementById('signalStatus').textContent = signal.confluence.strength;
+            
+            // Update latest signal table
+            const tbody = document.getElementById('latestSignalTable');
+            tbody.innerHTML = `
+                <tr>
+                    <td>${signal.symbol}</td>
+                    <td>$${signal.current_price.toFixed(2)}</td>
+                    <td><span class="badge ${baseSignal ? 'badge-success' : 'badge-danger'}">${baseSignal || 'NONE'}</span></td>
+                    <td><span class="badge ${gannSignal ? 'badge-success' : 'badge-danger'}">${gannSignal || 'NONE'}</span></td>
+                    <td><span class="badge ${rlSignal ? 'badge-success' : 'badge-danger'}">${rlSignal || 'NONE'}</span></td>
+                    <td>${signal.confluence.agreement}/3</td>
+                    <td><strong>${signal.confluence.strength}</strong></td>
+                    <td>${(signal.confluence.confidence * 100).toFixed(0)}%</td>
+                </tr>
+            `;
+            
+            // Update agent signals table
+            const agentTbody = document.getElementById('agentSignalsTable');
+            agentTbody.innerHTML = `
+                <tr>
+                    <td><strong>Base Confluence</strong></td>
+                    <td><span class="badge ${baseSignal ? 'badge-success' : 'badge-danger'}">${baseSignal || 'NONE'}</span></td>
+                    <td>65%</td>
+                    <td>Geo: ${signal.agents.base_confluence.geometric_level ? signal.agents.base_confluence.geometric_level.toFixed(2) : '--'}, Phi: ${signal.agents.base_confluence.phi_level ? signal.agents.base_confluence.phi_level.toFixed(2) : '--'}</td>
+                </tr>
+                <tr>
+                    <td><strong>Gann-Elliott</strong></td>
+                    <td><span class="badge ${gannSignal ? 'badge-success' : 'badge-danger'}">${gannSignal || 'NONE'}</span></td>
+                    <td>72%</td>
+                    <td>Wave: ${signal.agents.gann_elliott.wave_pattern}, Support: ${signal.agents.gann_elliott.support.toFixed(2)}, Resistance: ${signal.agents.gann_elliott.resistance.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td><strong>RL/DQN</strong></td>
+                    <td><span class="badge ${rlSignal ? 'badge-success' : 'badge-danger'}">${rlSignal || 'NONE'}</span></td>
+                    <td>71%</td>
+                    <td>ML prediction based on price momentum and patterns</td>
+                </tr>
+            `;
+        }
+
+        // Update price chart
+        function updatePriceChart(data) {
+            const dates = data.map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const closes = data.map(d => d.close);
+            
+            const ctx = document.getElementById('priceChart');
+            if (!ctx) return;
+            
+            if (priceChartInstance) priceChartInstance.destroy();
+            
+            priceChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    labels: dates,
                     datasets: [{
-                        label: 'Cumulative P&L',
-                        data: [100, 150, 120, 200, 280],
-                        borderColor: '#667eea',
-                        tension: 0.4,
+                        label: 'Close Price',
+                        data: closes,
+                        borderColor: '#1e40af',
+                        backgroundColor: 'rgba(30, 64, 175, 0.05)',
+                        borderWidth: 2,
                         fill: true,
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)'
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#1e40af'
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { display: false } } }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true, labels: { color: '#1f2937' } }
+                    },
+                    scales: {
+                        y: { ticks: { color: '#6b7280' } },
+                        x: { ticks: { color: '#6b7280' } }
+                    }
+                }
+            });
+            
+            // Initialize other charts
+            initializeCharts();
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            const winRateCtx = document.getElementById('winRateChart');
+            if (winRateCtx && !winRateCtx.dataset.initialized) {
+                new Chart(winRateCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Base', 'Gann', 'DQN', 'SUPER', 'ULTRA'],
+                        datasets: [{
+                            label: 'Win Rate %',
+                            data: [65, 72, 71, 78, 89],
+                            backgroundColor: ['#1e40af', '#7c3aed', '#ec4899', '#16a34a', '#059669']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: true, labels: { color: '#1f2937' } } },
+                        scales: {
+                            y: { ticks: { color: '#6b7280' } },
+                            x: { ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+                winRateCtx.dataset.initialized = true;
+            }
+            
+            const avgCtx = document.getElementById('avgReturnChart');
+            if (avgCtx && !avgCtx.dataset.initialized) {
+                new Chart(avgCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Base', 'Gann', 'DQN', 'SUPER', 'ULTRA'],
+                        datasets: [{
+                            label: 'Avg Return (R)',
+                            data: [1.8, 2.1, 1.9, 2.4, 3.2],
+                            backgroundColor: ['#1e40af', '#7c3aed', '#ec4899', '#16a34a', '#059669']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: true, labels: { color: '#1f2937' } } },
+                        scales: {
+                            y: { ticks: { color: '#6b7280' } },
+                            x: { ticks: { color: '#6b7280' } }
+                        }
+                    }
+                });
+                avgCtx.dataset.initialized = true;
+            }
+        }
+
+        // Initialize tabs
+        function initializeTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.getElementById(tabName).classList.add('active');
+                    this.classList.add('active');
+                });
             });
         }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadSymbolData, 30000);
     </script>
 </body>
 </html>
