@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+"""
+Master Runner - Execute All Trading Agents
+===========================================
+
+Runs all trading agents in sequence:
+1. Base Confluence Agent (with Gann-Elliott)
+2. DQN Agent
+3. Hybrid Multi-Agent System
+4. 3-Wave Profit Target Agent (NEW!)
+
+Usage:
+    python run_all_agents.py
+    python run_all_agents.py --skip-train
+    python run_all_agents.py --quick
+"""
+
+import argparse
+import logging
+import subprocess
+import sys
+import time
+from datetime import datetime
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)-8s | %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def run_agent(script_name, description, timeout=600):
+    """
+    Run a single agent script.
+    
+    Args:
+        script_name: Python script filename
+        description: Human-readable description
+        timeout: Maximum execution time in seconds
+    
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    logger.info("")
+    logger.info("=" * 70)
+    logger.info(f"Starting: {description}")
+    logger.info("=" * 70)
+    
+    start_time = time.time()
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, script_name],
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+        
+        elapsed = time.time() - start_time
+        
+        # Print stdout
+        if result.stdout:
+            print(result.stdout)
+        
+        if result.returncode == 0:
+            logger.info("")
+            logger.info(f"✓ {description} completed successfully")
+            logger.info(f"  Duration: {elapsed:.1f}s")
+            return True
+        else:
+            logger.error(f"✗ {description} failed with exit code {result.returncode}")
+            if result.stderr:
+                logger.error(f"  Error: {result.stderr[:200]}")
+            logger.info(f"  Duration: {elapsed:.1f}s")
+            return False
+    
+    except subprocess.TimeoutExpired:
+        logger.error(f"✗ {description} timed out after {timeout}s")
+        return False
+    
+    except FileNotFoundError:
+        logger.error(f"✗ {description} - File not found: {script_name}")
+        logger.info(f"  Make sure {script_name} exists in the current directory")
+        return False
+    
+    except Exception as e:
+        logger.error(f"✗ {description} failed with exception: {e}")
+        return False
+
+def print_header():
+    """Print startup header."""
+    print("\n")
+    print("=" * 70)
+    print("  MULTI-AGENT TRADING SYSTEM - MASTER RUNNER")
+    print("=" * 70)
+    print(f"  Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 70)
+    print("")
+
+def print_summary(results, elapsed):
+    """Print execution summary."""
+    print("\n")
+    print("=" * 70)
+    print("  EXECUTION COMPLETE - SUMMARY")
+    print("=" * 70)
+    print(f"  Total time: {elapsed:.1f}s ({elapsed/60:.1f}m)")
+    print(f"  Finished: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("")
+    print("  Agent Results:")
+    print("  " + "-" * 66)
+    
+    for name, success in results:
+        status = "✓ PASSED" if success else "✗ FAILED"
+        print(f"  {name:.<50} {status}")
+    
+    print("  " + "-" * 66)
+    
+    total_agents = len(results)
+    passed = sum(1 for _, success in results if success)
+    failed = total_agents - passed
+    
+    print(f"  Total: {total_agents} agents | Passed: {passed} | Failed: {failed}")
+    print("=" * 70)
+    
+    if failed == 0:
+        print("\n  🎉 ALL AGENTS COMPLETED SUCCESSFULLY!")
+        print("")
+        print("  📊 Check your reports:")
+        print("     - reports/portfolio_confluence.csv")
+        print("     - reports/portfolio_gann_elliott.csv")
+        print("     - reports/portfolio_dqn.csv")
+        print("     - reports/portfolio_hybrid.csv (USE THIS!)")
+        print("     - reports/portfolio_3_waves.csv (3-WAVE TARGETS!)")
+        print("")
+    else:
+        print(f"\n  ⚠️  {failed} agent(s) failed. Check logs for details.")
+    
+    print("=" * 70)
+    print("")
+
+def main():
+    """Main execution."""
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='Run all trading agents')
+    parser.add_argument('--skip-train', action='store_true',
+                       help='Skip DQN training (use existing model)')
+    parser.add_argument('--quick', action='store_true',
+                       help='Quick mode (fewer DQN episodes)')
+    args = parser.parse_args()
+    
+    # Print header
+    print_header()
+    
+    overall_start = time.time()
+    results = []
+    
+    # Agent 1: Base Confluence + Gann-Elliott
+    logger.info("🤖 Agent 1: Base Confluence + Gann-Elliott Overlay")
+    success_1 = run_agent(
+        "agent.py",
+        "Agent 1: Base Confluence + Gann-Elliott",
+        timeout=600
+    )
+    results.append(("Agent 1: Confluence + Gann-Elliott", success_1))
+    
+    if not success_1:
+        logger.error("Agent 1 failed. Aborting pipeline.")
+        print_summary(results, time.time() - overall_start)
+        return 1
+    
+    # Agent 2: DQN Reinforcement Learning
+    logger.info("🤖 Agent 2: DQN Reinforcement Learning")
+    success_2 = run_agent(
+        "agent_dqn.py",
+        "Agent 2: DQN Machine Learning",
+        timeout=1200
+    )
+    results.append(("Agent 2: DQN Machine Learning", success_2))
+    
+    # Continue even if DQN fails (not critical for hybrid)
+    if not success_2:
+        logger.warning("Agent 2 (DQN) failed, but continuing...")
+    
+    # Agent 3: Hybrid Multi-Agent System
+    logger.info("🤖 Agent 3: Hybrid Multi-Agent Voting System")
+    success_3 = run_agent(
+        "agent_hybrid.py",
+        "Agent 3: Hybrid Multi-Agent System",
+        timeout=600
+    )
+    results.append(("Agent 3: Hybrid Multi-Agent", success_3))
+    
+    # Agent 4: 3-Wave Profit Targets (NEW!)
+    logger.info("🤖 Agent 4: 3-Wave Profit Target System")
+    success_4 = run_agent(
+        "agent_3_waves.py",
+        "Agent 4: 3-Wave Profit Targets",
+        timeout=600
+    )
+    results.append(("Agent 4: 3-Wave Profit Targets", success_4))
+    
+    # Calculate total time
+    elapsed = time.time() - overall_start
+    
+    # Print summary
+    print_summary(results, elapsed)
+    
+    # Return exit code
+    if all(success for _, success in results):
+        return 0
+    else:
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())
