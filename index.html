@@ -42,14 +42,15 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .metric-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
         .metric-label { font-size: 11px; font-weight: 600; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
         .metric-value { font-size: 28px; font-weight: 700; }
         .metric-value.positive { color: var(--success); }
         .metric-value.negative { color: var(--danger); }
         .metric-sub { font-size: 12px; color: var(--text-light); margin-top: 5px; }
-        .card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--text-dark); }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 12px 15px; font-size: 11px; font-weight: 600; color: var(--text-gray); text-transform: uppercase; background: var(--bg-gray); border-bottom: 1px solid var(--border); }
         td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid var(--border); }
@@ -59,10 +60,16 @@
         .badge-danger { background: rgba(220,38,38,0.1); color: var(--danger); }
         .badge-warning { background: rgba(217,119,6,0.1); color: var(--warning); }
         .badge-info { background: rgba(8,145,178,0.1); color: var(--info); }
+        .badge-primary { background: rgba(30,64,175,0.1); color: var(--primary); }
         .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
         .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px; }
         .chart-container { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
         .chart-container h3 { font-size: 14px; font-weight: 600; margin-bottom: 15px; }
+        .vote-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .vote-item:last-child { border-bottom: none; }
+        .sector-bar { height: 24px; border-radius: 4px; margin: 5px 0; display: flex; align-items: center; padding: 0 10px; color: white; font-size: 12px; font-weight: 600; }
+        .market-indicator { display: flex; align-items: center; gap: 10px; padding: 15px; background: var(--bg-gray); border-radius: 8px; margin-bottom: 10px; }
+        .market-indicator .value { font-size: 20px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -102,9 +109,12 @@
             <button class="tab-btn" data-tab="realtime">Real-Time Data</button>
             <button class="tab-btn" data-tab="signals">Signals</button>
             <button class="tab-btn" data-tab="agents">Agents</button>
+            <button class="tab-btn" data-tab="market">Market</button>
+            <button class="tab-btn" data-tab="sectors">Sectors</button>
             <button class="tab-btn" data-tab="analytics">Analytics</button>
         </div>
 
+        <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
             <h2 class="section-title">Dashboard Overview</h2>
             <div class="metrics-grid">
@@ -115,8 +125,14 @@
             </div>
             <h2 class="section-title">Latest Trading Signal</h2>
             <div class="card"><table><thead><tr><th>Symbol</th><th>Price</th><th>Base Confluence</th><th>Gann-Elliott</th><th>RL/DQN</th><th>Agreement</th><th>Strength</th><th>Confidence</th></tr></thead><tbody id="signalTable"><tr><td colspan="8" class="empty-state">Loading signal data...</td></tr></tbody></table></div>
+            
+            <h2 class="section-title">Agent Voting Log</h2>
+            <div class="card" id="votingLogCard">
+                <div class="empty-state">Loading voting data...</div>
+            </div>
         </div>
 
+        <!-- REAL-TIME TAB -->
         <div id="realtime" class="tab-content">
             <h2 class="section-title">Real-Time Market Data</h2>
             <div class="metrics-grid">
@@ -125,14 +141,16 @@
                 <div class="metric-card"><div class="metric-label">ATR (14)</div><div class="metric-value" id="atr">--</div></div>
                 <div class="metric-card"><div class="metric-label">Bars</div><div class="metric-value" id="barCount">--</div></div>
             </div>
-            <div class="card"><h3 style="margin-bottom:15px">Price Chart (60 Days)</h3><canvas id="priceChart" height="100"></canvas></div>
+            <div class="card"><h3 class="card-title">Price Chart (60 Days)</h3><canvas id="priceChart" height="100"></canvas></div>
         </div>
 
+        <!-- SIGNALS TAB -->
         <div id="signals" class="tab-content">
             <h2 class="section-title">Trade History</h2>
             <div class="card"><table><thead><tr><th>Symbol</th><th>Signal</th><th>Entry Date</th><th>Exit Date</th><th>Entry $</th><th>Exit $</th><th>P&L</th><th>Status</th></tr></thead><tbody id="tradeTable"><tr><td colspan="8" class="empty-state">Loading trades...</td></tr></tbody></table></div>
         </div>
 
+        <!-- AGENTS TAB -->
         <div id="agents" class="tab-content">
             <h2 class="section-title">Agent Status</h2>
             <div class="metrics-grid">
@@ -141,8 +159,40 @@
                 <div class="metric-card"><div class="metric-label">DQN/RL</div><div class="metric-value" style="color:var(--success)">ACTIVE</div><div class="metric-sub">ML Agent</div></div>
                 <div class="metric-card"><div class="metric-label">Super Confluence</div><div class="metric-value" style="color:var(--primary)">2/3 VOTE</div><div class="metric-sub">Consensus</div></div>
             </div>
+            
+            <h2 class="section-title">Performance by Agent</h2>
+            <div class="card" id="performanceCard">
+                <div class="empty-state">Loading performance data...</div>
+            </div>
+            
+            <h2 class="section-title">Tuning Parameters</h2>
+            <div class="card" id="tuningCard">
+                <div class="empty-state">Loading tuning data...</div>
+            </div>
         </div>
 
+        <!-- MARKET TAB -->
+        <div id="market" class="tab-content">
+            <h2 class="section-title">Market Conditions</h2>
+            <div class="card" id="marketConditionsCard">
+                <div class="empty-state">Loading market conditions...</div>
+            </div>
+            
+            <h2 class="section-title">ETF Holdings Analysis</h2>
+            <div class="card" id="etfHoldingsCard">
+                <div class="empty-state">Loading ETF holdings...</div>
+            </div>
+        </div>
+
+        <!-- SECTORS TAB -->
+        <div id="sectors" class="tab-content">
+            <h2 class="section-title">Sector Rotation</h2>
+            <div class="card" id="sectorRotationCard">
+                <div class="empty-state">Loading sector data...</div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
         <div id="analytics" class="tab-content">
             <h2 class="section-title">Performance Analytics</h2>
             <div class="metrics-grid">
@@ -150,6 +200,12 @@
                 <div class="metric-card"><div class="metric-label">Win Rate</div><div class="metric-value" id="winRate">--</div></div>
                 <div class="metric-card"><div class="metric-label">Total P&L</div><div class="metric-value" id="totalPnl">--</div></div>
                 <div class="metric-card"><div class="metric-label">Last Updated</div><div class="metric-value" id="lastUpdate" style="font-size:16px">--</div></div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card"><div class="metric-label">Winning Trades</div><div class="metric-value positive" id="winCount">--</div></div>
+                <div class="metric-card"><div class="metric-label">Losing Trades</div><div class="metric-value negative" id="loseCount">--</div></div>
+                <div class="metric-card"><div class="metric-label">Avg Win</div><div class="metric-value positive" id="avgWin">--</div></div>
+                <div class="metric-card"><div class="metric-label">Avg Loss</div><div class="metric-value negative" id="avgLoss">--</div></div>
             </div>
             <div class="chart-grid">
                 <div class="chart-container"><h3>Win Rate by Agent</h3><canvas id="winRateChart"></canvas></div>
@@ -179,9 +235,19 @@ function setStatus(on, msg) {
     am.textContent = msg;
 }
 
+async function loadJSON(path) {
+    try {
+        const r = await fetch(path + '?t=' + Date.now());
+        if (r.ok) return await r.json();
+    } catch(e) {}
+    return null;
+}
+
 async function loadAllData() {
     try {
         let connected = false;
+        
+        // Load API status
         try {
             const r = await fetch('data/api_status.json?t=' + Date.now());
             if (r.ok) {
@@ -198,6 +264,7 @@ async function loadAllData() {
             }
         } catch(e) {}
 
+        // Load SPY CSV
         let r = await fetch('data/SPY.csv?t='+Date.now()).catch(()=>null);
         if (!r?.ok) r = await fetch('data/SPY_confluence.csv?t='+Date.now()).catch(()=>null);
         if (r?.ok) {
@@ -224,6 +291,7 @@ async function loadAllData() {
             }
         }
 
+        // Load trades and calculate REAL win rate
         r = await fetch('data/portfolio_confluence.csv?t='+Date.now()).catch(()=>null);
         if (!r?.ok) r = await fetch('reports/portfolio_confluence.csv?t='+Date.now()).catch(()=>null);
         if (r?.ok) {
@@ -236,16 +304,133 @@ async function loadAllData() {
                     return `<tr><td>${t.Symbol||'--'}</td><td><span class="badge badge-${t.Signal?.toUpperCase()==='CALL'?'success':'danger'}">${t.Signal||'--'}</span></td><td>${t.EntryDate||'--'}</td><td>${t.ExitDate||'--'}</td><td>$${(parseFloat(t.EntryPrice)||0).toFixed(2)}</td><td>$${(parseFloat(t.ExitPrice)||0).toFixed(2)}</td><td><span class="badge badge-${pnl>=0?'success':'danger'}">${pnl>=0?'+':''}$${pnl.toFixed(2)}</span></td><td>${t.Status||'--'}</td></tr>`;
                 }).join('');
             }
+            
+            // FIXED: Proper win rate calculation
             document.getElementById('totalTrades').textContent = trades.length;
-            const closed = trades.filter(t=>t.PNL), wins = closed.filter(t=>parseFloat(t.PNL)>0);
-            document.getElementById('winRate').textContent = closed.length ? (wins.length/closed.length*100).toFixed(1)+'%' : '--';
-            const total = closed.reduce((s,t)=>s+(parseFloat(t.PNL)||0),0);
-            document.getElementById('totalPnl').textContent = (total>=0?'+':'')+'$'+total.toFixed(2);
-            document.getElementById('totalPnl').className = 'metric-value '+(total>=0?'positive':'negative');
+            const closedTrades = trades.filter(t => t.PNL && t.PNL !== '' && !isNaN(parseFloat(t.PNL)));
+            const wins = closedTrades.filter(t => parseFloat(t.PNL) > 0);
+            const losses = closedTrades.filter(t => parseFloat(t.PNL) < 0);
+            
+            const winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length * 100) : 0;
+            document.getElementById('winRate').textContent = winRate.toFixed(1) + '%';
+            document.getElementById('winRate').className = 'metric-value ' + (winRate >= 50 ? 'positive' : 'negative');
+            
+            document.getElementById('winCount').textContent = wins.length;
+            document.getElementById('loseCount').textContent = losses.length;
+            
+            const totalPnl = closedTrades.reduce((s,t) => s + (parseFloat(t.PNL)||0), 0);
+            document.getElementById('totalPnl').textContent = (totalPnl>=0?'+':'') + '$' + totalPnl.toFixed(2);
+            document.getElementById('totalPnl').className = 'metric-value ' + (totalPnl>=0?'positive':'negative');
+            
+            const avgWin = wins.length > 0 ? wins.reduce((s,t) => s + parseFloat(t.PNL), 0) / wins.length : 0;
+            const avgLoss = losses.length > 0 ? losses.reduce((s,t) => s + parseFloat(t.PNL), 0) / losses.length : 0;
+            document.getElementById('avgWin').textContent = '+$' + avgWin.toFixed(2);
+            document.getElementById('avgLoss').textContent = '$' + avgLoss.toFixed(2);
         }
+        
         document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        
+        // Load JSON data files
+        await loadMarketConditions();
+        await loadSectorRotation();
+        await loadVotingLog();
+        await loadPerformance();
+        await loadETFHoldings();
+        await loadTuning();
+        
         initCharts();
-    } catch(e) { setStatus(false, 'Error: '+e.message); }
+    } catch(e) { setStatus(false, 'Error: '+e.message); console.error(e); }
+}
+
+async function loadMarketConditions() {
+    const data = await loadJSON('data/market_conditions.json');
+    const card = document.getElementById('marketConditionsCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No market data available</div>'; return; }
+    
+    let html = '<div class="metrics-grid">';
+    if (data.trend) html += `<div class="market-indicator"><span class="metric-label">Trend</span><span class="value">${data.trend}</span></div>`;
+    if (data.volatility) html += `<div class="market-indicator"><span class="metric-label">Volatility</span><span class="value">${data.volatility}</span></div>`;
+    if (data.vix) html += `<div class="market-indicator"><span class="metric-label">VIX</span><span class="value">${data.vix}</span></div>`;
+    if (data.regime) html += `<div class="market-indicator"><span class="metric-label">Regime</span><span class="value">${data.regime}</span></div>`;
+    html += '</div>';
+    if (Object.keys(data).length > 0) {
+        html += '<pre style="background:#f3f4f6;padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;margin-top:15px;">' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+    card.innerHTML = html;
+}
+
+async function loadSectorRotation() {
+    const data = await loadJSON('data/sector_rotation.json');
+    const card = document.getElementById('sectorRotationCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No sector data available</div>'; return; }
+    
+    const colors = ['#1e40af','#7c3aed','#ec4899','#16a34a','#d97706','#0891b2','#dc2626','#059669','#6366f1','#f59e0b'];
+    let html = '';
+    
+    if (Array.isArray(data)) {
+        data.forEach((s, i) => {
+            const pct = s.weight || s.percentage || s.value || 50;
+            html += `<div class="sector-bar" style="width:${Math.min(pct*2, 100)}%;background:${colors[i%colors.length]}">${s.sector || s.name}: ${pct}%</div>`;
+        });
+    } else {
+        html = '<pre style="background:#f3f4f6;padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;">' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+    card.innerHTML = html;
+}
+
+async function loadVotingLog() {
+    const data = await loadJSON('data/voting_log.json');
+    const card = document.getElementById('votingLogCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No voting data available</div>'; return; }
+    
+    let html = '';
+    const votes = Array.isArray(data) ? data.slice(-10) : (data.votes || data.log || []).slice(-10);
+    
+    if (votes.length > 0) {
+        html = '<table><thead><tr><th>Time</th><th>Base</th><th>Gann</th><th>DQN</th><th>Result</th></tr></thead><tbody>';
+        votes.reverse().forEach(v => {
+            const base = v.base || v.base_confluence || '--';
+            const gann = v.gann || v.gann_elliott || '--';
+            const dqn = v.dqn || v.rl_dqn || '--';
+            const result = v.result || v.consensus || v.final || '--';
+            const time = v.timestamp || v.time || v.date || '--';
+            html += `<tr><td>${time}</td><td><span class="badge badge-${base==='CALL'?'success':(base==='PUT'?'danger':'warning')}">${base}</span></td><td><span class="badge badge-${gann==='CALL'?'success':(gann==='PUT'?'danger':'warning')}">${gann}</span></td><td><span class="badge badge-info">${dqn}</span></td><td><strong>${result}</strong></td></tr>`;
+        });
+        html += '</tbody></table>';
+    } else {
+        html = '<pre style="background:#f3f4f6;padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;">' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+    card.innerHTML = html;
+}
+
+async function loadPerformance() {
+    const data = await loadJSON('data/performance_confluence.json');
+    const card = document.getElementById('performanceCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No performance data available</div>'; return; }
+    
+    let html = '<div class="metrics-grid">';
+    if (data.total_trades !== undefined) html += `<div class="metric-card"><div class="metric-label">Total Trades</div><div class="metric-value">${data.total_trades}</div></div>`;
+    if (data.win_rate !== undefined) html += `<div class="metric-card"><div class="metric-label">Win Rate</div><div class="metric-value">${(data.win_rate*100).toFixed(1)}%</div></div>`;
+    if (data.avg_r !== undefined) html += `<div class="metric-card"><div class="metric-label">Avg R</div><div class="metric-value">${data.avg_r.toFixed(2)}</div></div>`;
+    if (data.sharpe_ratio !== undefined) html += `<div class="metric-card"><div class="metric-label">Sharpe Ratio</div><div class="metric-value">${data.sharpe_ratio.toFixed(2)}</div></div>`;
+    html += '</div>';
+    card.innerHTML = html;
+}
+
+async function loadETFHoldings() {
+    const data = await loadJSON('data/etf_holdings_analysis.json');
+    const card = document.getElementById('etfHoldingsCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No ETF holdings data available</div>'; return; }
+    
+    card.innerHTML = '<pre style="background:#f3f4f6;padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;">' + JSON.stringify(data, null, 2) + '</pre>';
+}
+
+async function loadTuning() {
+    const data = await loadJSON('data/tuning_confluence.json');
+    const card = document.getElementById('tuningCard');
+    if (!data) { card.innerHTML = '<div class="empty-state">No tuning data available</div>'; return; }
+    
+    card.innerHTML = '<pre style="background:#f3f4f6;padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:400px;">' + JSON.stringify(data, null, 2) + '</pre>';
 }
 
 function updateSignalTable(d) {
