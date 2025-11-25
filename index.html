@@ -182,7 +182,6 @@ function setStatus(on, msg) {
 async function loadAllData() {
     try {
         let connected = false;
-        // Load API status
         try {
             const r = await fetch('data/api_status.json?t=' + Date.now());
             if (r.ok) {
@@ -199,7 +198,6 @@ async function loadAllData() {
             }
         } catch(e) {}
 
-        // Load SPY CSV
         let r = await fetch('data/SPY.csv?t='+Date.now()).catch(()=>null);
         if (!r?.ok) r = await fetch('data/SPY_confluence.csv?t='+Date.now()).catch(()=>null);
         if (r?.ok) {
@@ -226,7 +224,6 @@ async function loadAllData() {
             }
         }
 
-        // Load trades
         r = await fetch('data/portfolio_confluence.csv?t='+Date.now()).catch(()=>null);
         if (!r?.ok) r = await fetch('reports/portfolio_confluence.csv?t='+Date.now()).catch(()=>null);
         if (r?.ok) {
