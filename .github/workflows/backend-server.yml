@@ -1,0 +1,60 @@
+name: Stock Agent Backend Server
+
+   on:
+     workflow_dispatch:
+     schedule:
+       - cron: '*/15 9-16 * * 1-5'
+     push:
+       branches: [main]
+
+   jobs:
+     run-backend:
+       runs-on: ubuntu-latest
+       steps:
+       - uses: actions/checkout@v3
+       - uses: actions/setup-python@v4
+         with:
+           python-version: '3.10'
+       - run: |
+           pip install flask flask-cors pandas numpy yfinance
+           pip install scikit-learn tensorflow requests python-dateutil
+       - run: python server.py
+         env:
+           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+         timeout-minutes: 14
+```
+   - Click "Commit new file"
+
+6. **Set your Tiingo API key:**
+   - Go to: https://github.com/aadey002/Stock-agent-/settings/secrets/actions
+   - Click "New repository secret"
+   - Name: `TIINGO_API_KEY`
+   - Value: (get from https://www.tiingo.com/account/api/token)
+   - Click "Add secret"
+
+7. **Run the workflow:**
+   - Go to: https://github.com/aadey002/Stock-agent-/actions
+   - Click "Stock Agent Backend Server"
+   - Click "Run workflow"
+
+---
+
+### **Option 2: Simple Batch File** (from your current directory)
+
+1. **Download this file:**
+   - [easy_deploy.bat](computer:///mnt/user-data/outputs/easy_deploy.bat)
+
+2. **Double-click to run it** (works from any location)
+
+3. **Follow the on-screen instructions**
+
+---
+
+### **Option 3: Python Script** (if you prefer)
+
+1. **Download:**
+   - [deploy_simple.py](computer:///mnt/user-data/outputs/deploy_simple.py)
+
+2. **Run from your current directory:**
+```
+   python deploy_simple.py
