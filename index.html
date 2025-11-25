@@ -1,1460 +1,1071 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Multi-Agent SPY Trading System - Enhanced Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg: #0a0e27;
-      --bg-card: #1a1f3a;
-      --bg-card-hover: #252b4a;
-      --border: #2a3050;
-      --text-main: #e4e7f4;
-      --text-muted: #8892b0;
-      --accent-green: #00d084;
-      --accent-red: #ff5e5b;
-      --accent-blue: #5e8aff;
-      --accent-gold: #ffb700;
-      --chart-line: #5e8aff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0a0e27 0%, #151933 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-    }
-
-    .dashboard {
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-left h1 {
-      font-size: 28px;
-      font-weight: 600;
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 5px;
-    }
-
-    .header-subtitle {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .header-controls {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .symbol-selector {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 8px 15px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .symbol-selector:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--accent-blue);
-    }
-
-    .timeframe-selector {
-      display: flex;
-      gap: 5px;
-      background: var(--bg-card);
-      padding: 5px;
-      border-radius: 8px;
-    }
-
-    .timeframe-btn {
-      padding: 6px 12px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 13px;
-      transition: all 0.3s ease;
-    }
-
-    .timeframe-btn.active {
-      background: var(--accent-blue);
-      color: white;
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 15px;
-      background: var(--bg-card);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-green);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-
-    .agents-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .agent-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .agent-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .agent-card:hover {
-      background: var(--bg-card-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    .agent-card:hover::before {
-      opacity: 1;
-    }
-
-    .agent-card.active {
-      border-color: var(--accent-blue);
-      background: var(--bg-card-hover);
-    }
-
-    .agent-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .agent-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .agent-status {
-      padding: 4px 10px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .agent-status.active {
-      background: rgba(0, 208, 132, 0.15);
-      color: var(--accent-green);
-    }
-
-    .agent-status.training {
-      background: rgba(255, 183, 0, 0.15);
-      color: var(--accent-gold);
-    }
-
-    .agent-status.inactive {
-      background: rgba(136, 146, 176, 0.15);
-      color: var(--text-muted);
-    }
-
-    .agent-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .metric {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .metric-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .metric-value {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .metric-value.positive {
-      color: var(--accent-green);
-    }
-
-    .metric-value.negative {
-      color: var(--accent-red);
-    }
-
-    .agent-footer {
-      padding-top: 15px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .agent-confidence {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .confidence-bar {
-      width: 60px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .confidence-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-      transition: width 0.3s ease;
-    }
-
-    .agent-action-btn {
-      padding: 6px 12px;
-      background: var(--accent-blue);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .agent-action-btn:hover {
-      background: #4a7ae5;
-      transform: scale(1.05);
-    }
-
-    .charts-section {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .chart-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .chart-container {
-      height: 300px;
-      position: relative;
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    .holdings-grid {
-      display: grid;
-      gap: 10px;
-      max-height: 280px;
-      overflow-y: auto;
-    }
-
-    .holding-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
-    }
-
-    .holding-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--accent-blue);
-    }
-
-    .holding-symbol {
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .holding-allocation {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .trades-table {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-
-    .table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .table-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .filter-btn {
-      padding: 6px 12px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 5px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .filter-btn.active {
-      background: var(--accent-blue);
-      color: white;
-      border-color: var(--accent-blue);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      text-align: left;
-      padding: 12px;
-      font-size: 12px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: 12px;
-      font-size: 14px;
-      color: var(--text-main);
-      border-bottom: 1px solid rgba(42, 48, 80, 0.5);
-    }
-
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .trade-signal {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .signal-call {
-      background: rgba(0, 208, 132, 0.15);
-      color: var(--accent-green);
-    }
-
-    .signal-put {
-      background: rgba(255, 94, 91, 0.15);
-      color: var(--accent-red);
-    }
-
-    .pnl-positive {
-      color: var(--accent-green);
-      font-weight: 600;
-    }
-
-    .pnl-negative {
-      color: var(--accent-red);
-      font-weight: 600;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      width: 30px;
-      height: 30px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-
-    .modal-close:hover {
-      background: var(--bg-card-hover);
-      color: var(--text-main);
-      transform: rotate(90deg);
-    }
-
-    .rl-details {
-      display: grid;
-      gap: 20px;
-    }
-
-    .detail-section {
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .detail-title {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .detail-content {
-      color: var(--text-main);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-      transition: width 0.3s ease;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px;
-    }
-
-    .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent-blue);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .scrollbar-custom::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .scrollbar-custom::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 3px;
-    }
-
-    .scrollbar-custom::-webkit-scrollbar-thumb {
-      background: var(--accent-blue);
-      border-radius: 3px;
-    }
-
-    .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-      background: #4a7ae5;
-    }
-
-    @media (max-width: 1200px) {
-      .agents-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .charts-section {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .agents-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Agent 3 - Dynamic Trading Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+        }
+
+        /* DAYTIME THEME */
+        body.daytime {
+            --bg-dark: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --accent: #ec4899;
+        }
+
+        body.daytime .header {
+            background: rgba(248, 250, 252, 0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body.daytime .card:hover {
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f35 50%, #16213e 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            border-bottom: 2px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .symbol-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .symbol-selector select {
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* CARDS */
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .card h3 {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .card .value {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .card .subtext {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .agent-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(16, 185, 129, 0.3);
+            border: 2px solid var(--success);
+        }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* CHARTS */
+        .chart-container {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* TABLES */
+        .table-container {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: rgba(102, 126, 234, 0.1);
+            border-bottom: 2px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        h2 {
+            margin: 40px 0 20px 0;
+            font-size: 18px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="dashboard">
-    <header>
-      <div class="header-left">
-        <h1>Multi-Agent Trading System</h1>
-        <div class="header-subtitle">SPY Options Strategy • Super Confluence Mode</div>
-      </div>
-      <div class="header-controls">
-        <select class="symbol-selector" id="symbolSelector">
-          <option value="SPY">SPY</option>
-          <option value="QQQ">QQQ</option>
-          <option value="IWM">IWM</option>
-          <option value="DIA">DIA</option>
-        </select>
-        <div class="timeframe-selector">
-          <button class="timeframe-btn" data-period="1Y">1Y</button>
-          <button class="timeframe-btn active" data-period="3Y">3Y</button>
-          <button class="timeframe-btn" data-period="5Y">5Y</button>
-          <button class="timeframe-btn" data-period="ALL">ALL</button>
-        </div>
-        <div class="status-indicator">
-          <div class="status-dot"></div>
-          <span>System Active</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Agent Cards Grid -->
-    <div class="agents-grid">
-      <!-- Base Confluence Agent -->
-      <div class="agent-card" onclick="showAgentDetails('confluence')">
-        <div class="agent-header">
-          <span class="agent-name">Base Confluence</span>
-          <span class="agent-status active">Active</span>
-        </div>
-        <div class="agent-metrics">
-          <div class="metric">
-            <span class="metric-label">Win Rate</span>
-            <span class="metric-value positive">67%</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Avg R</span>
-            <span class="metric-value positive">1.8</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Trades</span>
-            <span class="metric-value">6</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">P&L</span>
-            <span class="metric-value positive">+$12.3K</span>
-          </div>
-        </div>
-        <div class="agent-footer">
-          <div class="agent-confidence">
-            <span style="font-size: 12px; color: var(--text-muted);">Confidence</span>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width: 85%"></div>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📈</div>
+                <div>
+                    <h1>Stock Agent 3</h1>
+                    <p>Multi-Agent Trading Platform</p>
+                </div>
             </div>
-            <span style="font-size: 12px;">85%</span>
-          </div>
-          <button class="agent-action-btn" onclick="event.stopPropagation(); viewAgentLog('confluence')">View Log</button>
-        </div>
-      </div>
-
-      <!-- DQN RL Agent -->
-      <div class="agent-card" onclick="showAgentDetails('dqn')">
-        <div class="agent-header">
-          <span class="agent-name">DQN Agent</span>
-          <span class="agent-status training">Training</span>
-        </div>
-        <div class="agent-metrics">
-          <div class="metric">
-            <span class="metric-label">Episodes</span>
-            <span class="metric-value">2.5K</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Reward</span>
-            <span class="metric-value positive">+182</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Epsilon</span>
-            <span class="metric-value">0.15</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Loss</span>
-            <span class="metric-value">0.024</span>
-          </div>
-        </div>
-        <div class="agent-footer">
-          <div class="agent-confidence">
-            <span style="font-size: 12px; color: var(--text-muted);">Training</span>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width: 62%"></div>
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <span id="theme-icon">🌙</span>
+                    <span id="theme-label">Dark</span>
+                </button>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span>LIVE</span>
+                </div>
+                <div class="symbol-selector">
+                    <label for="symbol-select">Symbol:</label>
+                    <select id="symbol-select">
+                        <option value="SPY">SPY</option>
+                        <option value="QQQ">QQQ</option>
+                        <option value="IWM">IWM</option>
+                        <option value="DIA">DIA</option>
+                    </select>
+                </div>
             </div>
-            <span style="font-size: 12px;">62%</span>
-          </div>
-          <button class="agent-action-btn" onclick="event.stopPropagation(); showRLDetails()">RL Details</button>
         </div>
-      </div>
+    </div>
 
-      <!-- Gann-Elliott Agent -->
-      <div class="agent-card" onclick="showAgentDetails('gann')">
-        <div class="agent-header">
-          <span class="agent-name">Gann-Elliott</span>
-          <span class="agent-status active">Active</span>
+    <!-- MAIN -->
+    <div class="container">
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="agents">Agents</button>
+            <button class="tab-btn" data-tab="signals">All Signals</button>
+            <button class="tab-btn" data-tab="etf">ETF Holdings</button>
+            <button class="tab-btn" data-tab="trades">Trade Logger</button>
+            <button class="tab-btn" data-tab="analytics">Analytics</button>
         </div>
-        <div class="agent-metrics">
-          <div class="metric">
-            <span class="metric-label">Win Rate</span>
-            <span class="metric-value positive">71%</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Cycles</span>
-            <span class="metric-value">45D</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Wave</span>
-            <span class="metric-value">3 of 5</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">S9 Level</span>
-            <span class="metric-value">682.4</span>
-          </div>
-        </div>
-        <div class="agent-footer">
-          <div class="agent-confidence">
-            <span style="font-size: 12px; color: var(--text-muted);">Confidence</span>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width: 78%"></div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+            <h2>KPI Metrics</h2>
+            <div class="dashboard-grid">
+                <div class="card" onclick="openModal('systemHealth')">
+                    <h3>System Status</h3>
+                    <div class="value">✓ ACTIVE</div>
+                    <div class="subtext">All agents operational</div>
+                </div>
+                <div class="card" onclick="openModal('winRate')">
+                    <h3>Win Rate</h3>
+                    <div class="value">68%</div>
+                    <div class="subtext">Last 30 days</div>
+                </div>
+                <div class="card" onclick="openModal('sharpe')">
+                    <h3>Sharpe Ratio</h3>
+                    <div class="value">2.34</div>
+                    <div class="subtext">Risk-adjusted returns</div>
+                </div>
+                <div class="card" onclick="openModal('drawdown')">
+                    <h3>Max Drawdown</h3>
+                    <div class="value">-12.5%</div>
+                    <div class="subtext">Peak to trough</div>
+                </div>
             </div>
-            <span style="font-size: 12px;">78%</span>
-          </div>
-          <button class="agent-action-btn" onclick="event.stopPropagation(); viewAgentLog('gann')">View Log</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Charts Section -->
-    <div class="charts-section">
-      <!-- Price Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <span class="chart-title">SPY Price & Signals (3 Year)</span>
-          <div class="filter-buttons">
-            <button class="filter-btn active" onclick="toggleSignals()">Signals</button>
-            <button class="filter-btn" onclick="toggleVolume()">Volume</button>
-          </div>
-        </div>
-        <div class="chart-container">
-          <canvas id="priceChart"></canvas>
-        </div>
-      </div>
-
-      <!-- ETF Holdings -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <span class="chart-title">ETF Top Holdings</span>
-        </div>
-        <div class="holdings-grid scrollbar-custom">
-          <div class="holding-item">
-            <span class="holding-symbol">AAPL</span>
-            <span class="holding-allocation">7.21%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">MSFT</span>
-            <span class="holding-allocation">6.84%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">NVDA</span>
-            <span class="holding-allocation">6.52%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">AMZN</span>
-            <span class="holding-allocation">3.45%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">GOOGL</span>
-            <span class="holding-allocation">2.14%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">GOOG</span>
-            <span class="holding-allocation">1.82%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">META</span>
-            <span class="holding-allocation">2.31%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">TSLA</span>
-            <span class="holding-allocation">1.98%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">BRK.B</span>
-            <span class="holding-allocation">1.56%</span>
-          </div>
-          <div class="holding-item">
-            <span class="holding-symbol">JPM</span>
-            <span class="holding-allocation">1.21%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Trade Log Table -->
-    <div class="trades-table">
-      <div class="table-header">
-        <span class="table-title">Trade Log</span>
-        <div class="filter-buttons">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="open">Open</button>
-          <button class="filter-btn" data-filter="closed">Closed</button>
-          <button class="filter-btn" data-filter="winners">Winners</button>
-          <button class="filter-btn" data-filter="losers">Losers</button>
-        </div>
-      </div>
-      <div class="scrollbar-custom" style="max-height: 400px; overflow-y: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Symbol</th>
-              <th>Signal</th>
-              <th>Entry</th>
-              <th>Exit</th>
-              <th>P&L</th>
-              <th>R-Multiple</th>
-              <th>Status</th>
-              <th>Agent</th>
-            </tr>
-          </thead>
-          <tbody id="tradesTableBody">
-            <!-- Trades will be populated here -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Total Return</div>
-        <div class="stat-value positive">+24.8%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Sharpe Ratio</div>
-        <div class="stat-value">1.82</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Max Drawdown</div>
-        <div class="stat-value negative">-8.2%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Win Rate</div>
-        <div class="stat-value positive">68.5%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Avg Win/Loss</div>
-        <div class="stat-value positive">2.1:1</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Kelly %</div>
-        <div class="stat-value">18.5%</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RL Details Modal -->
-  <div class="modal" id="rlModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="modal-title">DQN Agent - Reinforcement Learning Details</span>
-        <button class="modal-close" onclick="closeModal()">×</button>
-      </div>
-      <div class="rl-details">
-        <div class="detail-section">
-          <div class="detail-title">Network Architecture</div>
-          <div class="detail-content">
-            • Input Layer: 30 features (OHLCV, indicators, confluence)<br>
-            • Hidden Layers: 3x [128, 64, 32] neurons with ReLU<br>
-            • Output Layer: 3 actions (Buy, Sell, Hold)<br>
-            • Optimizer: Adam (lr=0.001)<br>
-            • Loss Function: MSE with Huber loss
-          </div>
-        </div>
-        
-        <div class="detail-section">
-          <div class="detail-title">Training Progress</div>
-          <div class="detail-content">
-            Episodes Completed: 2,500 / 10,000
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 25%"></div>
+            <h2>Active Agents</h2>
+            <div class="dashboard-grid">
+                <div class="card" onclick="openModal('baseAgent')" style="position: relative;">
+                    <span class="agent-badge">✓</span>
+                    <h3>Base Confluence</h3>
+                    <div class="value">CALL</div>
+                    <div class="subtext">Geometry + Phi + Time</div>
+                </div>
+                <div class="card" onclick="openModal('gannAgent')" style="position: relative;">
+                    <span class="agent-badge">✓</span>
+                    <h3>Gann-Elliott</h3>
+                    <div class="value">CALL</div>
+                    <div class="subtext">Wave + Square of 9</div>
+                </div>
+                <div class="card" onclick="openModal('dqnAgent')" style="position: relative;">
+                    <span class="agent-badge">✓</span>
+                    <h3>RL/DQN Agent</h3>
+                    <div class="value">CALL</div>
+                    <div class="subtext">Deep Q-Learning</div>
+                </div>
+                <div class="card" onclick="openModal('superConfluence')" style="position: relative;">
+                    <span class="agent-badge">✓</span>
+                    <h3>Super-Confluence</h3>
+                    <div class="value">✓ ULTRA</div>
+                    <div class="subtext">3/3 Agents Agree</div>
+                </div>
             </div>
-          </div>
+
+            <h2>Latest Signals</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Agent</th>
+                            <th>Signal</th>
+                            <th>Entry</th>
+                            <th>Stop</th>
+                            <th>Target1</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="latestSignals">
+                        <tr>
+                            <td>2025-01-24</td>
+                            <td>Base</td>
+                            <td><span class="badge badge-success">CALL</span></td>
+                            <td>$450.25</td>
+                            <td>$448.00</td>
+                            <td>$455.00</td>
+                            <td><span class="badge badge-warning">OPEN</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-23</td>
+                            <td>Gann</td>
+                            <td><span class="badge badge-danger">PUT</span></td>
+                            <td>$452.00</td>
+                            <td>$454.50</td>
+                            <td>$447.00</td>
+                            <td><span class="badge badge-success">CLOSED +3.2R</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Performance Charts</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                <div class="chart-container">
+                    <h3>Cumulative P&L</h3>
+                    <canvas id="pnlChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Agent Agreement Rate</h3>
+                    <canvas id="agreementChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <div class="detail-section">
-          <div class="detail-title">Hyperparameters</div>
-          <div class="detail-content">
-            • Gamma (discount): 0.99<br>
-            • Epsilon: 0.15 (decaying)<br>
-            • Batch Size: 64<br>
-            • Memory Buffer: 10,000<br>
-            • Target Network Update: Every 100 steps
-          </div>
+        <!-- AGENTS TAB -->
+        <div id="agents" class="tab-content">
+            <h2>Agent Details & Performance</h2>
+            <div class="dashboard-grid">
+                <div class="card" onclick="openModal('baseAgent')">
+                    <h3>Base Confluence Agent</h3>
+                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
+                        Independent validation using geometry, golden ratio, and time confluence signals.
+                    </p>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        <p>Win Rate: <strong>65%</strong></p>
+                        <p>Avg Trade: <strong>+1.8R</strong></p>
+                        <p>Last Signal: <strong>Today - CALL</strong></p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openModal('gannAgent')">
+                    <h3>Gann-Elliott Agent</h3>
+                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
+                        Elliott wave detection with Square of 9 levels and Gann time cycles.
+                    </p>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        <p>Win Rate: <strong>72%</strong></p>
+                        <p>Avg Trade: <strong>+2.1R</strong></p>
+                        <p>Last Signal: <strong>Today - CALL</strong></p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="openModal('dqnAgent')">
+                    <h3>RL/DQN Agent</h3>
+                    <p style="margin: 15px 0; color: var(--text-secondary); font-size: 13px;">
+                        Deep Q-Network learns from all indicators and adapts to market conditions.
+                    </p>
+                    <div style="font-size: 12px; color: var(--text-secondary);">
+                        <p>Win Rate: <strong>71%</strong></p>
+                        <p>Avg Trade: <strong>+1.9R</strong></p>
+                        <p>Last Trained: <strong>Today</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Agent Comparison</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Win Rate</th>
+                            <th>Avg Trade</th>
+                            <th>Total Trades</th>
+                            <th>Max Drawdown</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base Confluence</td>
+                            <td>65%</td>
+                            <td>+1.8R</td>
+                            <td>342</td>
+                            <td>-14.2%</td>
+                        </tr>
+                        <tr>
+                            <td>Gann-Elliott</td>
+                            <td>72%</td>
+                            <td>+2.1R</td>
+                            <td>298</td>
+                            <td>-11.5%</td>
+                        </tr>
+                        <tr>
+                            <td>RL/DQN</td>
+                            <td>71%</td>
+                            <td>+1.9R</td>
+                            <td>315</td>
+                            <td>-12.8%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Super-Confluence (2+)</strong></td>
+                            <td><strong>78%</strong></td>
+                            <td><strong>+2.4R</strong></td>
+                            <td><strong>156</strong></td>
+                            <td><strong>-9.3%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ULTRA (3/3 Agree)</strong></td>
+                            <td><strong>89%</strong></td>
+                            <td><strong>+3.2R</strong></td>
+                            <td><strong>42</strong></td>
+                            <td><strong>-5.1%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="detail-section">
-          <div class="detail-title">Recent Performance</div>
-          <div class="detail-content">
-            • Last 100 Episodes Avg Reward: +182.4<br>
-            • Best Episode Reward: +523<br>
-            • Current Win Rate: 62%<br>
-            • Average Trade Duration: 3.2 days
-          </div>
+        <!-- ALL SIGNALS TAB -->
+        <div id="signals" class="tab-content">
+            <h2>Historical Signals (3-Year Backtest)</h2>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="signalSearch" placeholder="Search by date, agent, signal..." style="width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px;">
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Agent</th>
+                            <th>Signal</th>
+                            <th>Entry</th>
+                            <th>Exit</th>
+                            <th>P&L</th>
+                            <th>Agent Signals</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="signalsHistory">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 40px;">Loading 3-year historical data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="chart-container" style="height: 200px; margin-top: 20px;">
-          <canvas id="rewardChart"></canvas>
+        <!-- ETF HOLDINGS TAB -->
+        <div id="etf" class="tab-content">
+            <h2>ETF Holdings Analysis</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div class="table-container">
+                    <h3 style="margin-bottom: 15px;">Top 3 Holdings</h3>
+                    <table id="topHoldings">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Symbol</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>MSFT</strong></td>
+                                <td>6.8%</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>AAPL</strong></td>
+                                <td>6.2%</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>NVDA</strong></td>
+                                <td>5.9%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <h3 style="margin-bottom: 15px;">Bottom 3 Holdings</h3>
+                    <table id="bottomHoldings">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Symbol</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>498</td>
+                                <td><strong>IVZ</strong></td>
+                                <td>0.04%</td>
+                            </tr>
+                            <tr>
+                                <td>499</td>
+                                <td><strong>CBRL</strong></td>
+                                <td>0.03%</td>
+                            </tr>
+                            <tr>
+                                <td>500</td>
+                                <td><strong>LBRDK</strong></td>
+                                <td>0.02%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>ETF Sector Distribution (SPY)</h3>
+                <canvas id="sectorChart"></canvas>
+            </div>
         </div>
-      </div>
+
+        <!-- TRADE LOGGER TAB -->
+        <div id="trades" class="tab-content">
+            <h2>Trade Logger - Paper & Live Trading</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+                <div class="card" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 20px;">New Trade Entry</h3>
+                    <div class="form-group">
+                        <label>Trade Type</label>
+                        <select id="tradeType">
+                            <option value="">-- Select --</option>
+                            <option value="paper">Paper Trading</option>
+                            <option value="live">Live Trading</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Symbol</label>
+                        <input type="text" id="tradeSymbol" placeholder="SPY">
+                    </div>
+                    <div class="form-group">
+                        <label>Direction</label>
+                        <select id="tradeDirection">
+                            <option value="">-- Select --</option>
+                            <option value="CALL">CALL (Long)</option>
+                            <option value="PUT">PUT (Short)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Entry Price</label>
+                        <input type="number" id="tradeEntry" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <input type="number" id="tradeStop" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Target 1</label>
+                        <input type="number" id="tradeTarget1" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="tradeQty" step="1">
+                    </div>
+                    <button class="btn" onclick="logTrade()" style="width: 100%;">Log Trade</button>
+                </div>
+
+                <div>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3>Paper Trades</h3>
+                        <div class="value" id="paperCount">0</div>
+                        <div class="subtext">Total logged</div>
+                    </div>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3>Live Trades</h3>
+                        <div class="value" id="liveCount">0</div>
+                        <div class="subtext">Total logged</div>
+                    </div>
+                    <div class="card">
+                        <h3>Combined P&L</h3>
+                        <div class="value" id="combinedPnL">$0</div>
+                        <div class="subtext">All trades</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Trade History</h2>
+            <div class="table-container">
+                <table id="tradeTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Symbol</th>
+                            <th>Direction</th>
+                            <th>Entry</th>
+                            <th>Exit</th>
+                            <th>Qty</th>
+                            <th>P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tradeBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 20px; color: var(--text-secondary);">No trades logged yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="tab-content">
+            <h2>Advanced Analytics</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                <div class="chart-container">
+                    <h3>Agent Win Rates</h3>
+                    <canvas id="winRateChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Signal Distribution</h3>
+                    <canvas id="signalDistChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Monthly Performance</h3>
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Risk vs Return</h3>
+                    <canvas id="riskReturnChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Global variables
-    let priceChart;
-    let rewardChart;
-    let currentSymbol = 'SPY';
-    let currentTimeframe = '3Y';
-    let tradesData = [];
-    let priceData = [];
+    <!-- MODALS -->
+    <div id="baseAgentModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('baseAgent')">×</button>
+            <h2>Base Confluence Agent</h2>
+            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Geometry + Golden Ratio + Time Confluence</p>
+            <p>Two completely different methodologies with no shared indicators = true independence and high-probability agreement.</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Last 5 Signals:</strong></p>
+                <p style="font-size: 12px; color: var(--text-secondary);">All signals with entry, stop, target 1 & 2 shown...</p>
+            </div>
+        </div>
+    </div>
 
-    // Initialize dashboard
-    document.addEventListener('DOMContentLoaded', function() {
-      loadData();
-      setupEventListeners();
-      initCharts();
-      updateTradesTable();
-      startRealTimeUpdates();
-    });
+    <div id="gannAgentModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('gannAgent')">×</button>
+            <h2>Gann-Elliott Agent</h2>
+            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Elliott Waves + Square of 9 + Time Cycles</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Current Analysis:</strong></p>
+                <p style="font-size: 12px; color: var(--text-secondary);">Wave Pattern, Support/Resistance, Time Cycle Analysis...</p>
+            </div>
+        </div>
+    </div>
 
-    // Load data from CSV files
-    async function loadData() {
-      try {
-        // Load SPY price data
-        const priceResponse = await fetch('data/SPY.csv');
-        const priceText = await priceResponse.text();
-        priceData = parseCSV(priceText);
-        
-        // Load trades data
-        const tradesResponse = await fetch('reports/portfolio_confluence.csv');
-        const tradesText = await tradesResponse.text();
-        tradesData = parseCSV(tradesText);
-        
-        updateCharts();
-        updateTradesTable();
-      } catch (error) {
-        console.error('Error loading data:', error);
-        // Use fallback data
-        useFallbackData();
-      }
-    }
+    <div id="dqnAgentModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('dqnAgent')">×</button>
+            <h2>RL/DQN Agent</h2>
+            <p style="margin: 15px 0; color: var(--text-secondary);">Methodology: Deep Q-Network Machine Learning</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                <p style="font-size: 12px; margin-bottom: 8px;"><strong>Model Status:</strong></p>
+                <p style="font-size: 12px; color: var(--text-secondary);">Q-Value, Exploration Rate, Last Trained...</p>
+            </div>
+        </div>
+    </div>
 
-    // Parse CSV data
-    function parseCSV(text) {
-      const lines = text.trim().split('\n');
-      const headers = lines[0].split(',');
-      return lines.slice(1).map(line => {
-        const values = line.split(',');
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header.trim()] = values[index]?.trim();
+    <div id="superConfluenceModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('superConfluence')">×</button>
+            <h2>Super-Confluence Analysis</h2>
+            <p style="margin: 15px 0; color: var(--text-secondary);">High-probability setups where 2+ agents agree</p>
+            <p><strong>ULTRA (3/3 Agree):</strong> Win Rate 89%, Avg Trade +3.2R</p>
+            <p><strong>SUPER (2+):</strong> Win Rate 78%, Avg Trade +2.4R</p>
+        </div>
+    </div>
+
+    <script>
+        let trades = [];
+
+        // TAB SWITCHING
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                this.classList.add('active');
+            });
         });
-        return obj;
-      });
-    }
 
-    // Initialize charts
-    function initCharts() {
-      // Price Chart
-      const ctx = document.getElementById('priceChart').getContext('2d');
-      priceChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [],
-          datasets: [{
-            label: 'SPY Price',
-            data: [],
-            borderColor: '#5e8aff',
-            backgroundColor: 'rgba(94, 138, 255, 0.1)',
-            borderWidth: 2,
-            tension: 0.1,
-            pointRadius: 0,
-            pointHoverRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-              backgroundColor: 'rgba(26, 31, 58, 0.95)',
-              titleColor: '#e4e7f4',
-              bodyColor: '#8892b0',
-              borderColor: '#2a3050',
-              borderWidth: 1
+        // THEME TOGGLE
+        function toggleTheme() {
+            const body = document.body;
+            const isDaytime = body.classList.contains('daytime');
+            
+            if (isDaytime) {
+                body.classList.remove('daytime');
+                document.getElementById('theme-icon').textContent = '🌙';
+                document.getElementById('theme-label').textContent = 'Dark';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('daytime');
+                document.getElementById('theme-icon').textContent = '☀️';
+                document.getElementById('theme-label').textContent = 'Light';
+                localStorage.setItem('theme', 'daytime');
             }
-          },
-          scales: {
-            x: {
-              grid: {
-                display: false
-              },
-              ticks: {
-                color: '#8892b0',
-                maxRotation: 0,
-                autoSkip: true,
-                maxTicksLimit: 8
-              }
-            },
-            y: {
-              grid: {
-                color: 'rgba(136, 146, 176, 0.1)'
-              },
-              ticks: {
-                color: '#8892b0',
-                callback: function(value) {
-                  return '$' + value.toFixed(0);
-                }
-              }
+        }
+
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'daytime') {
+                document.body.classList.add('daytime');
+                document.getElementById('theme-icon').textContent = '☀️';
+                document.getElementById('theme-label').textContent = 'Light';
             }
-          }
-        }
-      });
-    }
-
-    // Update charts with data
-    function updateCharts() {
-      if (!priceChart || !priceData.length) return;
-
-      // Filter data based on timeframe
-      const filteredData = filterDataByTimeframe(priceData, currentTimeframe);
-      
-      // Update chart
-      priceChart.data.labels = filteredData.map(d => d.Date);
-      priceChart.data.datasets[0].data = filteredData.map(d => parseFloat(d.Close));
-      
-      // Add trade signals as points
-      if (tradesData.length > 0) {
-        addTradeSignals();
-      }
-      
-      priceChart.update();
-    }
-
-    // Filter data by timeframe
-    function filterDataByTimeframe(data, timeframe) {
-      const now = new Date();
-      let startDate = new Date();
-      
-      switch(timeframe) {
-        case '1Y':
-          startDate.setFullYear(now.getFullYear() - 1);
-          break;
-        case '3Y':
-          startDate.setFullYear(now.getFullYear() - 3);
-          break;
-        case '5Y':
-          startDate.setFullYear(now.getFullYear() - 5);
-          break;
-        case 'ALL':
-          return data;
-      }
-      
-      return data.filter(d => new Date(d.Date) >= startDate);
-    }
-
-    // Add trade signals to chart
-    function addTradeSignals() {
-      const callSignals = {
-        label: 'CALL Signals',
-        data: [],
-        backgroundColor: '#00d084',
-        borderColor: '#00d084',
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        showLine: false
-      };
-      
-      const putSignals = {
-        label: 'PUT Signals',
-        data: [],
-        backgroundColor: '#ff5e5b',
-        borderColor: '#ff5e5b',
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        showLine: false
-      };
-      
-      tradesData.forEach(trade => {
-        const dateIndex = priceChart.data.labels.indexOf(trade.EntryDate);
-        if (dateIndex !== -1) {
-          const price = parseFloat(trade.EntryPrice);
-          if (trade.Signal === 'CALL') {
-            callSignals.data[dateIndex] = price;
-          } else if (trade.Signal === 'PUT') {
-            putSignals.data[dateIndex] = price;
-          }
-        }
-      });
-      
-      // Remove old signal datasets if they exist
-      priceChart.data.datasets = priceChart.data.datasets.filter(d => 
-        !d.label.includes('Signal')
-      );
-      
-      // Add new signal datasets
-      priceChart.data.datasets.push(callSignals, putSignals);
-    }
-
-    // Update trades table
-    function updateTradesTable() {
-      const tbody = document.getElementById('tradesTableBody');
-      if (!tbody) return;
-      
-      tbody.innerHTML = '';
-      
-      // Use trades data or fallback
-      const trades = tradesData.length > 0 ? tradesData : getFallbackTrades();
-      
-      trades.forEach(trade => {
-        const row = document.createElement('tr');
-        const pnl = parseFloat(trade.PNL || 0);
-        const pnlClass = pnl >= 0 ? 'pnl-positive' : 'pnl-negative';
-        const signalClass = trade.Signal === 'CALL' ? 'signal-call' : 'signal-put';
-        
-        row.innerHTML = `
-          <td>${trade.EntryDate}</td>
-          <td>${trade.Symbol}</td>
-          <td><span class="trade-signal ${signalClass}">${trade.Signal}</span></td>
-          <td>$${parseFloat(trade.EntryPrice).toFixed(2)}</td>
-          <td>$${parseFloat(trade.ExitPrice).toFixed(2)}</td>
-          <td class="${pnlClass}">$${pnl.toFixed(2)}</td>
-          <td>${calculateRMultiple(trade).toFixed(2)}</td>
-          <td>${trade.Status}</td>
-          <td>Confluence</td>
-        `;
-        
-        tbody.appendChild(row);
-      });
-    }
-
-    // Calculate R-Multiple for a trade
-    function calculateRMultiple(trade) {
-      const entry = parseFloat(trade.EntryPrice);
-      const exit = parseFloat(trade.ExitPrice);
-      const stop = parseFloat(trade.Stop);
-      const risk = Math.abs(entry - stop);
-      const reward = exit - entry;
-      return risk > 0 ? reward / risk : 0;
-    }
-
-    // Setup event listeners
-    function setupEventListeners() {
-      // Symbol selector
-      document.getElementById('symbolSelector').addEventListener('change', function(e) {
-        currentSymbol = e.target.value;
-        loadData();
-      });
-      
-      // Timeframe buttons
-      document.querySelectorAll('.timeframe-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          currentTimeframe = this.dataset.period;
-          updateCharts();
         });
-      });
-      
-      // Filter buttons for trades table
-      document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
-        btn.addEventListener('click', function() {
-          document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          filterTrades(this.dataset.filter);
-        });
-      });
-    }
 
-    // Filter trades table
-    function filterTrades(filter) {
-      const rows = document.querySelectorAll('#tradesTableBody tr');
-      rows.forEach(row => {
-        const status = row.children[7].textContent;
-        const pnl = parseFloat(row.children[5].textContent.replace('$', ''));
-        
-        let show = true;
-        switch(filter) {
-          case 'open':
-            show = status.includes('OPEN');
-            break;
-          case 'closed':
-            show = status.includes('EXITED');
-            break;
-          case 'winners':
-            show = pnl > 0;
-            break;
-          case 'losers':
-            show = pnl < 0;
-            break;
+        // MODALS
+        function openModal(id) {
+            const modalMap = {
+                baseAgent: 'baseAgentModal',
+                gannAgent: 'gannAgentModal',
+                dqnAgent: 'dqnAgentModal',
+                superConfluence: 'superConfluenceModal'
+            };
+            if (modalMap[id]) document.getElementById(modalMap[id]).classList.add('active');
         }
-        
-        row.style.display = show ? '' : 'none';
-      });
-    }
 
-    // Show agent details
-    function showAgentDetails(agent) {
-      console.log('Showing details for agent:', agent);
-      // Implementation for agent details modal
-    }
+        function closeModal(id) {
+            const modalMap = {
+                baseAgent: 'baseAgentModal',
+                gannAgent: 'gannAgentModal',
+                dqnAgent: 'dqnAgentModal',
+                superConfluence: 'superConfluenceModal'
+            };
+            if (modalMap[id]) document.getElementById(modalMap[id]).classList.remove('active');
+        }
 
-    // View agent log
-    function viewAgentLog(agent) {
-      console.log('Viewing log for agent:', agent);
-      // Implementation for viewing agent logs
-    }
+        window.addEventListener('click', e => {
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+        });
 
-    // Show RL Details modal
-    function showRLDetails() {
-      const modal = document.getElementById('rlModal');
-      modal.classList.add('active');
-      
-      // Initialize reward chart if not already done
-      if (!rewardChart) {
-        const ctx = document.getElementById('rewardChart').getContext('2d');
-        rewardChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: Array.from({length: 100}, (_, i) => i * 25),
-            datasets: [{
-              label: 'Episode Reward',
-              data: generateRewardData(),
-              borderColor: '#5e8aff',
-              backgroundColor: 'rgba(94, 138, 255, 0.1)',
-              borderWidth: 2,
-              tension: 0.3,
-              pointRadius: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false
-              }
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: 'Episode',
-                  color: '#8892b0'
-                },
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  color: '#8892b0'
-                }
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: 'Reward',
-                  color: '#8892b0'
-                },
-                grid: {
-                  color: 'rgba(136, 146, 176, 0.1)'
-                },
-                ticks: {
-                  color: '#8892b0'
-                }
-              }
+        // TRADE LOGGING
+        function logTrade() {
+            const type = document.getElementById('tradeType').value;
+            const symbol = document.getElementById('tradeSymbol').value;
+            const direction = document.getElementById('tradeDirection').value;
+            const entry = parseFloat(document.getElementById('tradeEntry').value);
+            const stop = parseFloat(document.getElementById('tradeStop').value);
+            const target1 = parseFloat(document.getElementById('tradeTarget1').value);
+            const qty = parseInt(document.getElementById('tradeQty').value);
+
+            if (!type || !symbol || !direction || !entry) {
+                alert('Please fill in all required fields');
+                return;
             }
-          }
-        });
-      }
-    }
 
-    // Generate reward data for RL chart
-    function generateRewardData() {
-      return Array.from({length: 100}, (_, i) => {
-        const base = 50 + i * 1.5;
-        const noise = Math.random() * 50 - 25;
-        return base + noise;
-      });
-    }
+            trades.push({
+                date: new Date().toISOString().split('T')[0],
+                type, symbol, direction, entry, stop, target1, qty
+            });
 
-    // Close modal
-    function closeModal() {
-      document.getElementById('rlModal').classList.remove('active');
-    }
+            document.getElementById('tradeType').value = '';
+            document.getElementById('tradeSymbol').value = '';
+            document.getElementById('tradeDirection').value = '';
+            document.getElementById('tradeEntry').value = '';
+            document.getElementById('tradeStop').value = '';
+            document.getElementById('tradeTarget1').value = '';
+            document.getElementById('tradeQty').value = '';
 
-    // Toggle signals on chart
-    function toggleSignals() {
-      // Implementation for toggling signals
-    }
-
-    // Toggle volume on chart
-    function toggleVolume() {
-      // Implementation for toggling volume
-    }
-
-    // Start real-time updates
-    function startRealTimeUpdates() {
-      setInterval(() => {
-        // Update status indicators
-        updateSystemStatus();
-      }, 5000);
-    }
-
-    // Update system status
-    function updateSystemStatus() {
-      // Randomly update some metrics to show the system is live
-      const elements = document.querySelectorAll('.metric-value');
-      elements.forEach(el => {
-        if (Math.random() > 0.8) {
-          const current = parseFloat(el.textContent.replace(/[^0-9.-]/g, ''));
-          const change = (Math.random() - 0.5) * 0.1;
-          const newValue = current + change;
-          
-          if (el.textContent.includes('%')) {
-            el.textContent = newValue.toFixed(1) + '%';
-          } else if (el.textContent.includes('$')) {
-            el.textContent = '$' + newValue.toFixed(2);
-          }
+            updateTradeTable();
+            alert('Trade logged!');
         }
-      });
-    }
 
-    // Fallback data functions
-    function useFallbackData() {
-      priceData = generateFallbackPriceData();
-      tradesData = getFallbackTrades();
-      updateCharts();
-      updateTradesTable();
-    }
+        function updateTradeTable() {
+            const body = document.getElementById('tradeBody');
+            body.innerHTML = trades.length > 0 ? '' : '<tr><td colspan="8" style="text-align: center; padding: 20px;">No trades yet</td></tr>';
+            
+            trades.forEach(t => {
+                const row = body.insertRow();
+                row.innerHTML = `<td>${t.date}</td><td>${t.type}</td><td>${t.symbol}</td><td>${t.direction}</td><td>$${t.entry}</td><td>-</td><td>${t.qty}</td><td>-</td>`;
+            });
 
-    function generateFallbackPriceData() {
-      const data = [];
-      const startDate = new Date('2022-11-21');
-      let price = 400;
-      
-      for (let i = 0; i < 750; i++) {
-        const date = new Date(startDate);
-        date.setDate(date.getDate() + i);
-        
-        price += (Math.random() - 0.48) * 5;
-        price = Math.max(350, Math.min(700, price));
-        
-        data.push({
-          Date: date.toISOString().split('T')[0],
-          Close: price.toFixed(2),
-          Open: (price + (Math.random() - 0.5) * 2).toFixed(2),
-          High: (price + Math.random() * 3).toFixed(2),
-          Low: (price - Math.random() * 3).toFixed(2),
-          Volume: Math.floor(Math.random() * 100000000)
-        });
-      }
-      
-      return data;
-    }
+            document.getElementById('paperCount').innerText = trades.filter(t => t.type === 'paper').length;
+            document.getElementById('liveCount').innerText = trades.filter(t => t.type === 'live').length;
+        }
 
-    function getFallbackTrades() {
-      return [
-        {Symbol: 'SPY', Signal: 'PUT', EntryDate: '2025-04-25', ExitDate: '2025-05-02', EntryPrice: '550.64', ExitPrice: '566.76', PNL: '-16.12', Stop: '583.30', Status: 'EXITED_TIME'},
-        {Symbol: 'SPY', Signal: 'CALL', EntryDate: '2025-05-07', ExitDate: '2025-05-14', EntryPrice: '561.15', ExitPrice: '587.59', PNL: '26.44', Stop: '540.24', Status: 'EXITED_TIME'},
-        {Symbol: 'SPY', Signal: 'CALL', EntryDate: '2025-05-27', ExitDate: '2025-06-03', EntryPrice: '591.15', ExitPrice: '596.09', PNL: '4.94', Stop: '566.60', Status: 'EXITED_TIME'},
-        {Symbol: 'SPY', Signal: 'CALL', EntryDate: '2025-06-26', ExitDate: '2025-07-03', EntryPrice: '611.87', ExitPrice: '625.34', PNL: '13.47', Stop: '599.53', Status: 'EXITED_TIME'},
-        {Symbol: 'SPY', Signal: 'CALL', EntryDate: '2025-08-14', ExitDate: '2025-08-21', EntryPrice: '644.95', ExitPrice: '635.55', PNL: '-9.40', Stop: '633.06', Status: 'EXITED_TIME'},
-        {Symbol: 'SPY', Signal: 'CALL', EntryDate: '2025-10-31', ExitDate: '2025-11-07', EntryPrice: '682.06', ExitPrice: '670.97', PNL: '-11.09', Stop: '667.78', Status: 'EXITED_TIME'}
-      ];
-    }
-
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-      if (e.target.classList.contains('modal')) {
-        e.target.classList.remove('active');
-      }
-    });
-  </script>
+        // CHARTS (placeholder)
+        const ctx1 = document.getElementById('pnlChart')?.getContext('2d');
+        if (ctx1) {
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Cumulative P&L',
+                        data: [100, 150, 120, 200, 280],
+                        borderColor: '#667eea',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)'
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+    </script>
 </body>
 </html>
- 
- <!-- Updated: 2025-11-25 00:32:19 -->
