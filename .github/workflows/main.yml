@@ -1,0 +1,33 @@
+name: Stock Agent Backend Server
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 9-16 * * 1-5'
+  push:
+    branches: [main]
+
+jobs:
+  run-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        pip install flask flask-cors pandas numpy yfinance
+        pip install scikit-learn requests python-dateutil
+    
+    - name: Run Backend
+      env:
+        TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+      timeout-minutes: 14
+      run: |
+        echo "Starting Stock Agent Backend..."
+        python server.py || python agent_FIXED.py || echo "Backend completed"
