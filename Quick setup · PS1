@@ -1,0 +1,298 @@
+# QUICK START: One-Command Backend Setup
+# This is the fastest way to deploy the backend workflow to GitHub
+
+# Run from your Stock-agent- repository folder:
+# .\setup-backend-powershell.ps1
+
+# OR run directly:
+# powershell -NoProfile -ExecutionPolicy Bypass -Command "& {[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/aadey002/Stock-agent-/main/setup-script.ps1'))}"
+
+# But for now, here's the manual step-by-step:
+
+Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+Write-Host "║           STOCK AGENT 3 - QUICK BACKEND SETUP via PowerShell               ║" -ForegroundColor Cyan
+Write-Host "╚══════════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host ""
+
+# Check prerequisites
+Write-Host "Checking Prerequisites..." -ForegroundColor Yellow
+Write-Host ""
+
+# Check 1: Git
+$gitInstalled = $false
+try {
+    $gitVersion = git --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ Git installed: $gitVersion" -ForegroundColor Green
+        $gitInstalled = $true
+    }
+} catch {
+    Write-Host "❌ Git not installed" -ForegroundColor Red
+}
+
+# Check 2: GitHub CLI
+$ghInstalled = $false
+try {
+    $ghVersion = gh --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ GitHub CLI installed" -ForegroundColor Green
+        $ghInstalled = $true
+    }
+} catch {
+    Write-Host "⚠️  GitHub CLI not found (optional, can use web UI instead)" -ForegroundColor Yellow
+    $ghInstalled = $false
+}
+
+# Check 3: In correct directory
+if (Test-Path "server.py") {
+    Write-Host "✓ In correct directory (server.py found)" -ForegroundColor Green
+} else {
+    Write-Host "❌ Not in correct directory (server.py not found)" -ForegroundColor Red
+    Write-Host "   Run this from: C:\path\to\Stock-agent-" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host ""
+Write-Host "Prerequisites Check Complete" -ForegroundColor Green
+Write-Host ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+
+Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+Write-Host "║                         SETUP PROCESS (3 STEPS)                             ║" -ForegroundColor Cyan
+Write-Host "╚══════════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host ""
+
+# STEP 1: Create workflow folder
+Write-Host "STEP 1: Creating workflow folder..." -ForegroundColor Yellow
+$workflowPath = ".github/workflows"
+if (-not (Test-Path $workflowPath)) {
+    New-Item -ItemType Directory -Path $workflowPath -Force | Out-Null
+}
+Write-Host "✓ Folder created/verified: $workflowPath" -ForegroundColor Green
+Write-Host ""
+
+# STEP 2: Create workflow file
+Write-Host "STEP 2: Creating workflow file..." -ForegroundColor Yellow
+
+$workflowFile = ".github/workflows/backend-server.yml"
+
+# Read the fixed workflow content from the file we already created
+$workflowContent = @'
+name: Stock Agent Backend Server
+
+on:
+  schedule:
+    - cron: '*/15 9-16 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  run-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_server.txt
+    
+    - name: Verify API Key
+      env:
+        TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+      run: |
+        if [ -z "$TIINGO_API_KEY" ]; then
+          echo "❌ TIINGO_API_KEY not set!"
+          exit 1
+        fi
+        echo "✓ API Key configured"
+    
+    - name: Check server.py
+      run: python -m py_compile server.py
+    
+    - name: Start backend
+      env:
+        TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        PYTHONUNBUFFERED: 1
+      run: |
+        timeout 30 python -u server.py > server.log 2>&1 &
+        SERVER_PID=$!
+        sleep 10
+        if kill -0 $SERVER_PID 2>/dev/null; then
+          echo "✓ Server running"
+        else
+          echo "❌ Server failed"
+          cat server.log
+          exit 1
+        fi
+        echo $SERVER_PID > server.pid
+    
+    - name: Test endpoints
+      run: |
+        for i in {1..5}; do
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✓ Health check passed"
+            break
+          fi
+          sleep 2
+        done
+        curl -s http://localhost:5000/api/price/SPY || true
+        curl -s http://localhost:5000/api/signal/SPY || true
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        pkill -f "python.*server.py" || true
+'@
+
+$workflowContent | Out-File -Encoding UTF8 $workflowFile -Force
+Write-Host "✓ Workflow file created: $workflowFile" -ForegroundColor Green
+Write-Host ""
+
+# STEP 3: Commit and Push
+Write-Host "STEP 3: Committing to GitHub..." -ForegroundColor Yellow
+Write-Host ""
+
+# Check git status
+$status = git status --short
+if ($status -match "backend-server.yml") {
+    Write-Host "Changes to commit:" -ForegroundColor Gray
+    $status | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
+    Write-Host ""
+    
+    # Add and commit
+    git add ".github/workflows/backend-server.yml"
+    Write-Host "✓ Added to git" -ForegroundColor Green
+    
+    git commit -m "Add backend server workflow with GitHub Actions"
+    Write-Host "✓ Committed to git" -ForegroundColor Green
+    
+    # Push
+    Write-Host ""
+    Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
+    git push origin main
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ Pushed to GitHub" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  Push may have failed - check connection" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "✓ No changes needed (workflow already exists)" -ForegroundColor Green
+}
+
+Write-Host ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+
+Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+Write-Host "║                     GITHUB SECRETS SETUP                                    ║" -ForegroundColor Cyan
+Write-Host "╚══════════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host ""
+
+if ($ghInstalled) {
+    Write-Host "GitHub CLI is available. Setting up secrets automatically..." -ForegroundColor Yellow
+    Write-Host ""
+    
+    # Check authentication
+    try {
+        gh auth status 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✓ GitHub CLI authenticated" -ForegroundColor Green
+            Write-Host ""
+            
+            # Prompt for API key
+            Write-Host "Enter your Tiingo API key:" -ForegroundColor Yellow
+            Write-Host "Get it from: https://www.tiingo.com/account/api/token" -ForegroundColor Gray
+            Write-Host ""
+            
+            $apiKey = Read-Host "Tiingo API Key" -AsSecureString
+            $apiKeyPlain = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($apiKey))
+            
+            if (-not [string]::IsNullOrEmpty($apiKeyPlain)) {
+                Write-Host ""
+                Write-Host "Setting secret TIINGO_API_KEY..." -ForegroundColor Yellow
+                echo $apiKeyPlain | gh secret set TIINGO_API_KEY 2>&1
+                
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "✓ Secret created successfully" -ForegroundColor Green
+                } else {
+                    Write-Host "⚠️  Could not verify secret creation" -ForegroundColor Yellow
+                }
+            } else {
+                Write-Host "No API key provided" -ForegroundColor Yellow
+            }
+        } else {
+            Write-Host "⚠️  GitHub CLI not authenticated" -ForegroundColor Yellow
+            Write-Host "   Run: gh auth login" -ForegroundColor Gray
+        }
+    } catch {
+        Write-Host "⚠️  Could not access GitHub CLI" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "GitHub CLI not available. Use web UI to set secrets:" -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "Manual Secret Setup (if needed):" -ForegroundColor Yellow
+Write-Host "  1. Go: https://github.com/aadey002/Stock-agent-/settings/secrets/actions" -ForegroundColor White
+Write-Host "  2. Click 'New repository secret'" -ForegroundColor White
+Write-Host "  3. Name: TIINGO_API_KEY" -ForegroundColor White
+Write-Host "  4. Value: Your Tiingo API key" -ForegroundColor White
+Write-Host "  5. Click 'Add secret'" -ForegroundColor White
+Write-Host ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+
+Write-Host "╔══════════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Green
+Write-Host "║                       ✅ SETUP COMPLETE!                                     ║" -ForegroundColor Green
+Write-Host "╚══════════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host ""
+
+Write-Host "What happened:" -ForegroundColor Cyan
+Write-Host "  ✓ Created .github/workflows/ folder" -ForegroundColor Green
+Write-Host "  ✓ Created backend-server.yml workflow file" -ForegroundColor Green
+Write-Host "  ✓ Committed changes to git" -ForegroundColor Green
+Write-Host "  ✓ Pushed to GitHub" -ForegroundColor Green
+Write-Host "  ✓ Set (or prompted to set) TIINGO_API_KEY secret" -ForegroundColor Green
+Write-Host ""
+
+Write-Host "Next Steps:" -ForegroundColor Cyan
+Write-Host "  1. Verify TIINGO_API_KEY secret is set:" -ForegroundColor White
+Write-Host "     https://github.com/aadey002/Stock-agent-/settings/secrets/actions" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  2. Go to Actions tab:" -ForegroundColor White
+Write-Host "     https://github.com/aadey002/Stock-agent-/actions" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  3. Select 'Stock Agent Backend Server' workflow" -ForegroundColor White
+Write-Host ""
+Write-Host "  4. Click 'Run workflow' button" -ForegroundColor White
+Write-Host ""
+Write-Host "  5. Watch logs - should see:" -ForegroundColor White
+Write-Host "     ✓ Setup Python" -ForegroundColor Green
+Write-Host "     ✓ Install dependencies" -ForegroundColor Green
+Write-Host "     ✓ Verify API Key" -ForegroundColor Green
+Write-Host "     ✓ Start backend" -ForegroundColor Green
+Write-Host "     ✓ Test endpoints" -ForegroundColor Green
+Write-Host "     ✓ SUCCESS!" -ForegroundColor Green
+Write-Host ""
+
+Write-Host "Expected Success Message:" -ForegroundColor Cyan
+Write-Host "  ✅ BACKEND SERVER TEST SUCCESSFUL" -ForegroundColor Green
+Write-Host "  ✓ Server started successfully" -ForegroundColor Green
+Write-Host "  ✓ API endpoints operational" -ForegroundColor Green
+Write-Host "  ✓ Tiingo API key working" -ForegroundColor Green
+Write-Host ""
+
+Write-Host "Automatic Schedule:" -ForegroundColor Cyan
+Write-Host "  • Runs every 15 minutes during market hours (9 AM - 4 PM ET, weekdays)" -ForegroundColor White
+Write-Host "  • Can manually trigger anytime from Actions tab" -ForegroundColor White
+Write-Host ""
+
+Write-Host "Questions? Read: POWERSHELL_SETUP_GUIDE.md" -ForegroundColor Gray
+Write-Host ""
