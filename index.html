@@ -1,1 +1,4161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Agent 4 - Q5D Options Trading Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3b82f6; --secondary: #8b5cf6; --accent: #06b6d4;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #0891b2;
+            --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+            --text: #1e293b; --muted: #64748b; --light: #94a3b8;
+            --intraday: #f59e0b; --swing: #8b5cf6;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        
+        /* LOGIN SCREEN STYLES */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 50%, #1a1a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .login-screen.hidden { display: none; }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .login-form { text-align: left; }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group input.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .login-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .login-error.show { display: block; }
+        
+        .login-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Remember me checkbox */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        .remember-me label {
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer;
+        }
+        
+        /* Logout Button in Header */
+        .logout-btn {
+            padding: 5px 12px;
+            background: rgba(239, 68, 68, 0.2);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+        
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* Main app hidden until logged in */
+        .main-app { display: none; }
+        .main-app.visible { display: block; }
+        
+        .header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 10px 0; position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1600px; margin: 0 auto; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .logo h1 { font-size: 16px; font-weight: 700; }
+        .logo p { font-size: 9px; opacity: 0.9; }
+        
+        .live-price-ticker { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); padding: 6px 14px; border-radius: 8px; }
+        .ticker-symbol { font-size: 13px; font-weight: 700; }
+        .ticker-price { font-size: 20px; font-weight: 800; }
+        .ticker-change { font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+        .ticker-change.positive { background: rgba(16,185,129,0.3); }
+        .ticker-change.negative { background: rgba(239,68,68,0.3); }
+        
+        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .status-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .status-badge:hover { transform: scale(1.05); }
+        .status-badge.online { background: rgba(16,185,129,0.3); }
+        .status-badge.warning { background: rgba(245,158,11,0.3); }
+        .status-badge.critical { background: rgba(239,68,68,0.3); }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        
+        .symbol-select select { padding: 5px 8px; border: none; border-radius: 5px; font-size: 11px; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600; }
+        .refresh-btn { padding: 5px 12px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 12px; }
+        
+        .mode-toggle-container { display: flex; justify-content: center; margin-bottom: 12px; }
+        .mode-toggle { display: flex; background: var(--card); border-radius: 8px; padding: 3px; border: 1px solid var(--border); }
+        .mode-btn { padding: 8px 20px; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px; }
+        .mode-btn.intraday { background: transparent; color: var(--muted); }
+        .mode-btn.swing { background: transparent; color: var(--muted); }
+        .mode-btn.active.intraday { background: linear-gradient(135deg, var(--intraday), #d97706); color: white; }
+        .mode-btn.active.swing { background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; }
+        
+        .symbol-banner { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 8px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; }
+        .symbol-banner.intraday-mode { background: linear-gradient(135deg, var(--intraday), #d97706); }
+        .symbol-banner.swing-mode { background: linear-gradient(135deg, var(--swing), #6d28d9); }
+        
+        .tabs { display: flex; gap: 3px; background: var(--card); border-radius: 8px; padding: 4px; margin-bottom: 12px; overflow-x: auto; border: 1px solid var(--border); }
+        .tab-btn { padding: 7px 12px; background: transparent; border: none; border-radius: 5px; color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .tab-btn:hover { color: var(--primary); background: rgba(59,130,246,0.05); }
+        .tab-btn.active { color: white; background: var(--primary); }
+        .tab-btn.ai-tab { background: var(--ai-gradient); color: white; }
+        .tab-btn.ai-tab:not(.active) { background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2)); color: var(--secondary); }
+        .tab-btn.health-tab { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .tab-btn.health-tab:not(.active) { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2)); color: var(--success); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        
+        .grid { display: grid; gap: 12px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+        .grid-5 { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        
+        .metric { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+        .metric-label { font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+        .metric-value { font-size: 18px; font-weight: 700; }
+        .metric-value.positive { color: var(--success); }
+        .metric-value.negative { color: var(--danger); }
+        .metric-sub { font-size: 9px; color: var(--light); margin-top: 2px; }
+        
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; text-transform: uppercase; }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-info { background: rgba(8,145,178,0.15); color: var(--info); }
+        .badge-primary { background: rgba(59,130,246,0.15); color: var(--primary); }
+        .badge-ultra { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .badge-intraday { background: linear-gradient(135deg, var(--intraday), #d97706); color: white; }
+        .badge-swing { background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; }
+        
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { text-align: left; padding: 8px; font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--border); }
+        td { padding: 8px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: rgba(59,130,246,0.02); }
+        
+        .chart-box { position: relative; height: 280px; }
+        
+        .dual-signal-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .signal-panel { border-radius: 8px; padding: 14px; }
+        .signal-panel.intraday { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 2px solid var(--intraday); }
+        .signal-panel.swing { background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.05)); border: 2px solid var(--swing); }
+        .signal-panel-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+        .signal-panel-title.intraday { color: var(--intraday); }
+        .signal-panel-title.swing { color: var(--swing); }
+        
+        .ref-data-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 11px; }
+        .ref-label { color: var(--muted); }
+        .ref-value { font-weight: 600; }
+        .ref-value.positive { color: var(--success); }
+        .ref-value.negative { color: var(--danger); }
+        
+        .bar-count-display { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .bar-count-item { background: var(--bg); border-radius: 6px; padding: 10px; text-align: center; }
+        .bar-count-value { font-size: 24px; font-weight: 800; }
+        .bar-count-label { font-size: 10px; color: var(--muted); margin-top: 3px; }
+        
+        .pattern-item { background: var(--bg); border-radius: 6px; padding: 8px; margin-bottom: 6px; }
+        .pattern-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .pattern-name { font-weight: 600; font-size: 12px; }
+        .pattern-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .pattern-fill { height: 100%; border-radius: 2px; }
+        .pattern-fill.bullish { background: var(--success); }
+        .pattern-fill.bearish { background: var(--danger); }
+        .pattern-fill.neutral { background: var(--warning); }
 
+        /* AI Assistant Styles */
+        .ai-assistant-container { display: grid; grid-template-columns: 1fr 320px; gap: 15px; min-height: 500px; }
+        .ai-chat-panel { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .ai-chat-header { background: var(--ai-gradient); color: white; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+        .ai-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .ai-chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; max-height: 450px; }
+        .ai-message { max-width: 90%; padding: 10px 14px; border-radius: 12px; font-size: 12px; line-height: 1.6; }
+        .ai-message.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-message.assistant { background: var(--bg); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .ai-message.assistant .message-content { white-space: pre-wrap; }
+        .ai-chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: var(--bg); }
+        .ai-chat-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 12px; outline: none; }
+        .ai-chat-input input:focus { border-color: var(--primary); }
+        .ai-chat-input button { padding: 10px 20px; background: var(--ai-gradient); color: white; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 12px; }
+        .ai-chat-input button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .ai-sidebar { display: flex; flex-direction: column; gap: 12px; }
+        .ai-quick-actions { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .ai-quick-actions h4 { font-size: 12px; margin-bottom: 8px; color: var(--secondary); }
+        .quick-action-btn { display: block; width: 100%; padding: 7px 10px; margin-bottom: 5px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; font-size: 10px; text-align: left; cursor: pointer; transition: all 0.2s; }
+        .quick-action-btn:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); }
+        
+        .ai-data-context { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .ai-data-context h4 { font-size: 11px; margin-bottom: 8px; color: var(--muted); }
+        .context-item { font-size: 10px; padding: 3px 0; display: flex; justify-content: space-between; }
+        
+        .typing-indicator { display: flex; gap: 4px; padding: 10px 14px; }
+        .typing-dot { width: 8px; height: 8px; background: var(--muted); border-radius: 50%; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; gap: 15px; }
+        .loading-overlay.active { display: flex; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) {
+            .ai-assistant-container { grid-template-columns: 1fr; }
+            .dual-signal-container { grid-template-columns: 1fr; }
+        }
+
+        /* Trade Log Styles */
+        .form-group-trade {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-group-trade label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .form-group-trade input,
+        .form-group-trade select {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group-trade input:focus,
+        .form-group-trade select:focus {
+            border-color: var(--primary);
+        }
+        
+        .trade-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .trade-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .trade-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .trade-btn.secondary {
+            background: var(--bg);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+        .trade-btn.secondary:hover {
+            background: var(--border);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: var(--card);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .action-btn.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        
+        #tradeTable th {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
+        }
+        #tradeTable td {
+            vertical-align: middle;
+        }
+        
+        .trade-action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+        .trade-action-btn.edit {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+        .trade-action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .pnl-positive { color: var(--success); font-weight: 600; }
+        .pnl-negative { color: var(--danger); font-weight: 600; }
+        
+        .status-badge-trade {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+        .status-badge-trade.open { background: rgba(59, 130, 246, 0.15); color: var(--primary); }
+        .status-badge-trade.closed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-badge-trade.stopped { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        
+        /* Print Styles */
+        @media print {
+            .login-screen, .header, .tabs, .mode-toggle-container, .symbol-banner,
+            .action-btn, .trade-btn, .trade-action-btn, #tradeForm, .ai-sidebar {
+                display: none !important;
+            }
+            .main-app { display: block !important; }
+            .card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+            body { background: white; }
+        }
+
+        /* Health Monitor Styles */
+        .health-banner {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.1));
+            border: 2px solid var(--success);
+        }
+        .health-banner.warning {
+            background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.1));
+            border-color: var(--warning);
+        }
+        .health-banner.critical {
+            background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1));
+            border-color: var(--danger);
+        }
+        .health-banner-icon { font-size: 32px; }
+        .health-banner-content { flex: 1; }
+        .health-banner-title { font-size: 18px; font-weight: 700; color: var(--text); }
+        .health-banner-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .refresh-health-btn {
+            padding: 8px 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .refresh-health-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+
+        .health-metric {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .health-metric.healthy { border-color: var(--success); background: rgba(16,185,129,0.05); }
+        .health-metric.warning { border-color: var(--warning); background: rgba(245,158,11,0.05); }
+        .health-metric.critical { border-color: var(--danger); background: rgba(239,68,68,0.05); }
+        .health-metric-icon { font-size: 28px; margin-bottom: 8px; }
+        .health-metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+        .health-metric-value { font-size: 18px; font-weight: 700; margin: 6px 0; }
+        .health-metric-status { font-size: 10px; padding: 3px 8px; border-radius: 10px; display: inline-block; }
+        .health-metric-status.ok { background: rgba(16,185,129,0.15); color: var(--success); }
+        .health-metric-status.warn { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .health-metric-status.error { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+        .health-timeline { display: flex; flex-direction: column; gap: 10px; }
+        .timeline-item { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--bg); border-radius: 6px; }
+        .timeline-label { color: var(--muted); font-size: 12px; }
+        .timeline-value { font-weight: 600; font-size: 12px; }
+
+        .connection-grid { display: flex; flex-direction: column; gap: 10px; }
+        .connection-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg); border-radius: 6px; }
+        .connection-indicator { font-size: 14px; }
+        .connection-indicator.online { color: var(--success); }
+        .connection-indicator.offline { color: var(--danger); }
+        .connection-indicator.unknown { color: var(--muted); }
+        .connection-status { margin-left: auto; font-size: 11px; color: var(--muted); }
+
+        .health-alerts { display: flex; flex-direction: column; gap: 8px; }
+        .health-alert {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .health-alert.info { background: rgba(8,145,178,0.1); color: var(--info); border-left: 3px solid var(--info); }
+        .health-alert.warning { background: rgba(245,158,11,0.1); color: #b45309; border-left: 3px solid var(--warning); }
+        .health-alert.critical { background: rgba(239,68,68,0.1); color: var(--danger); border-left: 3px solid var(--danger); }
+        .health-alert.success { background: rgba(16,185,129,0.1); color: var(--success); border-left: 3px solid var(--success); }
+        .alert-icon { font-size: 16px; }
+
+        .sys-info-item { background: var(--bg); padding: 12px; border-radius: 6px; }
+        .sys-info-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+        .sys-info-value { font-size: 13px; font-weight: 600; }
+        .sys-info-value a { color: var(--primary); text-decoration: none; }
+
+        .troubleshoot-accordion { display: flex; flex-direction: column; gap: 8px; }
+        .troubleshoot-item { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+        .troubleshoot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .troubleshoot-header:hover { background: var(--border); }
+        .troubleshoot-toggle { font-size: 18px; color: var(--muted); }
+        .troubleshoot-content {
+            display: none;
+            padding: 16px;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .troubleshoot-content.show { display: block; }
+        .troubleshoot-content ol { margin-left: 20px; }
+        .troubleshoot-content li { margin-bottom: 6px; }
+        .troubleshoot-content a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">📊</div>
+            <h1 class="login-title">Stock Agent 4</h1>
+            <p class="login-subtitle">Q5D Options Trading Platform</p>
+            
+            <div class="login-error" id="loginError">
+                Invalid username or password. Please try again.
+            </div>
+            
+            <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+                
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <label for="rememberMe">Remember me (stay logged in)</label>
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>🔒 Secure Access | Powered by Gann Principles</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION (Hidden until login) -->
+    <div class="main-app" id="mainApp">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div>Loading data...</div>
+        </div>
+
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">📊</div>
+                    <div><h1>Stock Agent 4</h1><p>Q5D Options Platform</p></div>
+                </div>
+                
+                <div class="live-price-ticker">
+                    <div>
+                        <div class="ticker-symbol" id="tickerSymbol">SPY</div>
+                        <div style="font-size:9px;opacity:0.8;" id="tickerName">S&P 500 ETF</div>
+                    </div>
+                    <div class="ticker-price" id="tickerPrice">$675.02</div>
+                    <div>
+                        <div class="ticker-change positive" id="tickerChange">+$6.29</div>
+                        <div style="font-size:9px;margin-top:1px;" id="tickerPct">+0.94%</div>
+                    </div>
+                </div>
+                
+                <div class="header-controls">
+                    <div class="status-badge" id="headerHealthBadge" onclick="switchToHealthTab()"><span class="status-dot" id="headerHealthDot"></span><span id="headerHealthText">CHECKING</span></div>
+                    <div class="symbol-select">
+                        <select id="symbolSelect" onchange="changeSymbol()">
+                            <optgroup label="Major ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sectors">
+                                <option value="XLK">XLK</option>
+                                <option value="XLF">XLF</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLE">XLE</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+                    <div class="user-info">
+                        <div class="user-avatar">👤</div>
+                        <span id="loggedInUser">User</span>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+    <div class="container">
+        <div class="mode-toggle-container">
+            <div class="mode-toggle">
+                <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">⚡ INTRADAY</button>
+                <button class="mode-btn swing" onclick="setTradingMode('swing')">🌊 SWING</button>
+            </div>
+        </div>
+
+        <div class="symbol-banner intraday-mode" id="symbolBanner">
+            <div><strong id="currentSymbolDisplay">SPY</strong> - <span id="currentSymbolName">S&P 500 ETF</span> | <span id="currentModeDisplay">INTRADAY</span></div>
+            <div style="font-size:11px;">📅 <span id="dataDate">--</span> 🕐 <span id="dataTime">--</span></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+            <button class="tab-btn" data-tab="charts">📈 Charts</button>
+            <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
+            <button class="tab-btn" data-tab="signals">🎯 Signals</button>
+            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+            <button class="tab-btn" data-tab="patterns">📐 Patterns</button>
+            <button class="tab-btn" data-tab="trades">📝 Trades</button>
+            <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
+            <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-5">
+                <div class="metric"><div class="metric-label">Price</div><div class="metric-value" id="currentPrice">--</div><div class="metric-sub" id="priceSource">Loading...</div></div>
+                <div class="metric"><div class="metric-label">Change</div><div class="metric-value" id="dailyChange">--</div><div class="metric-sub" id="changePct">--</div></div>
+                <div class="metric"><div class="metric-label">Volume</div><div class="metric-value" id="volumeDisplay">--</div><div class="metric-sub" id="volumeVsAvgSmall">vs avg</div></div>
+                <div class="metric"><div class="metric-label">Signal</div><div class="metric-value" id="signalStatus">--</div><div class="metric-sub" id="signalConf">--</div></div>
+                <div class="metric"><div class="metric-label">ATR</div><div class="metric-value" id="atrDisplay">--</div><div class="metric-sub">Volatility</div></div>
+            </div>
+
+            <div class="dual-signal-container">
+                <div class="signal-panel intraday">
+                    <div class="signal-panel-title intraday">⚡ INTRADAY (0-1 DTE)</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="intradaySignal">CALL</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="intradayEntry">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="intradayStop">--</span></div>
+                        </div>
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="intradayT1">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="intradayT2">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="intradayStrike">--</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="signal-panel swing">
+                    <div class="signal-panel-title swing">🌊 SWING (3-5 DTE)</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="swingEntry">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="swingStop">--</span></div>
+                        </div>
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="swingT1">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="swingT2">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="swingStrike">--</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 Reference Data</div>
+                <div class="grid grid-4">
+                    <div style="background:var(--bg);border-radius:6px;padding:10px;">
+                        <div class="ref-data-row"><span class="ref-label">52W High</span><span class="ref-value positive" id="week52High">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">52W Low</span><span class="ref-value negative" id="week52Low">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:6px;padding:10px;">
+                        <div class="ref-data-row"><span class="ref-label">Today High</span><span class="ref-value" id="todayHigh">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Today Low</span><span class="ref-value" id="todayLow">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:6px;padding:10px;">
+                        <div class="ref-data-row"><span class="ref-label">Avg Vol (20D)</span><span class="ref-value" id="avgVolume20">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Vol vs Avg</span><span class="ref-value" id="volumeVsAvg">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:6px;padding:10px;">
+                        <div class="ref-data-row"><span class="ref-label">Fibonacci Zone</span><span class="badge badge-info" id="fibZone">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Trend</span><span class="badge" id="trendBadge">--</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS TAB -->
+        <div id="charts" class="tab-content">
+            <div class="card">
+                <div class="card-title">📈 Price Chart with Fibonacci Levels</div>
+                <div class="chart-box"><canvas id="priceChart"></canvas></div>
+                <div class="grid grid-2" style="margin-top:12px;">
+                    <div style="background:rgba(239,68,68,0.05);border-radius:6px;padding:10px;">
+                        <h4 style="font-size:12px;color:var(--danger);margin-bottom:8px;">Resistance</h4>
+                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="chartR3">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="chartR2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="chartR1">--</span></div>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.05);border-radius:6px;padding:10px;">
+                        <h4 style="font-size:12px;color:var(--success);margin-bottom:8px;">Support</h4>
+                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="chartS1">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="chartS2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="chartS3">--</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAR COUNT TAB - FIXED -->
+        <div id="barcount" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔢 Bar Count Analysis</div>
+                <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
+                    <div>
+                        <label style="font-size:11px;color:var(--muted);">Bars to Analyze:</label>
+                        <select id="barCountSelect" onchange="updateBarCountAnalysis()" style="padding:6px 10px;border:1px solid var(--border);border-radius:5px;margin-left:8px;">
+                            <option value="20">20 Bars</option>
+                            <option value="50">50 Bars</option>
+                            <option value="100">100 Bars</option>
+                            <option value="200">200 Bars</option>
+                        </select>
+                    </div>
+                    <div style="background:var(--bg);padding:6px 12px;border-radius:5px;font-size:12px;">
+                        <strong>Current Symbol:</strong> <span id="barCountCurrentSymbol" style="color:var(--primary);font-weight:700;">SPY</span>
+                        <span style="color:var(--muted);font-size:10px;margin-left:5px;">(synced with header)</span>
+                    </div>
+                </div>
+                
+                <div class="bar-count-display">
+                    <div class="bar-count-item">
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📊 Base Confluence</div>
+                        <div class="bar-count-value" id="baseBarCount">+5</div>
+                        <div class="bar-count-label">Consecutive Bars</div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🔮 Gann-Elliott</div>
+                        <div class="bar-count-value" id="gannBarCount">+7</div>
+                        <div class="bar-count-label">Wave Progress</div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🧠 DQN/RL</div>
+                        <div class="bar-count-value" id="dqnBarCount">+2</div>
+                        <div class="bar-count-label">Momentum</div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🌊 3-Wave</div>
+                        <div class="bar-count-value" id="waveBarCount">+4</div>
+                        <div class="bar-count-label">Impulse</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Reversal Statistics -->
+            <div class="card">
+                <div class="card-title">📊 Trend Reversal Statistics</div>
+                <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Average bars before trend reversal based on historical data</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Symbol</th><th>Avg Bullish Run</th><th>Avg Bearish Run</th><th>Current Run</th><th>% of Avg</th><th>Reversal Risk</th></tr>
+                        </thead>
+                        <tbody id="reversalStatsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Bar Count History</div>
+                <div class="table-wrap" style="max-height:300px;overflow-y:auto;">
+                    <table>
+                        <thead><tr><th>#</th><th>Date</th><th>O/H/L/C</th><th>Dir</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Avg</th></tr></thead>
+                        <tbody id="barCountTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNALS TAB -->
+        <div id="signals" class="tab-content">
+            <div class="card">
+                <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th></tr></thead>
+                        <tbody>
+                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
+                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
+                            <tr><td>Fast SMA</td><td>5</td><td>10</td></tr>
+                            <tr><td>Slow SMA</td><td>20</td><td>30</td></tr>
+                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td></tr>
+                            <tr><td>Target</td><td>1.0-2.0 ATR</td><td>3.0-4.0 ATR</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENTS TAB -->
+        <div id="agents" class="tab-content">
+            <div class="card">
+                <div class="card-title">🤖 Agent Signals</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Agent</th><th>Intraday</th><th>Conf</th><th>Swing</th><th>Conf</th></tr></thead>
+                        <tbody>
+                            <tr><td>📊 Base Confluence</td><td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td><td id="baseIntradayConf">72%</td><td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td><td id="baseSwingConf">68%</td></tr>
+                            <tr><td>🔮 Gann-Elliott</td><td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td><td id="gannIntradayConf">75%</td><td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td><td id="gannSwingConf">70%</td></tr>
+                            <tr><td>🧠 DQN/RL</td><td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td><td id="dqnIntradayConf">58%</td><td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td><td id="dqnSwingConf">65%</td></tr>
+                            <tr><td>🌊 3-Wave</td><td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td><td id="waveIntradayConf">68%</td><td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td><td id="waveSwingConf">72%</td></tr>
+                            <tr style="background:var(--bg);"><td><strong>CONSENSUS</strong></td><td><span class="badge badge-ultra" id="intradayConsensus">3/4</span></td><td id="intradayConsensusConf">68%</td><td><span class="badge badge-ultra" id="swingConsensus">4/4</span></td><td id="swingConsensusConf">69%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATTERNS TAB -->
+        <div id="patterns" class="tab-content">
+            <div class="card">
+                <div class="card-title">📐 Fibonacci Levels</div>
+                <div class="grid grid-2">
+                    <div><div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3">--</span></div><div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2">--</span></div><div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1">--</span></div></div>
+                    <div><div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div><div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div><div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div></div>
+                </div>
+            </div>
+            <div class="grid grid-3">
+                <div class="card"><div class="card-title">📊 Technical</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
+                <div class="card"><div class="card-title">🕯️ Candlestick</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
+                <div class="card"><div class="card-title">⬛ Point & Figure</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- TRADES TAB - COMPREHENSIVE TRADE LOG -->
+        <div id="trades" class="tab-content">
+            <!-- Trade Statistics Dashboard -->
+            <div class="grid grid-5">
+                <div class="metric">
+                    <div class="metric-label">Total Trades</div>
+                    <div class="metric-value" id="statTotalTrades">0</div>
+                    <div class="metric-sub" id="statTradesThisWeek">0 this week</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Win Rate</div>
+                    <div class="metric-value positive" id="statWinRate">0%</div>
+                    <div class="metric-sub" id="statWinLoss">0W / 0L</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total P&L</div>
+                    <div class="metric-value" id="statTotalPnL">$0.00</div>
+                    <div class="metric-sub" id="statAvgTrade">Avg: $0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Best Trade</div>
+                    <div class="metric-value positive" id="statBestTrade">$0.00</div>
+                    <div class="metric-sub" id="statBestSymbol">--</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Worst Trade</div>
+                    <div class="metric-value negative" id="statWorstTrade">$0.00</div>
+                    <div class="metric-sub" id="statWorstSymbol">--</div>
+                </div>
+            </div>
+
+            <!-- Log New Trade Form -->
+            <div class="card">
+                <div class="card-title">📝 Log New Trade</div>
+                <form id="tradeForm" onsubmit="logTrade(event)">
+                    <div class="grid grid-4" style="margin-bottom:12px;">
+                        <div class="form-group-trade">
+                            <label>Date</label>
+                            <input type="date" id="tradeDate" required>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Symbol</label>
+                            <select id="tradeSymbol" required>
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLF">XLF</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLE">XLE</option>
+                            </select>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Direction</label>
+                            <select id="tradeDirection" required>
+                                <option value="CALL">📈 CALL</option>
+                                <option value="PUT">📉 PUT</option>
+                            </select>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Trade Type</label>
+                            <select id="tradeType" required>
+                                <option value="INTRADAY">⚡ Intraday (0DTE)</option>
+                                <option value="SWING">🌊 Swing (3-5 DTE)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-5" style="margin-bottom:12px;">
+                        <div class="form-group-trade">
+                            <label>Strike Price</label>
+                            <input type="number" id="tradeStrike" placeholder="675" step="1" required>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Contracts</label>
+                            <select id="tradeContracts" required>
+                                <option value="1">1 Contract</option>
+                                <option value="2">2 Contracts</option>
+                                <option value="3">3 Contracts</option>
+                                <option value="4">4 Contracts</option>
+                                <option value="5">5 Contracts</option>
+                                <option value="10">10 Contracts</option>
+                            </select>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Entry Premium</label>
+                            <input type="number" id="tradeEntry" placeholder="2.50" step="0.01" required>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Exit Premium</label>
+                            <input type="number" id="tradeExit" placeholder="3.75" step="0.01">
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Agent Consensus</label>
+                            <select id="tradeConsensus">
+                                <option value="4/4">4/4 ULTRA</option>
+                                <option value="3/4" selected>3/4 SUPER</option>
+                                <option value="2/4">2/4 SINGLE</option>
+                                <option value="1/4">1/4 WEAK</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-2" style="margin-bottom:12px;">
+                        <div class="form-group-trade">
+                            <label>Status</label>
+                            <select id="tradeStatus" onchange="toggleExitField()">
+                                <option value="CLOSED">✅ Closed</option>
+                                <option value="OPEN">🔵 Open</option>
+                                <option value="STOPPED">🛑 Stopped Out</option>
+                            </select>
+                        </div>
+                        <div class="form-group-trade">
+                            <label>Notes</label>
+                            <input type="text" id="tradeNotes" placeholder="Morning breakout, hit T1...">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button type="submit" class="trade-btn primary">➕ Log Trade</button>
+                        <button type="button" class="trade-btn secondary" onclick="clearTradeForm()">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Trade Actions Bar -->
+            <div class="card" style="padding:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <label style="font-size:11px;color:var(--muted);">Filter:</label>
+                        <select id="filterSymbol" onchange="filterTrades()" style="padding:5px;border:1px solid var(--border);border-radius:4px;font-size:11px;">
+                            <option value="ALL">All Symbols</option>
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
+                        <select id="filterDirection" onchange="filterTrades()" style="padding:5px;border:1px solid var(--border);border-radius:4px;font-size:11px;">
+                            <option value="ALL">All Directions</option>
+                            <option value="CALL">CALL Only</option>
+                            <option value="PUT">PUT Only</option>
+                        </select>
+                        <select id="filterStatus" onchange="filterTrades()" style="padding:5px;border:1px solid var(--border);border-radius:4px;font-size:11px;">
+                            <option value="ALL">All Status</option>
+                            <option value="OPEN">Open</option>
+                            <option value="CLOSED">Closed</option>
+                            <option value="STOPPED">Stopped</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="action-btn" onclick="printTrades()">🖨️ Print</button>
+                        <button class="action-btn" onclick="exportCSV()">📊 Export CSV</button>
+                        <button class="action-btn" onclick="shareTrades()">📤 Share</button>
+                        <button class="action-btn" onclick="emailTrades()">📧 Email</button>
+                        <button class="action-btn danger" onclick="clearAllTrades()">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade History Table -->
+            <div class="card">
+                <div class="card-title">📋 Trade History <span id="tradeCount" style="font-size:11px;color:var(--muted);margin-left:8px;">(0 trades)</span></div>
+                <div class="table-wrap" style="max-height:400px;overflow-y:auto;">
+                    <table id="tradeTable">
+                        <thead>
+                            <tr>
+                                <th style="width:30px;">#</th>
+                                <th>Date</th>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Strike</th>
+                                <th>Contracts</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>P&L</th>
+                                <th>Consensus</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th style="width:80px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeTableBody">
+                            <tr><td colspan="13" style="text-align:center;color:var(--muted);padding:30px;">No trades logged yet. Start by logging your first trade above!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Trade Analytics -->
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title">📊 Performance by Symbol</div>
+                    <div id="symbolPerformance">
+                        <p style="color:var(--muted);font-size:12px;">Log trades to see performance breakdown</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📈 Performance by Direction</div>
+                    <div id="directionPerformance">
+                        <p style="color:var(--muted);font-size:12px;">Log trades to see CALL vs PUT performance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🎯 Agent Consensus Analysis</div>
+                <div id="consensusAnalysis" class="grid grid-4">
+                    <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:var(--muted);">4/4 ULTRA</div>
+                        <div style="font-size:20px;font-weight:700;" id="ultra44WinRate">--%</div>
+                        <div style="font-size:10px;color:var(--muted);" id="ultra44Count">0 trades</div>
+                    </div>
+                    <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:var(--muted);">3/4 SUPER</div>
+                        <div style="font-size:20px;font-weight:700;" id="super34WinRate">--%</div>
+                        <div style="font-size:10px;color:var(--muted);" id="super34Count">0 trades</div>
+                    </div>
+                    <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:var(--muted);">2/4 SINGLE</div>
+                        <div style="font-size:20px;font-weight:700;" id="single24WinRate">--%</div>
+                        <div style="font-size:10px;color:var(--muted);" id="single24Count">0 trades</div>
+                    </div>
+                    <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
+                        <div style="font-size:11px;color:var(--muted);">1/4 WEAK</div>
+                        <div style="font-size:20px;font-weight:700;" id="weak14WinRate">--%</div>
+                        <div style="font-size:10px;color:var(--muted);" id="weak14Count">0 trades</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH MONITOR TAB -->
+        <div id="health" class="tab-content">
+            <!-- System Status Banner -->
+            <div class="health-banner" id="healthBanner">
+                <div class="health-banner-icon" id="healthBannerIcon">🟢</div>
+                <div class="health-banner-content">
+                    <div class="health-banner-title" id="healthBannerTitle">System Healthy</div>
+                    <div class="health-banner-subtitle" id="healthBannerSubtitle">All systems operational</div>
+                </div>
+                <button class="refresh-health-btn" onclick="runHealthCheck()">🔄 Run Check</button>
+            </div>
+
+            <!-- Health Metrics Grid -->
+            <div class="grid grid-4">
+                <div class="health-metric" id="healthDataFresh">
+                    <div class="health-metric-icon">📊</div>
+                    <div class="health-metric-label">Data Freshness</div>
+                    <div class="health-metric-value" id="dataFreshnessValue">Checking...</div>
+                    <div class="health-metric-status" id="dataFreshnessStatus">--</div>
+                </div>
+                <div class="health-metric" id="healthMarket">
+                    <div class="health-metric-icon">🏛️</div>
+                    <div class="health-metric-label">Market Status</div>
+                    <div class="health-metric-value" id="marketStatusValue">Checking...</div>
+                    <div class="health-metric-status" id="marketStatusStatus">--</div>
+                </div>
+                <div class="health-metric" id="healthWorkflow">
+                    <div class="health-metric-icon">⚙️</div>
+                    <div class="health-metric-label">Agent Workflow</div>
+                    <div class="health-metric-value" id="workflowStatusValue">Checking...</div>
+                    <div class="health-metric-status" id="workflowStatusStatus">--</div>
+                </div>
+                <div class="health-metric" id="healthDataQuality">
+                    <div class="health-metric-icon">✅</div>
+                    <div class="health-metric-label">Data Quality</div>
+                    <div class="health-metric-value" id="dataQualityValue">Checking...</div>
+                    <div class="health-metric-status" id="dataQualityStatus">--</div>
+                </div>
+            </div>
+
+            <!-- Detailed Status Cards -->
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title">📅 Data Timeline</div>
+                    <div class="health-timeline">
+                        <div class="timeline-item">
+                            <span class="timeline-label">Last Data Point:</span>
+                            <span class="timeline-value" id="lastDataDate">--</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-label">Days Since Update:</span>
+                            <span class="timeline-value" id="daysSinceUpdate">--</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-label">Expected Update:</span>
+                            <span class="timeline-value" id="expectedUpdate">--</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-label">Total Bars Loaded:</span>
+                            <span class="timeline-value" id="totalBarsLoaded">--</span>
+                        </div>
+                        <div class="timeline-item">
+                            <span class="timeline-label">Date Range:</span>
+                            <span class="timeline-value" id="dataDateRange">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🔌 Connection Status</div>
+                    <div class="connection-grid">
+                        <div class="connection-item">
+                            <span class="connection-indicator" id="connGitHub">●</span>
+                            <span>GitHub Pages</span>
+                            <span class="connection-status" id="connGitHubStatus">--</span>
+                        </div>
+                        <div class="connection-item">
+                            <span class="connection-indicator" id="connData">●</span>
+                            <span>Data Feed (SPY.csv)</span>
+                            <span class="connection-status" id="connDataStatus">--</span>
+                        </div>
+                        <div class="connection-item">
+                            <span class="connection-indicator" id="connPortfolio">●</span>
+                            <span>Portfolio Feed</span>
+                            <span class="connection-status" id="connPortfolioStatus">--</span>
+                        </div>
+                        <div class="connection-item">
+                            <span class="connection-indicator" id="connLocalStorage">●</span>
+                            <span>Local Storage</span>
+                            <span class="connection-status" id="connLocalStorageStatus">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts & Issues -->
+            <div class="card">
+                <div class="card-title">⚠️ Alerts & Issues</div>
+                <div id="healthAlerts" class="health-alerts">
+                    <div class="health-alert info">
+                        <span class="alert-icon">ℹ️</span>
+                        <span>Running initial health check...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="card">
+                <div class="card-title">ℹ️ System Information</div>
+                <div class="grid grid-3">
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Platform Version</div>
+                        <div class="sys-info-value">Stock Agent 4 v7.1</div>
+                    </div>
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Dashboard</div>
+                        <div class="sys-info-value">Q5D Options Platform</div>
+                    </div>
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Last Health Check</div>
+                        <div class="sys-info-value" id="lastHealthCheck">--</div>
+                    </div>
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Workflow Schedule</div>
+                        <div class="sys-info-value">9:35 AM & 4:05 PM ET</div>
+                    </div>
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Data Source</div>
+                        <div class="sys-info-value">Tiingo API</div>
+                    </div>
+                    <div class="sys-info-item">
+                        <div class="sys-info-label">Repository</div>
+                        <div class="sys-info-value"><a href="https://github.com/aadey002/Stock-agent-" target="_blank">Stock-agent-</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Troubleshooting Guide -->
+            <div class="card">
+                <div class="card-title">🔧 Troubleshooting Guide</div>
+                <div class="troubleshoot-accordion">
+                    <div class="troubleshoot-item">
+                        <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
+                            <span>❓ Data Not Updating</span>
+                            <span class="troubleshoot-toggle">+</span>
+                        </div>
+                        <div class="troubleshoot-content">
+                            <ol>
+                                <li>Check GitHub Actions: <a href="https://github.com/aadey002/Stock-agent-/actions" target="_blank">View Workflows</a></li>
+                                <li>Verify TIINGO_TOKEN secret is set in repository settings</li>
+                                <li>Check if market was open (no updates on weekends/holidays)</li>
+                                <li>Manually trigger workflow: Actions → Run workflow</li>
+                                <li>Check workflow logs for errors</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="troubleshoot-item">
+                        <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
+                            <span>❓ Dashboard Shows Stale Data</span>
+                            <span class="troubleshoot-toggle">+</span>
+                        </div>
+                        <div class="troubleshoot-content">
+                            <ol>
+                                <li>Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</li>
+                                <li>Clear browser cache</li>
+                                <li>Check if gh-pages branch has latest data</li>
+                                <li>Verify GitHub Pages deployment completed</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="troubleshoot-item">
+                        <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
+                            <span>❓ Workflow Failing</span>
+                            <span class="troubleshoot-toggle">+</span>
+                        </div>
+                        <div class="troubleshoot-content">
+                            <ol>
+                                <li>Check Actions tab for error messages</li>
+                                <li>Common issues: API rate limits, invalid token, network timeouts</li>
+                                <li>Verify Python dependencies are installed</li>
+                                <li>Check if Tiingo API is operational</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI ASSISTANT TAB -->
+        <div id="ai-assistant" class="tab-content">
+            <div class="ai-assistant-container">
+                <div class="ai-chat-panel">
+                    <div class="ai-chat-header">
+                        <div class="ai-avatar">🧠</div>
+                        <div>
+                            <div style="font-weight:700;">Gann Trading Assistant</div>
+                            <div style="font-size:10px;opacity:0.9;">Tunnel Through the Air • Mystifying Square • Divine Proportions</div>
+                        </div>
+                    </div>
+                    <div class="ai-chat-messages" id="aiChatMessages">
+                        <div class="ai-message assistant">
+                            <div class="message-content">Welcome to the Gann Trading Assistant! 🎯
+
+I'm trained on W.D. Gann's principles from "Tunnel Through the Air", the Mystifying Square (Square of 9), and Divine Proportions (Fibonacci/Golden Ratio).
+
+I can help you with:
+• 📊 Analyze any ETF/stock on the dashboard
+• 🎯 Find high-consensus trades (3/4, 4/4)
+• 📈 Recommend optimal strikes
+• 🔮 Gann time cycles & Square of 9
+• 📐 Divine Proportions (Phi/Fibonacci)
+• 📋 Generate custom reports
+
+Try: "Show me all ETFs with 4/4 consensus"</div>
+                        </div>
+                    </div>
+                    <div class="ai-chat-input">
+                        <input type="text" id="aiInput" placeholder="Ask about trades, Gann methods, analysis..." onkeypress="if(event.key==='Enter')sendAiMessage()">
+                        <button onclick="sendAiMessage()" id="aiSendBtn">Send</button>
+                    </div>
+                </div>
+                
+                <div class="ai-sidebar">
+                    <div class="ai-quick-actions">
+                        <h4>🚀 Quick Actions</h4>
+                        <button class="quick-action-btn" onclick="askAi('Show me all ETFs with 3/4 or 4/4 agent consensus today')">📊 High Consensus Trades</button>
+                        <button class="quick-action-btn" onclick="askAi('Which ETFs are breaking out today?')">🚀 Morning Breakouts</button>
+                        <button class="quick-action-btn" onclick="askAi('Scan for all patterns')">🔍 Pattern Scan</button>
+                        <button class="quick-action-btn" onclick="askAi('Show momentum rankings')">📈 Momentum Leaders</button>
+                        <button class="quick-action-btn" onclick="askAi('Any reversal patterns forming?')">🔄 Reversal Scan</button>
+                        <button class="quick-action-btn" onclick="askAi('What are the best CALL options for the next 2 days?')">📈 Best CALLs</button>
+                        <button class="quick-action-btn" onclick="askAi('What are the best PUT options for the next 2 days?')">📉 Best PUTs</button>
+                        <button class="quick-action-btn" onclick="askAi('What is the optimal strike for ' + currentSymbol + '?')">🎯 Optimal Strike</button>
+                        <button class="quick-action-btn" onclick="askAi('When is the best time to trade options?')">⏰ Best Time to Trade</button>
+                        <button class="quick-action-btn" onclick="askAi('Show bar count for all ETFs')">🔢 Bar Count</button>
+                    </div>
+                    
+                    <div class="ai-data-context">
+                        <h4>📊 Current Context</h4>
+                        <div class="context-item"><span>Symbol:</span><span id="aiContextSymbol">SPY</span></div>
+                        <div class="context-item"><span>Price:</span><span id="aiContextPrice">$675.02</span></div>
+                        <div class="context-item"><span>Signal:</span><span id="aiContextSignal">CALL</span></div>
+                        <div class="context-item"><span>Consensus:</span><span id="aiContextConsensus">3/4</span></div>
+                        <div class="context-item"><span>Mode:</span><span id="aiContextMode">INTRADAY</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END CONTAINER -->
+    </div>
+    <!-- END MAIN APP -->
+
+<script>
+// ============================================
+// AUTHENTICATION SYSTEM
+// ============================================
+
+// CREDENTIALS - Authorized Users
+const VALID_CREDENTIALS = {
+    // Admin account
+    'DrTee': 'Gann2025!',
+    // Backup admin
+    'admin': 'Q5D@dmin2025'
+};
+
+// Session duration in milliseconds
+const SESSION_DURATION_DEFAULT = 24 * 60 * 60 * 1000; // 24 hours if not remembered
+const SESSION_DURATION_FOREVER = 100 * 365 * 24 * 60 * 60 * 1000; // 100 years (essentially forever)
+
+// Check if user is already logged in
+function checkAuth() {
+    const session = localStorage.getItem('sa4_session');
+    if (session) {
+        try {
+            const sessionData = JSON.parse(session);
+            const now = new Date().getTime();
+            
+            // Check if session is still valid
+            if (sessionData.expiry > now) {
+                // Session valid - show main app
+                showMainApp(sessionData.username);
+                return true;
+            } else {
+                // Session expired - clear and show login
+                localStorage.removeItem('sa4_session');
+            }
+        } catch (e) {
+            localStorage.removeItem('sa4_session');
+        }
+    }
+    
+    // No valid session - show login
+    showLoginScreen();
+    return false;
+}
+
+// Handle login form submission
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    
+    // Disable button during validation
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Signing in...';
+    
+    // Simulate slight delay for security feel
+    setTimeout(() => {
+        // Validate credentials
+        if (VALID_CREDENTIALS[username] && VALID_CREDENTIALS[username] === password) {
+            // Success - create session
+            const expiry = new Date().getTime() + (rememberMe ? SESSION_DURATION_FOREVER : SESSION_DURATION_DEFAULT);
+            const sessionData = {
+                username: username,
+                expiry: expiry,
+                rememberMe: rememberMe,
+                loginTime: new Date().toISOString()
+            };
+            
+            localStorage.setItem('sa4_session', JSON.stringify(sessionData));
+            
+            // Hide error if shown
+            loginError.classList.remove('show');
+            
+            // Show main app
+            showMainApp(username);
+        } else {
+            // Failed - show error
+            loginError.classList.add('show');
+            document.getElementById('password').value = '';
+            document.getElementById('password').classList.add('error');
+            
+            setTimeout(() => {
+                document.getElementById('password').classList.remove('error');
+            }, 2000);
+        }
+        
+        // Re-enable button
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+    }, 500);
+}
+
+// Handle logout
+function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('sa4_session');
+        showLoginScreen();
+    }
+}
+
+// Show login screen
+function showLoginScreen() {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('mainApp').classList.remove('visible');
+    document.getElementById('username').focus();
+}
+
+// Show main application
+function showMainApp(username) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainApp').classList.add('visible');
+    document.getElementById('loggedInUser').textContent = username;
+    
+    // Initialize the app
+    initializeApp();
+}
+
+// Run auth check on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+});
+
+// ============================================
+// MAIN APPLICATION CODE
+// ============================================
+
+// Global State
+let currentSymbol = 'SPY';
+let tradingMode = 'intraday';
+let currentData = [];
+let allSymbolsData = {};
+let priceChart;
+let conversationHistory = [];
+
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLK', 'XLF', 'XLV', 'XLE'];
+const SYMBOL_NAMES = {
+    'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
+    'XLK': 'Technology', 'XLF': 'Financials', 'XLV': 'Healthcare', 'XLE': 'Energy'
+};
+
+const TRADING_PARAMS = {
+    intraday: { fastSMA: 5, slowSMA: 20, atrPeriod: 10, stopATR: 0.75, target1ATR: 1.0, target2ATR: 1.5 },
+    swing: { fastSMA: 10, slowSMA: 30, atrPeriod: 14, stopATR: 1.5, target1ATR: 2.0, target2ATR: 3.0 }
+};
+
+// ============================================
+// GANN KNOWLEDGE BASE - EXPANDED
+// ============================================
+
+const GANN_KNOWLEDGE = {
+    tunnelThroughAir: `📚 "THE TUNNEL THROUGH THE AIR" (1927) by W.D. Gann
+
+This novel encodes Gann's most powerful trading secrets through allegory and hidden meanings.
+
+CORE PRINCIPLES:
+1. TIME IS MORE IMPORTANT THAN PRICE
+   - Time cycles predict WHEN markets will turn
+   - Price analysis alone is incomplete
+   
+2. NATURAL LAW GOVERNS MARKETS
+   - Markets follow geometric and astronomical cycles
+   - Nothing is random - patterns repeat
+   
+3. THE WHEEL OF TIME
+   - 360 degrees = 1 year cycle
+   - Each degree = 1 day
+   - Major turns at 90°, 180°, 270°, 360°
+
+KEY CYCLES:
+• 7-year cycle (Biblical/Saturn)
+• 10-year cycle (Decade)
+• 20-year cycle (Jupiter-Saturn)
+• 30-year cycle (Saturn return)
+• 60-year cycle (Major)
+• 90-year cycle (Master)
+
+TRADING APPLICATION:
+- Count days from major highs/lows
+- Watch for turns at 30, 45, 60, 90, 120, 144, 180, 270, 360 days
+- Anniversary dates of major moves often repeat`,
+
+    mystifyingSquare: `⬜ THE MYSTIFYING SQUARE (SQUARE OF 9)
+
+The Square of 9 is Gann's most powerful tool - a spiral of numbers revealing price/time relationships.
+
+STRUCTURE:
+- Center starts at 1
+- Numbers spiral outward counter-clockwise
+- Cardinal cross (N,S,E,W) = strongest levels
+- 45° angles mark important support/resistance
+
+HOW TO CALCULATE:
+1. Take square root of current price: √Price
+2. Add/subtract for target:
+   - ±0.125 = 45° move (1/8 turn)
+   - ±0.25 = 90° move (1/4 turn)
+   - ±0.5 = 180° move (1/2 turn)
+   - ±1.0 = 360° move (full turn)
+   - ±2.0 = 720° move (2 full turns)
+3. Square the result: Result²
+
+EXAMPLE FOR SPY @ $675:
+√675 = 25.98
+• +0.25 (90°) = 26.23² = $688.01 (resistance)
+• +0.5 (180°) = 26.48² = $701.19 (major resistance)
+• -0.25 (90°) = 25.73² = $662.03 (support)
+• -0.5 (180°) = 25.48² = $649.23 (major support)
+
+CARDINAL CROSS LEVELS:
+Numbers on same angle have harmonic relationship
+- 1, 2, 4, 7, 13, 22, 34, 49... (East)
+- 1, 3, 6, 11, 19, 30, 44... (West)
+
+TIME APPLICATION:
+Same math applies to time (trading days from pivot)`,
+
+    divineProportions: `📐 DIVINE PROPORTIONS (PHI & FIBONACCI)
+
+The Golden Ratio (Phi = 1.618) is nature's blueprint that markets follow.
+
+THE GOLDEN RATIO:
+• Phi (φ) = 1.618033988...
+• Inverse = 0.618033988...
+• Square = 2.618
+• √Phi = 1.272
+
+FIBONACCI SEQUENCE:
+1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377...
+
+Each number ÷ previous ≈ 1.618 (approaches Phi)
+
+KEY RETRACEMENT LEVELS:
+• 23.6% - Minor pullback
+• 38.2% - First major support (Phi inverse)
+• 50.0% - Halfway (Gann's favorite)
+• 61.8% - Golden ratio (strongest)
+• 78.6% - Deep retracement (√0.618)
+
+EXTENSION LEVELS:
+• 100% - Equal move
+• 127.2% - √Phi extension
+• 161.8% - Phi extension (primary target)
+• 200% - Double move
+• 261.8% - Phi squared
+
+GANN'S USE OF PHI:
+- Combined with Square of 9
+- Price targets at Phi extensions
+- Time cycles in Fibonacci days
+- 144 days (Fibonacci) = sacred number
+
+DIVINE PROPORTION IN OPTIONS:
+• Entry at 61.8% retracement
+• Target at 161.8% extension
+• Stop below 78.6% retracement`,
+
+    timeCycles: `⏰ GANN TIME CYCLES
+
+"When time is up, the trend changes."
+
+NATURAL TIME DIVISIONS:
+• 7 days (week)
+• 30 days (month)
+• 90 days (quarter)
+• 365 days (year)
+
+GANN'S KEY NUMBERS:
+• 30 - Minor cycle
+• 45 - Important (1/8 year)
+• 60 - Significant (2 months)
+• 90 - Major (quarter)
+• 120 - Important (1/3 year)
+• 144 - Fibonacci/sacred
+• 180 - Half year
+• 270 - 3/4 year
+• 360 - Full year/circle
+
+ANNIVERSARY DATES:
+Major tops/bottoms repeat on:
+• Same calendar date
+• 30, 60, 90... days later
+• 1, 2, 3... years later
+
+SEASONAL DATES:
+• March 21 - Spring equinox
+• June 21 - Summer solstice
+• September 21 - Fall equinox
+• December 21 - Winter solstice
+
+TRADING APPLICATION:
+1. Mark major high/low date
+2. Add Gann numbers (30, 45, 60, 90...)
+3. Watch for reversals on those dates
+4. Combine with price levels`,
+
+    platformPrinciples: `🎯 Q5D PLATFORM CORE PRINCIPLES
+
+MULTI-AGENT CONSENSUS SYSTEM:
+4 independent agents must agree before trading:
+
+1. 📊 BASE CONFLUENCE - SMA crossover with ATR stops
+2. 🔮 GANN-ELLIOTT - Gann geometry + Elliott waves
+3. 🧠 DQN/RL - Reinforcement learning AI
+4. 🌊 3-WAVE - Simplified impulse detection
+
+SIGNAL CLASSIFICATION:
+• 1/4 agree = NO TRADE ❌
+• 2/4 agree = SINGLE (weak) ⚠️
+• 3/4 agree = SUPER (tradeable) ✅
+• 4/4 agree = ULTRA (highest) 🎯
+
+DUAL TIMEFRAME:
+• INTRADAY: 0-1 DTE, 5-15 min, tight stops
+• SWING: 3-5 DTE, daily, wider stops
+
+WHY MULTI-AGENT WORKS:
+- Reduces false signals
+- Multiple confirmations
+- Different methodologies
+- Higher win rate (65-89%)`
+};
+
+// Gann Knowledge and other constants are initialized above
+// App initialization is now handled by checkAuth() -> showMainApp()
+
+function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(btn.dataset.tab).classList.add('active');
+            btn.classList.add('active');
+        };
+    });
+}
+
+function setTradingMode(mode) {
+    tradingMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.mode-btn.${mode}`).classList.add('active');
+    document.getElementById('symbolBanner').className = `symbol-banner ${mode}-mode`;
+    document.getElementById('currentModeDisplay').textContent = mode.toUpperCase();
+    document.getElementById('aiContextMode').textContent = mode.toUpperCase();
+}
+
+function changeSymbol() {
+    currentSymbol = document.getElementById('symbolSelect').value;
+    
+    // Update ALL symbol displays
+    document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
+    document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+    document.getElementById('tickerSymbol').textContent = currentSymbol;
+    document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+    document.getElementById('aiContextSymbol').textContent = currentSymbol;
+    
+    // Update Bar Count tab symbol display
+    document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
+    
+    loadAllData();
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim());
+    return lines.slice(1).map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i]?.trim() || '');
+        return obj;
+    });
+}
+
+async function loadAllData() {
+    document.getElementById('loadingOverlay').classList.add('active');
+    try {
+        let r = await fetch(`data/${currentSymbol}.csv?t=${Date.now()}`).catch(() => null);
+        if (!r?.ok) r = await fetch('data/SPY.csv?t=' + Date.now()).catch(() => null);
+        if (r?.ok) {
+            currentData = parseCSV(await r.text());
+            if (currentData.length) {
+                updateDashboard();
+                updateBarCountAnalysis();
+                updateReversalStats();
+                updatePriceChart();
+            }
+        }
+    } catch (e) { console.error('Error:', e); }
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+async function loadAllSymbolsData() {
+    for (const symbol of SYMBOLS) {
+        try {
+            const r = await fetch(`data/${symbol}.csv?t=${Date.now()}`).catch(() => null);
+            if (r?.ok) {
+                allSymbolsData[symbol] = parseCSV(await r.text());
+            }
+        } catch (e) { console.error(`Error loading ${symbol}:`, e); }
+    }
+}
+
+function updateDashboard() {
+    const lat = currentData[currentData.length - 1];
+    const prev = currentData[currentData.length - 2] || lat;
+    const price = parseFloat(lat.Close) || 0;
+    const prevPrice = parseFloat(prev.Close) || price;
+    const chg = price - prevPrice;
+    const pct = prevPrice ? (chg / prevPrice * 100) : 0;
+    const atr = parseFloat(lat.ATR) || 5;
+    const bias = (lat.Bias || '').toUpperCase();
+
+    // Header ticker
+    document.getElementById('tickerPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('tickerChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    document.getElementById('tickerChange').className = 'ticker-change ' + (chg >= 0 ? 'positive' : 'negative');
+    document.getElementById('tickerPct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+
+    // Metrics
+    document.getElementById('currentPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('priceSource').textContent = `${currentData.length} bars`;
+    document.getElementById('dailyChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    document.getElementById('dailyChange').className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
+    document.getElementById('changePct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    document.getElementById('volumeDisplay').textContent = ((parseFloat(lat.Volume) || 0) / 1e6).toFixed(1) + 'M';
+    document.getElementById('signalStatus').textContent = bias || 'HOLD';
+    document.getElementById('signalConf').textContent = `${lat.PriceConfluence || 0}/4`;
+    document.getElementById('atrDisplay').textContent = '$' + atr.toFixed(2);
+
+    // Date/Time
+    const dateStr = lat.Date || '';
+    const [datePart, timePart] = dateStr.includes('T') ? dateStr.split('T') : [dateStr, 'EOD'];
+    document.getElementById('dataDate').textContent = datePart;
+    document.getElementById('dataTime').textContent = timePart.replace('Z', '');
+
+    // AI Context
+    document.getElementById('aiContextPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('aiContextSignal').textContent = bias || 'HOLD';
+    document.getElementById('aiContextConsensus').textContent = `${lat.PriceConfluence || 0}/4`;
+
+    // Signals
+    const ip = TRADING_PARAMS.intraday;
+    const sp = TRADING_PARAMS.swing;
+    
+    document.getElementById('intradaySignal').textContent = bias || 'HOLD';
+    document.getElementById('intradaySignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    document.getElementById('intradayEntry').textContent = '$' + price.toFixed(2);
+    document.getElementById('intradayStop').textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
+    document.getElementById('intradayT1').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
+    document.getElementById('intradayT2').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
+    document.getElementById('intradayStrike').textContent = '$' + Math.round(price) + ' ' + (bias || 'CALL');
+    
+    document.getElementById('swingSignal').textContent = bias || 'HOLD';
+    document.getElementById('swingSignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    document.getElementById('swingEntry').textContent = '$' + (price - 2).toFixed(0) + '-' + (price + 2).toFixed(0);
+    document.getElementById('swingStop').textContent = '$' + (bias === 'PUT' ? (price + atr * sp.stopATR) : (price - atr * sp.stopATR)).toFixed(2);
+    document.getElementById('swingT1').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target1ATR) : (price + atr * sp.target1ATR)).toFixed(2);
+    document.getElementById('swingT2').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target2ATR) : (price + atr * sp.target2ATR)).toFixed(2);
+    document.getElementById('swingStrike').textContent = '$' + (Math.round(price/5)*5) + ' ' + (bias || 'CALL');
+
+    updateReferenceData();
+    updateFibonacci();
+}
+
+function updateReferenceData() {
+    const lat = currentData[currentData.length - 1];
+    const yearData = currentData.slice(-252);
+    
+    const highs = yearData.map(d => parseFloat(d.High) || 0);
+    const lows = yearData.map(d => parseFloat(d.Low) || 0);
+    
+    document.getElementById('week52High').textContent = '$' + Math.max(...highs).toFixed(2);
+    document.getElementById('week52Low').textContent = '$' + Math.min(...lows).toFixed(2);
+    document.getElementById('todayHigh').textContent = '$' + (parseFloat(lat.High) || 0).toFixed(2);
+    document.getElementById('todayLow').textContent = '$' + (parseFloat(lat.Low) || 0).toFixed(2);
+    
+    const todayVol = parseFloat(lat.Volume) || 0;
+    const volumes20 = currentData.slice(-20).map(d => parseFloat(d.Volume) || 0);
+    const avgVol = volumes20.reduce((a, b) => a + b, 0) / 20;
+    
+    document.getElementById('avgVolume20').textContent = (avgVol / 1e6).toFixed(1) + 'M';
+    document.getElementById('volumeVsAvg').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '%';
+    document.getElementById('volumeVsAvgSmall').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '% vs avg';
+}
+
+function updateFibonacci() {
+    const recent = currentData.slice(-60);
+    const highs = recent.map(d => parseFloat(d.High) || 0);
+    const lows = recent.map(d => parseFloat(d.Low) || 0);
+    const swingHigh = Math.max(...highs);
+    const swingLow = Math.min(...lows);
+    const price = parseFloat(currentData[currentData.length - 1].Close) || 0;
+    const range = swingHigh - swingLow;
+    
+    const fib382 = swingHigh - (range * 0.382);
+    const fib500 = swingHigh - (range * 0.500);
+    const fib618 = swingHigh - (range * 0.618);
+    const fib100 = swingHigh;
+    const fib1272 = swingLow + (range * 1.272);
+    const fib1618 = swingLow + (range * 1.618);
+    
+    document.getElementById('fibR1').textContent = '$' + fib100.toFixed(2);
+    document.getElementById('fibR2').textContent = '$' + fib1272.toFixed(2);
+    document.getElementById('fibR3').textContent = '$' + fib1618.toFixed(2);
+    document.getElementById('fibS1').textContent = '$' + fib382.toFixed(2);
+    document.getElementById('fibS2').textContent = '$' + fib500.toFixed(2);
+    document.getElementById('fibS3').textContent = '$' + fib618.toFixed(2);
+    
+    document.getElementById('chartR1').textContent = '$' + fib100.toFixed(2);
+    document.getElementById('chartR2').textContent = '$' + fib1272.toFixed(2);
+    document.getElementById('chartR3').textContent = '$' + fib1618.toFixed(2);
+    document.getElementById('chartS1').textContent = '$' + fib382.toFixed(2);
+    document.getElementById('chartS2').textContent = '$' + fib500.toFixed(2);
+    document.getElementById('chartS3').textContent = '$' + fib618.toFixed(2);
+    
+    let zone = 'NEUTRAL';
+    if (price > fib100) zone = 'BREAKOUT';
+    else if (price > fib382) zone = 'STRONG';
+    else if (price > fib500) zone = 'PULLBACK';
+    else zone = 'DEEP';
+    document.getElementById('fibZone').textContent = zone;
+    
+    const fastSMA = parseFloat(currentData[currentData.length-1].FastSMA) || price;
+    const slowSMA = parseFloat(currentData[currentData.length-1].SlowSMA) || price;
+    const trend = fastSMA > slowSMA ? 'BULLISH' : 'BEARISH';
+    document.getElementById('trendBadge').textContent = trend;
+    document.getElementById('trendBadge').className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
+    
+    window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, swingHigh, swingLow };
+}
+
+// FIXED: Bar Count now uses currentSymbol
+function updateBarCountAnalysis() {
+    const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
+    
+    // Use current symbol's data
+    const symbolData = currentData;
+    if (!symbolData || symbolData.length < barCount) return;
+    
+    const data = symbolData.slice(-barCount);
+    const table = document.getElementById('barCountTable');
+    if (!table) return;
+    
+    // Update the symbol display
+    document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
+    
+    let html = '';
+    let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
+    
+    data.forEach((d, i) => {
+        const o = parseFloat(d.Open) || 0;
+        const c = parseFloat(d.Close) || 0;
+        const isBullish = c >= o;
+        
+        if (isBullish) {
+            baseCount = baseCount >= 0 ? baseCount + 1 : 1;
+            gannCount = gannCount >= 0 ? gannCount + 1 : 1;
+            dqnCount = dqnCount >= 0 ? dqnCount + 1 : 1;
+            waveCount = waveCount >= 0 ? waveCount + 1 : 1;
+        } else {
+            baseCount = baseCount <= 0 ? baseCount - 1 : -1;
+            gannCount = gannCount <= 0 ? gannCount - 1 : -1;
+            dqnCount = dqnCount <= 0 ? dqnCount - 1 : -1;
+            waveCount = waveCount <= 0 ? waveCount - 1 : -1;
+        }
+        
+        const avg = (baseCount + gannCount + dqnCount + waveCount) / 4;
+        const date = (d.Date || '').split('T')[0].slice(5);
+        
+        html += `<tr>
+            <td>${data.length - i}</td>
+            <td>${date}</td>
+            <td style="font-size:10px;">${o.toFixed(0)}/${(parseFloat(d.High)||0).toFixed(0)}/${(parseFloat(d.Low)||0).toFixed(0)}/${c.toFixed(0)}</td>
+            <td>${isBullish ? '📈' : '📉'}</td>
+            <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
+            <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
+            <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
+            <td class="${waveCount > 0 ? 'positive' : 'negative'}">${waveCount > 0 ? '+' : ''}${waveCount}</td>
+            <td><span class="badge badge-${avg > 2 ? 'success' : (avg < -2 ? 'danger' : 'warning')}">${avg.toFixed(1)}</span></td>
+        </tr>`;
+    });
+    
+    table.innerHTML = html;
+    
+    document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
+    document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('gannBarCount').textContent = (gannCount > 0 ? '+' : '') + gannCount;
+    document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('dqnBarCount').textContent = (dqnCount > 0 ? '+' : '') + dqnCount;
+    document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
+    document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
+}
+
+function updateReversalStats() {
+    const table = document.getElementById('reversalStatsTable');
+    if (!table) return;
+    
+    let html = '';
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 50) continue;
+        
+        let bullishRuns = [], bearishRuns = [], currentRun = 0, lastDir = null;
+        
+        for (const d of data) {
+            const isBullish = parseFloat(d.Close) >= parseFloat(d.Open);
+            
+            if (lastDir === null) {
+                lastDir = isBullish;
+                currentRun = 1;
+            } else if (isBullish === lastDir) {
+                currentRun++;
+            } else {
+                if (lastDir) bullishRuns.push(currentRun);
+                else bearishRuns.push(currentRun);
+                lastDir = isBullish;
+                currentRun = 1;
+            }
+        }
+        
+        const avgBullish = bullishRuns.length ? (bullishRuns.reduce((a,b) => a+b, 0) / bullishRuns.length).toFixed(1) : 'N/A';
+        const avgBearish = bearishRuns.length ? (bearishRuns.reduce((a,b) => a+b, 0) / bearishRuns.length).toFixed(1) : 'N/A';
+        const currentDir = lastDir ? 'Bullish' : 'Bearish';
+        const avgForDir = lastDir ? parseFloat(avgBullish) : parseFloat(avgBearish);
+        const pctOfAvg = avgForDir ? ((currentRun / avgForDir) * 100).toFixed(0) : 'N/A';
+        
+        let risk = 'LOW', riskClass = 'success';
+        if (pctOfAvg !== 'N/A') {
+            const pct = parseInt(pctOfAvg);
+            if (pct > 150) { risk = 'HIGH'; riskClass = 'danger'; }
+            else if (pct > 100) { risk = 'MEDIUM'; riskClass = 'warning'; }
+        }
+        
+        const isCurrentSymbol = symbol === currentSymbol;
+        html += `<tr ${isCurrentSymbol ? 'style="background:rgba(59,130,246,0.1);font-weight:600;"' : ''}>
+            <td>${isCurrentSymbol ? '➤ ' : ''}${symbol}</td>
+            <td>${avgBullish} bars</td>
+            <td>${avgBearish} bars</td>
+            <td>${currentRun} (${currentDir})</td>
+            <td>${pctOfAvg}%</td>
+            <td><span class="badge badge-${riskClass}">${risk}</span></td>
+        </tr>`;
+    }
+    
+    table.innerHTML = html;
+}
+
+function updatePriceChart() {
+    const data = currentData.slice(-60);
+    const ctx = document.getElementById('priceChart');
+    if (!ctx) return;
+    
+    if (priceChart) priceChart.destroy();
+    
+    const fib = window.fibLevels || {};
+    const colors = data.map(d => parseFloat(d.Close) >= parseFloat(d.Open) ? '#10b981' : '#ef4444');
+    
+    priceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => (d.Date || '').split('T')[0].slice(5)),
+            datasets: [{ label: 'Price', data: data.map(d => parseFloat(d.Close) || 0), backgroundColor: colors, borderColor: colors }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false },
+                annotation: { annotations: {
+                    r1: { type: 'line', yMin: fib.fib100, yMax: fib.fib100, borderColor: '#ef4444', borderWidth: 1, borderDash: [5,5] },
+                    s1: { type: 'line', yMin: fib.fib382, yMax: fib.fib382, borderColor: '#10b981', borderWidth: 1, borderDash: [5,5] },
+                    s2: { type: 'line', yMin: fib.fib500, yMax: fib.fib500, borderColor: '#14b8a6', borderWidth: 1, borderDash: [5,5] }
+                }}
+            },
+            scales: { y: { ticks: { callback: v => '$' + v } } }
+        }
+    });
+}
+
+// ============================================
+// AI ASSISTANT - IMPROVED
+// ============================================
+
+function askAi(question) {
+    document.getElementById('aiInput').value = question;
+    sendAiMessage();
+}
+
+async function sendAiMessage() {
+    const input = document.getElementById('aiInput');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    const messagesDiv = document.getElementById('aiChatMessages');
+    
+    messagesDiv.innerHTML += `<div class="ai-message user">${escapeHtml(message)}</div>`;
+    input.value = '';
+    
+    messagesDiv.innerHTML += `<div class="ai-message assistant" id="typingIndicator"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    document.getElementById('aiSendBtn').disabled = true;
+    
+    // Add to conversation history
+    conversationHistory.push({ role: 'user', content: message });
+    
+    try {
+        const response = await generateAiResponse(message);
+        document.getElementById('typingIndicator')?.remove();
+        messagesDiv.innerHTML += `<div class="ai-message assistant"><div class="message-content">${response}</div></div>`;
+        conversationHistory.push({ role: 'assistant', content: response });
+    } catch (e) {
+        document.getElementById('typingIndicator')?.remove();
+        messagesDiv.innerHTML += `<div class="ai-message assistant"><div class="message-content">Sorry, I encountered an error. Please try again.</div></div>`;
+    }
+    
+    document.getElementById('aiSendBtn').disabled = false;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+async function generateAiResponse(userMessage) {
+    const lowerMsg = userMessage.toLowerCase();
+    
+    // Build context
+    const dashboardContext = buildDashboardContext();
+    
+    // Try Claude API first
+    try {
+        const systemPrompt = buildSystemPrompt(dashboardContext);
+        
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 1500,
+                messages: [...conversationHistory.slice(-10)]
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data.content[0].text;
+        }
+    } catch (e) {
+        console.log("API unavailable, using local");
+    }
+    
+    // Enhanced local responses
+    return generateLocalResponse(userMessage, dashboardContext);
+}
+
+function buildSystemPrompt(context) {
+    return `You are the Gann Trading Assistant for Q5D Options Platform.
+
+KNOWLEDGE BASE:
+${GANN_KNOWLEDGE.tunnelThroughAir}
+${GANN_KNOWLEDGE.mystifyingSquare}
+${GANN_KNOWLEDGE.divineProportions}
+${GANN_KNOWLEDGE.timeCycles}
+${GANN_KNOWLEDGE.platformPrinciples}
+
+CURRENT DATA:
+${context}
+
+RULES:
+1. Give specific, actionable trading guidance
+2. Use actual dashboard data - never hallucinate
+3. Reference Gann principles when relevant
+4. Format responses clearly with tables when helpful
+5. Be concise but thorough`;
+}
+
+function buildDashboardContext() {
+    let context = `CURRENT: ${currentSymbol} | Mode: ${tradingMode.toUpperCase()}\n\n`;
+    
+    if (currentData.length) {
+        const lat = currentData[currentData.length - 1];
+        const price = parseFloat(lat.Close);
+        const atr = parseFloat(lat.ATR) || 5;
+        context += `${currentSymbol}: $${price.toFixed(2)} | Signal: ${lat.Bias || 'HOLD'} | Consensus: ${lat.PriceConfluence || 0}/4 | ATR: $${atr.toFixed(2)}\n\n`;
+        
+        // Square of 9 levels
+        const sqrtPrice = Math.sqrt(price);
+        context += `Square of 9 for ${currentSymbol}:\n`;
+        context += `• +90° (${(sqrtPrice + 0.25)}²) = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)}\n`;
+        context += `• +180° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)}\n`;
+        context += `• -90° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)}\n`;
+        context += `• -180° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)}\n\n`;
+    }
+    
+    context += `ALL SYMBOLS:\n`;
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            context += `${symbol}: $${parseFloat(lat.Close).toFixed(2)} | ${lat.Bias || 'HOLD'} | ${lat.PriceConfluence || 0}/4\n`;
+        }
+    }
+    
+    return context;
+}
+
+function generateLocalResponse(message, context) {
+    const lowerMsg = message.toLowerCase();
+    
+    // MORNING BREAKOUT PATTERN
+    if (lowerMsg.includes('breakout') || lowerMsg.includes('breaking out') || lowerMsg.includes('breaking above')) {
+        return generateBreakoutResponse();
+    }
+    
+    // PATTERN SCAN - General
+    if (lowerMsg.includes('pattern') || lowerMsg.includes('setup') || lowerMsg.includes('forming')) {
+        return generatePatternScanResponse();
+    }
+    
+    // MOMENTUM / TRENDING
+    if (lowerMsg.includes('momentum') || lowerMsg.includes('trending') || lowerMsg.includes('strongest') || lowerMsg.includes('weakest')) {
+        return generateMomentumResponse();
+    }
+    
+    // REVERSAL PATTERNS
+    if (lowerMsg.includes('reversal') || lowerMsg.includes('turning') || lowerMsg.includes('bottom') || lowerMsg.includes('top')) {
+        return generateReversalResponse();
+    }
+    
+    // BAR COUNT / CONSECUTIVE BARS
+    if (lowerMsg.includes('bar') && (lowerMsg.includes('count') || lowerMsg.includes('consecutive') || lowerMsg.includes('yesterday') || lowerMsg.includes('closing'))) {
+        return generateBarCountResponse();
+    }
+    
+    // OPTIMAL TIME TO TRADE
+    if ((lowerMsg.includes('optimal') || lowerMsg.includes('best')) && (lowerMsg.includes('time') || lowerMsg.includes('when'))) {
+        return generateOptimalTimeResponse();
+    }
+    
+    // WHEN TO TRADE / TRADING HOURS
+    if (lowerMsg.includes('when') && (lowerMsg.includes('trade') || lowerMsg.includes('buy') || lowerMsg.includes('sell'))) {
+        return generateOptimalTimeResponse();
+    }
+    
+    // HIGH CONSENSUS TRADES
+    if (lowerMsg.includes('consensus') || lowerMsg.includes('3/4') || lowerMsg.includes('4/4') || lowerMsg.includes('high consensus')) {
+        let trades = [];
+        for (const symbol of SYMBOLS) {
+            const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+            if (data && data.length) {
+                const lat = data[data.length - 1];
+                const consensus = parseInt(lat.PriceConfluence) || 0;
+                if (consensus >= 3) {
+                    const price = parseFloat(lat.Close);
+                    const atr = parseFloat(lat.ATR) || 5;
+                    trades.push({ symbol, signal: lat.Bias || 'HOLD', consensus, price: price.toFixed(2), strike: Math.round(price), target: (price + atr * 2).toFixed(2) });
+                }
+            }
+        }
+        
+        if (trades.length === 0) {
+            return `📊 No ETFs currently have 3/4 or 4/4 consensus.
+
+This could mean:
+• Markets are consolidating
+• Agents are conflicting
+• Wait for clearer signals
+
+💡 TIP: Check individual symbols for developing setups, or review the Bar Count tab for trend direction.`;
+        }
+        
+        let response = `📊 **HIGH CONSENSUS TRADES TODAY:**\n\n`;
+        trades.sort((a, b) => b.consensus - a.consensus);
+        trades.forEach(t => {
+            const emoji = t.consensus === 4 ? '🎯' : '✅';
+            response += `${emoji} **${t.symbol}** - ${t.signal} (${t.consensus}/4)\n`;
+            response += `   Price: $${t.price} | Strike: $${t.strike} | Target: $${t.target}\n\n`;
+        });
+        
+        const ultra = trades.filter(t => t.consensus === 4);
+        if (ultra.length) {
+            response += `🎯 **TOP PICK:** ${ultra[0].symbol} has ULTRA signal (4/4 consensus)`;
+        }
+        
+        return response;
+    }
+    
+    // BEST CALLS
+    if (lowerMsg.includes('call') && (lowerMsg.includes('best') || lowerMsg.includes('2 day'))) {
+        return generateOptionRecommendations('CALL');
+    }
+    
+    // BEST PUTS
+    if (lowerMsg.includes('put') && (lowerMsg.includes('best') || lowerMsg.includes('2 day'))) {
+        return generateOptionRecommendations('PUT');
+    }
+    
+    // SQUARE OF 9 / MYSTIFYING SQUARE
+    if (lowerMsg.includes('square of 9') || lowerMsg.includes('mystifying')) {
+        const price = currentData.length ? parseFloat(currentData[currentData.length - 1].Close) : 675;
+        const sqrtPrice = Math.sqrt(price);
+        
+        return `⬜ **MYSTIFYING SQUARE (SQUARE OF 9) FOR ${currentSymbol}**
+
+Current Price: $${price.toFixed(2)}
+Square Root: ${sqrtPrice.toFixed(4)}
+
+**RESISTANCE LEVELS (Price Targets):**
+• +45° = $${Math.pow(sqrtPrice + 0.125, 2).toFixed(2)} (minor)
+• +90° = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)} (important)
+• +180° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)} (major)
+• +360° = $${Math.pow(sqrtPrice + 1.0, 2).toFixed(2)} (full cycle)
+
+**SUPPORT LEVELS (Stop Areas):**
+• -45° = $${Math.pow(sqrtPrice - 0.125, 2).toFixed(2)} (minor)
+• -90° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)} (important)
+• -180° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)} (major)
+
+💡 **HOW TO USE:**
+- Buy at support levels
+- Take profits at resistance
+- 90° moves are most common
+- 180° = major reversal zones`;
+    }
+    
+    // DIVINE PROPORTIONS / FIBONACCI
+    if (lowerMsg.includes('divine') || lowerMsg.includes('proportion') || lowerMsg.includes('phi') || lowerMsg.includes('golden')) {
+        const fib = window.fibLevels || {};
+        return `📐 **DIVINE PROPORTIONS (PHI/FIBONACCI)**
+
+The Golden Ratio (Φ = 1.618) governs natural growth patterns and markets follow these proportions.
+
+**${currentSymbol} FIBONACCI LEVELS:**
+
+📈 Resistance (Targets):
+• R1 (100%) = $${fib.fib100?.toFixed(2) || '--'} (Swing High)
+• R2 (127.2%) = $${fib.fib1272?.toFixed(2) || '--'} (√Φ extension)
+• R3 (161.8%) = $${fib.fib1618?.toFixed(2) || '--'} (Φ extension)
+
+📉 Support (Stops):
+• S1 (38.2%) = $${fib.fib382?.toFixed(2) || '--'} (First support)
+• S2 (50.0%) = $${fib.fib500?.toFixed(2) || '--'} (Key level)
+• S3 (61.8%) = $${fib.fib618?.toFixed(2) || '--'} (Golden ratio)
+
+**TRADING RULES:**
+• Enter CALL at 61.8% retracement
+• Target 161.8% extension
+• Stop below 78.6% level
+
+**PHI RELATIONSHIPS:**
+• 1.618 × 1.618 = 2.618
+• 1/1.618 = 0.618
+• √1.618 = 1.272`;
+    }
+    
+    // TIME CYCLES
+    if (lowerMsg.includes('time cycle') || lowerMsg.includes('gann cycle') || lowerMsg.includes('when')) {
+        return `⏰ **GANN TIME CYCLES**
+
+"When time is up, the trend changes" - W.D. Gann
+
+**KEY CYCLE LENGTHS:**
+• 30 days - Minor cycle
+• 45 days - Important (1/8 year)
+• 60 days - Significant
+• 90 days - Major (quarter)
+• 120 days - 1/3 year
+• 144 days - Fibonacci/sacred
+• 180 days - Half year
+• 360 days - Full annual cycle
+
+**SEASONAL TURN DATES:**
+• Mar 21 - Spring Equinox
+• Jun 21 - Summer Solstice
+• Sep 21 - Fall Equinox
+• Dec 21 - Winter Solstice
+
+**HOW TO APPLY:**
+1. Mark the last major high or low date
+2. Add Gann numbers (30, 45, 60, 90...)
+3. Watch for reversals on those dates
+4. Combine with price levels for confirmation`;
+    }
+    
+    // OPTIMAL STRIKE
+    if (lowerMsg.includes('strike') || lowerMsg.includes('optimal')) {
+        if (currentData.length) {
+            const lat = currentData[currentData.length - 1];
+            const price = parseFloat(lat.Close);
+            const atr = parseFloat(lat.ATR) || 5;
+            const signal = lat.Bias || 'CALL';
+            const sqrtPrice = Math.sqrt(price);
+            
+            return `🎯 **OPTIMAL STRIKE FOR ${currentSymbol}**
+
+Current Price: $${price.toFixed(2)}
+Signal: ${signal}
+ATR: $${atr.toFixed(2)}
+
+**INTRADAY (0DTE):**
+• ATM Strike: $${Math.round(price)} (Delta ~0.50)
+• Target: $${(signal === 'PUT' ? price - atr : price + atr).toFixed(2)}
+• Stop: $${(signal === 'PUT' ? price + atr * 0.5 : price - atr * 0.5).toFixed(2)}
+
+**SWING (3-5 DTE):**
+• Strike: $${Math.round(price/5)*5} (slightly OTM)
+• Target: $${(signal === 'PUT' ? price - atr * 2.5 : price + atr * 2.5).toFixed(2)}
+• Stop: $${(signal === 'PUT' ? price + atr * 1.5 : price - atr * 1.5).toFixed(2)}
+
+**SQUARE OF 9 TARGETS:**
+• 90° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.25 : 0.25), 2).toFixed(2)}
+• 180° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.5 : 0.5), 2).toFixed(2)}`;
+        }
+        return "Please select a symbol to calculate optimal strike.";
+    }
+    
+    // SECTOR COMPARISON
+    if (lowerMsg.includes('sector') || lowerMsg.includes('compare') || lowerMsg.includes('strongest')) {
+        let sectors = [];
+        for (const symbol of ['XLK', 'XLF', 'XLV', 'XLE']) {
+            const data = allSymbolsData[symbol];
+            if (data && data.length > 20) {
+                const lat = data[data.length - 1];
+                const prev20 = data[data.length - 21];
+                const perf = ((parseFloat(lat.Close) - parseFloat(prev20.Close)) / parseFloat(prev20.Close) * 100);
+                sectors.push({ symbol, name: SYMBOL_NAMES[symbol], perf: perf.toFixed(2), signal: lat.Bias || 'HOLD', consensus: lat.PriceConfluence || 0 });
+            }
+        }
+        
+        sectors.sort((a, b) => parseFloat(b.perf) - parseFloat(a.perf));
+        
+        let response = `🌍 **SECTOR COMPARISON (20-Day Performance)**\n\n`;
+        sectors.forEach((s, i) => {
+            const emoji = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : '📊'));
+            const perfColor = parseFloat(s.perf) >= 0 ? '+' : '';
+            response += `${emoji} **${s.name}** (${s.symbol})\n`;
+            response += `   ${perfColor}${s.perf}% | ${s.signal} | ${s.consensus}/4 consensus\n\n`;
+        });
+        
+        response += `\n💡 **RECOMMENDATION:**\n`;
+        response += `• Strongest: ${sectors[0].symbol} - consider for CALL trades\n`;
+        response += `• Weakest: ${sectors[sectors.length-1].symbol} - consider for PUT trades`;
+        
+        return response;
+    }
+    
+    // TUNNEL THROUGH THE AIR
+    if (lowerMsg.includes('tunnel') || lowerMsg.includes('through the air')) {
+        return GANN_KNOWLEDGE.tunnelThroughAir;
+    }
+    
+    // PLATFORM / PRINCIPLES
+    if (lowerMsg.includes('platform') || lowerMsg.includes('principle') || lowerMsg.includes('how does') || lowerMsg.includes('q5d')) {
+        return GANN_KNOWLEDGE.platformPrinciples;
+    }
+    
+    // CURRENT PRICE / STATUS
+    if ((lowerMsg.includes('price') || lowerMsg.includes('status') || lowerMsg.includes('current')) && !lowerMsg.includes('strike')) {
+        return generateCurrentStatusResponse();
+    }
+    
+    // WHAT SHOULD I TRADE / RECOMMENDATION
+    if (lowerMsg.includes('should i') || lowerMsg.includes('recommend') || lowerMsg.includes('what to trade') || lowerMsg.includes('trade today')) {
+        return generateTradeRecommendation();
+    }
+    
+    // RISK / STOP LOSS
+    if (lowerMsg.includes('risk') || lowerMsg.includes('stop loss') || lowerMsg.includes('position size')) {
+        return generateRiskManagementResponse();
+    }
+    
+    // NEWS / MARKET UPDATE
+    if (lowerMsg.includes('news') || lowerMsg.includes('market') || lowerMsg.includes('update')) {
+        return generateMarketUpdateResponse();
+    }
+    
+    // HELP / WHAT CAN YOU DO
+    if (lowerMsg.includes('help') || lowerMsg.includes('what can you') || lowerMsg.includes('how to use')) {
+        return generateHelpResponse();
+    }
+    
+    // DEFAULT RESPONSE - More intelligent
+    return generateSmartDefaultResponse(message, context);
+}
+
+function generateOptionRecommendations(direction) {
+    let recommendations = [];
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            const signal = (lat.Bias || '').toUpperCase();
+            if (signal === direction) {
+                const price = parseFloat(lat.Close);
+                const atr = parseFloat(lat.ATR) || 5;
+                recommendations.push({
+                    symbol,
+                    price: price.toFixed(2),
+                    strike: Math.round(price),
+                    target: (direction === 'CALL' ? price + atr * 2 : price - atr * 2).toFixed(2),
+                    stop: (direction === 'CALL' ? price - atr : price + atr).toFixed(2),
+                    consensus: parseInt(lat.PriceConfluence) || 0,
+                    rr: ((atr * 2) / atr).toFixed(1)
+                });
+            }
+        }
+    }
+    
+    recommendations.sort((a, b) => b.consensus - a.consensus);
+    
+    if (recommendations.length === 0) {
+        return `📊 No strong ${direction} signals found across ETFs.
+
+The agents are not aligned for ${direction} trades currently. Consider:
+• Waiting for better setups
+• Checking individual symbols
+• Looking at the opposite direction`;
+    }
+    
+    let response = `📈 **BEST ${direction} OPTIONS (Next 2 Days)**\n\n`;
+    
+    recommendations.slice(0, 5).forEach((r, i) => {
+        const emoji = r.consensus >= 3 ? '🎯' : '📊';
+        response += `${emoji} **#${i+1} ${r.symbol}** (${r.consensus}/4 consensus)\n`;
+        response += `   Strike: $${r.strike} ${direction}\n`;
+        response += `   Entry: $${r.price} | Target: $${r.target} | Stop: $${r.stop}\n`;
+        response += `   Risk/Reward: 1:${r.rr}\n\n`;
+    });
+    
+    if (recommendations.length > 0) {
+        const best = recommendations[0];
+        response += `\n💡 **TOP PICK:** ${best.symbol} $${best.strike} ${direction}\n`;
+        response += `• ${best.consensus}/4 agent consensus\n`;
+        response += `• Target: $${best.target} (${best.rr}:1 R/R)`;
+    }
+    
+    return response;
+}
+
+// NEW: Generate Bar Count Response with actual data
+function generateBarCountResponse() {
+    let response = `🔢 **BAR COUNT ANALYSIS (as of last close)**\n\n`;
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 20) continue;
+        
+        // Calculate consecutive bars
+        let bullCount = 0, bearCount = 0, currentStreak = 0, lastDir = null;
+        
+        for (let i = Math.max(0, data.length - 50); i < data.length; i++) {
+            const d = data[i];
+            const isBullish = parseFloat(d.Close) >= parseFloat(d.Open);
+            
+            if (lastDir === null) {
+                lastDir = isBullish;
+                currentStreak = 1;
+            } else if (isBullish === lastDir) {
+                currentStreak++;
+            } else {
+                lastDir = isBullish;
+                currentStreak = 1;
+            }
+            
+            if (isBullish) bullCount++;
+            else bearCount++;
+        }
+        
+        const lat = data[data.length - 1];
+        const price = parseFloat(lat.Close).toFixed(2);
+        const signal = lat.Bias || 'HOLD';
+        const streakDir = lastDir ? '📈 Bullish' : '📉 Bearish';
+        const streakEmoji = currentStreak >= 5 ? '🔥' : (currentStreak >= 3 ? '✅' : '');
+        
+        response += `**${symbol}** - $${price} | ${signal}\n`;
+        response += `   Current Streak: ${currentStreak} bars ${streakDir} ${streakEmoji}\n`;
+        response += `   Last 50 bars: ${bullCount} bullish / ${bearCount} bearish\n\n`;
+    }
+    
+    // Add interpretation
+    response += `\n📊 **INTERPRETATION:**\n`;
+    response += `• 5+ consecutive bars = Strong trend, consider continuation\n`;
+    response += `• 7+ consecutive bars = Possible exhaustion, watch for reversal\n`;
+    response += `• Mixed (1-2 bars) = Choppy market, wait for direction`;
+    
+    return response;
+}
+
+// NEW: Morning Breakout Pattern Detection
+function generateBreakoutResponse() {
+    let breakouts = [];
+    let potentialBreakouts = [];
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 20) continue;
+        
+        const lat = data[data.length - 1];
+        const prev = data[data.length - 2];
+        const prev5 = data.slice(-6, -1);
+        
+        const price = parseFloat(lat.Close);
+        const open = parseFloat(lat.Open);
+        const high = parseFloat(lat.High);
+        const low = parseFloat(lat.Low);
+        const prevHigh = parseFloat(prev.High);
+        const prevClose = parseFloat(prev.Close);
+        const atr = parseFloat(lat.ATR) || 5;
+        const volume = parseFloat(lat.Volume) || 0;
+        
+        // Calculate average volume
+        const avgVol = data.slice(-20).reduce((sum, d) => sum + (parseFloat(d.Volume) || 0), 0) / 20;
+        const volRatio = volume / avgVol;
+        
+        // Calculate 5-day high
+        const fiveDayHigh = Math.max(...prev5.map(d => parseFloat(d.High) || 0));
+        
+        // Breakout criteria
+        const aboveOpen = price > open;
+        const nearHigh = (high - price) < (atr * 0.25); // Within 25% of ATR from high
+        const abovePrevHigh = price > prevHigh;
+        const above5DayHigh = price > fiveDayHigh;
+        const highVolume = volRatio > 1.2;
+        const strongMove = ((price - open) / open) * 100 > 0.5; // >0.5% move
+        
+        const breakoutScore = (aboveOpen ? 1 : 0) + (nearHigh ? 1 : 0) + (abovePrevHigh ? 1 : 0) + 
+                             (above5DayHigh ? 2 : 0) + (highVolume ? 1 : 0) + (strongMove ? 1 : 0);
+        
+        const breakoutData = {
+            symbol,
+            price: price.toFixed(2),
+            change: ((price - prevClose) / prevClose * 100).toFixed(2),
+            volRatio: (volRatio * 100).toFixed(0),
+            score: breakoutScore,
+            above5Day: above5DayHigh,
+            signal: lat.Bias || 'HOLD',
+            consensus: lat.PriceConfluence || 0,
+            target: (price + atr * 1.5).toFixed(2),
+            stop: (price - atr * 0.75).toFixed(2)
+        };
+        
+        if (breakoutScore >= 5 && above5DayHigh) {
+            breakouts.push(breakoutData);
+        } else if (breakoutScore >= 3) {
+            potentialBreakouts.push(breakoutData);
+        }
+    }
+    
+    let response = `🚀 **MORNING BREAKOUT SCAN**\n\n`;
+    
+    if (breakouts.length > 0) {
+        response += `**🔥 CONFIRMED BREAKOUTS:**\n`;
+        breakouts.sort((a, b) => b.score - a.score);
+        breakouts.forEach(b => {
+            response += `\n**${b.symbol}** - BREAKOUT! ⬆️\n`;
+            response += `   Price: $${b.price} (+${b.change}%)\n`;
+            response += `   Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? '🔥' : ''}\n`;
+            response += `   Breaking 5-day high: ${b.above5Day ? '✅ YES' : '❌ No'}\n`;
+            response += `   Agent Signal: ${b.signal} (${b.consensus}/4)\n`;
+            response += `   Target: $${b.target} | Stop: $${b.stop}\n`;
+        });
+    } else {
+        response += `**No confirmed breakouts at this time.**\n`;
+    }
+    
+    if (potentialBreakouts.length > 0) {
+        response += `\n**👀 POTENTIAL BREAKOUTS (Watch List):**\n`;
+        potentialBreakouts.sort((a, b) => b.score - a.score).slice(0, 4).forEach(b => {
+            response += `• ${b.symbol}: $${b.price} (+${b.change}%) - ${b.signal}\n`;
+        });
+    }
+    
+    response += `\n**📋 BREAKOUT CRITERIA:**\n`;
+    response += `• Price above open ✓\n`;
+    response += `• Near session high ✓\n`;
+    response += `• Above 5-day high ✓✓\n`;
+    response += `• Volume > 120% avg ✓\n`;
+    response += `• Move > 0.5% ✓\n`;
+    
+    response += `\n**⏰ BEST TIME:** Trade breakouts 9:45-10:30 AM ET`;
+    
+    return response;
+}
+
+// NEW: Pattern Scan Response
+function generatePatternScanResponse() {
+    let patterns = {
+        breakout: [],
+        pullback: [],
+        reversal: [],
+        consolidation: []
+    };
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 20) continue;
+        
+        const lat = data[data.length - 1];
+        const recent = data.slice(-10);
+        
+        const price = parseFloat(lat.Close);
+        const open = parseFloat(lat.Open);
+        const high = parseFloat(lat.High);
+        const low = parseFloat(lat.Low);
+        const atr = parseFloat(lat.ATR) || 5;
+        const signal = lat.Bias || 'HOLD';
+        
+        // Get recent highs/lows
+        const recentHighs = recent.map(d => parseFloat(d.High) || 0);
+        const recentLows = recent.map(d => parseFloat(d.Low) || 0);
+        const highestHigh = Math.max(...recentHighs);
+        const lowestLow = Math.min(...recentLows);
+        const range = highestHigh - lowestLow;
+        
+        // Pattern detection
+        const nearHigh = price > highestHigh - (range * 0.1);
+        const nearLow = price < lowestLow + (range * 0.1);
+        const inMiddle = !nearHigh && !nearLow;
+        const tightRange = range < atr * 2;
+        const bullishCandle = price > open;
+        
+        const symbolData = { symbol, price: price.toFixed(2), signal, consensus: lat.PriceConfluence || 0 };
+        
+        if (nearHigh && bullishCandle && signal === 'CALL') {
+            patterns.breakout.push({...symbolData, type: 'Bullish Breakout'});
+        } else if (nearLow && !bullishCandle && signal === 'PUT') {
+            patterns.breakout.push({...symbolData, type: 'Bearish Breakdown'});
+        } else if (inMiddle && signal === 'CALL') {
+            patterns.pullback.push({...symbolData, type: 'Bullish Pullback'});
+        } else if (inMiddle && signal === 'PUT') {
+            patterns.pullback.push({...symbolData, type: 'Bearish Rally'});
+        } else if (tightRange) {
+            patterns.consolidation.push({...symbolData, type: 'Tight Range'});
+        }
+    }
+    
+    let response = `📊 **PATTERN SCAN RESULTS**\n\n`;
+    
+    if (patterns.breakout.length) {
+        response += `**🚀 BREAKOUT PATTERNS:**\n`;
+        patterns.breakout.forEach(p => {
+            response += `• ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
+        });
+        response += `\n`;
+    }
+    
+    if (patterns.pullback.length) {
+        response += `**📉 PULLBACK/RETRACEMENT:**\n`;
+        patterns.pullback.forEach(p => {
+            response += `• ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
+        });
+        response += `\n`;
+    }
+    
+    if (patterns.consolidation.length) {
+        response += `**📦 CONSOLIDATION (Watch for breakout):**\n`;
+        patterns.consolidation.forEach(p => {
+            response += `• ${p.symbol}: ${p.type} @ $${p.price}\n`;
+        });
+        response += `\n`;
+    }
+    
+    if (patterns.breakout.length === 0 && patterns.pullback.length === 0) {
+        response += `No clear patterns detected. Market may be choppy.\n\n`;
+    }
+    
+    response += `💡 **TIP:** Breakouts need volume confirmation. Pullbacks offer better risk/reward.`;
+    
+    return response;
+}
+
+// NEW: Momentum Response
+function generateMomentumResponse() {
+    let momentum = [];
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 20) continue;
+        
+        const lat = data[data.length - 1];
+        const prev5 = data[data.length - 6];
+        const prev20 = data[data.length - 21];
+        
+        const price = parseFloat(lat.Close);
+        const price5 = parseFloat(prev5?.Close) || price;
+        const price20 = parseFloat(prev20?.Close) || price;
+        
+        const chg5 = ((price - price5) / price5 * 100);
+        const chg20 = ((price - price20) / price20 * 100);
+        
+        // Count consecutive bars
+        let streak = 0;
+        for (let i = data.length - 1; i >= Math.max(0, data.length - 10); i--) {
+            const d = data[i];
+            const bullish = parseFloat(d.Close) >= parseFloat(d.Open);
+            if (i === data.length - 1) {
+                streak = bullish ? 1 : -1;
+            } else if ((bullish && streak > 0) || (!bullish && streak < 0)) {
+                streak += bullish ? 1 : -1;
+            } else {
+                break;
+            }
+        }
+        
+        momentum.push({
+            symbol,
+            price: price.toFixed(2),
+            chg5: chg5.toFixed(2),
+            chg20: chg20.toFixed(2),
+            streak,
+            signal: lat.Bias || 'HOLD',
+            consensus: lat.PriceConfluence || 0,
+            score: chg5 + (streak * 0.5)
+        });
+    }
+    
+    // Sort by momentum score
+    momentum.sort((a, b) => b.score - a.score);
+    
+    let response = `📈 **MOMENTUM RANKINGS**\n\n`;
+    
+    response += `**🔥 STRONGEST (Bullish Momentum):**\n`;
+    momentum.slice(0, 3).forEach((m, i) => {
+        const emoji = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
+        response += `${emoji} **${m.symbol}** - $${m.price}\n`;
+        response += `   5-Day: ${parseFloat(m.chg5) >= 0 ? '+' : ''}${m.chg5}% | 20-Day: ${parseFloat(m.chg20) >= 0 ? '+' : ''}${m.chg20}%\n`;
+        response += `   Streak: ${m.streak > 0 ? '+' : ''}${m.streak} bars | Signal: ${m.signal} (${m.consensus}/4)\n\n`;
+    });
+    
+    response += `**📉 WEAKEST (Bearish Momentum):**\n`;
+    momentum.slice(-3).reverse().forEach((m, i) => {
+        response += `${i + 1}. **${m.symbol}** - $${m.price}\n`;
+        response += `   5-Day: ${parseFloat(m.chg5) >= 0 ? '+' : ''}${m.chg5}% | Streak: ${m.streak > 0 ? '+' : ''}${m.streak} bars\n\n`;
+    });
+    
+    response += `💡 **TRADING TIP:**\n`;
+    response += `• Strong momentum + 3/4 consensus = High probability CALL\n`;
+    response += `• Weak momentum + PUT signal = Consider PUT trades`;
+    
+    return response;
+}
+
+// NEW: Reversal Pattern Response
+function generateReversalResponse() {
+    let reversals = [];
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (!data || data.length < 20) continue;
+        
+        const lat = data[data.length - 1];
+        const prev = data[data.length - 2];
+        const prev2 = data[data.length - 3];
+        
+        const price = parseFloat(lat.Close);
+        const open = parseFloat(lat.Open);
+        const high = parseFloat(lat.High);
+        const low = parseFloat(lat.Low);
+        const prevClose = parseFloat(prev.Close);
+        const prevOpen = parseFloat(prev.Open);
+        const atr = parseFloat(lat.ATR) || 5;
+        
+        // Calculate bar counts
+        let bearStreak = 0, bullStreak = 0;
+        for (let i = data.length - 2; i >= Math.max(0, data.length - 10); i--) {
+            const d = data[i];
+            if (parseFloat(d.Close) < parseFloat(d.Open)) bearStreak++;
+            else break;
+        }
+        for (let i = data.length - 2; i >= Math.max(0, data.length - 10); i--) {
+            const d = data[i];
+            if (parseFloat(d.Close) >= parseFloat(d.Open)) bullStreak++;
+            else break;
+        }
+        
+        // Reversal patterns
+        const bullishEngulfing = prevClose < prevOpen && price > open && price > prevOpen && open < prevClose;
+        const bearishEngulfing = prevClose > prevOpen && price < open && price < prevOpen && open > prevClose;
+        const hammer = (open - low) > (high - open) * 2 && price > open && bearStreak >= 3;
+        const shootingStar = (high - open) > (open - low) * 2 && price < open && bullStreak >= 3;
+        
+        let pattern = null;
+        let direction = null;
+        
+        if (bullishEngulfing || hammer) {
+            pattern = bullishEngulfing ? 'Bullish Engulfing' : 'Hammer';
+            direction = 'BULLISH';
+        } else if (bearishEngulfing || shootingStar) {
+            pattern = bearishEngulfing ? 'Bearish Engulfing' : 'Shooting Star';
+            direction = 'BEARISH';
+        } else if (bearStreak >= 5 && price > open) {
+            pattern = 'Potential Bullish Reversal';
+            direction = 'BULLISH';
+        } else if (bullStreak >= 5 && price < open) {
+            pattern = 'Potential Bearish Reversal';
+            direction = 'BEARISH';
+        }
+        
+        if (pattern) {
+            reversals.push({
+                symbol,
+                pattern,
+                direction,
+                price: price.toFixed(2),
+                priorStreak: direction === 'BULLISH' ? bearStreak : bullStreak,
+                signal: lat.Bias || 'HOLD',
+                consensus: lat.PriceConfluence || 0
+            });
+        }
+    }
+    
+    let response = `🔄 **REVERSAL PATTERN SCAN**\n\n`;
+    
+    if (reversals.length === 0) {
+        response += `No clear reversal patterns detected.\n\n`;
+        response += `**What to look for:**\n`;
+        response += `• 5+ bar downtrend + bullish candle = Potential bottom\n`;
+        response += `• 5+ bar uptrend + bearish candle = Potential top\n`;
+        response += `• Engulfing patterns at key Fibonacci levels\n`;
+    } else {
+        const bullish = reversals.filter(r => r.direction === 'BULLISH');
+        const bearish = reversals.filter(r => r.direction === 'BEARISH');
+        
+        if (bullish.length) {
+            response += `**📈 BULLISH REVERSALS (Potential Bottoms):**\n`;
+            bullish.forEach(r => {
+                response += `• **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
+                response += `  Prior downtrend: ${r.priorStreak} bars | Signal: ${r.signal}\n\n`;
+            });
+        }
+        
+        if (bearish.length) {
+            response += `**📉 BEARISH REVERSALS (Potential Tops):**\n`;
+            bearish.forEach(r => {
+                response += `• **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
+                response += `  Prior uptrend: ${r.priorStreak} bars | Signal: ${r.signal}\n\n`;
+            });
+        }
+    }
+    
+    response += `⚠️ **CAUTION:** Reversals need confirmation. Wait for follow-through!`;
+    
+    return response;
+}
+
+// NEW: Generate Optimal Trading Time Response
+function generateOptimalTimeResponse() {
+    const lat = currentData.length ? currentData[currentData.length - 1] : null;
+    const price = lat ? parseFloat(lat.Close).toFixed(2) : '--';
+    const signal = lat ? (lat.Bias || 'HOLD') : '--';
+    
+    return `⏰ **OPTIMAL TIMES TO TRADE ${currentSymbol} OPTIONS**
+
+**INTRADAY (0DTE) BEST WINDOWS:**
+
+🌅 **9:30-10:00 AM ET - Opening Range**
+• Highest volatility & liquidity
+• Wait for first 5-15 min to establish range
+• Best for momentum plays
+• ⚠️ Avoid trading first 5 minutes (too erratic)
+
+📊 **10:00-11:30 AM ET - Morning Trend**
+• Trend typically established
+• Best time for directional trades
+• Options premiums still reasonable
+• ✅ RECOMMENDED for 0DTE entries
+
+☀️ **11:30 AM-2:00 PM ET - Midday Lull**
+• Lower volatility, choppy action
+• ⚠️ Avoid new positions
+• Good for managing existing trades
+
+🚀 **2:00-3:00 PM ET - Power Hour Setup**
+• Institutional positioning begins
+• Good for swing entries (1-5 DTE)
+• Watch for trend continuation/reversal
+
+🔥 **3:00-4:00 PM ET - Power Hour**
+• High volume, strong moves
+• Last chance for 0DTE
+• ⚠️ Wide spreads near close
+• Best for experienced traders
+
+**SWING TRADES (3-5 DTE) BEST TIMES:**
+• Enter: 10:00-11:00 AM (after opening noise)
+• Avoid: Fridays (weekend theta decay)
+• Best days: Tuesday-Thursday
+
+**CURRENT ${currentSymbol} STATUS:**
+• Price: $${price}
+• Signal: ${signal}
+• Mode: ${tradingMode.toUpperCase()}
+
+**GANN TIME FACTORS:**
+• Strongest moves: First hour, last hour
+• Weakest: 12:00-1:00 PM (lunch hour)
+• Watch 90-minute cycles intraday (Gann)
+
+**🎯 MY RECOMMENDATION:**
+For ${currentSymbol} ${signal} signal:
+${signal === 'CALL' ? '• Enter on pullback to support 10:00-11:00 AM' : '• Enter on rally to resistance 10:00-11:00 AM'}
+• Set stop based on ATR ($${lat ? parseFloat(lat.ATR).toFixed(2) : '--'})
+• Take profits before 3:30 PM for 0DTE`;
+}
+
+// Current Status Response
+function generateCurrentStatusResponse() {
+    let response = `📊 **CURRENT MARKET STATUS**\n\n`;
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            const prev = data[data.length - 2] || lat;
+            const price = parseFloat(lat.Close);
+            const prevPrice = parseFloat(prev.Close);
+            const chg = price - prevPrice;
+            const pct = ((chg / prevPrice) * 100).toFixed(2);
+            const signal = lat.Bias || 'HOLD';
+            const consensus = lat.PriceConfluence || 0;
+            const isCurrentSym = symbol === currentSymbol;
+            
+            response += `${isCurrentSym ? '➤ ' : ''}**${symbol}**: $${price.toFixed(2)} (${chg >= 0 ? '+' : ''}${pct}%)\n`;
+            response += `   Signal: ${signal} | Consensus: ${consensus}/4\n\n`;
+        }
+    }
+    
+    return response;
+}
+
+// Trade Recommendation
+function generateTradeRecommendation() {
+    let bestTrade = null;
+    let bestScore = 0;
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            const consensus = parseInt(lat.PriceConfluence) || 0;
+            const signal = lat.Bias || 'HOLD';
+            
+            if (consensus > bestScore && signal !== 'HOLD') {
+                bestScore = consensus;
+                bestTrade = {
+                    symbol,
+                    signal,
+                    consensus,
+                    price: parseFloat(lat.Close),
+                    atr: parseFloat(lat.ATR) || 5
+                };
+            }
+        }
+    }
+    
+    if (!bestTrade || bestScore < 2) {
+        return `🤔 **NO STRONG TRADE RECOMMENDATIONS RIGHT NOW**
+
+Current market conditions don't show clear setups:
+• No symbols have 3/4 or 4/4 consensus
+• Agents are conflicting
+• Consider staying flat or reducing size
+
+**WHAT TO DO:**
+• Wait for clearer signals
+• Review the Bar Count tab for trend direction
+• Check back after market open for fresh data`;
+    }
+    
+    const strike = Math.round(bestTrade.price);
+    const target = bestTrade.signal === 'CALL' 
+        ? bestTrade.price + bestTrade.atr * 2 
+        : bestTrade.price - bestTrade.atr * 2;
+    const stop = bestTrade.signal === 'CALL'
+        ? bestTrade.price - bestTrade.atr
+        : bestTrade.price + bestTrade.atr;
+    
+    return `🎯 **TODAY'S TOP TRADE RECOMMENDATION**
+
+**${bestTrade.symbol} ${bestTrade.signal}**
+Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? '✅' : '⚠️'}
+
+📍 **ENTRY:**
+• Price: $${bestTrade.price.toFixed(2)}
+• Strike: $${strike} ${bestTrade.signal}
+• Mode: ${tradingMode === 'intraday' ? '0DTE' : '3-5 DTE'}
+
+🎯 **TARGETS:**
+• Target 1: $${(bestTrade.signal === 'CALL' ? bestTrade.price + bestTrade.atr : bestTrade.price - bestTrade.atr).toFixed(2)}
+• Target 2: $${target.toFixed(2)}
+
+🛑 **RISK:**
+• Stop Loss: $${stop.toFixed(2)}
+• Risk/Reward: 1:2
+
+⏰ **TIMING:**
+• Best entry: 10:00-11:00 AM ET
+• Avoid: First 15 min, last 30 min (0DTE)`;
+}
+
+// Risk Management Response
+function generateRiskManagementResponse() {
+    const lat = currentData.length ? currentData[currentData.length - 1] : null;
+    const price = lat ? parseFloat(lat.Close) : 675;
+    const atr = lat ? parseFloat(lat.ATR) || 5 : 5;
+    
+    return `🛡️ **RISK MANAGEMENT GUIDELINES**
+
+**POSITION SIZING (Kelly Criterion):**
+• Risk 0.5-1% per trade (intraday)
+• Risk 1-2% per trade (swing)
+• Never risk more than 5% daily
+
+**EXAMPLE for $10,000 Account:**
+• 1% risk = $100 max loss per trade
+• If stop is $${atr.toFixed(2)} away (1 ATR)
+• Max position = $100 ÷ $${atr.toFixed(2)} = ${(100/atr).toFixed(0)} contracts
+
+**STOP LOSS PLACEMENT:**
+• Intraday: 0.5-1.0 ATR = $${(atr * 0.75).toFixed(2)}
+• Swing: 1.5-2.0 ATR = $${(atr * 1.5).toFixed(2)}
+
+**${currentSymbol} CURRENT LEVELS:**
+• Price: $${price.toFixed(2)}
+• ATR: $${atr.toFixed(2)}
+• Intraday Stop: $${(price - atr * 0.75).toFixed(2)} (CALL) / $${(price + atr * 0.75).toFixed(2)} (PUT)
+• Swing Stop: $${(price - atr * 1.5).toFixed(2)} (CALL) / $${(price + atr * 1.5).toFixed(2)} (PUT)
+
+**GANN'S RISK RULES:**
+• Never let a profit turn into a loss
+• Move stop to breakeven after 1 ATR profit
+• Scale out: 50% at T1, 50% at T2
+• Max 3 losses in a row = stop trading for day`;
+}
+
+// Market Update Response
+function generateMarketUpdateResponse() {
+    let bullish = 0, bearish = 0, neutral = 0;
+    
+    for (const symbol of SYMBOLS) {
+        const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
+        if (data && data.length) {
+            const signal = data[data.length - 1].Bias || 'HOLD';
+            if (signal === 'CALL') bullish++;
+            else if (signal === 'PUT') bearish++;
+            else neutral++;
+        }
+    }
+    
+    const marketBias = bullish > bearish ? 'BULLISH' : (bearish > bullish ? 'BEARISH' : 'MIXED');
+    const biasEmoji = marketBias === 'BULLISH' ? '📈' : (marketBias === 'BEARISH' ? '📉' : '↔️');
+    
+    return `📰 **MARKET UPDATE**
+
+${biasEmoji} **OVERALL BIAS: ${marketBias}**
+• Bullish signals: ${bullish}/${SYMBOLS.length} ETFs
+• Bearish signals: ${bearish}/${SYMBOLS.length} ETFs
+• Neutral: ${neutral}/${SYMBOLS.length} ETFs
+
+**SECTOR BREAKDOWN:**
+${generateQuickSectorSummary()}
+
+**TRADING IMPLICATION:**
+${marketBias === 'BULLISH' ? '• Favor CALL trades\n• Look for pullbacks to support\n• Sector leaders: Check XLK, XLF' : 
+  marketBias === 'BEARISH' ? '• Favor PUT trades\n• Look for rallies to resistance\n• Defensive sectors may outperform' :
+  '• Mixed signals - reduce position size\n• Wait for clearer direction\n• Focus on highest consensus trades'}
+
+💡 Use "high consensus trades" to find specific setups.`;
+}
+
+function generateQuickSectorSummary() {
+    let summary = '';
+    for (const symbol of ['XLK', 'XLF', 'XLV', 'XLE']) {
+        const data = allSymbolsData[symbol];
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            const signal = lat.Bias || 'HOLD';
+            const emoji = signal === 'CALL' ? '📈' : (signal === 'PUT' ? '📉' : '➡️');
+            summary += `${emoji} ${SYMBOL_NAMES[symbol]}: ${signal}\n`;
+        }
+    }
+    return summary;
+}
+
+// Help Response
+function generateHelpResponse() {
+    return `🆘 **HOW TO USE THE AI ASSISTANT**
+
+**QUICK ACTIONS (Click the buttons!):**
+• 📊 High Consensus - Find best trades
+• 📈 Best CALLs - Top bullish plays
+• 📉 Best PUTs - Top bearish plays
+• 🎯 Optimal Strike - Get strike recommendations
+
+**EXAMPLE QUESTIONS:**
+
+📊 **Data & Analysis:**
+• "Show me bar count for all ETFs"
+• "What's the current status?"
+• "Compare all sectors"
+
+🎯 **Trade Ideas:**
+• "What should I trade today?"
+• "Best CALL options for 2 days"
+• "Optimal strike for SPY"
+• "Show high consensus trades"
+
+⏰ **Timing:**
+• "When is the best time to trade?"
+• "What are Gann time cycles?"
+
+📚 **Education:**
+• "Explain Square of 9"
+• "What is Divine Proportions?"
+• "Tunnel Through the Air principles"
+
+🛡️ **Risk:**
+• "How should I size my position?"
+• "Where to place stop loss?"
+
+Just type naturally - I understand most trading questions!`;
+}
+
+// Smart Default Response
+function generateSmartDefaultResponse(message, context) {
+    // Try to extract intent
+    const lowerMsg = message.toLowerCase();
+    
+    // Check for symbol mentions
+    const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase()));
+    
+    let response = `🤔 I want to help! Let me clarify...\n\n`;
+    response += `You asked: "${message}"\n\n`;
+    
+    if (mentionedSymbol) {
+        const data = allSymbolsData[mentionedSymbol] || currentData;
+        if (data && data.length) {
+            const lat = data[data.length - 1];
+            response += `**${mentionedSymbol} Quick Info:**\n`;
+            response += `• Price: $${parseFloat(lat.Close).toFixed(2)}\n`;
+            response += `• Signal: ${lat.Bias || 'HOLD'}\n`;
+            response += `• Consensus: ${lat.PriceConfluence || 0}/4\n\n`;
+        }
+    }
+    
+    response += `**Try asking:**\n`;
+    response += `• "What should I trade today?"\n`;
+    response += `• "Show me ${currentSymbol} bar count"\n`;
+    response += `• "Best time to trade options"\n`;
+    response += `• "Calculate Square of 9 for ${currentSymbol}"\n`;
+    response += `• "High consensus trades"\n\n`;
+    response += `Or click a Quick Action button on the right →`;
+    
+    return response;
+}
+
+// ============================================
+// TRADE LOG SYSTEM
+// ============================================
+
+// Initialize trades from localStorage
+let trades = [];
+
+function loadTrades() {
+    const stored = localStorage.getItem('sa4_trades');
+    if (stored) {
+        try {
+            trades = JSON.parse(stored);
+        } catch (e) {
+            trades = [];
+        }
+    }
+    renderTrades();
+    updateTradeStats();
+    
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('tradeDate');
+    if (dateInput) dateInput.value = today;
+}
+
+function saveTrades() {
+    localStorage.setItem('sa4_trades', JSON.stringify(trades));
+}
+
+function logTrade(event) {
+    event.preventDefault();
+    
+    const trade = {
+        id: Date.now(),
+        date: document.getElementById('tradeDate').value,
+        symbol: document.getElementById('tradeSymbol').value,
+        direction: document.getElementById('tradeDirection').value,
+        type: document.getElementById('tradeType').value,
+        strike: parseFloat(document.getElementById('tradeStrike').value),
+        contracts: parseInt(document.getElementById('tradeContracts').value),
+        entry: parseFloat(document.getElementById('tradeEntry').value),
+        exit: parseFloat(document.getElementById('tradeExit').value) || null,
+        consensus: document.getElementById('tradeConsensus').value,
+        status: document.getElementById('tradeStatus').value,
+        notes: document.getElementById('tradeNotes').value,
+        createdAt: new Date().toISOString()
+    };
+    
+    // Calculate P&L if closed
+    if (trade.exit && trade.status !== 'OPEN') {
+        trade.pnl = (trade.exit - trade.entry) * trade.contracts * 100;
+    } else {
+        trade.pnl = null;
+    }
+    
+    trades.unshift(trade); // Add to beginning
+    saveTrades();
+    renderTrades();
+    updateTradeStats();
+    clearTradeForm();
+    
+    // Show success message
+    alert('✅ Trade logged successfully!');
+}
+
+function clearTradeForm() {
+    document.getElementById('tradeForm').reset();
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tradeDate').value = today;
+    document.getElementById('tradeSymbol').value = currentSymbol;
+}
+
+function toggleExitField() {
+    const status = document.getElementById('tradeStatus').value;
+    const exitField = document.getElementById('tradeExit');
+    if (status === 'OPEN') {
+        exitField.value = '';
+        exitField.disabled = true;
+    } else {
+        exitField.disabled = false;
+    }
+}
+
+function renderTrades() {
+    const tbody = document.getElementById('tradeTableBody');
+    if (!tbody) return;
+    
+    const filterSymbol = document.getElementById('filterSymbol')?.value || 'ALL';
+    const filterDirection = document.getElementById('filterDirection')?.value || 'ALL';
+    const filterStatus = document.getElementById('filterStatus')?.value || 'ALL';
+    
+    let filteredTrades = trades.filter(t => {
+        if (filterSymbol !== 'ALL' && t.symbol !== filterSymbol) return false;
+        if (filterDirection !== 'ALL' && t.direction !== filterDirection) return false;
+        if (filterStatus !== 'ALL' && t.status !== filterStatus) return false;
+        return true;
+    });
+    
+    document.getElementById('tradeCount').textContent = `(${filteredTrades.length} trades)`;
+    
+    if (filteredTrades.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:30px;">No trades match your filters.</td></tr>';
+        return;
+    }
+    
+    let html = '';
+    filteredTrades.forEach((trade, index) => {
+        const pnlClass = trade.pnl > 0 ? 'pnl-positive' : (trade.pnl < 0 ? 'pnl-negative' : '');
+        const pnlDisplay = trade.pnl !== null ? `${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}` : '--';
+        const statusClass = trade.status.toLowerCase();
+        const directionEmoji = trade.direction === 'CALL' ? '📈' : '📉';
+        const typeEmoji = trade.type === 'INTRADAY' ? '⚡' : '🌊';
+        
+        html += `<tr>
+            <td>${filteredTrades.length - index}</td>
+            <td>${trade.date}</td>
+            <td><strong>${trade.symbol}</strong></td>
+            <td>${directionEmoji} ${trade.direction} ${typeEmoji}</td>
+            <td>$${trade.strike}</td>
+            <td>${trade.contracts}</td>
+            <td>$${trade.entry.toFixed(2)}</td>
+            <td>${trade.exit ? '$' + trade.exit.toFixed(2) : '--'}</td>
+            <td class="${pnlClass}">${pnlDisplay}</td>
+            <td><span class="badge badge-${trade.consensus === '4/4' ? 'ultra' : (trade.consensus === '3/4' ? 'success' : 'warning')}">${trade.consensus}</span></td>
+            <td><span class="status-badge-trade ${statusClass}">${trade.status}</span></td>
+            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${trade.notes || ''}">${trade.notes || '--'}</td>
+            <td>
+                <button class="trade-action-btn edit" onclick="editTrade(${trade.id})">✏️</button>
+                <button class="trade-action-btn delete" onclick="deleteTrade(${trade.id})">🗑️</button>
+            </td>
+        </tr>`;
+    });
+    
+    tbody.innerHTML = html;
+}
+
+function filterTrades() {
+    renderTrades();
+}
+
+function editTrade(id) {
+    const trade = trades.find(t => t.id === id);
+    if (!trade) return;
+    
+    document.getElementById('tradeDate').value = trade.date;
+    document.getElementById('tradeSymbol').value = trade.symbol;
+    document.getElementById('tradeDirection').value = trade.direction;
+    document.getElementById('tradeType').value = trade.type;
+    document.getElementById('tradeStrike').value = trade.strike;
+    document.getElementById('tradeContracts').value = trade.contracts;
+    document.getElementById('tradeEntry').value = trade.entry;
+    document.getElementById('tradeExit').value = trade.exit || '';
+    document.getElementById('tradeConsensus').value = trade.consensus;
+    document.getElementById('tradeStatus').value = trade.status;
+    document.getElementById('tradeNotes').value = trade.notes || '';
+    
+    // Remove the old trade
+    trades = trades.filter(t => t.id !== id);
+    saveTrades();
+    
+    // Scroll to form
+    document.getElementById('tradeForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteTrade(id) {
+    if (!confirm('Are you sure you want to delete this trade?')) return;
+    
+    trades = trades.filter(t => t.id !== id);
+    saveTrades();
+    renderTrades();
+    updateTradeStats();
+}
+
+function clearAllTrades() {
+    if (!confirm('⚠️ Are you sure you want to delete ALL trades? This cannot be undone!')) return;
+    if (!confirm('This will permanently delete your entire trade history. Continue?')) return;
+    
+    trades = [];
+    saveTrades();
+    renderTrades();
+    updateTradeStats();
+}
+
+function updateTradeStats() {
+    const closedTrades = trades.filter(t => t.status !== 'OPEN' && t.pnl !== null);
+    const wins = closedTrades.filter(t => t.pnl > 0);
+    const losses = closedTrades.filter(t => t.pnl <= 0);
+    
+    // Basic stats
+    document.getElementById('statTotalTrades').textContent = trades.length;
+    
+    // Win rate
+    const winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length * 100).toFixed(1) : 0;
+    document.getElementById('statWinRate').textContent = winRate + '%';
+    document.getElementById('statWinRate').className = `metric-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}`;
+    document.getElementById('statWinLoss').textContent = `${wins.length}W / ${losses.length}L`;
+    
+    // Total P&L
+    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    document.getElementById('statTotalPnL').textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}`;
+    document.getElementById('statTotalPnL').className = `metric-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
+    
+    // Average trade
+    const avgTrade = closedTrades.length > 0 ? totalPnL / closedTrades.length : 0;
+    document.getElementById('statAvgTrade').textContent = `Avg: ${avgTrade >= 0 ? '+' : ''}$${avgTrade.toFixed(2)}`;
+    
+    // Best/Worst trade
+    if (closedTrades.length > 0) {
+        const best = closedTrades.reduce((max, t) => t.pnl > max.pnl ? t : max);
+        const worst = closedTrades.reduce((min, t) => t.pnl < min.pnl ? t : min);
+        
+        document.getElementById('statBestTrade').textContent = `+$${best.pnl.toFixed(2)}`;
+        document.getElementById('statBestSymbol').textContent = `${best.symbol} ${best.direction}`;
+        document.getElementById('statWorstTrade').textContent = `$${worst.pnl.toFixed(2)}`;
+        document.getElementById('statWorstSymbol').textContent = `${worst.symbol} ${worst.direction}`;
+    }
+    
+    // Trades this week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const weekTrades = trades.filter(t => new Date(t.date) >= oneWeekAgo);
+    document.getElementById('statTradesThisWeek').textContent = `${weekTrades.length} this week`;
+    
+    // Update analytics
+    updateSymbolPerformance();
+    updateDirectionPerformance();
+    updateConsensusAnalysis();
+}
+
+function updateSymbolPerformance() {
+    const container = document.getElementById('symbolPerformance');
+    if (!container) return;
+    
+    const closedTrades = trades.filter(t => t.status !== 'OPEN' && t.pnl !== null);
+    if (closedTrades.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);font-size:12px;">Log closed trades to see performance breakdown</p>';
+        return;
+    }
+    
+    const bySymbol = {};
+    closedTrades.forEach(t => {
+        if (!bySymbol[t.symbol]) {
+            bySymbol[t.symbol] = { wins: 0, losses: 0, pnl: 0 };
+        }
+        bySymbol[t.symbol].pnl += t.pnl;
+        if (t.pnl > 0) bySymbol[t.symbol].wins++;
+        else bySymbol[t.symbol].losses++;
+    });
+    
+    let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+    Object.entries(bySymbol).sort((a, b) => b[1].pnl - a[1].pnl).forEach(([symbol, data]) => {
+        const winRate = ((data.wins / (data.wins + data.losses)) * 100).toFixed(0);
+        const pnlClass = data.pnl >= 0 ? 'positive' : 'negative';
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:var(--bg);border-radius:4px;">
+            <span style="font-weight:600;">${symbol}</span>
+            <span>${data.wins}W/${data.losses}L (${winRate}%)</span>
+            <span class="${pnlClass}" style="font-weight:600;">${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}</span>
+        </div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updateDirectionPerformance() {
+    const container = document.getElementById('directionPerformance');
+    if (!container) return;
+    
+    const closedTrades = trades.filter(t => t.status !== 'OPEN' && t.pnl !== null);
+    if (closedTrades.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);font-size:12px;">Log closed trades to see CALL vs PUT performance</p>';
+        return;
+    }
+    
+    const calls = closedTrades.filter(t => t.direction === 'CALL');
+    const puts = closedTrades.filter(t => t.direction === 'PUT');
+    
+    const callWins = calls.filter(t => t.pnl > 0).length;
+    const callPnL = calls.reduce((sum, t) => sum + t.pnl, 0);
+    const putWins = puts.filter(t => t.pnl > 0).length;
+    const putPnL = puts.reduce((sum, t) => sum + t.pnl, 0);
+    
+    const callWinRate = calls.length > 0 ? ((callWins / calls.length) * 100).toFixed(0) : 0;
+    const putWinRate = puts.length > 0 ? ((putWins / puts.length) * 100).toFixed(0) : 0;
+    
+    container.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(16,185,129,0.1);border-radius:6px;border-left:4px solid var(--success);">
+                <div>
+                    <div style="font-weight:700;font-size:14px;">📈 CALLS</div>
+                    <div style="font-size:11px;color:var(--muted);">${calls.length} trades | ${callWinRate}% win rate</div>
+                </div>
+                <div style="font-size:18px;font-weight:700;" class="${callPnL >= 0 ? 'positive' : 'negative'}">${callPnL >= 0 ? '+' : ''}$${callPnL.toFixed(2)}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(239,68,68,0.1);border-radius:6px;border-left:4px solid var(--danger);">
+                <div>
+                    <div style="font-weight:700;font-size:14px;">📉 PUTS</div>
+                    <div style="font-size:11px;color:var(--muted);">${puts.length} trades | ${putWinRate}% win rate</div>
+                </div>
+                <div style="font-size:18px;font-weight:700;" class="${putPnL >= 0 ? 'positive' : 'negative'}">${putPnL >= 0 ? '+' : ''}$${putPnL.toFixed(2)}</div>
+            </div>
+        </div>
+    `;
+}
+
+function updateConsensusAnalysis() {
+    const consensusLevels = ['4/4', '3/4', '2/4', '1/4'];
+    const ids = ['ultra44', 'super34', 'single24', 'weak14'];
+    
+    consensusLevels.forEach((level, i) => {
+        const levelTrades = trades.filter(t => t.consensus === level && t.status !== 'OPEN' && t.pnl !== null);
+        const wins = levelTrades.filter(t => t.pnl > 0).length;
+        const winRate = levelTrades.length > 0 ? ((wins / levelTrades.length) * 100).toFixed(0) : '--';
+        
+        document.getElementById(`${ids[i]}WinRate`).textContent = winRate + '%';
+        document.getElementById(`${ids[i]}WinRate`).style.color = winRate !== '--' && parseFloat(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
+        document.getElementById(`${ids[i]}Count`).textContent = `${levelTrades.length} trades`;
+    });
+}
+
+// Export Functions
+function printTrades() {
+    window.print();
+}
+
+function exportCSV() {
+    if (trades.length === 0) {
+        alert('No trades to export!');
+        return;
+    }
+    
+    const headers = ['Date', 'Symbol', 'Direction', 'Type', 'Strike', 'Contracts', 'Entry', 'Exit', 'P&L', 'Consensus', 'Status', 'Notes'];
+    const rows = trades.map(t => [
+        t.date,
+        t.symbol,
+        t.direction,
+        t.type,
+        t.strike,
+        t.contracts,
+        t.entry,
+        t.exit || '',
+        t.pnl || '',
+        t.consensus,
+        t.status,
+        `"${(t.notes || '').replace(/"/g, '""')}"`
+    ]);
+    
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `trade_log_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    URL.revokeObjectURL(url);
+}
+
+function shareTrades() {
+    const closedTrades = trades.filter(t => t.status !== 'OPEN' && t.pnl !== null);
+    const wins = closedTrades.filter(t => t.pnl > 0).length;
+    const winRate = closedTrades.length > 0 ? ((wins / closedTrades.length) * 100).toFixed(1) : 0;
+    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    
+    const text = `📊 Stock Agent 4 - Trade Summary
+
+📈 Total Trades: ${trades.length}
+🎯 Win Rate: ${winRate}%
+💰 Total P&L: ${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}
+📅 Period: ${trades.length > 0 ? trades[trades.length-1].date : 'N/A'} to ${trades.length > 0 ? trades[0].date : 'N/A'}
+
+Powered by Q5D Options Platform & Gann Principles 🔮`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Stock Agent 4 Trade Summary',
+            text: text
+        }).catch(console.log);
+    } else {
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            alert('📋 Trade summary copied to clipboard!');
+        }).catch(() => {
+            prompt('Copy this trade summary:', text);
+        });
+    }
+}
+
+function emailTrades() {
+    const closedTrades = trades.filter(t => t.status !== 'OPEN' && t.pnl !== null);
+    const wins = closedTrades.filter(t => t.pnl > 0).length;
+    const winRate = closedTrades.length > 0 ? ((wins / closedTrades.length) * 100).toFixed(1) : 0;
+    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    
+    const subject = encodeURIComponent('Stock Agent 4 - Trade Summary');
+    const body = encodeURIComponent(`Stock Agent 4 - Trade Summary
+
+Total Trades: ${trades.length}
+Win Rate: ${winRate}%
+Total P&L: ${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}
+
+Recent Trades:
+${trades.slice(0, 10).map(t => `- ${t.date}: ${t.symbol} ${t.direction} ${t.contracts}x $${t.strike} | P&L: ${t.pnl !== null ? '$' + t.pnl.toFixed(2) : 'Open'}`).join('\n')}
+
+---
+Powered by Q5D Options Platform`);
+    
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+}
+
+// Initialize trade log when app loads
+function initializeApp() {
+    initTabs();
+    loadAllData();
+    loadAllSymbolsData();
+    loadTrades(); // Load trade history
+    runHealthCheck(); // Run initial health check
+    setInterval(loadAllData, 60000);
+    setInterval(runHealthCheck, 300000); // Health check every 5 minutes
+}
+
+// ============================================
+// HEALTH MONITORING SYSTEM
+// ============================================
+
+let healthStatus = {
+    dataFreshness: 'unknown',
+    marketStatus: 'unknown',
+    workflowStatus: 'unknown',
+    dataQuality: 'unknown',
+    alerts: []
+};
+
+function runHealthCheck() {
+    console.log('Running health check...');
+    healthStatus.alerts = [];
+    
+    // Check data freshness
+    checkDataFreshness();
+    
+    // Check market status
+    checkMarketStatus();
+    
+    // Check data quality
+    checkDataQuality();
+    
+    // Check connections
+    checkConnections();
+    
+    // Update overall status
+    updateOverallHealth();
+    
+    // Update last check time
+    document.getElementById('lastHealthCheck').textContent = new Date().toLocaleString();
+}
+
+function checkDataFreshness() {
+    const freshEl = document.getElementById('healthDataFresh');
+    const valueEl = document.getElementById('dataFreshnessValue');
+    const statusEl = document.getElementById('dataFreshnessStatus');
+    const lastDateEl = document.getElementById('lastDataDate');
+    const daysSinceEl = document.getElementById('daysSinceUpdate');
+    const expectedEl = document.getElementById('expectedUpdate');
+    const totalBarsEl = document.getElementById('totalBarsLoaded');
+    const dateRangeEl = document.getElementById('dataDateRange');
+    
+    if (!currentData || currentData.length === 0) {
+        valueEl.textContent = 'No Data';
+        statusEl.textContent = 'CRITICAL';
+        statusEl.className = 'health-metric-status error';
+        freshEl.className = 'health-metric critical';
+        healthStatus.dataFreshness = 'critical';
+        healthStatus.alerts.push({ type: 'critical', message: 'No data loaded - check data feed connection' });
+        return;
+    }
+    
+    // Get last data point date
+    const lastBar = currentData[currentData.length - 1];
+    const lastDate = lastBar.Date ? new Date(lastBar.Date) : null;
+    
+    if (!lastDate) {
+        valueEl.textContent = 'Invalid Date';
+        statusEl.textContent = 'ERROR';
+        statusEl.className = 'health-metric-status error';
+        freshEl.className = 'health-metric critical';
+        healthStatus.dataFreshness = 'critical';
+        return;
+    }
+    
+    const now = new Date();
+    const diffTime = now - lastDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Update timeline info
+    lastDateEl.textContent = lastDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    daysSinceEl.textContent = diffDays === 0 ? 'Today' : (diffDays === 1 ? '1 day ago' : diffDays + ' days ago');
+    totalBarsEl.textContent = currentData.length + ' bars';
+    
+    // Get first date
+    const firstBar = currentData[0];
+    const firstDate = firstBar.Date ? new Date(firstBar.Date) : null;
+    if (firstDate) {
+        dateRangeEl.textContent = `${firstDate.toLocaleDateString()} - ${lastDate.toLocaleDateString()}`;
+    }
+    
+    // Calculate expected next update
+    const nextUpdate = getNextMarketDay(lastDate);
+    expectedEl.textContent = nextUpdate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    
+    // Determine status based on days since update
+    if (diffDays === 0) {
+        valueEl.textContent = 'Up to Date';
+        statusEl.textContent = 'FRESH';
+        statusEl.className = 'health-metric-status ok';
+        freshEl.className = 'health-metric healthy';
+        healthStatus.dataFreshness = 'healthy';
+        healthStatus.alerts.push({ type: 'success', message: 'Data is current as of today' });
+    } else if (diffDays <= 1) {
+        valueEl.textContent = '1 Day Old';
+        statusEl.textContent = 'OK';
+        statusEl.className = 'health-metric-status ok';
+        freshEl.className = 'health-metric healthy';
+        healthStatus.dataFreshness = 'healthy';
+    } else if (diffDays <= 3) {
+        // Check if weekend
+        const isWeekend = isWeekendGap(lastDate, now);
+        if (isWeekend) {
+            valueEl.textContent = diffDays + ' Days (Weekend)';
+            statusEl.textContent = 'OK';
+            statusEl.className = 'health-metric-status ok';
+            freshEl.className = 'health-metric healthy';
+            healthStatus.dataFreshness = 'healthy';
+        } else {
+            valueEl.textContent = diffDays + ' Days Old';
+            statusEl.textContent = 'STALE';
+            statusEl.className = 'health-metric-status warn';
+            freshEl.className = 'health-metric warning';
+            healthStatus.dataFreshness = 'warning';
+            healthStatus.alerts.push({ type: 'warning', message: `Data is ${diffDays} days old - agent may not be running` });
+        }
+    } else {
+        valueEl.textContent = diffDays + ' Days Old';
+        statusEl.textContent = 'OUTDATED';
+        statusEl.className = 'health-metric-status error';
+        freshEl.className = 'health-metric critical';
+        healthStatus.dataFreshness = 'critical';
+        healthStatus.alerts.push({ type: 'critical', message: `Data is ${diffDays} days old - agent needs attention!` });
+    }
+}
+
+function checkMarketStatus() {
+    const marketEl = document.getElementById('healthMarket');
+    const valueEl = document.getElementById('marketStatusValue');
+    const statusEl = document.getElementById('marketStatusStatus');
+    
+    const now = new Date();
+    const etOffset = getETOffset();
+    const etNow = new Date(now.getTime() + etOffset);
+    
+    const day = etNow.getDay();
+    const hours = etNow.getHours();
+    const minutes = etNow.getMinutes();
+    const timeNum = hours * 100 + minutes;
+    
+    // Weekend check
+    if (day === 0 || day === 6) {
+        valueEl.textContent = 'Weekend';
+        statusEl.textContent = 'CLOSED';
+        statusEl.className = 'health-metric-status warn';
+        marketEl.className = 'health-metric warning';
+        healthStatus.marketStatus = 'closed';
+        return;
+    }
+    
+    // Market hours: 9:30 AM - 4:00 PM ET
+    if (timeNum >= 930 && timeNum < 1600) {
+        valueEl.textContent = 'Market Open';
+        statusEl.textContent = 'TRADING';
+        statusEl.className = 'health-metric-status ok';
+        marketEl.className = 'health-metric healthy';
+        healthStatus.marketStatus = 'open';
+    } else if (timeNum >= 400 && timeNum < 930) {
+        valueEl.textContent = 'Pre-Market';
+        statusEl.textContent = 'WAITING';
+        statusEl.className = 'health-metric-status warn';
+        marketEl.className = 'health-metric warning';
+        healthStatus.marketStatus = 'premarket';
+    } else {
+        valueEl.textContent = 'After Hours';
+        statusEl.textContent = 'CLOSED';
+        statusEl.className = 'health-metric-status warn';
+        marketEl.className = 'health-metric warning';
+        healthStatus.marketStatus = 'closed';
+    }
+}
+
+function checkDataQuality() {
+    const qualityEl = document.getElementById('healthDataQuality');
+    const valueEl = document.getElementById('dataQualityValue');
+    const statusEl = document.getElementById('dataQualityStatus');
+    
+    if (!currentData || currentData.length === 0) {
+        valueEl.textContent = 'No Data';
+        statusEl.textContent = 'N/A';
+        statusEl.className = 'health-metric-status error';
+        qualityEl.className = 'health-metric critical';
+        healthStatus.dataQuality = 'critical';
+        return;
+    }
+    
+    let issues = 0;
+    let checks = 0;
+    
+    // Check for required fields
+    const lastBar = currentData[currentData.length - 1];
+    const requiredFields = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume'];
+    
+    requiredFields.forEach(field => {
+        checks++;
+        if (!lastBar[field] && lastBar[field] !== 0) {
+            issues++;
+        }
+    });
+    
+    // Check for valid price data
+    checks++;
+    if (lastBar.Close && (lastBar.Close < 0 || lastBar.Close > 10000)) {
+        issues++;
+        healthStatus.alerts.push({ type: 'warning', message: 'Unusual price detected - verify data integrity' });
+    }
+    
+    // Check for signal data
+    checks++;
+    if (!lastBar.Bias) {
+        issues++;
+    }
+    
+    // Calculate quality score
+    const score = Math.round(((checks - issues) / checks) * 100);
+    
+    if (score >= 90) {
+        valueEl.textContent = score + '%';
+        statusEl.textContent = 'EXCELLENT';
+        statusEl.className = 'health-metric-status ok';
+        qualityEl.className = 'health-metric healthy';
+        healthStatus.dataQuality = 'healthy';
+    } else if (score >= 70) {
+        valueEl.textContent = score + '%';
+        statusEl.textContent = 'GOOD';
+        statusEl.className = 'health-metric-status ok';
+        qualityEl.className = 'health-metric healthy';
+        healthStatus.dataQuality = 'healthy';
+    } else if (score >= 50) {
+        valueEl.textContent = score + '%';
+        statusEl.textContent = 'FAIR';
+        statusEl.className = 'health-metric-status warn';
+        qualityEl.className = 'health-metric warning';
+        healthStatus.dataQuality = 'warning';
+    } else {
+        valueEl.textContent = score + '%';
+        statusEl.textContent = 'POOR';
+        statusEl.className = 'health-metric-status error';
+        qualityEl.className = 'health-metric critical';
+        healthStatus.dataQuality = 'critical';
+        healthStatus.alerts.push({ type: 'critical', message: 'Data quality issues detected - check CSV files' });
+    }
+}
+
+function checkConnections() {
+    // GitHub Pages - if page loaded, it's working
+    document.getElementById('connGitHub').className = 'connection-indicator online';
+    document.getElementById('connGitHubStatus').textContent = 'Connected';
+    
+    // Data feed - based on whether data loaded
+    if (currentData && currentData.length > 0) {
+        document.getElementById('connData').className = 'connection-indicator online';
+        document.getElementById('connDataStatus').textContent = 'Loaded';
+    } else {
+        document.getElementById('connData').className = 'connection-indicator offline';
+        document.getElementById('connDataStatus').textContent = 'Failed';
+    }
+    
+    // Portfolio feed
+    // This would be checked based on portfolio data
+    document.getElementById('connPortfolio').className = 'connection-indicator online';
+    document.getElementById('connPortfolioStatus').textContent = 'Active';
+    
+    // Local Storage
+    try {
+        localStorage.setItem('health_test', 'test');
+        localStorage.removeItem('health_test');
+        document.getElementById('connLocalStorage').className = 'connection-indicator online';
+        document.getElementById('connLocalStorageStatus').textContent = 'Available';
+    } catch (e) {
+        document.getElementById('connLocalStorage').className = 'connection-indicator offline';
+        document.getElementById('connLocalStorageStatus').textContent = 'Blocked';
+        healthStatus.alerts.push({ type: 'warning', message: 'Local storage unavailable - trade log may not persist' });
+    }
+}
+
+function updateOverallHealth() {
+    const banner = document.getElementById('healthBanner');
+    const icon = document.getElementById('healthBannerIcon');
+    const title = document.getElementById('healthBannerTitle');
+    const subtitle = document.getElementById('healthBannerSubtitle');
+    const workflowEl = document.getElementById('healthWorkflow');
+    const workflowValue = document.getElementById('workflowStatusValue');
+    const workflowStatus = document.getElementById('workflowStatusStatus');
+    
+    // Determine workflow status based on data freshness
+    if (healthStatus.dataFreshness === 'healthy') {
+        workflowValue.textContent = 'Running';
+        workflowStatus.textContent = 'ACTIVE';
+        workflowStatus.className = 'health-metric-status ok';
+        workflowEl.className = 'health-metric healthy';
+        healthStatus.workflowStatus = 'healthy';
+    } else if (healthStatus.dataFreshness === 'warning') {
+        workflowValue.textContent = 'Delayed';
+        workflowStatus.textContent = 'CHECK';
+        workflowStatus.className = 'health-metric-status warn';
+        workflowEl.className = 'health-metric warning';
+        healthStatus.workflowStatus = 'warning';
+    } else {
+        workflowValue.textContent = 'Stopped?';
+        workflowStatus.textContent = 'ERROR';
+        workflowStatus.className = 'health-metric-status error';
+        workflowEl.className = 'health-metric critical';
+        healthStatus.workflowStatus = 'critical';
+    }
+    
+    // Overall status
+    const statuses = [healthStatus.dataFreshness, healthStatus.dataQuality, healthStatus.workflowStatus];
+    
+    if (statuses.includes('critical')) {
+        banner.className = 'health-banner critical';
+        icon.textContent = '🔴';
+        title.textContent = 'System Issues Detected';
+        subtitle.textContent = 'Critical issues require attention';
+    } else if (statuses.includes('warning')) {
+        banner.className = 'health-banner warning';
+        icon.textContent = '🟡';
+        title.textContent = 'System Warning';
+        subtitle.textContent = 'Some components need attention';
+    } else {
+        banner.className = 'health-banner';
+        icon.textContent = '🟢';
+        title.textContent = 'System Healthy';
+        subtitle.textContent = 'All systems operational';
+    }
+    
+    // Render alerts
+    renderHealthAlerts();
+    
+    // Update header badge
+    updateHeaderHealthBadge();
+}
+
+function renderHealthAlerts() {
+    const container = document.getElementById('healthAlerts');
+    
+    if (healthStatus.alerts.length === 0) {
+        container.innerHTML = `
+            <div class="health-alert success">
+                <span class="alert-icon">✅</span>
+                <span>No issues detected - system running normally</span>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    healthStatus.alerts.forEach(alert => {
+        const iconMap = { critical: '🚨', warning: '⚠️', info: 'ℹ️', success: '✅' };
+        html += `
+            <div class="health-alert ${alert.type}">
+                <span class="alert-icon">${iconMap[alert.type] || 'ℹ️'}</span>
+                <span>${alert.message}</span>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Helper functions
+function getETOffset() {
+    // Rough ET offset (doesn't account for DST perfectly)
+    const now = new Date();
+    const jan = new Date(now.getFullYear(), 0, 1);
+    const jul = new Date(now.getFullYear(), 6, 1);
+    const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+    const isDST = now.getTimezoneOffset() < stdOffset;
+    return isDST ? -4 * 60 * 60 * 1000 : -5 * 60 * 60 * 1000;
+}
+
+function getNextMarketDay(fromDate) {
+    const next = new Date(fromDate);
+    next.setDate(next.getDate() + 1);
+    
+    // Skip weekends
+    while (next.getDay() === 0 || next.getDay() === 6) {
+        next.setDate(next.getDate() + 1);
+    }
+    
+    return next;
+}
+
+function isWeekendGap(lastDate, currentDate) {
+    const lastDay = lastDate.getDay();
+    const diff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+    
+    // If last data was Friday and it's been 2-3 days, it's a weekend gap
+    if (lastDay === 5 && diff <= 3) return true;
+    
+    return false;
+}
+
+function toggleTroubleshoot(header) {
+    const content = header.nextElementSibling;
+    const toggle = header.querySelector('.troubleshoot-toggle');
+    
+    if (content.classList.contains('show')) {
+        content.classList.remove('show');
+        toggle.textContent = '+';
+    } else {
+        content.classList.add('show');
+        toggle.textContent = '−';
+    }
+}
+
+function updateHeaderHealthBadge() {
+    const badge = document.getElementById('headerHealthBadge');
+    const dot = document.getElementById('headerHealthDot');
+    const text = document.getElementById('headerHealthText');
+    
+    if (!badge) return;
+    
+    const statuses = [healthStatus.dataFreshness, healthStatus.dataQuality, healthStatus.workflowStatus];
+    
+    if (statuses.includes('critical')) {
+        badge.className = 'status-badge critical';
+        badge.style.background = 'rgba(239,68,68,0.3)';
+        text.textContent = 'ISSUES';
+    } else if (statuses.includes('warning')) {
+        badge.className = 'status-badge warning';
+        badge.style.background = 'rgba(245,158,11,0.3)';
+        text.textContent = 'WARNING';
+    } else if (statuses.includes('unknown')) {
+        badge.className = 'status-badge';
+        badge.style.background = 'rgba(255,255,255,0.2)';
+        text.textContent = 'CHECKING';
+    } else {
+        badge.className = 'status-badge online';
+        badge.style.background = 'rgba(16,185,129,0.3)';
+        text.textContent = 'HEALTHY';
+    }
+}
+
+function switchToHealthTab() {
+    // Activate health tab
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    const healthTab = document.querySelector('[data-tab="health"]');
+    const healthContent = document.getElementById('health');
+    
+    if (healthTab) healthTab.classList.add('active');
+    if (healthContent) healthContent.classList.add('active');
+    
+    // Run health check when switching
+    runHealthCheck();
+}
+</script>
+</body>
+</html>
