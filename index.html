@@ -1,1 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Agent 4 - Q5D Options Trading Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3b82f6; --secondary: #8b5cf6; --accent: #06b6d4;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #0891b2;
+            --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+            --text: #1e293b; --muted: #64748b; --light: #94a3b8;
+            --intraday: #f59e0b; --swing: #8b5cf6;
+            --candle-green: #10b981; --candle-red: #ef4444;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        
+        .header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 12px 0; position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1600px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .logo h1 { font-size: 18px; font-weight: 700; }
+        .logo p { font-size: 10px; opacity: 0.9; }
+        
+        /* Live Price Ticker in Header */
+        .live-price-ticker { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 10px; }
+        .ticker-symbol { font-size: 14px; font-weight: 700; }
+        .ticker-price { font-size: 22px; font-weight: 800; }
+        .ticker-change { font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+        .ticker-change.positive { background: rgba(16,185,129,0.3); }
+        .ticker-change.negative { background: rgba(239,68,68,0.3); }
+        
+        .header-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .status-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-badge.online { background: rgba(16,185,129,0.3); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        
+        .symbol-select select { padding: 6px 10px; border: none; border-radius: 6px; font-size: 12px; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600; }
+        .refresh-btn { padding: 6px 14px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 15px; }
+        
+        /* Trading Mode Toggle */
+        .mode-toggle-container { display: flex; justify-content: center; margin-bottom: 15px; }
+        .mode-toggle { display: flex; background: var(--card); border-radius: 10px; padding: 4px; border: 1px solid var(--border); }
+        .mode-btn { padding: 10px 24px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; }
+        .mode-btn.intraday { background: transparent; color: var(--muted); }
+        .mode-btn.swing { background: transparent; color: var(--muted); }
+        .mode-btn.active.intraday { background: linear-gradient(135deg, var(--intraday), #d97706); color: white; }
+        .mode-btn.active.swing { background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; }
+        
+        .symbol-banner { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 10px 16px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .symbol-banner h2 { font-size: 16px; }
+        .symbol-banner.intraday-mode { background: linear-gradient(135deg, var(--intraday), #d97706); }
+        .symbol-banner.swing-mode { background: linear-gradient(135deg, var(--swing), #6d28d9); }
+        
+        .tabs { display: flex; gap: 4px; background: var(--card); border-radius: 10px; padding: 5px; margin-bottom: 15px; overflow-x: auto; border: 1px solid var(--border); }
+        .tab-btn { padding: 8px 14px; background: transparent; border: none; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .tab-btn:hover { color: var(--primary); background: rgba(59,130,246,0.05); }
+        .tab-btn.active { color: white; background: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 15px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        
+        .grid { display: grid; gap: 15px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+        .grid-5 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        
+        .metric { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+        .metric-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+        .metric-value { font-size: 20px; font-weight: 700; }
+        .metric-value.positive { color: var(--success); }
+        .metric-value.negative { color: var(--danger); }
+        .metric-sub { font-size: 10px; color: var(--light); margin-top: 3px; }
+        
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-info { background: rgba(8,145,178,0.15); color: var(--info); }
+        .badge-primary { background: rgba(59,130,246,0.15); color: var(--primary); }
+        .badge-ultra { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .badge-intraday { background: linear-gradient(135deg, var(--intraday), #d97706); color: white; }
+        .badge-swing { background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; }
+        
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 10px; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--border); }
+        td { padding: 10px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: rgba(59,130,246,0.02); }
+        
+        .chart-box { position: relative; height: 300px; }
+        .chart-box.large { height: 400px; }
+        
+        /* Dual Signal Panel */
+        .dual-signal-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .signal-panel { border-radius: 10px; padding: 16px; }
+        .signal-panel.intraday { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 2px solid var(--intraday); }
+        .signal-panel.swing { background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.05)); border: 2px solid var(--swing); }
+        .signal-panel-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+        .signal-panel-title.intraday { color: var(--intraday); }
+        .signal-panel-title.swing { color: var(--swing); }
+        
+        .ref-data-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 12px; }
+        .ref-label { color: var(--muted); }
+        .ref-value { font-weight: 600; }
+        .ref-value.positive { color: var(--success); }
+        .ref-value.negative { color: var(--danger); }
+        
+        /* Chart Type Selector */
+        .chart-type-selector { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .chart-type-btn { padding: 8px 16px; border: 2px solid var(--border); border-radius: 8px; background: var(--card); color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .chart-type-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .chart-type-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+        
+        /* P&F Chart Styles */
+        .pnf-chart { font-family: monospace; font-size: 12px; line-height: 1.2; overflow-x: auto; background: var(--bg); padding: 15px; border-radius: 8px; }
+        .pnf-row { display: flex; }
+        .pnf-cell { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .pnf-x { color: var(--success); }
+        .pnf-o { color: var(--danger); }
+        .pnf-price { width: 60px; text-align: right; padding-right: 10px; color: var(--muted); font-size: 11px; }
+        
+        /* Heikin-Ashi Legend */
+        .ha-legend { display: flex; gap: 20px; margin-bottom: 10px; font-size: 12px; }
+        .ha-legend-item { display: flex; align-items: center; gap: 6px; }
+        .ha-legend-color { width: 16px; height: 16px; border-radius: 3px; }
+        
+        /* Fibonacci Level Lines */
+        .fib-level-indicator { position: absolute; right: 10px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+        
+        /* Bar Count Display */
+        .bar-count-display { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .bar-count-item { background: var(--bg); border-radius: 8px; padding: 12px; text-align: center; }
+        .bar-count-value { font-size: 28px; font-weight: 800; }
+        .bar-count-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+        .bar-count-signal { font-size: 10px; margin-top: 6px; }
+        
+        /* Options Value Toggle */
+        .value-toggle { display: flex; background: var(--bg); border-radius: 6px; padding: 3px; margin-bottom: 10px; }
+        .value-toggle-btn { flex: 1; padding: 6px 12px; border: none; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; background: transparent; color: var(--muted); }
+        .value-toggle-btn.active { background: var(--primary); color: white; }
 
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; gap: 15px; }
+        .loading-overlay.active { display: flex; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .pattern-item { background: var(--bg); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+        .pattern-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .pattern-name { font-weight: 600; font-size: 13px; }
+        .pattern-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .pattern-fill { height: 100%; border-radius: 3px; }
+        .pattern-fill.bullish { background: var(--success); }
+        .pattern-fill.bearish { background: var(--danger); }
+        .pattern-fill.neutral { background: var(--warning); }
+
+        @media (max-width: 768px) {
+            .dual-signal-container { grid-template-columns: 1fr; }
+            .live-price-ticker { padding: 6px 12px; }
+            .ticker-price { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div>Loading data...</div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div><h1>Stock Agent 4</h1><p>Q5D Options Platform</p></div>
+            </div>
+            
+            <!-- LIVE PRICE TICKER - Always Visible -->
+            <div class="live-price-ticker">
+                <div>
+                    <div class="ticker-symbol" id="tickerSymbol">SPY</div>
+                    <div style="font-size:10px;opacity:0.8;">S&P 500 ETF</div>
+                </div>
+                <div class="ticker-price" id="tickerPrice">$675.02</div>
+                <div>
+                    <div class="ticker-change positive" id="tickerChange">+$6.29</div>
+                    <div style="font-size:10px;margin-top:2px;" id="tickerPct">+0.94%</div>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="status-badge online" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span id="statusText">LIVE</span>
+                </div>
+                <div class="symbol-select">
+                    <select id="symbolSelect" onchange="changeSymbol()">
+                        <optgroup label="Major ETFs">
+                            <option value="SPY">SPY - S&P 500</option>
+                            <option value="QQQ">QQQ - Nasdaq 100</option>
+                            <option value="IWM">IWM - Russell 2000</option>
+                            <option value="DIA">DIA - Dow Jones</option>
+                        </optgroup>
+                        <optgroup label="Sector ETFs">
+                            <option value="XLK">XLK - Technology</option>
+                            <option value="XLF">XLF - Financials</option>
+                            <option value="XLV">XLV - Healthcare</option>
+                            <option value="XLE">XLE - Energy</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Trading Mode Toggle -->
+        <div class="mode-toggle-container">
+            <div class="mode-toggle">
+                <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">
+                    <span>⚡</span> INTRADAY <span style="font-size:10px;opacity:0.8;">(0-1 DTE)</span>
+                </button>
+                <button class="mode-btn swing" onclick="setTradingMode('swing')">
+                    <span>🌊</span> SWING <span style="font-size:10px;opacity:0.8;">(3-5 DTE)</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="symbol-banner intraday-mode" id="symbolBanner">
+            <div>
+                <h2><span id="currentSymbolDisplay">SPY</span> - <span id="currentSymbolName">S&P 500 ETF</span></h2>
+                <div style="font-size:11px;opacity:0.9;">Mode: <strong id="currentModeDisplay">INTRADAY</strong> | TF: <strong id="currentTimeframeDisplay">15-min</strong></div>
+            </div>
+            <div style="display:flex;gap:15px;font-size:12px;">
+                <span>📅 <strong id="dataDate">--</strong></span>
+                <span>🕐 <strong id="dataTime">--</strong></span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+            <button class="tab-btn" data-tab="charts">📈 Charts</button>
+            <button class="tab-btn" data-tab="signals">🎯 Signals</button>
+            <button class="tab-btn" data-tab="options">📋 Options</button>
+            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+            <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
+            <button class="tab-btn" data-tab="patterns">📐 Patterns</button>
+            <button class="tab-btn" data-tab="trades">📝 Trades</button>
+            <button class="tab-btn" data-tab="analytics">📉 Analytics</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-5">
+                <div class="metric"><div class="metric-label">Price</div><div class="metric-value" id="currentPrice">--</div><div class="metric-sub" id="priceSource">Loading...</div></div>
+                <div class="metric"><div class="metric-label">Change</div><div class="metric-value" id="dailyChange">--</div><div class="metric-sub" id="changePct">--</div></div>
+                <div class="metric"><div class="metric-label">Volume</div><div class="metric-value" id="volumeDisplay">--</div><div class="metric-sub" id="volumeVsAvgSmall">vs avg</div></div>
+                <div class="metric"><div class="metric-label" id="signalModeLabel">Signal</div><div class="metric-value" id="signalStatus">--</div><div class="metric-sub" id="signalConf">--</div></div>
+                <div class="metric"><div class="metric-label">ATR (14)</div><div class="metric-value" id="atrDisplay">--</div><div class="metric-sub">Volatility</div></div>
+            </div>
+
+            <!-- Dual Signal Panels -->
+            <div class="dual-signal-container">
+                <div class="signal-panel intraday">
+                    <div class="signal-panel-title intraday">⚡ INTRADAY SIGNAL (0-1 DTE)</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="intradaySignal">CALL</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Confidence</span><span class="ref-value" id="intradayConf">72%</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="intradayEntry">--</span></div>
+                        </div>
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="intradayStop">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="intradayT1">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="intradayT2">--</span></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(245,158,11,0.3);">
+                        <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" style="color:var(--intraday);" id="intradayStrike">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Expiry</span><span class="ref-value" id="intradayExpiry">0DTE</span></div>
+                    </div>
+                </div>
+
+                <div class="signal-panel swing">
+                    <div class="signal-panel-title swing">🌊 SWING SIGNAL (3-5 DTE)</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Confidence</span><span class="ref-value" id="swingConf">68%</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="swingEntry">--</span></div>
+                        </div>
+                        <div>
+                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="swingStop">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="swingT1">--</span></div>
+                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="swingT2">--</span></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(139,92,246,0.3);">
+                        <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" style="color:var(--swing);" id="swingStrike">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Expiry</span><span class="ref-value" id="swingExpiry">4 DTE</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reference Data -->
+            <div class="card">
+                <div class="card-title">📋 Reference Data</div>
+                <div class="grid grid-4">
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">52W High</span><span class="ref-value positive" id="week52High">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">52W Low</span><span class="ref-value negative" id="week52Low">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Today High</span><span class="ref-value" id="todayHigh">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Today Low</span><span class="ref-value" id="todayLow">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Avg Vol (20D)</span><span class="ref-value" id="avgVolume20">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Vol vs Avg</span><span class="ref-value" id="volumeVsAvg">--</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Next Earnings</span><span class="ref-value" id="nextEarningsDate">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Vol Alert</span><span class="badge" id="earningsVolatilityAlert">--</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS TAB - NEW -->
+        <div id="charts" class="tab-content">
+            <!-- Chart Type Selector -->
+            <div class="card">
+                <div class="card-title">📈 Chart Type</div>
+                <div class="chart-type-selector">
+                    <button class="chart-type-btn active" onclick="setChartType('candlestick')">🕯️ Candlestick</button>
+                    <button class="chart-type-btn" onclick="setChartType('heikin')">📊 Heikin-Ashi</button>
+                    <button class="chart-type-btn" onclick="setChartType('pnf')">⬛ Point & Figure</button>
+                </div>
+                
+                <!-- Value Toggle for Options vs Price -->
+                <div style="display:flex;align-items:center;gap:15px;margin-top:10px;">
+                    <span style="font-size:12px;color:var(--muted);">Display:</span>
+                    <div class="value-toggle">
+                        <button class="value-toggle-btn active" onclick="setValueType('price')">💵 Price</button>
+                        <button class="value-toggle-btn" onclick="setValueType('options')">📋 Options Value</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candlestick Chart with Fibonacci -->
+            <div class="card" id="candlestickChartCard">
+                <div class="card-title">🕯️ Candlestick Chart with Fibonacci Levels</div>
+                <div class="ha-legend">
+                    <div class="ha-legend-item"><div class="ha-legend-color" style="background:var(--candle-green);"></div><span>Bullish</span></div>
+                    <div class="ha-legend-item"><div class="ha-legend-color" style="background:var(--candle-red);"></div><span>Bearish</span></div>
+                    <div class="ha-legend-item"><div style="width:30px;height:2px;background:var(--success);"></div><span>Support (S1-S3)</span></div>
+                    <div class="ha-legend-item"><div style="width:30px;height:2px;background:var(--danger);"></div><span>Resistance (R1-R3)</span></div>
+                </div>
+                <div class="chart-box large"><canvas id="candlestickChart"></canvas></div>
+                
+                <!-- Fibonacci Levels Table -->
+                <div class="grid grid-2" style="margin-top:15px;">
+                    <div style="background:rgba(239,68,68,0.05);border-radius:8px;padding:12px;">
+                        <h4 style="font-size:13px;color:var(--danger);margin-bottom:10px;">📈 Resistance Levels</h4>
+                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="chartR3">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="chartR2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="chartR1">--</span></div>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.05);border-radius:8px;padding:12px;">
+                        <h4 style="font-size:13px;color:var(--success);margin-bottom:10px;">📉 Support Levels</h4>
+                        <div class="ref-data-row"><span class="ref-label">P0 (Current)</span><span class="ref-value" id="chartP0">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="chartS1">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="chartS2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="chartS3">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heikin-Ashi Chart -->
+            <div class="card" id="heikinChartCard" style="display:none;">
+                <div class="card-title">📊 Heikin-Ashi Chart</div>
+                <div class="ha-legend">
+                    <div class="ha-legend-item"><div class="ha-legend-color" style="background:var(--candle-green);"></div><span>HA Bullish (no lower wick = strong)</span></div>
+                    <div class="ha-legend-item"><div class="ha-legend-color" style="background:var(--candle-red);"></div><span>HA Bearish (no upper wick = strong)</span></div>
+                </div>
+                <div class="chart-box large"><canvas id="heikinAshiChart"></canvas></div>
+                <div style="margin-top:15px;background:var(--bg);border-radius:8px;padding:12px;">
+                    <h4 style="font-size:13px;margin-bottom:10px;">📖 Heikin-Ashi Reading Guide</h4>
+                    <div class="grid grid-2" style="font-size:12px;">
+                        <div>
+                            <p><strong style="color:var(--success);">Strong Bullish:</strong> Green candles with no lower shadow</p>
+                            <p><strong style="color:var(--success);">Bullish:</strong> Green candles with small body</p>
+                        </div>
+                        <div>
+                            <p><strong style="color:var(--danger);">Strong Bearish:</strong> Red candles with no upper shadow</p>
+                            <p><strong style="color:var(--warning);">Indecision:</strong> Small body with long shadows both sides</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Point & Figure Chart -->
+            <div class="card" id="pnfChartCard" style="display:none;">
+                <div class="card-title">⬛ Point & Figure Chart (3-Box Reversal)</div>
+                <div class="ha-legend">
+                    <div class="ha-legend-item"><span style="color:var(--success);font-weight:bold;font-size:16px;">X</span><span>Rising prices</span></div>
+                    <div class="ha-legend-item"><span style="color:var(--danger);font-weight:bold;font-size:16px;">O</span><span>Falling prices</span></div>
+                    <div class="ha-legend-item"><span style="font-size:11px;">Box Size: $5.00</span></div>
+                </div>
+                <div class="pnf-chart" id="pnfChartContainer">
+                    <!-- P&F Chart will be rendered here -->
+                </div>
+                <div class="grid grid-3" style="margin-top:15px;">
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Current Column</span><span class="badge badge-success" id="pnfCurrentCol">X (Rising)</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Column Count</span><span class="ref-value" id="pnfColCount">8</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Pattern</span><span class="ref-value" id="pnfPattern">Double Top Breakout</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="pnfSignal">BULLISH</span></div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:8px;padding:12px;">
+                        <div class="ref-data-row"><span class="ref-label">Price Target</span><span class="ref-value positive" id="pnfTarget">$695.00</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Support</span><span class="ref-value" id="pnfSupport">$660.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNALS TAB -->
+        <div id="signals" class="tab-content">
+            <div class="card">
+                <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
+                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
+                            <tr><td>Fast SMA</td><td>5</td><td>10</td></tr>
+                            <tr><td>Slow SMA</td><td>20</td><td>30</td></tr>
+                            <tr><td>ATR Period</td><td>10</td><td>14</td></tr>
+                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td></tr>
+                            <tr><td>Target 1</td><td>1.0 ATR</td><td>2.0 ATR</td></tr>
+                            <tr><td>Target 2</td><td>1.5-2.0 ATR</td><td>3.0-4.0 ATR</td></tr>
+                            <tr><td>Hold Time</td><td>5 min - 2 hrs</td><td>1-5 days</td></tr>
+                            <tr><td>Risk/Trade</td><td>0.5-1%</td><td>1-2%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTIONS TAB -->
+        <div id="options" class="tab-content">
+            <div class="card">
+                <div class="card-title">📋 Strike Recommendations</div>
+                <div class="grid grid-2">
+                    <div style="background:linear-gradient(135deg,rgba(245,158,11,0.1),transparent);border:2px solid var(--intraday);border-radius:10px;padding:16px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <span class="badge badge-intraday">⚡ INTRADAY</span>
+                            <span id="intradayOptionType">0DTE CALL</span>
+                        </div>
+                        <div style="font-size:32px;font-weight:800;color:var(--intraday);margin-bottom:12px;" id="intradayRecStrike">$675</div>
+                        <div class="ref-data-row"><span class="ref-label">Delta</span><span class="ref-value" id="intradayDelta">~0.50</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Est. Premium</span><span class="ref-value" id="intradayPremium">$1.50-2.00</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Break Even</span><span class="ref-value" id="intradayBE">$676.75</span></div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,rgba(139,92,246,0.1),transparent);border:2px solid var(--swing);border-radius:10px;padding:16px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <span class="badge badge-swing">🌊 SWING</span>
+                            <span id="swingOptionType">4DTE CALL</span>
+                        </div>
+                        <div style="font-size:32px;font-weight:800;color:var(--swing);margin-bottom:12px;" id="swingRecStrike">$680</div>
+                        <div class="ref-data-row"><span class="ref-label">Delta</span><span class="ref-value" id="swingDelta">~0.45</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Est. Premium</span><span class="ref-value" id="swingPremium">$4.00-5.00</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Break Even</span><span class="ref-value" id="swingBE">$684.50</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENTS TAB -->
+        <div id="agents" class="tab-content">
+            <div class="card">
+                <div class="card-title">🤖 Agent Signals by Mode</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th style="color:var(--intraday);">⚡ Intraday Signal</th>
+                                <th style="color:var(--intraday);">Conf</th>
+                                <th style="color:var(--swing);">🌊 Swing Signal</th>
+                                <th style="color:var(--swing);">Conf</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>📊 Base Confluence</strong></td>
+                                <td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td>
+                                <td id="baseIntradayConf">72%</td>
+                                <td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td>
+                                <td id="baseSwingConf">68%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>🔮 Gann-Elliott</strong></td>
+                                <td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td>
+                                <td id="gannIntradayConf">75%</td>
+                                <td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td>
+                                <td id="gannSwingConf">70%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>🧠 DQN/RL</strong></td>
+                                <td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td>
+                                <td id="dqnIntradayConf">58%</td>
+                                <td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td>
+                                <td id="dqnSwingConf">65%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>🌊 3-Wave</strong></td>
+                                <td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td>
+                                <td id="waveIntradayConf">68%</td>
+                                <td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td>
+                                <td id="waveSwingConf">72%</td>
+                            </tr>
+                            <tr style="background:var(--bg);font-weight:700;">
+                                <td><strong>📈 CONSENSUS</strong></td>
+                                <td><span class="badge badge-ultra" id="intradayConsensus">3/4 CALL</span></td>
+                                <td id="intradayConsensusConf">68%</td>
+                                <td><span class="badge badge-ultra" id="swingConsensus">4/4 CALL</span></td>
+                                <td id="swingConsensusConf">69%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAR COUNT TAB - NEW -->
+        <div id="barcount" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔢 Intraday Bar Counting Analysis</div>
+                <p style="font-size:12px;color:var(--muted);margin-bottom:15px;">Bar counting helps identify trend exhaustion and potential reversal points. Each agent tracks consecutive bars in the same direction.</p>
+                
+                <div class="bar-count-display">
+                    <div class="bar-count-item">
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">📊 Base Confluence</div>
+                        <div class="bar-count-value" style="color:var(--success);" id="baseBarCount">+5</div>
+                        <div class="bar-count-label">Consecutive Bullish Bars</div>
+                        <div class="bar-count-signal"><span class="badge badge-success">Trend Strong</span></div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">🔮 Gann-Elliott</div>
+                        <div class="bar-count-value" style="color:var(--success);" id="gannBarCount">+7</div>
+                        <div class="bar-count-label">Wave Count Progress</div>
+                        <div class="bar-count-signal"><span class="badge badge-warning">Wave 3 of 5</span></div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">🧠 DQN/RL</div>
+                        <div class="bar-count-value" style="color:var(--warning);" id="dqnBarCount">+2</div>
+                        <div class="bar-count-label">Momentum Bars</div>
+                        <div class="bar-count-signal"><span class="badge badge-info">Neutral Zone</span></div>
+                    </div>
+                    <div class="bar-count-item">
+                        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">🌊 3-Wave</div>
+                        <div class="bar-count-value" style="color:var(--success);" id="waveBarCount">+4</div>
+                        <div class="bar-count-label">Impulse Bars</div>
+                        <div class="bar-count-signal"><span class="badge badge-success">Wave 1 Confirmed</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📊 Bar Count History (Last 20 Bars)</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Bar #</th><th>Time</th><th>O/H/L/C</th><th>Direction</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Consensus</th></tr>
+                        </thead>
+                        <tbody id="barCountTable">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Bar Count Interpretation</div>
+                <div class="grid grid-2">
+                    <div style="background:rgba(16,185,129,0.05);border-radius:8px;padding:12px;">
+                        <h4 style="font-size:13px;color:var(--success);margin-bottom:10px;">✅ Bullish Signals</h4>
+                        <ul style="font-size:12px;padding-left:18px;color:var(--muted);">
+                            <li><strong>5+ consecutive green bars:</strong> Strong uptrend, consider CALL</li>
+                            <li><strong>Bar count reset from -3 to +1:</strong> Trend reversal, new CALL entry</li>
+                            <li><strong>All agents show +3 or more:</strong> High confidence CALL</li>
+                        </ul>
+                    </div>
+                    <div style="background:rgba(239,68,68,0.05);border-radius:8px;padding:12px;">
+                        <h4 style="font-size:13px;color:var(--danger);margin-bottom:10px;">🚨 Bearish Signals</h4>
+                        <ul style="font-size:12px;padding-left:18px;color:var(--muted);">
+                            <li><strong>5+ consecutive red bars:</strong> Strong downtrend, consider PUT</li>
+                            <li><strong>Bar count reset from +3 to -1:</strong> Trend reversal, new PUT entry</li>
+                            <li><strong>All agents show -3 or more:</strong> High confidence PUT</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PATTERNS TAB -->
+        <div id="patterns" class="tab-content">
+            <div class="card">
+                <div class="card-title">📐 Fibonacci Levels</div>
+                <div class="grid grid-2">
+                    <div>
+                        <h4 style="color:var(--danger);margin-bottom:10px;font-size:13px;">Resistance (Targets)</h4>
+                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1">--</span></div>
+                    </div>
+                    <div>
+                        <h4 style="color:var(--success);margin-bottom:10px;font-size:13px;">Support (Stops)</h4>
+                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div class="card-title">📊 Technical</div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bull Flag</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:58%"></div></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🕯️ Candlestick</div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Morning Star</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:62%"></div></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⬛ P&F</div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Triple Top</span><span class="badge badge-warning">NEUTRAL</span></div><div class="pattern-bar"><div class="pattern-fill neutral" style="width:55%"></div></div></div>
+                    <div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">BULLISH</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRADES TAB -->
+        <div id="trades" class="tab-content">
+            <div class="grid grid-4" style="margin-bottom:15px;">
+                <div class="metric"><div class="metric-label">Total Trades</div><div class="metric-value">24</div></div>
+                <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-value positive">71%</div></div>
+                <div class="metric"><div class="metric-label">Total P&L</div><div class="metric-value positive">+$2,450</div></div>
+                <div class="metric"><div class="metric-label">Avg Trade</div><div class="metric-value positive">+$102</div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">📝 Log New Trade</div>
+                <div class="grid grid-4">
+                    <select id="tradeMode" style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+                        <option value="intraday">⚡ Intraday</option>
+                        <option value="swing">🌊 Swing</option>
+                    </select>
+                    <select id="tradeDirection" style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+                        <option value="CALL">📈 CALL</option>
+                        <option value="PUT">📉 PUT</option>
+                    </select>
+                    <input type="text" id="tradeStrike" placeholder="Strike (e.g., $675)" style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+                    <input type="number" step="0.01" id="tradePremium" placeholder="Premium" style="padding:10px;border:1px solid var(--border);border-radius:6px;">
+                </div>
+                <button onclick="logTrade()" style="width:100%;margin-top:12px;padding:12px;background:var(--primary);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Log Trade</button>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="tab-content">
+            <div class="grid grid-4" style="margin-bottom:15px;">
+                <div class="metric"><div class="metric-label">Sharpe Ratio</div><div class="metric-value">2.15</div></div>
+                <div class="metric"><div class="metric-label">Max Drawdown</div><div class="metric-value negative">-12.5%</div></div>
+                <div class="metric"><div class="metric-label">Profit Factor</div><div class="metric-value positive">1.85</div></div>
+                <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-value positive">68%</div></div>
+            </div>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title">📊 Performance by Mode</div>
+                    <div class="chart-box"><canvas id="modeChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📈 Win Rate by Agent</div>
+                    <div class="chart-box"><canvas id="winRateChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Global State
+let currentSymbol = 'SPY';
+let tradingMode = 'intraday';
+let chartType = 'candlestick';
+let valueType = 'price';
+let currentData = [];
+let candlestickChart, heikinChart, modeChart, winRateChart;
+
+const SYMBOL_NAMES = {
+    'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
+    'XLK': 'Technology', 'XLF': 'Financials', 'XLV': 'Healthcare', 'XLE': 'Energy'
+};
+
+const TRADING_PARAMS = {
+    intraday: { fastSMA: 5, slowSMA: 20, atrPeriod: 10, stopATR: 0.75, target1ATR: 1.0, target2ATR: 1.5 },
+    swing: { fastSMA: 10, slowSMA: 30, atrPeriod: 14, stopATR: 1.5, target1ATR: 2.0, target2ATR: 3.0 }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTabs();
+    loadAllData();
+    initAnalyticsCharts();
+    setInterval(loadAllData, 60000);
+});
+
+function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(btn.dataset.tab).classList.add('active');
+            btn.classList.add('active');
+        };
+    });
+}
+
+function setTradingMode(mode) {
+    tradingMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.mode-btn.${mode}`).classList.add('active');
+    document.getElementById('symbolBanner').className = `symbol-banner ${mode}-mode`;
+    document.getElementById('currentModeDisplay').textContent = mode.toUpperCase();
+    document.getElementById('currentTimeframeDisplay').textContent = mode === 'intraday' ? '15-min' : 'Daily';
+}
+
+function setChartType(type) {
+    chartType = type;
+    document.querySelectorAll('.chart-type-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById('candlestickChartCard').style.display = type === 'candlestick' ? 'block' : 'none';
+    document.getElementById('heikinChartCard').style.display = type === 'heikin' ? 'block' : 'none';
+    document.getElementById('pnfChartCard').style.display = type === 'pnf' ? 'block' : 'none';
+    
+    if (type === 'candlestick') updateCandlestickChart();
+    if (type === 'heikin') updateHeikinAshiChart();
+    if (type === 'pnf') updatePnFChart();
+}
+
+function setValueType(type) {
+    valueType = type;
+    document.querySelectorAll('.value-toggle-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    updateCandlestickChart();
+}
+
+function changeSymbol() {
+    currentSymbol = document.getElementById('symbolSelect').value;
+    document.querySelectorAll('.symbolTag').forEach(el => el.textContent = currentSymbol);
+    document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
+    document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+    document.getElementById('tickerSymbol').textContent = currentSymbol;
+    loadAllData();
+}
+
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim());
+    return lines.slice(1).map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i]?.trim() || '');
+        return obj;
+    });
+}
+
+async function loadAllData() {
+    document.getElementById('loadingOverlay').classList.add('active');
+    
+    try {
+        let r = await fetch(`data/${currentSymbol}.csv?t=${Date.now()}`).catch(() => null);
+        if (!r?.ok) r = await fetch('data/SPY.csv?t=' + Date.now()).catch(() => null);
+        
+        if (r?.ok) {
+            currentData = parseCSV(await r.text());
+            if (currentData.length) {
+                updateDashboard();
+                updateCandlestickChart();
+                updateBarCountTable();
+            }
+        }
+    } catch (e) {
+        console.error('Error:', e);
+    }
+    
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+function updateDashboard() {
+    const lat = currentData[currentData.length - 1];
+    const prev = currentData[currentData.length - 2] || lat;
+    const price = parseFloat(lat.Close) || 0;
+    const prevPrice = parseFloat(prev.Close) || price;
+    const chg = price - prevPrice;
+    const pct = prevPrice ? (chg / prevPrice * 100) : 0;
+    const atr = parseFloat(lat.ATR) || 5;
+    const bias = (lat.Bias || '').toUpperCase();
+
+    // Header Live Price Ticker
+    document.getElementById('tickerPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('tickerChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    document.getElementById('tickerChange').className = 'ticker-change ' + (chg >= 0 ? 'positive' : 'negative');
+    document.getElementById('tickerPct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+
+    // Basic metrics
+    document.getElementById('currentPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('priceSource').textContent = `${currentData.length} bars`;
+    document.getElementById('dailyChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    document.getElementById('dailyChange').className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
+    document.getElementById('changePct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    document.getElementById('volumeDisplay').textContent = ((parseFloat(lat.Volume) || 0) / 1e6).toFixed(1) + 'M';
+    document.getElementById('signalStatus').textContent = bias || 'HOLD';
+    document.getElementById('signalConf').textContent = `${lat.PriceConfluence || 0}/4 agents`;
+    document.getElementById('atrDisplay').textContent = '$' + atr.toFixed(2);
+
+    // Date/Time
+    const dateStr = lat.Date || '';
+    const [datePart, timePart] = dateStr.includes('T') ? dateStr.split('T') : [dateStr, 'EOD'];
+    document.getElementById('dataDate').textContent = datePart;
+    document.getElementById('dataTime').textContent = timePart.replace('Z', '');
+
+    // Intraday signals
+    const ip = TRADING_PARAMS.intraday;
+    document.getElementById('intradaySignal').textContent = bias || 'HOLD';
+    document.getElementById('intradaySignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    document.getElementById('intradayEntry').textContent = `$${price.toFixed(2)}`;
+    document.getElementById('intradayStop').textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
+    document.getElementById('intradayT1').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
+    document.getElementById('intradayT2').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
+    document.getElementById('intradayStrike').textContent = `$${Math.round(price)} ${bias || 'CALL'}`;
+    document.getElementById('intradayRecStrike').textContent = '$' + Math.round(price);
+
+    // Swing signals
+    const sp = TRADING_PARAMS.swing;
+    document.getElementById('swingSignal').textContent = bias || 'HOLD';
+    document.getElementById('swingSignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    document.getElementById('swingEntry').textContent = `$${(price - 2).toFixed(2)}-${(price + 2).toFixed(2)}`;
+    document.getElementById('swingStop').textContent = '$' + (bias === 'PUT' ? (price + atr * sp.stopATR) : (price - atr * sp.stopATR)).toFixed(2);
+    document.getElementById('swingT1').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target1ATR) : (price + atr * sp.target1ATR)).toFixed(2);
+    document.getElementById('swingT2').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target2ATR) : (price + atr * sp.target2ATR)).toFixed(2);
+    document.getElementById('swingStrike').textContent = `$${Math.round(price / 5) * 5} ${bias || 'CALL'}`;
+    document.getElementById('swingRecStrike').textContent = '$' + Math.round(price / 5) * 5;
+
+    // Reference data
+    updateReferenceData();
+    updateFibonacci();
+}
+
+function updateReferenceData() {
+    const lat = currentData[currentData.length - 1];
+    const yearData = currentData.slice(-252);
+    const price = parseFloat(lat.Close) || 0;
+    
+    const highs = yearData.map(d => parseFloat(d.High) || 0);
+    const lows = yearData.map(d => parseFloat(d.Low) || 0);
+    const week52High = Math.max(...highs);
+    const week52Low = Math.min(...lows);
+    
+    document.getElementById('week52High').textContent = '$' + week52High.toFixed(2);
+    document.getElementById('week52Low').textContent = '$' + week52Low.toFixed(2);
+    document.getElementById('todayHigh').textContent = '$' + (parseFloat(lat.High) || 0).toFixed(2);
+    document.getElementById('todayLow').textContent = '$' + (parseFloat(lat.Low) || 0).toFixed(2);
+    
+    const todayVol = parseFloat(lat.Volume) || 0;
+    const volumes20 = currentData.slice(-20).map(d => parseFloat(d.Volume) || 0);
+    const avgVol = volumes20.reduce((a, b) => a + b, 0) / 20;
+    const volRatio = todayVol / avgVol;
+    
+    document.getElementById('avgVolume20').textContent = (avgVol / 1e6).toFixed(1) + 'M';
+    document.getElementById('volumeVsAvg').textContent = ((volRatio - 1) * 100).toFixed(0) + '%';
+    document.getElementById('volumeVsAvgSmall').textContent = (volRatio > 1 ? '+' : '') + ((volRatio - 1) * 100).toFixed(0) + '% vs avg';
+    
+    document.getElementById('nextEarningsDate').textContent = '2026-01-24';
+    document.getElementById('earningsVolatilityAlert').textContent = 'LOW';
+    document.getElementById('earningsVolatilityAlert').className = 'badge badge-success';
+}
+
+function updateFibonacci() {
+    const recent = currentData.slice(-60);
+    const highs = recent.map(d => parseFloat(d.High) || 0);
+    const lows = recent.map(d => parseFloat(d.Low) || 0);
+    const swingHigh = Math.max(...highs);
+    const swingLow = Math.min(...lows);
+    const price = parseFloat(currentData[currentData.length - 1].Close) || 0;
+    const range = swingHigh - swingLow;
+    
+    const fib382 = swingHigh - (range * 0.382);
+    const fib500 = swingHigh - (range * 0.500);
+    const fib618 = swingHigh - (range * 0.618);
+    const fib100 = swingHigh;
+    const fib1272 = swingLow + (range * 1.272);
+    const fib1618 = swingLow + (range * 1.618);
+    
+    // Patterns tab
+    document.getElementById('fibR1').textContent = '$' + fib100.toFixed(2);
+    document.getElementById('fibR2').textContent = '$' + fib1272.toFixed(2);
+    document.getElementById('fibR3').textContent = '$' + fib1618.toFixed(2);
+    document.getElementById('fibS1').textContent = '$' + fib382.toFixed(2);
+    document.getElementById('fibS2').textContent = '$' + fib500.toFixed(2);
+    document.getElementById('fibS3').textContent = '$' + fib618.toFixed(2);
+    
+    // Charts tab
+    document.getElementById('chartP0').textContent = '$' + price.toFixed(2);
+    document.getElementById('chartR1').textContent = '$' + fib100.toFixed(2);
+    document.getElementById('chartR2').textContent = '$' + fib1272.toFixed(2);
+    document.getElementById('chartR3').textContent = '$' + fib1618.toFixed(2);
+    document.getElementById('chartS1').textContent = '$' + fib382.toFixed(2);
+    document.getElementById('chartS2').textContent = '$' + fib500.toFixed(2);
+    document.getElementById('chartS3').textContent = '$' + fib618.toFixed(2);
+    
+    // Store for chart annotations
+    window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, price };
+}
+
+function updateCandlestickChart() {
+    const data = currentData.slice(-60);
+    const ctx = document.getElementById('candlestickChart');
+    if (!ctx) return;
+    
+    if (candlestickChart) candlestickChart.destroy();
+    
+    const fib = window.fibLevels || {};
+    
+    // Calculate candlestick data
+    const candleData = data.map(d => ({
+        x: (d.Date || '').split('T')[0].slice(5),
+        o: parseFloat(d.Open) || 0,
+        h: parseFloat(d.High) || 0,
+        l: parseFloat(d.Low) || 0,
+        c: parseFloat(d.Close) || 0
+    }));
+    
+    // Create separate datasets for bullish and bearish candles
+    const closes = data.map(d => parseFloat(d.Close) || 0);
+    const colors = data.map(d => (parseFloat(d.Close) >= parseFloat(d.Open)) ? '#10b981' : '#ef4444');
+    
+    candlestickChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: candleData.map(c => c.x),
+            datasets: [{
+                label: 'Price',
+                data: closes,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                annotation: {
+                    annotations: {
+                        r3Line: { type: 'line', yMin: fib.fib1618, yMax: fib.fib1618, borderColor: '#ef4444', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'R3', position: 'end' }},
+                        r2Line: { type: 'line', yMin: fib.fib1272, yMax: fib.fib1272, borderColor: '#f59e0b', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'R2', position: 'end' }},
+                        r1Line: { type: 'line', yMin: fib.fib100, yMax: fib.fib100, borderColor: '#f97316', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'R1', position: 'end' }},
+                        s1Line: { type: 'line', yMin: fib.fib382, yMax: fib.fib382, borderColor: '#22c55e', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'S1', position: 'end' }},
+                        s2Line: { type: 'line', yMin: fib.fib500, yMax: fib.fib500, borderColor: '#14b8a6', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'S2', position: 'end' }},
+                        s3Line: { type: 'line', yMin: fib.fib618, yMax: fib.fib618, borderColor: '#10b981', borderWidth: 2, borderDash: [5,5], label: { display: true, content: 'S3', position: 'end' }}
+                    }
+                }
+            },
+            scales: {
+                y: { ticks: { callback: v => '$' + v.toFixed(0) } }
+            }
+        }
+    });
+}
+
+function updateHeikinAshiChart() {
+    const data = currentData.slice(-60);
+    const ctx = document.getElementById('heikinAshiChart');
+    if (!ctx) return;
+    
+    if (heikinChart) heikinChart.destroy();
+    
+    // Calculate Heikin-Ashi
+    const haData = [];
+    for (let i = 0; i < data.length; i++) {
+        const o = parseFloat(data[i].Open) || 0;
+        const h = parseFloat(data[i].High) || 0;
+        const l = parseFloat(data[i].Low) || 0;
+        const c = parseFloat(data[i].Close) || 0;
+        
+        const haClose = (o + h + l + c) / 4;
+        const haOpen = i === 0 ? (o + c) / 2 : (haData[i-1].haOpen + haData[i-1].haClose) / 2;
+        const haHigh = Math.max(h, haOpen, haClose);
+        const haLow = Math.min(l, haOpen, haClose);
+        
+        haData.push({ haOpen, haHigh, haLow, haClose, date: (data[i].Date || '').split('T')[0].slice(5) });
+    }
+    
+    const colors = haData.map(d => d.haClose >= d.haOpen ? '#10b981' : '#ef4444');
+    
+    heikinChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: haData.map(d => d.date),
+            datasets: [{
+                label: 'HA Price',
+                data: haData.map(d => d.haClose),
+                backgroundColor: colors,
+                borderColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { callback: v => '$' + v.toFixed(0) } } }
+        }
+    });
+}
+
+function updatePnFChart() {
+    const container = document.getElementById('pnfChartContainer');
+    if (!container || currentData.length < 20) return;
+    
+    const boxSize = 5;
+    const reversal = 3;
+    const prices = currentData.slice(-100).map(d => parseFloat(d.Close) || 0);
+    const minPrice = Math.floor(Math.min(...prices) / boxSize) * boxSize;
+    const maxPrice = Math.ceil(Math.max(...prices) / boxSize) * boxSize;
+    
+    // Generate P&F columns
+    const columns = [];
+    let currentCol = { type: 'X', boxes: [] };
+    let lastPrice = Math.round(prices[0] / boxSize) * boxSize;
+    currentCol.boxes.push(lastPrice);
+    
+    for (let i = 1; i < prices.length; i++) {
+        const price = prices[i];
+        const boxPrice = Math.round(price / boxSize) * boxSize;
+        
+        if (currentCol.type === 'X') {
+            if (boxPrice > lastPrice) {
+                for (let p = lastPrice + boxSize; p <= boxPrice; p += boxSize) {
+                    currentCol.boxes.push(p);
+                }
+                lastPrice = boxPrice;
+            } else if (boxPrice <= lastPrice - (reversal * boxSize)) {
+                columns.push({...currentCol});
+                currentCol = { type: 'O', boxes: [] };
+                for (let p = lastPrice - boxSize; p >= boxPrice; p -= boxSize) {
+                    currentCol.boxes.push(p);
+                }
+                lastPrice = boxPrice;
+            }
+        } else {
+            if (boxPrice < lastPrice) {
+                for (let p = lastPrice - boxSize; p >= boxPrice; p -= boxSize) {
+                    currentCol.boxes.push(p);
+                }
+                lastPrice = boxPrice;
+            } else if (boxPrice >= lastPrice + (reversal * boxSize)) {
+                columns.push({...currentCol});
+                currentCol = { type: 'X', boxes: [] };
+                for (let p = lastPrice + boxSize; p <= boxPrice; p += boxSize) {
+                    currentCol.boxes.push(p);
+                }
+                lastPrice = boxPrice;
+            }
+        }
+    }
+    columns.push(currentCol);
+    
+    // Render P&F chart
+    let html = '';
+    for (let price = maxPrice; price >= minPrice; price -= boxSize) {
+        html += '<div class="pnf-row">';
+        html += `<div class="pnf-price">${price}</div>`;
+        
+        for (let c = Math.max(0, columns.length - 25); c < columns.length; c++) {
+            const col = columns[c];
+            if (col.boxes.includes(price)) {
+                html += `<div class="pnf-cell pnf-${col.type.toLowerCase()}">${col.type}</div>`;
+            } else {
+                html += '<div class="pnf-cell"></div>';
+            }
+        }
+        html += '</div>';
+    }
+    container.innerHTML = html;
+    
+    // Update P&F info
+    const lastCol = columns[columns.length - 1];
+    document.getElementById('pnfCurrentCol').textContent = lastCol.type === 'X' ? 'X (Rising)' : 'O (Falling)';
+    document.getElementById('pnfCurrentCol').className = `badge badge-${lastCol.type === 'X' ? 'success' : 'danger'}`;
+    document.getElementById('pnfColCount').textContent = columns.length;
+    document.getElementById('pnfSignal').textContent = lastCol.type === 'X' ? 'BULLISH' : 'BEARISH';
+    document.getElementById('pnfSignal').className = `badge badge-${lastCol.type === 'X' ? 'success' : 'danger'}`;
+    document.getElementById('pnfTarget').textContent = '$' + (lastPrice + (boxSize * 4)).toFixed(2);
+    document.getElementById('pnfSupport').textContent = '$' + (lastPrice - (boxSize * 3)).toFixed(2);
+}
+
+function updateBarCountTable() {
+    const table = document.getElementById('barCountTable');
+    if (!table || currentData.length < 20) return;
+    
+    const data = currentData.slice(-20);
+    let html = '';
+    let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
+    
+    data.forEach((d, i) => {
+        const o = parseFloat(d.Open) || 0;
+        const h = parseFloat(d.High) || 0;
+        const l = parseFloat(d.Low) || 0;
+        const c = parseFloat(d.Close) || 0;
+        const isBullish = c >= o;
+        const dir = isBullish ? '📈' : '📉';
+        
+        // Update counts
+        if (isBullish) {
+            baseCount = baseCount >= 0 ? baseCount + 1 : 1;
+            gannCount = gannCount >= 0 ? gannCount + 1 : 1;
+            dqnCount = dqnCount >= 0 ? dqnCount + 1 : 1;
+            waveCount = waveCount >= 0 ? waveCount + 1 : 1;
+        } else {
+            baseCount = baseCount <= 0 ? baseCount - 1 : -1;
+            gannCount = gannCount <= 0 ? gannCount - 1 : -1;
+            dqnCount = dqnCount <= 0 ? dqnCount - 1 : -1;
+            waveCount = waveCount <= 0 ? waveCount - 1 : -1;
+        }
+        
+        const date = (d.Date || '').split('T')[0];
+        const consensus = (baseCount + gannCount + dqnCount + waveCount) / 4;
+        const consBadge = consensus > 2 ? 'success' : (consensus < -2 ? 'danger' : 'warning');
+        
+        html += `<tr>
+            <td>${data.length - i}</td>
+            <td>${date}</td>
+            <td style="font-size:11px;">${o.toFixed(1)}/${h.toFixed(1)}/${l.toFixed(1)}/${c.toFixed(1)}</td>
+            <td>${dir}</td>
+            <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
+            <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
+            <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
+            <td class="${waveCount > 0 ? 'positive' : 'negative'}">${waveCount > 0 ? '+' : ''}${waveCount}</td>
+            <td><span class="badge badge-${consBadge}">${consensus.toFixed(1)}</span></td>
+        </tr>`;
+    });
+    
+    table.innerHTML = html;
+    
+    // Update bar count display
+    document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
+    document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('gannBarCount').textContent = (gannCount > 0 ? '+' : '') + gannCount;
+    document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('dqnBarCount').textContent = (dqnCount > 0 ? '+' : '') + dqnCount;
+    document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : (dqnCount < 0 ? 'var(--danger)' : 'var(--warning)');
+    document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
+    document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
+}
+
+function initAnalyticsCharts() {
+    const modeCtx = document.getElementById('modeChart');
+    if (modeCtx) {
+        new Chart(modeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Win Rate', 'Avg Return', 'Sharpe'],
+                datasets: [
+                    { label: 'Intraday', data: [65, 1.2, 1.8], backgroundColor: '#f59e0b' },
+                    { label: 'Swing', data: [72, 2.5, 2.2], backgroundColor: '#8b5cf6' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+    
+    const wrCtx = document.getElementById('winRateChart');
+    if (wrCtx) {
+        new Chart(wrCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Base', 'Gann', 'DQN', '3-Wave'],
+                datasets: [{ label: 'Win %', data: [65, 72, 62, 71], backgroundColor: ['#3b82f6', '#8b5cf6', '#06b6d4', '#f59e0b'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+}
+
+function logTrade() {
+    alert(`Trade logged!\nMode: ${document.getElementById('tradeMode').value}\nDirection: ${document.getElementById('tradeDirection').value}`);
+}
+</script>
+</body>
+</html>
