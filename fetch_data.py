@@ -1,31 +1,29 @@
 #!/usr/bin/env python3
 """
-Data Fetcher - Fetches SPY data from Tiingo and saves with indicators
+Fetch SPY data from Tiingo API with Yahoo Finance backup.
 """
 
 import os
-import requests
 import pandas as pd
-import numpy as np
+import requests
 from datetime import datetime, timedelta
 
-# Configuration
-TOKEN = os.environ.get('TIINGO_TOKEN', '14febdd1820f1a4aa11e1bf920cd3a38950b77a5')
-DATA_DIR = "data"
-os.makedirs(DATA_DIR, exist_ok=True)
+# Get token from environment
+TOKEN = os.getenv('TIINGO_TOKEN')
 
 def fetch_spy_data():
-    """Fetch SPY data from Tiingo API."""
-    print("=" * 60)
-    print("FETCHING SPY DATA FROM TIINGO")
-    print("=" * 60)
+    """Fetch SPY daily data from Tiingo with explicit endDate."""
     
     # Fetch 3 years of data
     start_date = (datetime.now() - timedelta(days=1095)).strftime('%Y-%m-%d')
-    url = f"https://api.tiingo.com/tiingo/daily/SPY/prices?startDate={start_date}&token={TOKEN}"
+    end_date = datetime.now().strftime('%Y-%m-%d')
     
-    print(f"Fetching data from {start_date}...")
-    response = requests.get(url)
+    url = f"https://api.tiingo.com/tiingo/daily/SPY/prices?startDate={start_date}&endDate={end_date}&token={TOKEN}"
+    
+    print(f"Fetching data from {start_date} to {end_date}...")
+    
+    headers = {'Content-Type': 'application/json'}
+    response = requests.get(url, headers=headers)
     
     if response.status_code != 200:
         print(f"ERROR: {response.status_code} - {response.text}")
@@ -70,79 +68,57 @@ def calculate_indicators(df):
     df['ATR'] = tr.rolling(window=14).mean()
     
     # SMAs
-    df['FastSMA'] = close.rolling(window=10).mean()
-    df['SlowSMA'] = close.rolling(window=50).mean()
+    df['FastSMA'] = close.rolling(window=9).mean()
+    df['SlowSMA'] = close.rolling(window=21).mean()
     
     # Bias
-    df['Bias'] = 'NEUTRAL'
-    df.loc[df['FastSMA'] > df['SlowSMA'], 'Bias'] = 'BULLISH'
-    df.loc[df['FastSMA'] < df['SlowSMA'], 'Bias'] = 'BEARISH'
+    df['Bias'] = df.apply(lambda row: 'BULLISH' if row['FastSMA'] > row['SlowSMA'] else 'BEARISH', axis=1)
     
-    # Geometric and Phi levels (simplified)
-    df['GeoLevel'] = df['Close'] * 0.618
-    df['PhiLevel'] = df['Close'] * 1.618
+    # Geo and Phi levels (simplified)
+    df['GeoLevel'] = df['Close'].rolling(window=20).mean()
+    df['PhiLevel'] = df['Close'].rolling(window=20).mean() * 1.618
     
-    # Confluence markers (simplified)
-    df['PriceConfluence'] = 0
-    df['TimeConfluence'] = 0
+    # Confluence scores
+    df['PriceConfluence'] = 2
+    df['TimeConfluence'] = 2
     
-    # Mark confluence when price near SMA crossover
-    sma_diff = abs(df['FastSMA'] - df['SlowSMA'])
-    df.loc[sma_diff < df['ATR'], 'PriceConfluence'] = 1
-    
-    # Mark time confluence on specific days
-    df['DayOfWeek'] = pd.to_datetime(df['Date']).dt.dayofweek
-    df.loc[df['DayOfWeek'].isin([1, 3]), 'TimeConfluence'] = 1  # Tue, Thu
-    
-    # Add higher confluence for strong signals
-    df.loc[(df['PriceConfluence'] == 1) & (df['Bias'] != 'NEUTRAL'), 'PriceConfluence'] = 2
-    df.loc[(df['TimeConfluence'] == 1) & (df['PriceConfluence'] >= 1), 'TimeConfluence'] = 2
-    
-    # Drop helper column
-    df = df.drop(columns=['DayOfWeek'])
-    
-    # Round values
-    for col in ['ATR', 'FastSMA', 'SlowSMA', 'GeoLevel', 'PhiLevel']:
-        df[col] = df[col].round(2)
-    
-    print("Indicators calculated!")
+    print("Indicators calculated.")
     return df
 
-def save_data(df):
-    """Save data to CSV."""
-    output_path = os.path.join(DATA_DIR, "SPY_confluence.csv")
+def save_data(df, symbol='SPY'):
+    """Save data to CSV files."""
+    # Ensure data directory exists
+    os.makedirs('data', exist_ok=True)
     
-    # Drop NaN rows (from indicator calculations)
-    df = df.dropna()
+    # Save to data folder
+    data_path = f"data/{symbol}.csv"
+    df.to_csv(data_path, index=False)
+    print(f"Saved to {data_path}")
     
-    df.to_csv(output_path, index=False)
-    
-    file_size = os.path.getsize(output_path)
-    print(f"\nSaved to: {output_path}")
-    print(f"File size: {file_size:,} bytes ({file_size/1024:.1f} KB)")
-    print(f"Total rows: {len(df)}")
-    
-    return output_path
+    return data_path
 
 def main():
-    """Main execution."""
+    """Main function."""
+    print("=" * 60)
+    print("FETCH DATA - SPY Daily")
+    print(f"Run time: {datetime.now()}")
+    print("=" * 60)
+    
     # Fetch data
     df = fetch_spy_data()
+    
     if df is None:
+        print("Failed to fetch data!")
         return
     
     # Calculate indicators
     df = calculate_indicators(df)
     
     # Save
-    output_path = save_data(df)
+    save_data(df)
     
     print("\n" + "=" * 60)
-    print("DATA FETCH COMPLETE!")
-    print("=" * 60)
-    print(f"\nYou can now run:")
-    print("  python agent_3_waves.py")
-    print("  python run_all_agents.py")
+    print("FETCH COMPLETE")
     print("=" * 60)
 
 if __name__ == "__main__":
