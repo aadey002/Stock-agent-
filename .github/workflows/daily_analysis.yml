@@ -1,5 +1,5 @@
 # Stock Agent 4 - Q5D Daily Analysis
-# Fixed: Copies SPY_confluence.csv as SPY.csv for dashboard
+# Fixed: Runs fetch_data.py to get latest market data
 
 name: Q5D Daily Analysis
 
@@ -36,76 +36,13 @@ jobs:
       - name: 📂 Create folders
         run: mkdir -p data reports logs
 
+      - name: 📥 Fetch Data
+        env:
+          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
+        run: python fetch_data.py
+
       - name: 🤖 Run Base Agent
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        run: python agents/base_agent.py
-
-      - name: 🔄 Run Hybrid Engine
-        env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
         continue-on-error: true
-        run: python agents/hybrid_engine.py || echo "Skipped"
-
-      - name: 📊 Show results
-        run: |
-          echo "=== DATA FILES ==="
-          ls -la data/
-          echo ""
-          echo "=== Last lines of confluence files ==="
-          tail -2 data/*_confluence.csv 2>/dev/null || echo "No confluence files"
-          tail -2 data/SPY.csv 2>/dev/null || echo "No SPY.csv"
-
-      - name: 📤 Push to main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --staged --quiet || git commit -m "🤖 $(date '+%Y-%m-%d %H:%M ET')"
-          git push --force origin main || true
-
-      - name: 🌐 Deploy to gh-pages
-        run: |
-          # Prepare files for dashboard
-          mkdir -p /tmp/deploy
-          
-          # Copy confluence files AS the expected names
-          # SPY_confluence.csv -> SPY.csv (dashboard expects this)
-          for file in data/*_confluence.csv; do
-            if [ -f "$file" ]; then
-              # Extract symbol name (e.g., SPY from SPY_confluence.csv)
-              symbol=$(basename "$file" _confluence.csv)
-              cp "$file" "/tmp/deploy/${symbol}.csv"
-              echo "✅ Copied $file -> ${symbol}.csv"
-            fi
-          done
-          
-          # Also copy any regular CSV files from data/
-          cp data/*.csv /tmp/deploy/ 2>/dev/null || true
-          
-          # Copy reports
-          cp reports/*.csv /tmp/deploy/ 2>/dev/null || true
-          
-          echo ""
-          echo "=== Files to deploy ==="
-          ls -la /tmp/deploy/
-          
-          # Switch to gh-pages
-          git fetch origin gh-pages || true
-          git checkout gh-pages || git checkout --orphan gh-pages
-          
-          # Copy files (preserve index.html)
-          cp /tmp/deploy/*.csv . 2>/dev/null || true
-          
-          # Commit and push
-          git add *.csv 2>/dev/null || true
-          
-          if git diff --staged --quiet; then
-            echo "No changes"
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "📊 $(date '+%Y-%m-%d %H:%M ET')"
-            git push --force origin gh-pages
-            echo "✅ Deployed!"
-          fi
+        run: python agents/base_agent.py || echo
