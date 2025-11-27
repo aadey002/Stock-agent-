@@ -1,13 +1,10 @@
-# Stock Agent 4 - Q5D Daily Analysis
-# Fixed: Runs fetch_data.py first, then copies CSVs to gh-pages
-
 name: Q5D Daily Analysis
 
 on:
   schedule:
-    - cron: '35 14 * * 1-5'  # 9:35 AM ET
-    - cron: '05 21 * * 1-5'  # 4:05 PM ET
-    - cron: '00 23 * * 1-5'  # 6:00 PM ET
+    - cron: '35 14 * * 1-5'
+    - cron: '05 21 * * 1-5'
+    - cron: '00 23 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -20,94 +17,39 @@ jobs:
       TZ: America/New_York
 
     steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: main
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 📦 Install deps
-        run: pip install pandas numpy requests --quiet
+      - run: pip install pandas numpy requests --quiet
 
-      - name: 📂 Create folders
-        run: mkdir -p data reports logs
+      - run: mkdir -p data reports logs
 
-      - name: 📥 Fetch ALL Symbols from Tiingo
+      - name: Fetch ALL Symbols
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
         run: python fetch_all_symbols.py
 
-      - name: 🤖 Run Base Agent
-        env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        continue-on-error: true
-        run: python agents/base_agent.py || echo "Skipped base_agent"
+      - run: ls -la data/
 
-      - name: 🔄 Run Hybrid Engine
-        env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        continue-on-error: true
-        run: python agents/hybrid_engine.py || echo "Skipped hybrid_engine"
-
-      - name: 📊 Show results
-        run: |
-          echo "=== DATA FILES ==="
-          ls -la data/
-          echo ""
-          echo "=== Last 2 lines of CSV files ==="
-          for f in data/*.csv; do
-            if [ -f "$f" ]; then
-              echo "--- $f ---"
-              tail -2 "$f"
-            fi
-          done
-
-      - name: 📤 Push to main
+      - name: Push to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "🤖 Data: $(date '+%Y-%m-%d %H:%M ET')"
+          git diff --staged --quiet || git commit -m "Data update"
           git push --force origin main || true
 
-      - name: 🌐 Deploy to gh-pages
+      - name: Deploy to gh-pages
         run: |
-          # Prepare files for dashboard
           mkdir -p /tmp/deploy
-          
-          # Copy all CSV files from data/
           cp data/*.csv /tmp/deploy/ 2>/dev/null || true
-          
-          # Copy voting_log.json (real agent signals)
-          cp data/voting_log.json /tmp/deploy/ 2>/dev/null || true
-          
-          # Copy reports
-          cp reports/*.csv /tmp/deploy/ 2>/dev/null || true
-          
-          echo ""
-          echo "=== Files to deploy ==="
-          ls -la /tmp/deploy/
-          
-          # Switch to gh-pages
           git fetch origin gh-pages || true
           git checkout gh-pages || git checkout --orphan gh-pages
-          
-          # Copy files (preserve index.html)
           cp /tmp/deploy/*.csv . 2>/dev/null || true
-          cp /tmp/deploy/*.json . 2>/dev/null || true
-          
-          # Commit and push
-          git add *.csv *.json 2>/dev/null || true
-          if git diff --staged --quiet; then
-            echo "No changes"
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "📊 Data: $(date '+%Y-%m-%d %H:%M ET')"
-            git push --force origin gh-pages
-            echo "✅ Deployed!"
-          fi
+          git add *.csv 2>/dev/null || true
+          git diff --staged --quiet || (git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com" && git commit -m "Data update" && git push --force origin gh-pages)
