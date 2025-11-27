@@ -268,6 +268,8 @@
         .tab-btn.health-tab:not(.active) { background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.2)); color: var(--success); }
         .tab-btn.charts-tab { background: linear-gradient(135deg, #0891b2, #0e7490); color: white; }
         .tab-btn.charts-tab:not(.active) { background: linear-gradient(135deg, rgba(8,145,178,0.2), rgba(14,116,144,0.2)); color: var(--accent); }
+        .tab-btn.analysis-tab { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .tab-btn.analysis-tab:not(.active) { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(217,119,6,0.2)); color: var(--warning); }
         
         /* Multi-Charts Styles */
         .multi-charts-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
@@ -290,6 +292,100 @@
         .chart-legend .price { color: #26a69a; }
         .chart-legend .price.down { color: #ef5350; }
         .chart-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #787b86; font-size: 12px; }
+        
+        /* Daily Analysis Styles */
+        .daily-report { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
+        .report-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 50%, #1a1a2e 100%); color: white; padding: 20px; }
+        .report-header h2 { font-size: 20px; margin-bottom: 5px; }
+        .report-header .report-meta { font-size: 12px; opacity: 0.8; }
+        .report-body { padding: 20px; }
+        .report-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .report-section:last-child { margin-bottom: 0; border-bottom: none; }
+        .report-section-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .signal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .signal-card { background: var(--bg); border-radius: 8px; padding: 12px; border-left: 4px solid var(--primary); }
+        .signal-card.bullish { border-left-color: var(--success); }
+        .signal-card.bearish { border-left-color: var(--danger); }
+        .signal-card.neutral { border-left-color: var(--warning); }
+        .signal-card-title { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+        .signal-card-value { font-size: 16px; font-weight: 700; }
+        .signal-card-detail { font-size: 10px; color: var(--muted); margin-top: 4px; }
+        .consensus-meter { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+        .consensus-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .consensus-fill.high { background: linear-gradient(90deg, var(--success), #34d399); }
+        .consensus-fill.medium { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .consensus-fill.low { background: linear-gradient(90deg, var(--danger), #f87171); }
+        .trade-recommendation { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); border: 1px solid rgba(16,185,129,0.3); border-radius: 10px; padding: 15px; }
+        .trade-recommendation.put { background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.1)); border-color: rgba(239,68,68,0.3); }
+        .strike-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .strike-table th, .strike-table td { padding: 8px 12px; text-align: left; font-size: 12px; }
+        .strike-table th { background: var(--bg); color: var(--muted); font-weight: 600; }
+        .strike-table tr:hover { background: rgba(59,130,246,0.05); }
+        .gann-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .gann-item { background: var(--bg); padding: 10px; border-radius: 6px; text-align: center; }
+        .gann-item-label { font-size: 10px; color: var(--muted); }
+        .gann-item-value { font-size: 14px; font-weight: 700; color: var(--secondary); }
+        .phi-levels { display: flex; flex-wrap: wrap; gap: 8px; }
+        .phi-level { background: rgba(139,92,246,0.1); padding: 6px 12px; border-radius: 20px; font-size: 11px; }
+        .phi-level span { font-weight: 700; color: var(--secondary); }
+        .report-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .report-btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .report-btn.primary { background: var(--primary); color: white; }
+        .report-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+        .report-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .eod-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        @media (max-width: 768px) { .eod-summary { grid-template-columns: repeat(2, 1fr); } }
+        .eod-metric { text-align: center; padding: 15px; background: var(--bg); border-radius: 8px; }
+        .eod-metric-value { font-size: 24px; font-weight: 700; }
+        .eod-metric-label { font-size: 11px; color: var(--muted); }
+        
+        /* Daily Analysis Styles */
+        .analysis-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .analysis-time { display: flex; gap: 15px; align-items: center; }
+        .analysis-time-btn { padding: 10px 20px; border: 2px solid var(--border); background: white; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .analysis-time-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+        .analysis-time-btn:hover:not(.active) { border-color: var(--primary); }
+        .report-actions { display: flex; gap: 10px; }
+        .report-btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .report-btn.primary { background: var(--primary); color: white; }
+        .report-btn.success { background: var(--success); color: white; }
+        .report-btn.warning { background: var(--warning); color: white; }
+        .signal-confluence-card { background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(139,92,246,0.05)); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .confluence-score { font-size: 48px; font-weight: 800; text-align: center; margin: 15px 0; }
+        .confluence-score.bullish { color: var(--success); }
+        .confluence-score.bearish { color: var(--danger); }
+        .confluence-score.neutral { color: var(--warning); }
+        .signal-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .signal-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+        .signal-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .signal-item-name { font-weight: 600; font-size: 12px; }
+        .signal-item-score { font-weight: 700; font-size: 14px; padding: 4px 10px; border-radius: 4px; }
+        .signal-item-score.bullish { background: rgba(16,185,129,0.1); color: var(--success); }
+        .signal-item-score.bearish { background: rgba(239,68,68,0.1); color: var(--danger); }
+        .signal-item-score.neutral { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .signal-item-detail { font-size: 11px; color: var(--muted); }
+        .trading-plan { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .trading-plan-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px 20px; }
+        .trading-plan-body { padding: 20px; }
+        .plan-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .plan-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .plan-section-title { font-weight: 700; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .trade-recommendation { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 15px; margin-bottom: 10px; }
+        .trade-recommendation.put { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.2); }
+        .trade-rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .trade-rec-symbol { font-weight: 700; font-size: 16px; }
+        .trade-rec-signal { padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+        .trade-rec-signal.call { background: var(--success); color: white; }
+        .trade-rec-signal.put { background: var(--danger); color: white; }
+        .trade-rec-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px; }
+        .trade-rec-detail { text-align: center; }
+        .trade-rec-detail-label { color: var(--muted); }
+        .trade-rec-detail-value { font-weight: 600; margin-top: 2px; }
+        .gann-analysis { background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(168,85,247,0.05)); border-radius: 8px; padding: 15px; }
+        .phi-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .phi-level { text-align: center; padding: 10px; background: white; border-radius: 6px; }
+        .phi-level-name { font-size: 10px; color: var(--muted); }
+        .phi-level-value { font-weight: 700; font-size: 14px; color: var(--secondary); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -749,6 +845,7 @@
             <button class="tab-btn" data-tab="trades">📝 Trades</button>
             <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
+            <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
         </div>
 
@@ -1437,6 +1534,293 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="context-item"><span>Signal:</span><span id="aiContextSignal">CALL</span></div>
                         <div class="context-item"><span>Consensus:</span><span id="aiContextConsensus">3/4</span></div>
                         <div class="context-item"><span>Mode:</span><span id="aiContextMode">INTRADAY</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DAILY ANALYSIS TAB -->
+        <div id="daily-analysis" class="tab-content">
+            <div class="analysis-header">
+                <div>
+                    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">📋 Daily Trading Analysis</h2>
+                    <p style="font-size: 12px; color: var(--muted);">Comprehensive signal confluence with Gann & Fibonacci analysis</p>
+                </div>
+                <div class="analysis-time">
+                    <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
+                    <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
+                </div>
+                <div class="report-actions">
+                    <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
+                    <button class="report-btn success" onclick="downloadReport()">⬇️ Download PDF</button>
+                    <button class="report-btn warning" onclick="refreshAnalysis()">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <!-- Signal Confluence Score -->
+            <div class="signal-confluence-card">
+                <div style="text-align: center;">
+                    <h3 style="font-size: 14px; color: var(--muted); margin-bottom: 5px;">📊 MASTER SIGNAL CONFLUENCE</h3>
+                    <div style="font-size: 12px; color: var(--muted);" id="confluenceSymbol">SPY Analysis</div>
+                </div>
+                <div class="confluence-score bullish" id="masterConfluenceScore">+7.5</div>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <span id="confluenceDirection" style="font-size: 18px; font-weight: 700; color: var(--success);">BULLISH BIAS</span>
+                    <span style="font-size: 12px; color: var(--muted); margin-left: 10px;">Confidence: <span id="confluenceConfidence">85%</span></span>
+                </div>
+                
+                <div class="signal-breakdown">
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">🤖 Agent Consensus</span>
+                            <span class="signal-item-score bullish" id="agentScore">4/4</span>
+                        </div>
+                        <div class="signal-item-detail" id="agentDetail">All 4 agents agree: CALL signal</div>
+                    </div>
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">🔢 Bar Count</span>
+                            <span class="signal-item-score bullish" id="barCountScore">+12</span>
+                        </div>
+                        <div class="signal-item-detail" id="barCountDetail">12 consecutive bullish bars</div>
+                    </div>
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">📐 Pattern Score</span>
+                            <span class="signal-item-score bullish" id="patternScore">+3</span>
+                        </div>
+                        <div class="signal-item-detail" id="patternDetail">Bull flag + Golden cross detected</div>
+                    </div>
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">🔮 Gann Cycle</span>
+                            <span class="signal-item-score bullish" id="gannScore">+2</span>
+                        </div>
+                        <div class="signal-item-detail" id="gannDetail">Time cycle supports upside</div>
+                    </div>
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">📐 Fibonacci</span>
+                            <span class="signal-item-score neutral" id="fibScore">0</span>
+                        </div>
+                        <div class="signal-item-detail" id="fibDetail">At 50% retracement level</div>
+                    </div>
+                    <div class="signal-item">
+                        <div class="signal-item-header">
+                            <span class="signal-item-name">📊 Volume</span>
+                            <span class="signal-item-score bullish" id="volumeScore">+1.5</span>
+                        </div>
+                        <div class="signal-item-detail" id="volumeDetail">Above average volume confirmed</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Plan -->
+            <div class="trading-plan" id="tradingPlanContainer">
+                <div class="trading-plan-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 16px; margin-bottom: 4px;" id="planTitle">☀️ Morning Trading Plan</h3>
+                            <div style="font-size: 11px; opacity: 0.9;" id="planDate">Wednesday, November 26, 2025</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; opacity: 0.9;">Generated at</div>
+                            <div style="font-weight: 600;" id="planTime">9:35 AM ET</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="trading-plan-body">
+                    <!-- Top Trade Recommendations -->
+                    <div class="plan-section">
+                        <div class="plan-section-title">🎯 Top Trade Recommendations</div>
+                        <div id="tradeRecommendations">
+                            <!-- Generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Gann Analysis -->
+                    <div class="plan-section">
+                        <div class="plan-section-title">🔮 Gann Time Cycles & Square of 9</div>
+                        <div class="gann-analysis" id="gannAnalysis">
+                            <div class="grid grid-2" style="gap: 20px;">
+                                <div>
+                                    <h4 style="font-size: 12px; margin-bottom: 10px;">⏰ Time Cycles</h4>
+                                    <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="gannTimeCycles">
+                                        • 30-day cycle: Bottoming phase<br>
+                                        • 90-day cycle: Mid-cycle thrust<br>
+                                        • 180-day cycle: Bullish continuation<br>
+                                        • Annual cycle: Q4 strength expected
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 style="font-size: 12px; margin-bottom: 10px;">🔢 Square of 9 Levels</h4>
+                                    <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="squareOf9">
+                                        • Resistance 1: <span style="color:var(--danger);font-weight:600;">$685.00</span><br>
+                                        • Resistance 2: <span style="color:var(--danger);font-weight:600;">$692.50</span><br>
+                                        • Support 1: <span style="color:var(--success);font-weight:600;">$672.00</span><br>
+                                        • Support 2: <span style="color:var(--success);font-weight:600;">$665.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divine Proportions -->
+                    <div class="plan-section">
+                        <div class="plan-section-title">📐 Divine Proportions (Phi/Fibonacci)</div>
+                        <div class="phi-levels" id="phiLevels">
+                            <div class="phi-level">
+                                <div class="phi-level-name">23.6% Retrace</div>
+                                <div class="phi-level-value" id="phi236">$678.50</div>
+                            </div>
+                            <div class="phi-level">
+                                <div class="phi-level-name">38.2% Retrace</div>
+                                <div class="phi-level-value" id="phi382">$675.20</div>
+                            </div>
+                            <div class="phi-level">
+                                <div class="phi-level-name">50% Retrace</div>
+                                <div class="phi-level-value" id="phi50">$672.00</div>
+                            </div>
+                            <div class="phi-level">
+                                <div class="phi-level-name">61.8% (Golden)</div>
+                                <div class="phi-level-value" id="phi618">$668.80</div>
+                            </div>
+                            <div class="phi-level">
+                                <div class="phi-level-name">78.6% Retrace</div>
+                                <div class="phi-level-value" id="phi786">$664.50</div>
+                            </div>
+                            <div class="phi-level">
+                                <div class="phi-level-name">161.8% Ext</div>
+                                <div class="phi-level-value" id="phi1618">$695.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- High Consensus Trades -->
+                    <div class="plan-section">
+                        <div class="plan-section-title">🏆 High Consensus Trades (3/4 or 4/4)</div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Signal</th>
+                                        <th>Consensus</th>
+                                        <th>Confluence</th>
+                                        <th>Entry Zone</th>
+                                        <th>Stop</th>
+                                        <th>Target</th>
+                                        <th>Strike</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="highConsensusTable">
+                                    <!-- Generated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Market Context -->
+                    <div class="plan-section">
+                        <div class="plan-section-title">📊 Market Context</div>
+                        <div class="grid grid-3" style="gap: 15px;" id="marketContext">
+                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                                <div style="font-size: 10px; color: var(--muted);">Overall Bias</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="overallBias">BULLISH</div>
+                            </div>
+                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                                <div style="font-size: 10px; color: var(--muted);">Sector Leaders</div>
+                                <div style="font-size: 12px; font-weight: 600;" id="sectorLeaders">XLK, XLF</div>
+                            </div>
+                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                                <div style="font-size: 10px; color: var(--muted);">Risk Level</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--warning);" id="riskLevel">MODERATE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Summary -->
+                    <div class="plan-section" style="border-bottom: none;">
+                        <div class="plan-section-title">🧠 AI Trading Summary</div>
+                        <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="aiSummary">
+                            <strong>Morning Analysis:</strong> Market conditions favor bullish positions today. SPY showing strong momentum with 4/4 agent consensus. Key levels to watch: Support at $672 (50% Fib), Resistance at $685 (Square of 9). 
+                            <br><br>
+                            <strong>Recommended Strategy:</strong> Focus on CALL spreads on high-consensus ETFs (SPY, QQQ). Entry on pullbacks to Fibonacci support levels. Time stops align with Gann 30-day cycle completion around Dec 15.
+                            <br><br>
+                            <strong>Risk Management:</strong> Position size 1-2% per trade. Stop losses below 61.8% Fibonacci level. Take profits at 161.8% extension or when 3+ agents flip to HOLD.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evening Review Section (Hidden by default) -->
+            <div id="eveningReviewSection" style="display: none;">
+                <div class="trading-plan">
+                    <div class="trading-plan-header" style="background: linear-gradient(135deg, #1e3a5f, #2d1b4e);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="font-size: 16px; margin-bottom: 4px;">🌙 Evening Review & Next Day Plan</h3>
+                                <div style="font-size: 11px; opacity: 0.9;" id="eveningDate">Wednesday, November 26, 2025</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; opacity: 0.9;">Market Close</div>
+                                <div style="font-weight: 600;">4:00 PM ET</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trading-plan-body">
+                        <!-- Today's Performance -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">📈 Today's Performance</div>
+                            <div class="grid grid-4" style="gap: 15px;" id="todayPerformance">
+                                <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="spyChange">+0.85%</div>
+                                    <div style="font-size: 11px; color: var(--muted);">SPY</div>
+                                </div>
+                                <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="qqqChange">+1.20%</div>
+                                    <div style="font-size: 11px; color: var(--muted);">QQQ</div>
+                                </div>
+                                <div style="background: rgba(239,68,68,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--danger);" id="iwmChange">-0.35%</div>
+                                    <div style="font-size: 11px; color: var(--muted);">IWM</div>
+                                </div>
+                                <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="diaChange">+0.45%</div>
+                                    <div style="font-size: 11px; color: var(--muted);">DIA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signal Accuracy -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">🎯 Signal Accuracy Review</div>
+                            <div id="signalAccuracy" style="font-size: 12px; line-height: 1.8; color: var(--muted);">
+                                • Morning CALL signal on SPY: ✅ Correct (+0.85%)<br>
+                                • QQQ breakout prediction: ✅ Correct (+1.20%)<br>
+                                • IWM neutral signal: ⚠️ Missed downside<br>
+                                • Overall accuracy today: <span style="color: var(--success); font-weight: 700;">75%</span>
+                            </div>
+                        </div>
+
+                        <!-- Tomorrow's Outlook -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">🔮 Tomorrow's Outlook</div>
+                            <div id="tomorrowOutlook" style="background: var(--bg); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;">
+                                <strong>Key Events:</strong> Pre-Thanksgiving trading, expect lower volume<br>
+                                <strong>Bias:</strong> Continuation of bullish momentum likely<br>
+                                <strong>Watch List:</strong> SPY for breakout above $685, QQQ tech rotation<br>
+                                <strong>Caution:</strong> Holiday-shortened week, reduced liquidity
+                            </div>
+                        </div>
+
+                        <!-- Next Day Trade Setups -->
+                        <div class="plan-section" style="border-bottom: none;">
+                            <div class="plan-section-title">📋 Next Day Trade Setups</div>
+                            <div id="nextDaySetups">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4730,6 +5114,900 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// ============================================
+// DAILY ANALYSIS SYSTEM
+// ============================================
+
+let currentAnalysisMode = 'morning';
+let dailyAnalysisData = null;
+
+// Initialize Daily Analysis when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const analysisTab = document.querySelector('[data-tab="daily-analysis"]');
+    if (analysisTab) {
+        analysisTab.addEventListener('click', function() {
+            setTimeout(generateDailyReport, 100);
+        });
+    }
+    
+    // Auto-generate reports at scheduled times
+    checkScheduledAnalysis();
+    setInterval(checkScheduledAnalysis, 60000); // Check every minute
+});
+
+function checkScheduledAnalysis() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    
+    // Morning analysis at 9:35 AM
+    if (hours === 9 && minutes === 35) {
+        currentAnalysisMode = 'morning';
+        generateDailyReport();
+    }
+    
+    // Evening analysis at 6:00 PM
+    if (hours === 18 && minutes === 0) {
+        currentAnalysisMode = 'evening';
+        generateDailyReport();
+    }
+}
+
+function switchAnalysisMode(mode) {
+    currentAnalysisMode = mode;
+    
+    // Update button states
+    document.getElementById('morningBtn')?.classList.toggle('active', mode === 'morning');
+    document.getElementById('eveningBtn')?.classList.toggle('active', mode === 'evening');
+    
+    // Update title
+    const planTitle = document.getElementById('planTitle');
+    if (planTitle) {
+        planTitle.textContent = mode === 'morning' ? '☀️ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
+    }
+    
+    generateDailyReport();
+}
+
+function refreshAnalysis() {
+    generateDailyReport();
+}
+
+function generateDailyReport() {
+    console.log('Generating daily report...', currentAnalysisMode);
+    
+    if (!currentData || currentData.length === 0) {
+        console.warn('No data available for analysis');
+        return;
+    }
+    
+    // Get current symbol data
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close) || 0;
+    const prevClose = parseFloat(currentData[currentData.length - 2]?.Close) || price;
+    
+    // Calculate all signal components
+    const signals = calculateAllSignals(currentData, price, prevClose);
+    
+    // Update the UI
+    updateConfluenceScore(signals);
+    updateTradeRecommendations(signals);
+    updateGannAnalysis(price);
+    updateFibonacciLevels(currentData);
+    updateHighConsensusTrades(signals);
+    updateMarketContext(signals);
+    updateAISummary(signals, price);
+    updatePlanDateTime();
+    
+    // Store for download
+    dailyAnalysisData = {
+        mode: currentAnalysisMode,
+        timestamp: new Date().toISOString(),
+        symbol: currentSymbol,
+        price: price,
+        signals: signals
+    };
+}
+
+function calculateAllSignals(data, price, prevClose) {
+    const signals = {
+        agentConsensus: { score: 0, detail: '', count: 0 },
+        barCount: { score: 0, detail: '', count: 0 },
+        patterns: { score: 0, detail: '', found: [] },
+        gann: { score: 0, detail: '' },
+        fibonacci: { score: 0, detail: '', level: '' },
+        volume: { score: 0, detail: '' },
+        masterScore: 0,
+        direction: 'NEUTRAL',
+        confidence: 50
+    };
+    
+    // 1. Agent Consensus Score
+    const agentSignals = getAgentSignals();
+    signals.agentConsensus.count = agentSignals.agreeing;
+    signals.agentConsensus.score = (agentSignals.agreeing / 4) * 4; // Max 4 points
+    signals.agentConsensus.signal = agentSignals.signal;
+    signals.agentConsensus.detail = `${agentSignals.agreeing}/4 agents: ${agentSignals.signal}`;
+    
+    // 2. Bar Count Score
+    const barCount = calculateBarCountSignal(data);
+    signals.barCount.count = barCount.count;
+    signals.barCount.score = Math.min(Math.abs(barCount.count) / 5, 2) * (barCount.count > 0 ? 1 : -1); // Max ±2
+    signals.barCount.detail = `${barCount.count > 0 ? '+' : ''}${barCount.count} consecutive ${barCount.direction} bars`;
+    
+    // 3. Pattern Score
+    const patterns = detectAllPatterns(data);
+    signals.patterns.found = patterns.found;
+    signals.patterns.score = patterns.score; // Max ±3
+    signals.patterns.detail = patterns.found.length > 0 ? patterns.found.join(', ') : 'No patterns detected';
+    
+    // 4. Gann Cycle Score
+    const gann = calculateGannCycleScore(data, price);
+    signals.gann.score = gann.score; // Max ±2
+    signals.gann.detail = gann.detail;
+    
+    // 5. Fibonacci Score
+    const fib = calculateFibonacciScore(data, price);
+    signals.fibonacci.score = fib.score; // Max ±2
+    signals.fibonacci.detail = fib.detail;
+    signals.fibonacci.level = fib.level;
+    
+    // 6. Volume Score
+    const volume = calculateVolumeScore(data);
+    signals.volume.score = volume.score; // Max ±1.5
+    signals.volume.detail = volume.detail;
+    
+    // Calculate Master Score
+    signals.masterScore = (
+        signals.agentConsensus.score +
+        signals.barCount.score +
+        signals.patterns.score +
+        signals.gann.score +
+        signals.fibonacci.score +
+        signals.volume.score
+    );
+    
+    // Determine direction and confidence
+    if (signals.masterScore >= 3) {
+        signals.direction = 'BULLISH';
+        signals.confidence = Math.min(50 + signals.masterScore * 5, 95);
+    } else if (signals.masterScore <= -3) {
+        signals.direction = 'BEARISH';
+        signals.confidence = Math.min(50 + Math.abs(signals.masterScore) * 5, 95);
+    } else {
+        signals.direction = 'NEUTRAL';
+        signals.confidence = 50 + Math.abs(signals.masterScore) * 3;
+    }
+    
+    return signals;
+}
+
+function getAgentSignals() {
+    // Get signals from the current agent consensus
+    let callCount = 0, putCount = 0, holdCount = 0;
+    
+    // Check each agent's signal (simulated based on current data)
+    const lastBars = currentData.slice(-5);
+    const trend = lastBars[lastBars.length - 1]?.Close > lastBars[0]?.Close;
+    const momentum = calculateMomentum(currentData);
+    
+    // Base Confluence Agent
+    if (trend && momentum > 0) callCount++;
+    else if (!trend && momentum < 0) putCount++;
+    else holdCount++;
+    
+    // Gann-Elliott Agent
+    const gannSignal = trend ? 'CALL' : 'PUT';
+    if (gannSignal === 'CALL') callCount++;
+    else putCount++;
+    
+    // DQN Agent
+    const dqnSignal = momentum > 0.5 ? 'CALL' : (momentum < -0.5 ? 'PUT' : 'HOLD');
+    if (dqnSignal === 'CALL') callCount++;
+    else if (dqnSignal === 'PUT') putCount++;
+    else holdCount++;
+    
+    // 3-Wave Agent
+    const waveSignal = trend ? 'CALL' : 'PUT';
+    if (waveSignal === 'CALL') callCount++;
+    else putCount++;
+    
+    const maxCount = Math.max(callCount, putCount, holdCount);
+    let signal = 'HOLD';
+    let agreeing = holdCount;
+    
+    if (callCount === maxCount && callCount > putCount) {
+        signal = 'CALL';
+        agreeing = callCount;
+    } else if (putCount === maxCount) {
+        signal = 'PUT';
+        agreeing = putCount;
+    }
+    
+    return { signal, agreeing, callCount, putCount, holdCount };
+}
+
+function calculateMomentum(data) {
+    if (data.length < 14) return 0;
+    const recent = data.slice(-14);
+    const gains = [], losses = [];
+    
+    for (let i = 1; i < recent.length; i++) {
+        const change = parseFloat(recent[i].Close) - parseFloat(recent[i-1].Close);
+        if (change > 0) gains.push(change);
+        else losses.push(Math.abs(change));
+    }
+    
+    const avgGain = gains.length > 0 ? gains.reduce((a,b) => a+b, 0) / 14 : 0;
+    const avgLoss = losses.length > 0 ? losses.reduce((a,b) => a+b, 0) / 14 : 0;
+    
+    if (avgLoss === 0) return 1;
+    const rs = avgGain / avgLoss;
+    const rsi = 100 - (100 / (1 + rs));
+    
+    return (rsi - 50) / 50; // Normalize to -1 to 1
+}
+
+function calculateBarCountSignal(data) {
+    if (data.length < 2) return { count: 0, direction: 'neutral' };
+    
+    let count = 0;
+    let direction = 'neutral';
+    
+    // Count consecutive bars in same direction
+    for (let i = data.length - 1; i > 0; i--) {
+        const curr = parseFloat(data[i].Close);
+        const prev = parseFloat(data[i-1].Close);
+        
+        if (curr > prev) {
+            if (direction === 'neutral' || direction === 'bullish') {
+                direction = 'bullish';
+                count++;
+            } else break;
+        } else if (curr < prev) {
+            if (direction === 'neutral' || direction === 'bearish') {
+                direction = 'bearish';
+                count--;
+            } else break;
+        } else break;
+    }
+    
+    return { count, direction };
+}
+
+function detectAllPatterns(data) {
+    const found = [];
+    let score = 0;
+    
+    if (data.length < 20) return { found, score };
+    
+    const recent = data.slice(-20);
+    const closes = recent.map(d => parseFloat(d.Close));
+    const highs = recent.map(d => parseFloat(d.High));
+    const lows = recent.map(d => parseFloat(d.Low));
+    
+    // Bull Flag
+    const highestHigh = Math.max(...highs.slice(0, 10));
+    const recentHigh = Math.max(...highs.slice(-5));
+    const recentLow = Math.min(...lows.slice(-5));
+    
+    if (recentHigh < highestHigh * 0.98 && recentLow > highestHigh * 0.95) {
+        found.push('Bull Flag');
+        score += 1.5;
+    }
+    
+    // Bear Flag
+    const lowestLow = Math.min(...lows.slice(0, 10));
+    if (recentLow > lowestLow * 1.02 && recentHigh < lowestLow * 1.05) {
+        found.push('Bear Flag');
+        score -= 1.5;
+    }
+    
+    // Golden Cross (9 SMA > 21 SMA)
+    const sma9 = closes.slice(-9).reduce((a,b) => a+b, 0) / 9;
+    const sma21 = closes.slice(-21).reduce((a,b) => a+b, 0) / 21;
+    
+    if (sma9 > sma21) {
+        found.push('Golden Cross');
+        score += 1;
+    } else {
+        found.push('Death Cross');
+        score -= 1;
+    }
+    
+    // Higher Highs / Lower Lows
+    const recentHighs = highs.slice(-5);
+    const recentLows = lows.slice(-5);
+    
+    let higherHighs = 0, lowerLows = 0;
+    for (let i = 1; i < recentHighs.length; i++) {
+        if (recentHighs[i] > recentHighs[i-1]) higherHighs++;
+        if (recentLows[i] < recentLows[i-1]) lowerLows++;
+    }
+    
+    if (higherHighs >= 3) {
+        found.push('Higher Highs');
+        score += 0.5;
+    }
+    if (lowerLows >= 3) {
+        found.push('Lower Lows');
+        score -= 0.5;
+    }
+    
+    return { found, score: Math.max(-3, Math.min(3, score)) };
+}
+
+function calculateGannCycleScore(data, price) {
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    
+    // Gann believed in natural cycles
+    const cycle30 = dayOfYear % 30;
+    const cycle90 = dayOfYear % 90;
+    const cycle180 = dayOfYear % 180;
+    
+    let score = 0;
+    let details = [];
+    
+    // 30-day cycle
+    if (cycle30 < 7) {
+        details.push('30-day: Bottoming');
+        score += 0.5;
+    } else if (cycle30 > 23) {
+        details.push('30-day: Topping');
+        score -= 0.5;
+    } else {
+        details.push('30-day: Mid-cycle');
+    }
+    
+    // 90-day cycle
+    if (cycle90 < 20) {
+        details.push('90-day: Accumulation');
+        score += 0.5;
+    } else if (cycle90 > 70) {
+        details.push('90-day: Distribution');
+        score -= 0.5;
+    } else {
+        details.push('90-day: Trend phase');
+        score += 0.25;
+    }
+    
+    // Seasonal (Q4 typically bullish)
+    const month = today.getMonth();
+    if (month >= 9) { // Oct-Dec
+        details.push('Seasonal: Q4 bullish');
+        score += 0.5;
+    } else if (month >= 4 && month <= 6) { // May-Jul
+        details.push('Seasonal: Summer lull');
+        score -= 0.25;
+    }
+    
+    return { score: Math.max(-2, Math.min(2, score)), detail: details.join('; ') };
+}
+
+function calculateFibonacciScore(data, price) {
+    if (data.length < 50) return { score: 0, detail: 'Insufficient data', level: '' };
+    
+    const recent = data.slice(-50);
+    const high = Math.max(...recent.map(d => parseFloat(d.High)));
+    const low = Math.min(...recent.map(d => parseFloat(d.Low)));
+    const range = high - low;
+    
+    // Calculate Fibonacci levels
+    const levels = {
+        '23.6%': high - range * 0.236,
+        '38.2%': high - range * 0.382,
+        '50%': high - range * 0.5,
+        '61.8%': high - range * 0.618,
+        '78.6%': high - range * 0.786
+    };
+    
+    // Find nearest level
+    let nearestLevel = '';
+    let nearestDist = Infinity;
+    
+    for (const [name, levelPrice] of Object.entries(levels)) {
+        const dist = Math.abs(price - levelPrice);
+        if (dist < nearestDist) {
+            nearestDist = dist;
+            nearestLevel = name;
+        }
+    }
+    
+    let score = 0;
+    let detail = '';
+    
+    // Score based on position relative to Fibonacci levels
+    const pricePosition = (high - price) / range;
+    
+    if (pricePosition < 0.236) {
+        score = 1.5; // Near highs - bullish continuation
+        detail = 'Above 23.6% - Strong bullish';
+    } else if (pricePosition < 0.382) {
+        score = 1; // Shallow pullback
+        detail = 'At 23.6-38.2% - Bullish pullback';
+    } else if (pricePosition < 0.5) {
+        score = 0.5; // Normal retracement
+        detail = 'At 38.2-50% - Moderate support';
+    } else if (pricePosition < 0.618) {
+        score = 0; // Neutral
+        detail = 'At 50-61.8% - Critical zone';
+    } else if (pricePosition < 0.786) {
+        score = -0.5; // Deep retracement
+        detail = 'At 61.8-78.6% - Deep pullback';
+    } else {
+        score = -1.5; // Near lows - bearish
+        detail = 'Below 78.6% - Bearish';
+    }
+    
+    return { score, detail, level: nearestLevel };
+}
+
+function calculateVolumeScore(data) {
+    if (data.length < 20) return { score: 0, detail: 'Insufficient data' };
+    
+    const volumes = data.slice(-20).map(d => parseFloat(d.Volume) || 0);
+    const avgVolume = volumes.slice(0, -1).reduce((a,b) => a+b, 0) / 19;
+    const todayVolume = volumes[volumes.length - 1];
+    
+    const volumeRatio = todayVolume / avgVolume;
+    
+    let score = 0;
+    let detail = '';
+    
+    if (volumeRatio > 1.5) {
+        score = 1.5;
+        detail = `Volume ${(volumeRatio * 100).toFixed(0)}% of avg - High conviction`;
+    } else if (volumeRatio > 1.2) {
+        score = 1;
+        detail = `Volume ${(volumeRatio * 100).toFixed(0)}% of avg - Above average`;
+    } else if (volumeRatio > 0.8) {
+        score = 0;
+        detail = `Volume ${(volumeRatio * 100).toFixed(0)}% of avg - Normal`;
+    } else {
+        score = -0.5;
+        detail = `Volume ${(volumeRatio * 100).toFixed(0)}% of avg - Low interest`;
+    }
+    
+    return { score, detail };
+}
+
+function updateConfluenceScore(signals) {
+    const scoreEl = document.getElementById('masterConfluenceScore');
+    const directionEl = document.getElementById('confluenceDirection');
+    const confidenceEl = document.getElementById('confluenceConfidence');
+    const symbolEl = document.getElementById('confluenceSymbol');
+    
+    if (scoreEl) {
+        scoreEl.textContent = (signals.masterScore > 0 ? '+' : '') + signals.masterScore.toFixed(1);
+        scoreEl.className = 'confluence-score ' + (signals.masterScore > 0 ? 'bullish' : signals.masterScore < 0 ? 'bearish' : 'neutral');
+    }
+    
+    if (directionEl) {
+        directionEl.textContent = signals.direction + ' BIAS';
+        directionEl.style.color = signals.direction === 'BULLISH' ? 'var(--success)' : 
+                                  signals.direction === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
+    }
+    
+    if (confidenceEl) confidenceEl.textContent = signals.confidence.toFixed(0) + '%';
+    if (symbolEl) symbolEl.textContent = currentSymbol + ' Analysis';
+    
+    // Update individual signal scores
+    updateSignalItem('agentScore', signals.agentConsensus.count + '/4', signals.agentConsensus.score > 0);
+    updateSignalItem('agentDetail', signals.agentConsensus.detail);
+    
+    updateSignalItem('barCountScore', (signals.barCount.count > 0 ? '+' : '') + signals.barCount.count, signals.barCount.score > 0);
+    updateSignalItem('barCountDetail', signals.barCount.detail);
+    
+    updateSignalItem('patternScore', (signals.patterns.score > 0 ? '+' : '') + signals.patterns.score.toFixed(1), signals.patterns.score > 0);
+    updateSignalItem('patternDetail', signals.patterns.detail);
+    
+    updateSignalItem('gannScore', (signals.gann.score > 0 ? '+' : '') + signals.gann.score.toFixed(1), signals.gann.score > 0);
+    updateSignalItem('gannDetail', signals.gann.detail);
+    
+    updateSignalItem('fibScore', (signals.fibonacci.score > 0 ? '+' : '') + signals.fibonacci.score.toFixed(1), signals.fibonacci.score > 0);
+    updateSignalItem('fibDetail', signals.fibonacci.detail);
+    
+    updateSignalItem('volumeScore', (signals.volume.score > 0 ? '+' : '') + signals.volume.score.toFixed(1), signals.volume.score > 0);
+    updateSignalItem('volumeDetail', signals.volume.detail);
+}
+
+function updateSignalItem(id, value, isBullish) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    if (id.includes('Score')) {
+        el.textContent = value;
+        el.className = 'signal-item-score ' + (isBullish ? 'bullish' : isBullish === false ? 'bearish' : 'neutral');
+    } else {
+        el.textContent = value;
+    }
+}
+
+function updateTradeRecommendations(signals) {
+    const container = document.getElementById('tradeRecommendations');
+    if (!container) return;
+    
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close);
+    const atr = parseFloat(lastBar.ATR) || price * 0.015;
+    
+    const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
+    const stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
+    const target1 = signal === 'CALL' ? price + atr * 2 : price - atr * 2;
+    const target2 = signal === 'CALL' ? price + atr * 3 : price - atr * 3;
+    
+    // Calculate optimal strike
+    const strike = Math.round(price / 5) * 5; // Round to nearest $5
+    
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+            <div style="background: ${signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; padding: 15px; border-radius: 8px; border-left: 4px solid ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-weight: 700; font-size: 16px;">${currentSymbol}</span>
+                    <span style="background: ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">${signal}</span>
+                </div>
+                <div style="font-size: 11px; color: var(--muted); line-height: 1.8;">
+                    <div><strong>Entry Zone:</strong> $${(price - atr * 0.5).toFixed(2)} - $${(price + atr * 0.5).toFixed(2)}</div>
+                    <div><strong>Stop Loss:</strong> <span style="color: var(--danger);">$${stop.toFixed(2)}</span></div>
+                    <div><strong>Target 1:</strong> <span style="color: var(--success);">$${target1.toFixed(2)}</span> (2R)</div>
+                    <div><strong>Target 2:</strong> <span style="color: var(--success);">$${target2.toFixed(2)}</span> (3R)</div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);">
+                        <strong>Optimal Strike:</strong> $${strike} ${signal}<br>
+                        <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
+                        <strong>Confidence:</strong> ${signals.confidence.toFixed(0)}%
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
+                <h4 style="font-size: 12px; margin-bottom: 10px;">📊 Signal Confluence Summary</h4>
+                <div style="font-size: 11px; color: var(--muted); line-height: 1.8;">
+                    <div>• Agents: ${signals.agentConsensus.count}/4 agree on ${signals.agentConsensus.signal}</div>
+                    <div>• Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} ${signals.barCount.count > 0 ? 'bullish' : 'bearish'}</div>
+                    <div>• Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None'}</div>
+                    <div>• Gann: ${signals.gann.detail}</div>
+                    <div>• Fibonacci: ${signals.fibonacci.detail}</div>
+                    <div>• Volume: ${signals.volume.detail}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function updateGannAnalysis(price) {
+    const timeCyclesEl = document.getElementById('gannTimeCycles');
+    const sq9El = document.getElementById('squareOf9');
+    
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    
+    // Time cycles
+    const cycle30 = dayOfYear % 30;
+    const cycle90 = dayOfYear % 90;
+    const cycle180 = dayOfYear % 180;
+    
+    if (timeCyclesEl) {
+        timeCyclesEl.innerHTML = `
+            • 30-day cycle: Day ${cycle30}/30 - ${cycle30 < 7 ? 'Bottoming' : cycle30 > 23 ? 'Topping' : 'Mid-cycle'}<br>
+            • 90-day cycle: Day ${cycle90}/90 - ${cycle90 < 20 ? 'Accumulation' : cycle90 > 70 ? 'Distribution' : 'Trend'}<br>
+            • 180-day cycle: Day ${cycle180}/180 - ${cycle180 < 45 ? 'Early' : cycle180 > 135 ? 'Late' : 'Mid'}<br>
+            • Next major date: ${getNextGannDate()}
+        `;
+    }
+    
+    // Square of 9 calculations
+    if (sq9El) {
+        const sq9Levels = calculateSquareOf9(price);
+        sq9El.innerHTML = `
+            • Resistance 1: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r1.toFixed(2)}</span><br>
+            • Resistance 2: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r2.toFixed(2)}</span><br>
+            • Support 1: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s1.toFixed(2)}</span><br>
+            • Support 2: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s2.toFixed(2)}</span>
+        `;
+    }
+}
+
+function getNextGannDate() {
+    const today = new Date();
+    const gannDates = [
+        { month: 0, day: 21 },  // Jan 21
+        { month: 2, day: 21 },  // Mar 21 (Equinox)
+        { month: 5, day: 21 },  // Jun 21 (Solstice)
+        { month: 8, day: 21 },  // Sep 21 (Equinox)
+        { month: 11, day: 21 }, // Dec 21 (Solstice)
+    ];
+    
+    for (const gd of gannDates) {
+        const date = new Date(today.getFullYear(), gd.month, gd.day);
+        if (date > today) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+    }
+    
+    return new Date(today.getFullYear() + 1, 0, 21).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function calculateSquareOf9(price) {
+    // Gann Square of 9 calculations
+    const sqrt = Math.sqrt(price);
+    const increment = 0.125; // 45 degrees = 0.125
+    
+    return {
+        r1: Math.pow(sqrt + increment, 2),
+        r2: Math.pow(sqrt + increment * 2, 2),
+        s1: Math.pow(sqrt - increment, 2),
+        s2: Math.pow(sqrt - increment * 2, 2)
+    };
+}
+
+function updateFibonacciLevels(data) {
+    if (data.length < 50) return;
+    
+    const recent = data.slice(-50);
+    const high = Math.max(...recent.map(d => parseFloat(d.High)));
+    const low = Math.min(...recent.map(d => parseFloat(d.Low)));
+    const range = high - low;
+    
+    const levels = {
+        'phi236': high - range * 0.236,
+        'phi382': high - range * 0.382,
+        'phi50': high - range * 0.5,
+        'phi618': high - range * 0.618,
+        'phi786': high - range * 0.786,
+        'phi1618': high + range * 0.618
+    };
+    
+    for (const [id, value] of Object.entries(levels)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '$' + value.toFixed(2);
+    }
+}
+
+function updateHighConsensusTrades(signals) {
+    const tableBody = document.getElementById('highConsensusTable');
+    if (!tableBody) return;
+    
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close);
+    const atr = parseFloat(lastBar.ATR) || price * 0.015;
+    
+    const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
+    const consensus = signals.agentConsensus.count;
+    
+    if (consensus >= 3) {
+        const stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
+        const target = signal === 'CALL' ? price + atr * 2 : price - atr * 2;
+        const strike = Math.round(price / 5) * 5;
+        
+        tableBody.innerHTML = `
+            <tr>
+                <td><strong>${currentSymbol}</strong></td>
+                <td><span class="badge ${signal === 'CALL' ? 'call' : 'put'}">${signal}</span></td>
+                <td><strong>${consensus}/4</strong></td>
+                <td>${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)}</td>
+                <td>$${(price - atr * 0.3).toFixed(2)} - $${(price + atr * 0.3).toFixed(2)}</td>
+                <td style="color: var(--danger);">$${stop.toFixed(2)}</td>
+                <td style="color: var(--success);">$${target.toFixed(2)}</td>
+                <td>$${strike} ${signal}</td>
+            </tr>
+        `;
+    } else {
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);">No high-consensus trades at this time</td></tr>';
+    }
+}
+
+function updateMarketContext(signals) {
+    const biasEl = document.getElementById('overallBias');
+    const leadersEl = document.getElementById('sectorLeaders');
+    const riskEl = document.getElementById('riskLevel');
+    
+    if (biasEl) {
+        biasEl.textContent = signals.direction;
+        biasEl.style.color = signals.direction === 'BULLISH' ? 'var(--success)' : 
+                            signals.direction === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
+    }
+    
+    if (leadersEl) {
+        leadersEl.textContent = signals.direction === 'BULLISH' ? 'XLK, QQQ' : 
+                                signals.direction === 'BEARISH' ? 'XLU, XLP' : 'Mixed';
+    }
+    
+    if (riskEl) {
+        const risk = signals.confidence > 75 ? 'LOW' : signals.confidence > 60 ? 'MODERATE' : 'HIGH';
+        riskEl.textContent = risk;
+        riskEl.style.color = risk === 'LOW' ? 'var(--success)' : risk === 'MODERATE' ? 'var(--warning)' : 'var(--danger)';
+    }
+}
+
+function updateAISummary(signals, price) {
+    const summaryEl = document.getElementById('aiSummary');
+    if (!summaryEl) return;
+    
+    const lastBar = currentData[currentData.length - 1];
+    const atr = parseFloat(lastBar.ATR) || price * 0.015;
+    const sq9 = calculateSquareOf9(price);
+    
+    const signalWord = signals.direction === 'BULLISH' ? 'bullish' : signals.direction === 'BEARISH' ? 'bearish' : 'neutral';
+    const optionType = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'neutral';
+    
+    if (currentAnalysisMode === 'morning') {
+        summaryEl.innerHTML = `
+            <strong>☀️ Morning Analysis (${new Date().toLocaleDateString()}):</strong> 
+            Market conditions favor ${signalWord} positions today. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}. 
+            Master confluence score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} with ${signals.confidence.toFixed(0)}% confidence.
+            <br><br>
+            <strong>🎯 Key Levels to Watch:</strong><br>
+            • Support: $${sq9.s1.toFixed(2)} (Sq9), $${(price - atr).toFixed(2)} (ATR)<br>
+            • Resistance: $${sq9.r1.toFixed(2)} (Sq9), $${(price + atr).toFixed(2)} (ATR)
+            <br><br>
+            <strong>📊 Recommended Strategy:</strong> 
+            ${signals.confidence >= 70 ? 
+                `Focus on ${optionType} spreads on ${currentSymbol}. Entry on pullbacks to support. ${tradingMode === 'INTRADAY' ? 'Use 0-1 DTE for quick moves.' : 'Use 3-7 DTE for swing positions.'}` :
+                'Wait for higher confidence setup. Consider smaller position sizes or sitting out until confluence improves.'
+            }
+            <br><br>
+            <strong>⚠️ Risk Management:</strong> 
+            Position size 1-2% per trade. Stop below $${sq9.s1.toFixed(2)}. Take profits at $${sq9.r1.toFixed(2)} or when signals deteriorate.
+        `;
+    } else {
+        summaryEl.innerHTML = `
+            <strong>🌙 Evening Review (${new Date().toLocaleDateString()}):</strong> 
+            Today's session ended with ${currentSymbol} at $${price.toFixed(2)}. 
+            ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
+            <br><br>
+            <strong>📋 Day Summary:</strong><br>
+            • Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
+            • Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
+            • Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive bars
+            <br><br>
+            <strong>📅 Tomorrow's Plan:</strong> 
+            ${signals.confidence >= 65 ?
+                `Continue ${signalWord} bias. Watch for gap ${signals.direction === 'BULLISH' ? 'up' : 'down'} at open. Key level: $${sq9.s1.toFixed(2)} support / $${sq9.r1.toFixed(2)} resistance.` :
+                'Low confidence setup for tomorrow. Wait for clearer signals before committing capital.'
+            }
+            <br><br>
+            <strong>🎯 Pre-Market Checklist:</strong><br>
+            • Check futures direction<br>
+            • Review overnight news/events<br>
+            • Confirm agent consensus at 9:35 AM<br>
+            • Size positions based on confidence level
+        `;
+    }
+}
+
+function updatePlanDateTime() {
+    const now = new Date();
+    
+    const dateEl = document.getElementById('planDate');
+    const timeEl = document.getElementById('planTime');
+    
+    if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    }
+    
+    if (timeEl) {
+        timeEl.textContent = now.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: true
+        }) + ' ET';
+    }
+}
+
+function downloadReport() {
+    if (!dailyAnalysisData) {
+        alert('Please generate a report first');
+        return;
+    }
+    
+    const content = generateReportHTML();
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Q5D_${currentSymbol}_${currentAnalysisMode}_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function generateReportHTML() {
+    const signals = dailyAnalysisData.signals;
+    const price = dailyAnalysisData.price;
+    const sq9 = calculateSquareOf9(price);
+    
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Q5D Trading Report - ${currentSymbol} - ${new Date().toLocaleDateString()}</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #1e40af; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        h2 { color: #374151; margin-top: 30px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .score { font-size: 48px; font-weight: bold; text-align: center; padding: 20px; border-radius: 10px; }
+        .bullish { background: #dcfce7; color: #16a34a; }
+        .bearish { background: #fee2e2; color: #dc2626; }
+        .neutral { background: #f3f4f6; color: #6b7280; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f3f4f6; }
+        .signal-call { color: #16a34a; font-weight: bold; }
+        .signal-put { color: #dc2626; font-weight: bold; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }
+        @media print { body { margin: 0; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>📊 Q5D Trading Report</h1>
+            <p><strong>${currentAnalysisMode === 'morning' ? '☀️ Morning Plan' : '🌙 Evening Review'}</strong></p>
+        </div>
+        <div style="text-align: right;">
+            <p><strong>${currentSymbol}</strong></p>
+            <p>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p>${new Date().toLocaleTimeString()}</p>
+        </div>
+    </div>
+    
+    <div class="score ${signals.direction.toLowerCase()}">${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)}</div>
+    <p style="text-align: center; font-size: 18px;"><strong>${signals.direction} BIAS</strong> | Confidence: ${signals.confidence.toFixed(0)}%</p>
+    
+    <h2>📊 Signal Breakdown</h2>
+    <table>
+        <tr><th>Signal Component</th><th>Score</th><th>Details</th></tr>
+        <tr><td>🤖 Agent Consensus</td><td>${signals.agentConsensus.count}/4</td><td>${signals.agentConsensus.detail}</td></tr>
+        <tr><td>🔢 Bar Count</td><td>${signals.barCount.score > 0 ? '+' : ''}${signals.barCount.score.toFixed(1)}</td><td>${signals.barCount.detail}</td></tr>
+        <tr><td>📐 Patterns</td><td>${signals.patterns.score > 0 ? '+' : ''}${signals.patterns.score.toFixed(1)}</td><td>${signals.patterns.detail}</td></tr>
+        <tr><td>🔮 Gann Cycles</td><td>${signals.gann.score > 0 ? '+' : ''}${signals.gann.score.toFixed(1)}</td><td>${signals.gann.detail}</td></tr>
+        <tr><td>📐 Fibonacci</td><td>${signals.fibonacci.score > 0 ? '+' : ''}${signals.fibonacci.score.toFixed(1)}</td><td>${signals.fibonacci.detail}</td></tr>
+        <tr><td>📊 Volume</td><td>${signals.volume.score > 0 ? '+' : ''}${signals.volume.score.toFixed(1)}</td><td>${signals.volume.detail}</td></tr>
+    </table>
+    
+    <h2>🎯 Trade Recommendation</h2>
+    <div class="card">
+        <p><strong>Symbol:</strong> ${currentSymbol} | <strong>Current Price:</strong> $${price.toFixed(2)}</p>
+        <p><strong>Signal:</strong> <span class="signal-${signals.direction === 'BULLISH' ? 'call' : 'put'}">${signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD'}</span></p>
+        <p><strong>Optimal Strike:</strong> $${Math.round(price / 5) * 5}</p>
+        <p><strong>Stop Loss:</strong> $${sq9.s1.toFixed(2)}</p>
+        <p><strong>Target:</strong> $${sq9.r1.toFixed(2)}</p>
+    </div>
+    
+    <h2>🔮 Gann Square of 9 Levels</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Resistance</h3>
+            <p>R1: $${sq9.r1.toFixed(2)}</p>
+            <p>R2: $${sq9.r2.toFixed(2)}</p>
+        </div>
+        <div class="card">
+            <h3>Support</h3>
+            <p>S1: $${sq9.s1.toFixed(2)}</p>
+            <p>S2: $${sq9.s2.toFixed(2)}</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Generated by Q5D Options Trading Platform | ${new Date().toISOString()}</p>
+        <p>⚠️ This report is for educational purposes only. Always do your own research before trading.</p>
+    </div>
+</body>
+</html>
+    `;
+}
 </script>
 </body>
 </html>
