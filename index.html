@@ -3770,11 +3770,14 @@ function checkDataFreshness() {
     console.log('📅 Last bar:', lastBar);
     console.log('📅 Last bar Date:', lastBar.Date);
     
-    // Parse the date - handle ISO format
+    // Parse the date - handle ISO format WITHOUT timezone conversion
     let lastDate;
     if (lastBar.Date) {
-        lastDate = new Date(lastBar.Date);
-        console.log('📅 Parsed lastDate:', lastDate);
+        // Extract just the date part (YYYY-MM-DD) to avoid timezone issues
+        const dateStr = lastBar.Date.split('T')[0];
+        const [year, month, day] = dateStr.split('-').map(Number);
+        lastDate = new Date(year, month - 1, day); // month is 0-indexed
+        console.log('📅 Parsed lastDate (no TZ):', lastDate);
     }
     
     if (!lastDate || isNaN(lastDate.getTime())) {
@@ -3823,7 +3826,9 @@ function checkDataFreshness() {
     // First date for range
     const firstBar = currentData[0];
     if (firstBar && firstBar.Date && dateRangeEl) {
-        const firstDate = new Date(firstBar.Date);
+        const firstDateStr = firstBar.Date.split('T')[0];
+        const [fy, fm, fd] = firstDateStr.split('-').map(Number);
+        const firstDate = new Date(fy, fm - 1, fd);
         dateRangeEl.textContent = firstDate.toLocaleDateString() + ' - ' + lastDate.toLocaleDateString();
     }
     
