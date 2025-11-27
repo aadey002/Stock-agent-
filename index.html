@@ -6,8 +6,6 @@
     <title>Stock Agent 4 - Q5D Options Trading Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-    <!-- ADD THIS LINE after the opening <head> tag (around line 5) -->
-    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -287,8 +285,8 @@
         .chart-controls { display: flex; gap: 8px; flex-wrap: wrap; }
         .chart-select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; background: white; color: var(--text); cursor: pointer; min-width: 100px; }
         .chart-select:focus { outline: none; border-color: var(--primary); }
-        .chart-body { height: 350px; background: #131722; border-radius: 0 0 10px 10px; position: relative; overflow: hidden; }
-        .chart-container-tv { width: 100%; height: 100%; } 
+        .chart-body { height: 350px; position: relative; background: #131722; }
+        .chart-canvas-container { width: 100%; height: 100%; position: relative; }
         .chart-legend { position: absolute; top: 10px; left: 10px; background: rgba(19, 23, 34, 0.9); padding: 8px 12px; border-radius: 4px; font-size: 11px; color: #d1d4dc; z-index: 10; }
         .chart-legend .symbol { font-weight: 700; color: #fff; margin-right: 10px; }
         .chart-legend .price { color: #26a69a; }
@@ -2331,7 +2329,7 @@ function setTradingMode(mode) {
     document.getElementById('aiContextMode').textContent = mode.toUpperCase();
 }
 
-async async function changeSymbol() {
+async function changeSymbol() {
     const newSymbol = document.getElementById('symbolSelect').value;
     console.log(`🔄 Changing symbol from ${currentSymbol} to ${newSymbol}`);
     currentSymbol = newSymbol;
@@ -2356,7 +2354,7 @@ async async function changeSymbol() {
     if (confluenceSymbol) confluenceSymbol.textContent = currentSymbol + ' Analysis';
     
     // Load the new symbol's data and update everything
-    await await await loadAllData();
+    await loadAllData();
 }
 
 function parseCSV(text) {
@@ -4320,7 +4318,7 @@ Powered by Q5D Options Platform`);
 // Initialize trade log when app loads
 async function initializeApp() {
     initTabs();
-    await await await loadAllData();  // Wait for data to load
+    await loadAllData();  // Wait for data to load
     await loadAllSymbolsData();
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
@@ -4830,27 +4828,23 @@ let multiChartInstances = {
     swing: null,
     position: null
 };
-// ============================================
-// PROFESSIONAL TRADING VIEW CHARTS
-// ============================================
-
-let tvCharts = { intraday: null, swing: null, position: null };
-let tvCandleSeries = { intraday: null, swing: null, position: null };
-let tvVolumeSeries = { intraday: null, swing: null, position: null };
-let tvEma9Series = { intraday: null, swing: null, position: null };
-let tvEma21Series = { intraday: null, swing: null, position: null };
 
 function initMultiCharts() {
-    console.log('Initializing professional charts...');
+    console.log('Initializing multi-charts...');
     updateAllMultiCharts();
 }
 
+// Sync Multi-Charts symbol with main symbol selector
 async function syncSymbolFromMultiCharts() {
     const newSymbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
+    
+    // Update main symbol selector
     const mainSelect = document.getElementById('symbolSelect');
     if (mainSelect && mainSelect.value !== newSymbol) {
         mainSelect.value = newSymbol;
     }
+    
+    // Trigger full symbol change
     await changeSymbol();
 }
 
@@ -4875,704 +4869,391 @@ async function updateChart(panelType) {
     const symbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
     const timeframe = document.getElementById(`${panelType}Timeframe`)?.value;
     const chartType = document.getElementById(`${panelType}ChartType`)?.value;
-    const chartBody = document.getElementById(`${panelType}ChartBody`);
+    const canvas = document.getElementById(`${panelType}Chart`);
     const loading = document.getElementById(`${panelType}Loading`);
-    const priceEl = document.getElementById(`${panelType}Price`);
     
-    if (!chartBody) return;
-    
-    if (loading) loading.style.display = 'flex';
+    if (loading) loading.style.display = 'block';
     
     try {
-        const data = getMultiChartData(panelType, timeframe);
+        let data = getMultiChartData(panelType, timeframe);
         
-        if (data && data.length > 0) {
-            const lastPrice = parseFloat(data[data.length - 1].Close || data[data.length - 1].close);
-            const prevPrice = parseFloat(data[data.length - 2]?.Close || data[data.length - 2]?.close || lastPrice);
-            
-            if (priceEl) {
-                priceEl.textContent = '$' + lastPrice.toFixed(2);
-                priceEl.style.color = lastPrice >= prevPrice ? '#26a69a' : '#ef5350';
-            }
-            
-            if (chartType === 'pf') {
-                renderPointAndFigureChart(panelType, data, chartBody);
-            } else {
-                renderTradingViewChart(panelType, data, chartType, chartBody);
-            }
+        if (!data || data.length === 0) {
+            if (loading) loading.textContent = 'No data available';
+            return;
         }
-    } catch (e) {
-        console.error(`Error updating ${panelType} chart:`, e);
-    }
-    
-    if (loading) loading.style.display = 'none';
-}
-
-function renderTradingViewChart(panelType, data, chartType, container) {
-    // Clear previous chart
-    const chartContainer = container.querySelector('.chart-container-tv') || container;
-    
-    // Remove old canvas if exists
-    const oldCanvas = container.querySelector('canvas');
-    if (oldCanvas) oldCanvas.style.display = 'none';
-    
-    // Create or get TV container
-    let tvContainer = container.querySelector('.tv-chart-container');
-    if (!tvContainer) {
-        tvContainer = document.createElement('div');
-        tvContainer.className = 'tv-chart-container';
-        tvContainer.style.cssText = 'width: 100%; height: 100%; position: absolute; top: 0; left: 0;';
-        container.appendChild(tvContainer);
-    }
-    tvContainer.innerHTML = '';
-    
-    // Check if LightweightCharts is available
-    if (typeof LightweightCharts === 'undefined') {
-        console.warn('LightweightCharts not loaded, using canvas fallback');
-        const canvas = container.querySelector('canvas');
-        if (canvas) {
-            canvas.style.display = 'block';
-            renderCanvasCandlestick(panelType, data, chartType, canvas);
-        }
-        return;
-    }
-    
-    // Create chart
-    const chart = LightweightCharts.createChart(tvContainer, {
-        width: tvContainer.clientWidth || 400,
-        height: tvContainer.clientHeight || 320,
-        layout: {
-            background: { color: '#131722' },
-            textColor: '#d1d4dc',
-        },
-        grid: {
-            vertLines: { color: '#1e222d' },
-            horzLines: { color: '#1e222d' },
-        },
-        crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
-            vertLine: {
-                color: '#758696',
-                width: 1,
-                style: LightweightCharts.LineStyle.Dashed,
-            },
-            horzLine: {
-                color: '#758696',
-                width: 1,
-                style: LightweightCharts.LineStyle.Dashed,
-            },
-        },
-        rightPriceScale: {
-            borderColor: '#2a2e39',
-            scaleMargins: { top: 0.1, bottom: 0.2 },
-        },
-        timeScale: {
-            borderColor: '#2a2e39',
-            timeVisible: true,
-            secondsVisible: false,
-        },
-    });
-    
-    tvCharts[panelType] = chart;
-    
-    // Process data based on chart type
-    let processedData = chartType === 'heikinashi' ? convertToHeikinAshi(data) : data;
-    
-    // Format data for TradingView
-    const candleData = processedData.map(d => {
-        const dateStr = d.Date || d.date;
-        let timestamp;
         
-        if (dateStr.includes(':')) {
-            timestamp = new Date(dateStr).getTime() / 1000;
+        if (chartType === 'heikinashi') {
+            data = convertToHeikinAshi(data);
+        }
+        
+        if (chartType === 'pf') {
+            renderPointAndFigureChart(panelType, data, canvas);
         } else {
-            timestamp = new Date(dateStr + 'T00:00:00').getTime() / 1000;
+            renderMultiCandlestickChart(panelType, data, chartType, canvas);
         }
         
-        return {
-            time: timestamp,
-            open: parseFloat(d.Open || d.open),
-            high: parseFloat(d.High || d.high),
-            low: parseFloat(d.Low || d.low),
-            close: parseFloat(d.Close || d.close),
-        };
-    }).filter(d => !isNaN(d.open) && !isNaN(d.time));
-    
-    // Sort by time
-    candleData.sort((a, b) => a.time - b.time);
-    
-    // Add candlestick series
-    const candleSeries = chart.addCandlestickSeries({
-        upColor: '#26a69a',
-        downColor: '#ef5350',
-        borderVisible: false,
-        wickUpColor: '#26a69a',
-        wickDownColor: '#ef5350',
-    });
-    candleSeries.setData(candleData);
-    tvCandleSeries[panelType] = candleSeries;
-    
-    // Add EMA 9 (yellow)
-    const ema9Data = calculateEMA(candleData, 9);
-    const ema9Series = chart.addLineSeries({
-        color: '#f59e0b',
-        lineWidth: 1,
-        crosshairMarkerVisible: false,
-        priceLineVisible: false,
-        lastValueVisible: false,
-    });
-    ema9Series.setData(ema9Data);
-    tvEma9Series[panelType] = ema9Series;
-    
-    // Add EMA 21 (blue)
-    const ema21Data = calculateEMA(candleData, 21);
-    const ema21Series = chart.addLineSeries({
-        color: '#3b82f6',
-        lineWidth: 1,
-        crosshairMarkerVisible: false,
-        priceLineVisible: false,
-        lastValueVisible: false,
-    });
-    ema21Series.setData(ema21Data);
-    tvEma21Series[panelType] = ema21Series;
-    
-    // Add volume
-    const volumeData = data.map((d, i) => {
-        const dateStr = d.Date || d.date;
-        let timestamp;
-        if (dateStr.includes(':')) {
-            timestamp = new Date(dateStr).getTime() / 1000;
-        } else {
-            timestamp = new Date(dateStr + 'T00:00:00').getTime() / 1000;
+        const lastBar = data[data.length - 1];
+        const priceEl = document.getElementById(`${panelType}Price`);
+        if (priceEl && lastBar) {
+            priceEl.textContent = `$${lastBar.close.toFixed(2)}`;
+            priceEl.className = lastBar.close >= lastBar.open ? 'price' : 'price down';
         }
         
-        const close = parseFloat(d.Close || d.close);
-        const open = parseFloat(d.Open || d.open);
+        if (loading) loading.style.display = 'none';
         
-        return {
-            time: timestamp,
-            value: parseInt(d.Volume || d.volume) || 0,
-            color: close >= open ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)',
-        };
-    }).filter(d => !isNaN(d.time));
-    
-    volumeData.sort((a, b) => a.time - b.time);
-    
-    if (volumeData.length > 0 && volumeData[0].value > 0) {
-        const volumeSeries = chart.addHistogramSeries({
-            priceFormat: { type: 'volume' },
-            priceScaleId: '',
-            scaleMargins: { top: 0.85, bottom: 0 },
-        });
-        volumeSeries.setData(volumeData);
-        tvVolumeSeries[panelType] = volumeSeries;
-    }
-    
-    chart.timeScale().fitContent();
-    
-    // Handle resize
-    const resizeObserver = new ResizeObserver(entries => {
-        if (entries[0]) {
-            const { width, height } = entries[0].contentRect;
-            chart.applyOptions({ width, height });
-        }
-    });
-    resizeObserver.observe(tvContainer);
-}
-
-function calculateEMA(data, period) {
-    if (!data || data.length === 0) return [];
-    
-    const k = 2 / (period + 1);
-    const result = [];
-    let ema = data[0].close;
-    
-    for (let i = 0; i < data.length; i++) {
-        if (i === 0) {
-            ema = data[i].close;
-        } else {
-            ema = data[i].close * k + ema * (1 - k);
-        }
-        result.push({ time: data[i].time, value: ema });
-    }
-    
-    return result;
-}
-
-function convertToHeikinAshi(data) {
-    if (!data || data.length === 0) return [];
-    
-    const ha = [];
-    for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-        const open = parseFloat(d.Open || d.open);
-        const high = parseFloat(d.High || d.high);
-        const low = parseFloat(d.Low || d.low);
-        const close = parseFloat(d.Close || d.close);
-        
-        const haClose = (open + high + low + close) / 4;
-        const haOpen = i === 0 ? (open + close) / 2 : (parseFloat(ha[i-1].Open) + parseFloat(ha[i-1].Close)) / 2;
-        const haHigh = Math.max(high, haOpen, haClose);
-        const haLow = Math.min(low, haOpen, haClose);
-        
-        ha.push({
-            Date: d.Date || d.date,
-            Open: haOpen,
-            High: haHigh,
-            Low: haLow,
-            Close: haClose,
-            Volume: d.Volume || d.volume
-        });
-    }
-    return ha;
-}
-
-function renderPointAndFigureChart(panelType, data, container) {
-    // Hide TV chart if exists
-    const tvContainer = container.querySelector('.tv-chart-container');
-    if (tvContainer) tvContainer.innerHTML = '';
-    
-    // Get or create canvas
-    let canvas = container.querySelector('canvas');
-    if (!canvas) {
-        canvas = document.createElement('canvas');
-        container.appendChild(canvas);
-    }
-    canvas.style.display = 'block';
-    
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width = container.clientWidth || 400;
-    const height = canvas.height = container.clientHeight || 320;
-    
-    // Dark background
-    ctx.fillStyle = '#131722';
-    ctx.fillRect(0, 0, width, height);
-    
-    if (!data || data.length < 5) {
-        ctx.fillStyle = '#787b86';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Not enough data for P&F chart', width/2, height/2);
-        return;
-    }
-    
-    // Calculate box size (0.75% of average price for tighter boxes)
-    const avgPrice = data.reduce((a, b) => a + parseFloat(b.Close || b.close), 0) / data.length;
-    const boxSize = avgPrice * 0.0075;
-    const reversal = 3;
-    
-    // Generate P&F columns
-    const columns = generatePFColumns(data, boxSize, reversal);
-    
-    if (columns.length === 0) {
-        ctx.fillStyle = '#787b86';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('No reversals detected', width/2, height/2);
-        return;
-    }
-    
-    // Calculate dimensions with MORE SPACING
-    const padding = { top: 40, right: 70, bottom: 30, left: 15 };
-    const chartWidth = width - padding.left - padding.right;
-    const chartHeight = height - padding.top - padding.bottom;
-    
-    // Find price range
-    let minPrice = Infinity, maxPrice = -Infinity;
-    columns.forEach(col => {
-        minPrice = Math.min(minPrice, col.low);
-        maxPrice = Math.max(maxPrice, col.high);
-    });
-    
-    // Add buffer
-    const priceRange = maxPrice - minPrice;
-    minPrice -= priceRange * 0.1;
-    maxPrice += priceRange * 0.1;
-    
-    // Limit columns and calculate WIDER spacing
-    const maxCols = Math.min(columns.length, 20);
-    const colWidth = Math.max(chartWidth / maxCols, 30); // Minimum 30px per column
-    const displayCols = columns.slice(-maxCols);
-    const actualChartWidth = colWidth * displayCols.length;
-    const startX = padding.left + (chartWidth - actualChartWidth) / 2;
-    
-    // Draw price axis grid
-    ctx.strokeStyle = '#1e222d';
-    ctx.fillStyle = '#787b86';
-    ctx.font = '10px Arial';
-    ctx.textAlign = 'right';
-    
-    const priceSteps = 6;
-    for (let i = 0; i <= priceSteps; i++) {
-        const price = minPrice + (maxPrice - minPrice) * (i / priceSteps);
-        const y = padding.top + chartHeight - (chartHeight * i / priceSteps);
-        
-        // Grid line
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(width - padding.right, y);
-        ctx.stroke();
-        
-        // Price label
-        ctx.fillText('$' + price.toFixed(0), width - 8, y + 3);
-    }
-    
-    // Draw X's and O's with PROPER SPACING
-    displayCols.forEach((col, colIndex) => {
-        const x = startX + (colIndex + 0.5) * colWidth;
-        
-        // Calculate number of boxes
-        const numBoxes = Math.max(1, Math.round((col.high - col.low) / boxSize));
-        
-        // Draw each box
-        for (let j = 0; j <= numBoxes; j++) {
-            const price = col.low + j * boxSize;
-            const y = padding.top + chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
-            
-            // Symbol size based on column width
-            const fontSize = Math.min(colWidth * 0.6, 16);
-            
-            ctx.font = `bold ${fontSize}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            if (col.direction === 'up') {
-                ctx.fillStyle = '#26a69a';
-                ctx.fillText('X', x, y);
-            } else {
-                ctx.fillStyle = '#ef5350';
-                ctx.fillText('O', x, y);
-            }
-        }
-    });
-    
-    // Draw legend box
-    ctx.fillStyle = 'rgba(19, 23, 34, 0.9)';
-    ctx.fillRect(padding.left, 5, 200, 28);
-    ctx.strokeStyle = '#2a2e39';
-    ctx.strokeRect(padding.left, 5, 200, 28);
-    
-    // Legend text
-    ctx.fillStyle = '#d1d4dc';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText('Point & Figure', padding.left + 8, 22);
-    
-    ctx.font = '10px Arial';
-    ctx.fillStyle = '#787b86';
-    ctx.fillText(`Box: $${boxSize.toFixed(2)} | Rev: ${reversal}`, padding.left + 95, 22);
-    
-    // X and O legend
-    ctx.fillStyle = '#26a69a';
-    ctx.font = 'bold 12px Arial';
-    ctx.fillText('X=Up', width - padding.right - 60, 22);
-    ctx.fillStyle = '#ef5350';
-    ctx.fillText('O=Dn', width - padding.right - 20, 22);
-}
-
-function generatePFColumns(data, boxSize, reversal) {
-    if (!data || data.length < 2) return [];
-    
-    const columns = [];
-    let currentCol = null;
-    let lastPrice = parseFloat(data[0].Close || data[0].close);
-    
-    for (let i = 1; i < data.length; i++) {
-        const close = parseFloat(data[i].Close || data[i].close);
-        
-        if (!currentCol) {
-            // Initialize first column
-            const direction = close > lastPrice ? 'up' : 'down';
-            currentCol = {
-                direction: direction,
-                high: Math.max(close, lastPrice),
-                low: Math.min(close, lastPrice),
-                startIdx: i
-            };
-            lastPrice = close;
-            continue;
-        }
-        
-        if (currentCol.direction === 'up') {
-            if (close > currentCol.high) {
-                // Continue up
-                currentCol.high = close;
-            } else if (close <= currentCol.high - boxSize * reversal) {
-                // Reversal down
-                columns.push({...currentCol});
-                currentCol = {
-                    direction: 'down',
-                    high: currentCol.high - boxSize,
-                    low: close,
-                    startIdx: i
-                };
-            }
-        } else {
-            if (close < currentCol.low) {
-                // Continue down
-                currentCol.low = close;
-            } else if (close >= currentCol.low + boxSize * reversal) {
-                // Reversal up
-                columns.push({...currentCol});
-                currentCol = {
-                    direction: 'up',
-                    low: currentCol.low + boxSize,
-                    high: close,
-                    startIdx: i
-                };
-            }
-        }
-        lastPrice = close;
-    }
-    
-    // Add final column
-    if (currentCol) {
-        columns.push(currentCol);
-    }
-    
-    return columns;
-}
-
-function renderCanvasCandlestick(panelType, data, chartType, canvas) {
-    // Fallback canvas renderer if TradingView not available
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width = canvas.parentElement.clientWidth || 400;
-    const height = canvas.height = 320;
-    
-    ctx.fillStyle = '#131722';
-    ctx.fillRect(0, 0, width, height);
-    
-    if (!data || data.length === 0) return;
-    
-    const processedData = chartType === 'heikinashi' ? convertToHeikinAshi(data) : data;
-    
-    const padding = { top: 20, right: 60, bottom: 30, left: 10 };
-    const chartWidth = width - padding.left - padding.right;
-    const chartHeight = height - padding.top - padding.bottom;
-    
-    // Find price range
-    let minPrice = Infinity, maxPrice = -Infinity;
-    processedData.forEach(d => {
-        const high = parseFloat(d.High || d.high);
-        const low = parseFloat(d.Low || d.low);
-        if (high > maxPrice) maxPrice = high;
-        if (low < minPrice) minPrice = low;
-    });
-    
-    const priceRange = maxPrice - minPrice;
-    minPrice -= priceRange * 0.05;
-    maxPrice += priceRange * 0.05;
-    
-    const barWidth = Math.max(chartWidth / processedData.length - 1, 2);
-    
-    // Draw candles
-    processedData.forEach((d, i) => {
-        const open = parseFloat(d.Open || d.open);
-        const high = parseFloat(d.High || d.high);
-        const low = parseFloat(d.Low || d.low);
-        const close = parseFloat(d.Close || d.close);
-        
-        const x = padding.left + (i / processedData.length) * chartWidth;
-        const yHigh = padding.top + ((maxPrice - high) / (maxPrice - minPrice)) * chartHeight;
-        const yLow = padding.top + ((maxPrice - low) / (maxPrice - minPrice)) * chartHeight;
-        const yOpen = padding.top + ((maxPrice - open) / (maxPrice - minPrice)) * chartHeight;
-        const yClose = padding.top + ((maxPrice - close) / (maxPrice - minPrice)) * chartHeight;
-        
-        const color = close >= open ? '#26a69a' : '#ef5350';
-        
-        // Wick
-        ctx.strokeStyle = color;
-        ctx.beginPath();
-        ctx.moveTo(x + barWidth/2, yHigh);
-        ctx.lineTo(x + barWidth/2, yLow);
-        ctx.stroke();
-        
-        // Body
-        ctx.fillStyle = color;
-        const bodyTop = Math.min(yOpen, yClose);
-        const bodyHeight = Math.abs(yClose - yOpen) || 1;
-        ctx.fillRect(x, bodyTop, barWidth - 1, bodyHeight);
-    });
-    
-    // Price axis
-    ctx.fillStyle = '#787b86';
-    ctx.font = '10px Arial';
-    ctx.textAlign = 'right';
-    for (let i = 0; i <= 5; i++) {
-        const price = minPrice + (maxPrice - minPrice) * (1 - i / 5);
-        const y = padding.top + (i / 5) * chartHeight;
-        ctx.fillText('$' + price.toFixed(0), width - 5, y + 3);
+    } catch (error) {
+        console.error(`Error updating ${panelType} chart:`, error);
+        if (loading) loading.textContent = 'Error loading chart';
     }
 }
 
 function getMultiChartData(panelType, timeframe) {
     if (!currentData || currentData.length === 0) return [];
     
-    const tf = parseInt(timeframe) || 15;
+    let data = currentData.map(bar => ({
+        date: bar.Date,
+        open: parseFloat(bar.Open) || 0,
+        high: parseFloat(bar.High) || 0,
+        low: parseFloat(bar.Low) || 0,
+        close: parseFloat(bar.Close) || 0,
+        volume: parseFloat(bar.Volume) || 0
+    })).filter(bar => bar.close > 0);
     
-    switch (panelType) {
-        case 'intraday':
-            return simulateIntradayBars(currentData.slice(-10), tf);
-        case 'swing':
-            if (timeframe === 'daily') return currentData.slice(-60);
-            return aggregateWeekly(currentData).slice(-30);
-        case 'position':
-            if (timeframe === 'monthly') return aggregateMonthly(currentData).slice(-24);
-            return aggregateQuarterly(currentData).slice(-12);
-        default:
-            return currentData.slice(-60);
+    if (panelType === 'intraday') {
+        return simulateIntradayBars(data.slice(-5), parseInt(timeframe) || 15);
     }
+    
+    if (panelType === 'swing') {
+        if (timeframe === 'W') return aggregateWeekly(data);
+        return data.slice(-60);
+    }
+    
+    if (panelType === 'position') {
+        if (timeframe === 'Q') return aggregateQuarterly(data);
+        return aggregateMonthly(data);
+    }
+    
+    return data;
 }
 
 function simulateIntradayBars(dailyData, minutes) {
-    if (!dailyData || dailyData.length === 0) return [];
-    
-    const bars = [];
+    const intradayBars = [];
     const barsPerDay = Math.floor(390 / minutes);
     
     dailyData.forEach(day => {
-        const open = parseFloat(day.Open || day.open);
-        const high = parseFloat(day.High || day.high);
-        const low = parseFloat(day.Low || day.low);
-        const close = parseFloat(day.Close || day.close);
-        const volume = parseInt(day.Volume || day.volume) || 0;
-        const dateStr = day.Date || day.date;
-        
+        const range = day.high - day.low;
         for (let i = 0; i < barsPerDay; i++) {
             const progress = i / barsPerDay;
-            const nextProgress = (i + 1) / barsPerDay;
+            const basePrice = day.open + (day.close - day.open) * progress;
+            const noise = (Math.random() - 0.5) * range * 0.3;
             
-            const barOpen = open + (close - open) * progress + (Math.random() - 0.5) * (high - low) * 0.3;
-            const barClose = open + (close - open) * nextProgress + (Math.random() - 0.5) * (high - low) * 0.3;
-            const barHigh = Math.max(barOpen, barClose) + Math.random() * (high - low) * 0.2;
-            const barLow = Math.min(barOpen, barClose) - Math.random() * (high - low) * 0.2;
+            const open = i === 0 ? day.open : intradayBars[intradayBars.length - 1]?.close || basePrice;
+            const close = basePrice + noise;
             
-            const hour = 9 + Math.floor((i * minutes + 30) / 60);
-            const minute = (i * minutes + 30) % 60;
-            const timeStr = `${dateStr} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            
-            bars.push({
-                Date: timeStr,
-                Open: barOpen,
-                High: Math.min(barHigh, high),
-                Low: Math.max(barLow, low),
-                Close: barClose,
-                Volume: Math.floor(volume / barsPerDay)
+            intradayBars.push({
+                date: day.date,
+                time: `${Math.floor(9.5 + (i * minutes) / 60)}:${String((30 + i * minutes) % 60).padStart(2, '0')}`,
+                open: open,
+                high: Math.max(open, close) + Math.random() * range * 0.1,
+                low: Math.min(open, close) - Math.random() * range * 0.1,
+                close: close,
+                volume: day.volume / barsPerDay
             });
         }
     });
-    
-    return bars.slice(-78);
+    return intradayBars.slice(-50);
 }
 
 function aggregateWeekly(dailyData) {
-    if (!dailyData || dailyData.length === 0) return [];
-    
-    const weeks = [];
-    let currentWeek = null;
-    
-    dailyData.forEach(day => {
-        const date = new Date(day.Date || day.date);
+    const weeks = {};
+    dailyData.forEach(bar => {
+        const date = new Date(bar.date);
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
-        const weekKey = weekStart.toISOString().slice(0, 10);
+        const weekKey = weekStart.toISOString().split('T')[0];
         
-        if (!currentWeek || currentWeek.weekKey !== weekKey) {
-            if (currentWeek) weeks.push(currentWeek);
-            currentWeek = {
-                weekKey,
-                Date: day.Date || day.date,
-                Open: parseFloat(day.Open || day.open),
-                High: parseFloat(day.High || day.high),
-                Low: parseFloat(day.Low || day.low),
-                Close: parseFloat(day.Close || day.close),
-                Volume: parseInt(day.Volume || day.volume) || 0
-            };
+        if (!weeks[weekKey]) {
+            weeks[weekKey] = { date: weekKey, open: bar.open, high: bar.high, low: bar.low, close: bar.close, volume: bar.volume };
         } else {
-            currentWeek.High = Math.max(currentWeek.High, parseFloat(day.High || day.high));
-            currentWeek.Low = Math.min(currentWeek.Low, parseFloat(day.Low || day.low));
-            currentWeek.Close = parseFloat(day.Close || day.close);
-            currentWeek.Volume += parseInt(day.Volume || day.volume) || 0;
-            currentWeek.Date = day.Date || day.date;
+            weeks[weekKey].high = Math.max(weeks[weekKey].high, bar.high);
+            weeks[weekKey].low = Math.min(weeks[weekKey].low, bar.low);
+            weeks[weekKey].close = bar.close;
+            weeks[weekKey].volume += bar.volume;
         }
     });
-    
-    if (currentWeek) weeks.push(currentWeek);
-    return weeks;
+    return Object.values(weeks).slice(-30);
 }
 
 function aggregateMonthly(dailyData) {
-    if (!dailyData || dailyData.length === 0) return [];
-    
-    const months = [];
-    let currentMonth = null;
-    
-    dailyData.forEach(day => {
-        const date = new Date(day.Date || day.date);
-        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    const months = {};
+    dailyData.forEach(bar => {
+        const date = new Date(bar.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         
-        if (!currentMonth || currentMonth.monthKey !== monthKey) {
-            if (currentMonth) months.push(currentMonth);
-            currentMonth = {
-                monthKey,
-                Date: day.Date || day.date,
-                Open: parseFloat(day.Open || day.open),
-                High: parseFloat(day.High || day.high),
-                Low: parseFloat(day.Low || day.low),
-                Close: parseFloat(day.Close || day.close),
-                Volume: parseInt(day.Volume || day.volume) || 0
-            };
+        if (!months[monthKey]) {
+            months[monthKey] = { date: monthKey + '-01', open: bar.open, high: bar.high, low: bar.low, close: bar.close, volume: bar.volume };
         } else {
-            currentMonth.High = Math.max(currentMonth.High, parseFloat(day.High || day.high));
-            currentMonth.Low = Math.min(currentMonth.Low, parseFloat(day.Low || day.low));
-            currentMonth.Close = parseFloat(day.Close || day.close);
-            currentMonth.Volume += parseInt(day.Volume || day.volume) || 0;
-            currentMonth.Date = day.Date || day.date;
+            months[monthKey].high = Math.max(months[monthKey].high, bar.high);
+            months[monthKey].low = Math.min(months[monthKey].low, bar.low);
+            months[monthKey].close = bar.close;
+            months[monthKey].volume += bar.volume;
         }
     });
-    
-    if (currentMonth) months.push(currentMonth);
-    return months;
+    return Object.values(months).slice(-24);
 }
 
 function aggregateQuarterly(dailyData) {
-    if (!dailyData || dailyData.length === 0) return [];
-    
-    const quarters = [];
-    let currentQuarter = null;
-    
-    dailyData.forEach(day => {
-        const date = new Date(day.Date || day.date);
+    const quarters = {};
+    dailyData.forEach(bar => {
+        const date = new Date(bar.date);
         const quarter = Math.floor(date.getMonth() / 3) + 1;
         const quarterKey = `${date.getFullYear()}-Q${quarter}`;
         
-        if (!currentQuarter || currentQuarter.quarterKey !== quarterKey) {
-            if (currentQuarter) quarters.push(currentQuarter);
-            currentQuarter = {
-                quarterKey,
-                Date: day.Date || day.date,
-                Open: parseFloat(day.Open || day.open),
-                High: parseFloat(day.High || day.high),
-                Low: parseFloat(day.Low || day.low),
-                Close: parseFloat(day.Close || day.close),
-                Volume: parseInt(day.Volume || day.volume) || 0
-            };
+        if (!quarters[quarterKey]) {
+            quarters[quarterKey] = { date: `${date.getFullYear()}-${String((quarter - 1) * 3 + 1).padStart(2, '0')}-01`, open: bar.open, high: bar.high, low: bar.low, close: bar.close, volume: bar.volume };
         } else {
-            currentQuarter.High = Math.max(currentQuarter.High, parseFloat(day.High || day.high));
-            currentQuarter.Low = Math.min(currentQuarter.Low, parseFloat(day.Low || day.low));
-            currentQuarter.Close = parseFloat(day.Close || day.close);
-            currentQuarter.Volume += parseInt(day.Volume || day.volume) || 0;
-            currentQuarter.Date = day.Date || day.date;
+            quarters[quarterKey].high = Math.max(quarters[quarterKey].high, bar.high);
+            quarters[quarterKey].low = Math.min(quarters[quarterKey].low, bar.low);
+            quarters[quarterKey].close = bar.close;
+            quarters[quarterKey].volume += bar.volume;
+        }
+    });
+    return Object.values(quarters).slice(-12);
+}
+
+function convertToHeikinAshi(data) {
+    if (!data || data.length === 0) return [];
+    const haData = [];
+    
+    data.forEach((bar, i) => {
+        const haBar = { ...bar };
+        if (i === 0) {
+            haBar.open = (bar.open + bar.close) / 2;
+            haBar.close = (bar.open + bar.high + bar.low + bar.close) / 4;
+        } else {
+            const prevHA = haData[i - 1];
+            haBar.open = (prevHA.open + prevHA.close) / 2;
+            haBar.close = (bar.open + bar.high + bar.low + bar.close) / 4;
+        }
+        haBar.high = Math.max(bar.high, haBar.open, haBar.close);
+        haBar.low = Math.min(bar.low, haBar.open, haBar.close);
+        haData.push(haBar);
+    });
+    return haData;
+}
+
+function renderMultiCandlestickChart(panelType, data, chartType, canvas) {
+    const ctx = canvas.getContext('2d');
+    
+    if (multiChartInstances[panelType]) {
+        multiChartInstances[panelType].destroy();
+    }
+    
+    const labels = data.map((bar, i) => {
+        if (bar.time) return bar.time;
+        const dateStr = bar.date?.split('T')[0] || '';
+        return dateStr.slice(5);
+    });
+    
+    const upColor = chartType === 'heikinashi' ? '#4caf50' : '#26a69a';
+    const downColor = chartType === 'heikinashi' ? '#f44336' : '#ef5350';
+    
+    multiChartInstances[panelType] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Price',
+                data: data.map(bar => bar.close),
+                backgroundColor: data.map(bar => bar.close >= bar.open ? upColor : downColor),
+                borderColor: data.map(bar => bar.close >= bar.open ? upColor : downColor),
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const bar = data[context.dataIndex];
+                            return [`O: ${bar.open.toFixed(2)}`, `H: ${bar.high.toFixed(2)}`, `L: ${bar.low.toFixed(2)}`, `C: ${bar.close.toFixed(2)}`];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#787b86', maxTicksLimit: 8, font: { size: 9 } } },
+                y: { display: true, position: 'right', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#787b86', font: { size: 9 } } }
+            }
+        }
+    });
+}
+
+function renderPointAndFigureChart(panelType, data, canvas) {
+    if (multiChartInstances[panelType]) {
+        multiChartInstances[panelType].destroy();
+        multiChartInstances[panelType] = null;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.offsetWidth || 300;
+    const height = canvas.offsetHeight || 350;
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    ctx.fillStyle = '#131722';
+    ctx.fillRect(0, 0, width, height);
+    
+    const avgPrice = data.reduce((sum, bar) => sum + bar.close, 0) / data.length;
+    const boxSize = avgPrice * 0.01;
+    const columns = generatePFCols(data, boxSize, 3);
+    
+    if (columns.length === 0) return;
+    
+    let minPrice = Infinity, maxPrice = -Infinity;
+    columns.forEach(col => {
+        col.boxes.forEach(box => {
+            minPrice = Math.min(minPrice, box);
+            maxPrice = Math.max(maxPrice, box);
+        });
+    });
+    
+    const priceRange = maxPrice - minPrice;
+    const boxHeight = (height - 40) / Math.ceil(priceRange / boxSize);
+    const colWidth = Math.min(20, (width - 40) / columns.length);
+    
+    columns.forEach((col, colIdx) => {
+        const x = 20 + colIdx * colWidth;
+        col.boxes.forEach(price => {
+            const y = height - 20 - ((price - minPrice) / boxSize) * boxHeight;
+            ctx.fillStyle = col.type === 'X' ? '#26a69a' : '#ef5350';
+            ctx.font = `${Math.min(14, colWidth - 2)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(col.type, x + colWidth / 2, y);
+        });
+    });
+    
+    ctx.fillStyle = '#787b86';
+    ctx.font = '9px Arial';
+    ctx.textAlign = 'right';
+    for (let p = minPrice; p <= maxPrice; p += boxSize * 5) {
+        const y = height - 20 - ((p - minPrice) / boxSize) * boxHeight;
+        ctx.fillText(p.toFixed(0), 18, y + 3);
+    }
+}
+
+function generatePFCols(data, boxSize, reversal) {
+    if (!data || data.length === 0) return [];
+    
+    const columns = [];
+    let currentCol = { type: 'X', boxes: [Math.floor(data[0].close / boxSize) * boxSize] };
+    
+    data.forEach(bar => {
+        const high = Math.floor(bar.high / boxSize) * boxSize;
+        const low = Math.floor(bar.low / boxSize) * boxSize;
+        const lastBox = currentCol.boxes[currentCol.boxes.length - 1];
+        
+        if (currentCol.type === 'X') {
+            if (high > lastBox) {
+                for (let p = lastBox + boxSize; p <= high; p += boxSize) currentCol.boxes.push(p);
+            } else if (lastBox - low >= reversal * boxSize) {
+                columns.push(currentCol);
+                currentCol = { type: 'O', boxes: [] };
+                for (let p = lastBox - boxSize; p >= low; p -= boxSize) currentCol.boxes.push(p);
+            }
+        } else {
+            if (low < lastBox) {
+                for (let p = lastBox - boxSize; p >= low; p -= boxSize) currentCol.boxes.push(p);
+            } else if (high - lastBox >= reversal * boxSize) {
+                columns.push(currentCol);
+                currentCol = { type: 'X', boxes: [] };
+                for (let p = lastBox + boxSize; p <= high; p += boxSize) currentCol.boxes.push(p);
+            }
         }
     });
     
-    if (currentQuarter) quarters.push(currentQuarter);
-    return quarters;
+    if (currentCol.boxes.length > 0) columns.push(currentCol);
+    return columns.slice(-30);
 }
 
+// Initialize multi-charts when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const multiChartsTab = document.querySelector('[data-tab="multi-charts"]');
+    if (multiChartsTab) {
+        multiChartsTab.addEventListener('click', function() {
+            setTimeout(initMultiCharts, 100);
+        });
+    }
+});
+
 // ============================================
-// END PROFESSIONAL CHARTS
-// ============================================function generateDailyReport() {
+// DAILY ANALYSIS SYSTEM
+// ============================================
+
+let currentAnalysisMode = 'morning';
+let dailyAnalysisData = null;
+
+// Initialize Daily Analysis when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const analysisTab = document.querySelector('[data-tab="daily-analysis"]');
+    if (analysisTab) {
+        analysisTab.addEventListener('click', async function() {
+            await loadRealAgentSignals();
+            setTimeout(generateDailyReport, 100);
+        });
+    }
+    
+    // Pre-load agent signals on page load
+    loadRealAgentSignals();
+    
+    // Auto-generate reports at scheduled times
+    checkScheduledAnalysis();
+    setInterval(checkScheduledAnalysis, 60000); // Check every minute
+});
+
+function checkScheduledAnalysis() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    
+    // Morning analysis at 9:35 AM
+    if (hours === 9 && minutes === 35) {
+        currentAnalysisMode = 'morning';
+        generateDailyReport();
+    }
+    
+    // Evening analysis at 6:00 PM
+    if (hours === 18 && minutes === 0) {
+        currentAnalysisMode = 'evening';
+        generateDailyReport();
+    }
+}
+
+function switchAnalysisMode(mode) {
+    currentAnalysisMode = mode;
+    
+    // Update button states
+    document.getElementById('morningBtn')?.classList.toggle('active', mode === 'morning');
+    document.getElementById('eveningBtn')?.classList.toggle('active', mode === 'evening');
+    
+    // Update title
+    const planTitle = document.getElementById('planTitle');
+    if (planTitle) {
+        planTitle.textContent = mode === 'morning' ? '☀️ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
+    }
+    
+    generateDailyReport();
+}
+
+function refreshAnalysis() {
+    generateDailyReport();
+}
+
+function generateDailyReport() {
     console.log('Generating daily report...', currentAnalysisMode);
     
     if (!currentData || currentData.length === 0) {
@@ -6727,7 +6408,7 @@ function generateReportHTML() {
     return `
 <!DOCTYPE html>
 <html>
-<head><script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+<head>
     <title>Q5D Trading Report - ${currentSymbol} - ${new Date().toLocaleDateString()}</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
