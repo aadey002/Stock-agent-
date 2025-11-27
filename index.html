@@ -3741,97 +3741,133 @@ function runHealthCheck() {
 }
 
 function checkDataFreshness() {
-    const freshEl = document.getElementById('healthDataFresh');
-    const valueEl = document.getElementById('dataFreshnessValue');
-    const statusEl = document.getElementById('dataFreshnessStatus');
+    console.log('🔍 checkDataFreshness running...');
+    
+    // Get elements directly
     const lastDateEl = document.getElementById('lastDataDate');
     const daysSinceEl = document.getElementById('daysSinceUpdate');
     const expectedEl = document.getElementById('expectedUpdate');
     const totalBarsEl = document.getElementById('totalBarsLoaded');
     const dateRangeEl = document.getElementById('dataDateRange');
+    const valueEl = document.getElementById('dataFreshnessValue');
+    const statusEl = document.getElementById('dataFreshnessStatus');
+    const freshEl = document.getElementById('healthDataFresh');
     
+    // Check if we have data
     if (!currentData || currentData.length === 0) {
-        valueEl.textContent = 'No Data';
-        statusEl.textContent = 'CRITICAL';
-        statusEl.className = 'health-metric-status error';
-        freshEl.className = 'health-metric critical';
+        console.log('❌ No data available');
+        if (valueEl) valueEl.textContent = 'No Data';
+        if (statusEl) statusEl.textContent = 'CRITICAL';
         healthStatus.dataFreshness = 'critical';
-        healthStatus.alerts.push({ type: 'critical', message: 'No data loaded - check data feed connection' });
+        healthStatus.alerts.push({ type: 'critical', message: 'No data loaded' });
         return;
     }
     
-    // Get last data point date
+    console.log('📊 Data length:', currentData.length);
+    
+    // Get last bar directly
     const lastBar = currentData[currentData.length - 1];
-    const lastDate = lastBar.Date ? new Date(lastBar.Date) : null;
+    console.log('📅 Last bar:', lastBar);
+    console.log('📅 Last bar Date:', lastBar.Date);
     
-    if (!lastDate) {
-        valueEl.textContent = 'Invalid Date';
-        statusEl.textContent = 'ERROR';
-        statusEl.className = 'health-metric-status error';
-        freshEl.className = 'health-metric critical';
+    // Parse the date - handle ISO format
+    let lastDate;
+    if (lastBar.Date) {
+        lastDate = new Date(lastBar.Date);
+        console.log('📅 Parsed lastDate:', lastDate);
+    }
+    
+    if (!lastDate || isNaN(lastDate.getTime())) {
+        console.log('❌ Invalid date');
+        if (valueEl) valueEl.textContent = 'Invalid Date';
         healthStatus.dataFreshness = 'critical';
         return;
     }
     
+    // Calculate days difference
     const now = new Date();
-    const diffTime = now - lastDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffMs = now - lastDate;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     
-    // Update timeline info
-    lastDateEl.textContent = lastDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    daysSinceEl.textContent = diffDays === 0 ? 'Today' : (diffDays === 1 ? '1 day ago' : diffDays + ' days ago');
-    totalBarsEl.textContent = currentData.length + ' bars';
+    console.log('📅 Now:', now);
+    console.log('📅 Diff days:', diffDays);
     
-    // Get first date
-    const firstBar = currentData[0];
-    const firstDate = firstBar.Date ? new Date(firstBar.Date) : null;
-    if (firstDate) {
-        dateRangeEl.textContent = `${firstDate.toLocaleDateString()} - ${lastDate.toLocaleDateString()}`;
+    // Format the date string
+    const dateStr = lastDate.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
+    console.log('📅 Formatted date:', dateStr);
+    
+    // UPDATE THE ELEMENTS DIRECTLY
+    if (lastDateEl) {
+        lastDateEl.textContent = dateStr;
+        lastDateEl.innerHTML = dateStr;
+        console.log('✅ Updated lastDataDate to:', dateStr);
+    } else {
+        console.log('❌ lastDataDate element not found!');
     }
     
-    // Calculate expected next update
-    const nextUpdate = getNextMarketDay(lastDate);
-    expectedEl.textContent = nextUpdate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    if (daysSinceEl) {
+        const daysText = diffDays === 0 ? 'Today' : (diffDays === 1 ? '1 day ago' : diffDays + ' days ago');
+        daysSinceEl.textContent = daysText;
+        console.log('✅ Updated daysSinceUpdate to:', daysText);
+    }
     
-    // Determine status based on days since update
+    if (totalBarsEl) {
+        totalBarsEl.textContent = currentData.length + ' bars';
+    }
+    
+    // First date for range
+    const firstBar = currentData[0];
+    if (firstBar && firstBar.Date && dateRangeEl) {
+        const firstDate = new Date(firstBar.Date);
+        dateRangeEl.textContent = firstDate.toLocaleDateString() + ' - ' + lastDate.toLocaleDateString();
+    }
+    
+    // Expected update
+    if (expectedEl) {
+        const nextUpdate = getNextMarketDay(lastDate);
+        expectedEl.textContent = nextUpdate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+    
+    // Status based on days
     if (diffDays === 0) {
-        valueEl.textContent = 'Up to Date';
-        statusEl.textContent = 'FRESH';
-        statusEl.className = 'health-metric-status ok';
-        freshEl.className = 'health-metric healthy';
+        if (valueEl) valueEl.textContent = 'Up to Date';
+        if (statusEl) { statusEl.textContent = 'FRESH'; statusEl.className = 'health-metric-status ok'; }
+        if (freshEl) freshEl.className = 'health-metric healthy';
         healthStatus.dataFreshness = 'healthy';
-        healthStatus.alerts.push({ type: 'success', message: 'Data is current as of today' });
-    } else if (diffDays <= 1) {
-        valueEl.textContent = '1 Day Old';
-        statusEl.textContent = 'OK';
-        statusEl.className = 'health-metric-status ok';
-        freshEl.className = 'health-metric healthy';
+        healthStatus.alerts.push({ type: 'success', message: 'Data is current' });
+    } else if (diffDays === 1) {
+        if (valueEl) valueEl.textContent = '1 Day Old';
+        if (statusEl) { statusEl.textContent = 'OK'; statusEl.className = 'health-metric-status ok'; }
+        if (freshEl) freshEl.className = 'health-metric healthy';
         healthStatus.dataFreshness = 'healthy';
     } else if (diffDays <= 3) {
-        // Check if weekend
         const isWeekend = isWeekendGap(lastDate, now);
         if (isWeekend) {
-            valueEl.textContent = diffDays + ' Days (Weekend)';
-            statusEl.textContent = 'OK';
-            statusEl.className = 'health-metric-status ok';
-            freshEl.className = 'health-metric healthy';
+            if (valueEl) valueEl.textContent = diffDays + ' Days (Weekend)';
+            if (statusEl) { statusEl.textContent = 'OK'; statusEl.className = 'health-metric-status ok'; }
+            if (freshEl) freshEl.className = 'health-metric healthy';
             healthStatus.dataFreshness = 'healthy';
         } else {
-            valueEl.textContent = diffDays + ' Days Old';
-            statusEl.textContent = 'STALE';
-            statusEl.className = 'health-metric-status warn';
-            freshEl.className = 'health-metric warning';
+            if (valueEl) valueEl.textContent = diffDays + ' Days Old';
+            if (statusEl) { statusEl.textContent = 'STALE'; statusEl.className = 'health-metric-status warn'; }
+            if (freshEl) freshEl.className = 'health-metric warning';
             healthStatus.dataFreshness = 'warning';
-            healthStatus.alerts.push({ type: 'warning', message: `Data is ${diffDays} days old - agent may not be running` });
+            healthStatus.alerts.push({ type: 'warning', message: 'Data is ' + diffDays + ' days old' });
         }
     } else {
-        valueEl.textContent = diffDays + ' Days Old';
-        statusEl.textContent = 'OUTDATED';
-        statusEl.className = 'health-metric-status error';
-        freshEl.className = 'health-metric critical';
+        if (valueEl) valueEl.textContent = diffDays + ' Days Old';
+        if (statusEl) { statusEl.textContent = 'OUTDATED'; statusEl.className = 'health-metric-status error'; }
+        if (freshEl) freshEl.className = 'health-metric critical';
         healthStatus.dataFreshness = 'critical';
-        healthStatus.alerts.push({ type: 'critical', message: `Data is ${diffDays} days old - agent needs attention!` });
+        healthStatus.alerts.push({ type: 'critical', message: 'Data is ' + diffDays + ' days old!' });
     }
+    
+    console.log('✅ checkDataFreshness complete');
 }
 
 function checkMarketStatus() {
