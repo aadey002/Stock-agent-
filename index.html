@@ -5126,10 +5126,14 @@ let dailyAnalysisData = null;
 document.addEventListener('DOMContentLoaded', function() {
     const analysisTab = document.querySelector('[data-tab="daily-analysis"]');
     if (analysisTab) {
-        analysisTab.addEventListener('click', function() {
+        analysisTab.addEventListener('click', async function() {
+            await loadRealAgentSignals();
             setTimeout(generateDailyReport, 100);
         });
     }
+    
+    // Pre-load agent signals on page load
+    loadRealAgentSignals();
     
     // Auto-generate reports at scheduled times
     checkScheduledAnalysis();
@@ -5212,7 +5216,7 @@ function generateDailyReport() {
 
 function calculateAllSignals(data, price, prevClose) {
     const signals = {
-        agentConsensus: { score: 0, detail: '', count: 0 },
+        agentConsensus: { score: 0, detail: '', count: 0, agentDetails: null, isReal: false },
         barCount: { score: 0, detail: '', count: 0 },
         patterns: { score: 0, detail: '', found: [] },
         gann: { score: 0, detail: '' },
@@ -5223,12 +5227,15 @@ function calculateAllSignals(data, price, prevClose) {
         confidence: 50
     };
     
-    // 1. Agent Consensus Score
+    // 1. Agent Consensus Score (with individual agent breakdown)
     const agentSignals = getAgentSignals();
     signals.agentConsensus.count = agentSignals.agreeing;
     signals.agentConsensus.score = (agentSignals.agreeing / 4) * 4; // Max 4 points
     signals.agentConsensus.signal = agentSignals.signal;
-    signals.agentConsensus.detail = `${agentSignals.agreeing}/4 agents: ${agentSignals.signal}`;
+    signals.agentConsensus.isReal = agentSignals.isReal;
+    signals.agentConsensus.agentDetails = agentSignals.agentDetails;
+    signals.agentConsensus.timestamp = agentSignals.timestamp;
+    signals.agentConsensus.detail = `${agentSignals.agreeing}/4 agents: ${agentSignals.signal}${agentSignals.isReal ? ' (LIVE)' : ' (calc)'}`;
     
     // 2. Bar Count Score
     const barCount = calculateBarCountSignal(data);
@@ -5283,35 +5290,130 @@ function calculateAllSignals(data, price, prevClose) {
     return signals;
 }
 
+// Real agent voting data (loaded from voting_log.json)
+let realAgentVotes = null;
+
+async function loadRealAgentSignals() {
+    try {
+        const response = await fetch('voting_log.json');
+        if (response.ok) {
+            const data = await response.json();
+            realAgentVotes = data;
+            console.log('✅ Loaded real agent signals from voting_log.json');
+            return true;
+        }
+    } catch (e) {
+        console.log('⚠️ voting_log.json not available, using calculated signals');
+    }
+    return false;
+}
+
 function getAgentSignals() {
-    // Get signals from the current agent consensus
-    let callCount = 0, putCount = 0, holdCount = 0;
+    // Try to get REAL signals from voting_log.json first
+    if (realAgentVotes && realAgentVotes.votes && realAgentVotes.votes.length > 0) {
+        const latestVote = realAgentVotes.votes[realAgentVotes.votes.length - 1];
+        
+        // Parse individual agent signals
+        const agentDetails = {
+            base: { signal: 'HOLD', confidence: 0 },
+            gann: { signal: 'HOLD', confidence: 0 },
+            dqn: { signal: 'HOLD', confidence: 0 },
+            wave: { signal: 'HOLD', confidence: 0 }
+        };
+        
+        let callCount = 0, putCount = 0, holdCount = 0;
+        
+        if (latestVote.component_signals) {
+            latestVote.component_signals.forEach(sig => {
+                const agentName = sig.agent?.toLowerCase() || '';
+                const signal = sig.signal?.toUpperCase() || 'HOLD';
+                const confidence = sig.confidence || 0;
+                
+                if (agentName.includes('base') || agentName.includes('confluence')) {
+                    agentDetails.base = { signal, confidence };
+                } else if (agentName.includes('gann') || agentName.includes('elliott')) {
+                    agentDetails.gann = { signal, confidence };
+                } else if (agentName.includes('dqn') || agentName.includes('ml')) {
+                    agentDetails.dqn = { signal, confidence };
+                } else if (agentName.includes('wave') || agentName.includes('3')) {
+                    agentDetails.wave = { signal, confidence };
+                }
+                
+                if (signal === 'CALL') callCount++;
+                else if (signal === 'PUT') putCount++;
+                else holdCount++;
+            });
+        }
+        
+        const finalSignal = latestVote.final_signal?.toUpperCase() || 'HOLD';
+        const agreementLevel = latestVote.agreement_level || Math.max(callCount, putCount, holdCount);
+        
+        return { 
+            signal: finalSignal, 
+            agreeing: agreementLevel, 
+            callCount, 
+            putCount, 
+            holdCount,
+            isReal: true,
+            agentDetails,
+            timestamp: latestVote.timestamp
+        };
+    }
     
-    // Check each agent's signal (simulated based on current data)
+    // FALLBACK: Calculate signals from price data if voting_log.json not available
+    let callCount = 0, putCount = 0, holdCount = 0;
+    const agentDetails = {
+        base: { signal: 'HOLD', confidence: 50 },
+        gann: { signal: 'HOLD', confidence: 50 },
+        dqn: { signal: 'HOLD', confidence: 50 },
+        wave: { signal: 'HOLD', confidence: 50 }
+    };
+    
     const lastBars = currentData.slice(-5);
     const trend = lastBars[lastBars.length - 1]?.Close > lastBars[0]?.Close;
     const momentum = calculateMomentum(currentData);
     
     // Base Confluence Agent
-    if (trend && momentum > 0) callCount++;
-    else if (!trend && momentum < 0) putCount++;
-    else holdCount++;
+    if (trend && momentum > 0) {
+        callCount++;
+        agentDetails.base = { signal: 'CALL', confidence: 60 + momentum * 20 };
+    } else if (!trend && momentum < 0) {
+        putCount++;
+        agentDetails.base = { signal: 'PUT', confidence: 60 + Math.abs(momentum) * 20 };
+    } else {
+        holdCount++;
+        agentDetails.base = { signal: 'HOLD', confidence: 50 };
+    }
     
     // Gann-Elliott Agent
-    const gannSignal = trend ? 'CALL' : 'PUT';
-    if (gannSignal === 'CALL') callCount++;
-    else putCount++;
+    if (trend) {
+        callCount++;
+        agentDetails.gann = { signal: 'CALL', confidence: 65 };
+    } else {
+        putCount++;
+        agentDetails.gann = { signal: 'PUT', confidence: 65 };
+    }
     
     // DQN Agent
-    const dqnSignal = momentum > 0.5 ? 'CALL' : (momentum < -0.5 ? 'PUT' : 'HOLD');
-    if (dqnSignal === 'CALL') callCount++;
-    else if (dqnSignal === 'PUT') putCount++;
-    else holdCount++;
+    if (momentum > 0.5) {
+        callCount++;
+        agentDetails.dqn = { signal: 'CALL', confidence: 70 + momentum * 15 };
+    } else if (momentum < -0.5) {
+        putCount++;
+        agentDetails.dqn = { signal: 'PUT', confidence: 70 + Math.abs(momentum) * 15 };
+    } else {
+        holdCount++;
+        agentDetails.dqn = { signal: 'HOLD', confidence: 50 };
+    }
     
     // 3-Wave Agent
-    const waveSignal = trend ? 'CALL' : 'PUT';
-    if (waveSignal === 'CALL') callCount++;
-    else putCount++;
+    if (trend) {
+        callCount++;
+        agentDetails.wave = { signal: 'CALL', confidence: 60 };
+    } else {
+        putCount++;
+        agentDetails.wave = { signal: 'PUT', confidence: 60 };
+    }
     
     const maxCount = Math.max(callCount, putCount, holdCount);
     let signal = 'HOLD';
@@ -5325,7 +5427,16 @@ function getAgentSignals() {
         agreeing = putCount;
     }
     
-    return { signal, agreeing, callCount, putCount, holdCount };
+    return { 
+        signal, 
+        agreeing, 
+        callCount, 
+        putCount, 
+        holdCount,
+        isReal: false,
+        agentDetails,
+        timestamp: null
+    };
 }
 
 function calculateMomentum(data) {
@@ -5701,12 +5812,43 @@ function updateTradeRecommendations(signals) {
             
             <!-- Signal Breakdown Card -->
             <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
-                <h4 style="font-size: 13px; margin-bottom: 12px;">📊 Why This Signal?</h4>
-                <div style="font-size: 11px; line-height: 1.9;">
-                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                        <span>🤖 Agent Consensus:</span>
-                        <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)' : 'var(--muted)'};">${signals.agentConsensus.count}/4 → ${signals.agentConsensus.signal}</strong>
+                <h4 style="font-size: 13px; margin-bottom: 12px;">
+                    📊 Why This Signal? 
+                    ${signals.agentConsensus.isReal ? '<span style="background: var(--success); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">LIVE DATA</span>' : '<span style="background: var(--muted); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">CALCULATED</span>'}
+                </h4>
+                
+                <!-- Individual Agent Breakdown -->
+                <div style="background: white; border-radius: 6px; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border);">
+                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--text);">🤖 Individual Agent Votes:</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 10px;">
+                        ${signals.agentConsensus.agentDetails ? `
+                        <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
+                            <span>📊 Base Confluence:</span>
+                            <strong style="color: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.base.signal} (${signals.agentConsensus.agentDetails.base.confidence.toFixed(0)}%)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
+                            <span>🔮 Gann-Elliott:</span>
+                            <strong style="color: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.gann.signal} (${signals.agentConsensus.agentDetails.gann.confidence.toFixed(0)}%)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
+                            <span>🧠 DQN (ML):</span>
+                            <strong style="color: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.dqn.signal} (${signals.agentConsensus.agentDetails.dqn.confidence.toFixed(0)}%)</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
+                            <span>🌊 3-Wave:</span>
+                            <strong style="color: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.wave.signal} (${signals.agentConsensus.agentDetails.wave.confidence.toFixed(0)}%)</strong>
+                        </div>
+                        ` : '<div style="grid-column: span 2; text-align: center; color: var(--muted);">Agent data not available</div>'}
                     </div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); text-align: center;">
+                        <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)' : 'var(--warning)'};">
+                            Consensus: ${signals.agentConsensus.count}/4 agents → ${signals.agentConsensus.signal}
+                        </strong>
+                    </div>
+                </div>
+                
+                <!-- Other Signals -->
+                <div style="font-size: 11px; line-height: 1.9;">
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
                         <span>🔢 Bar Count:</span>
                         <strong style="color: ${signals.barCount.count > 0 ? 'var(--success)' : signals.barCount.count < 0 ? 'var(--danger)' : 'var(--muted)'};">${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} bars</strong>
