@@ -1,12 +1,12 @@
 # Stock Agent 4 - Q5D Daily Analysis
-# Robust version - forces updates, no merge conflicts
+# Fixed: Copies SPY_confluence.csv as SPY.csv for dashboard
 
 name: Q5D Daily Analysis
 
 on:
   schedule:
-    - cron: '35 14 * * 1-5'  # 9:35 AM ET
-    - cron: '05 21 * * 1-5'  # 4:05 PM ET
+    - cron: '35 14 * * 1-5'
+    - cron: '05 21 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -19,103 +19,92 @@ jobs:
       TZ: America/New_York
     
     steps:
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🐍 Set up Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 📦 Install dependencies
-        run: |
-          pip install pandas numpy requests
-          pip install tensorflow || echo "TensorFlow skipped"
+      - name: 📦 Install deps
+        run: pip install pandas numpy requests --quiet
 
-      - name: 📂 Setup directories
+      - name: 📂 Create folders
         run: mkdir -p data reports logs
 
       - name: 🤖 Run Base Agent
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        run: |
-          echo "🚀 Running Base Agent..."
-          python agents/base_agent.py
-
-      - name: 🧠 Run DQN Agent
-        env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        continue-on-error: true
-        run: python agents/dqn_agent.py || echo "DQN skipped"
+        run: python agents/base_agent.py
 
       - name: 🔄 Run Hybrid Engine
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
         continue-on-error: true
-        run: python agents/hybrid_engine.py || echo "Hybrid skipped"
+        run: python agents/hybrid_engine.py || echo "Skipped"
 
       - name: 📊 Show results
         run: |
           echo "=== DATA FILES ==="
-          ls -la data/ 2>/dev/null || echo "No data/"
+          ls -la data/
           echo ""
-          echo "=== REPORTS ==="
-          ls -la reports/ 2>/dev/null || echo "No reports/"
-          echo ""
-          echo "=== SPY.csv tail ==="
-          tail -3 data/SPY.csv 2>/dev/null || echo "No SPY.csv"
+          echo "=== Last lines of confluence files ==="
+          tail -2 data/*_confluence.csv 2>/dev/null || echo "No confluence files"
+          tail -2 data/SPY.csv 2>/dev/null || echo "No SPY.csv"
 
-      - name: 📤 Force push to main
+      - name: 📤 Push to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Add all changes
           git add -A
-          
-          # Check for changes
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          
-          # Commit
-          git commit -m "🤖 Agent: $(date '+%Y-%m-%d %H:%M ET')"
-          
-          # Force push to avoid conflicts
-          git push --force origin main
-          echo "✅ Pushed to main"
+          git diff --staged --quiet || git commit -m "🤖 $(date '+%Y-%m-%d %H:%M ET')"
+          git push --force origin main || true
 
       - name: 🌐 Deploy to gh-pages
         run: |
-          # Save CSV files
-          mkdir -p /tmp/csvs
-          cp data/*.csv /tmp/csvs/ 2>/dev/null || true
-          cp reports/*.csv /tmp/csvs/ 2>/dev/null || true
-          cp *.csv /tmp/csvs/ 2>/dev/null || true
+          # Prepare files for dashboard
+          mkdir -p /tmp/deploy
           
-          echo "Files to deploy:"
-          ls -la /tmp/csvs/
+          # Copy confluence files AS the expected names
+          # SPY_confluence.csv -> SPY.csv (dashboard expects this)
+          for file in data/*_confluence.csv; do
+            if [ -f "$file" ]; then
+              # Extract symbol name (e.g., SPY from SPY_confluence.csv)
+              symbol=$(basename "$file" _confluence.csv)
+              cp "$file" "/tmp/deploy/${symbol}.csv"
+              echo "✅ Copied $file -> ${symbol}.csv"
+            fi
+          done
           
-          # Get gh-pages
+          # Also copy any regular CSV files from data/
+          cp data/*.csv /tmp/deploy/ 2>/dev/null || true
+          
+          # Copy reports
+          cp reports/*.csv /tmp/deploy/ 2>/dev/null || true
+          
+          echo ""
+          echo "=== Files to deploy ==="
+          ls -la /tmp/deploy/
+          
+          # Switch to gh-pages
           git fetch origin gh-pages || true
           git checkout gh-pages || git checkout --orphan gh-pages
           
-          # Clean and copy
-          cp /tmp/csvs/*.csv . 2>/dev/null || true
+          # Copy files (preserve index.html)
+          cp /tmp/deploy/*.csv . 2>/dev/null || true
           
           # Commit and push
           git add *.csv 2>/dev/null || true
           
           if git diff --staged --quiet; then
-            echo "No CSV changes"
+            echo "No changes"
           else
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "📊 Data: $(date '+%Y-%m-%d %H:%M ET')"
+            git commit -m "📊 $(date '+%Y-%m-%d %H:%M ET')"
             git push --force origin gh-pages
-            echo "✅ Deployed to gh-pages"
+            echo "✅ Deployed!"
           fi
