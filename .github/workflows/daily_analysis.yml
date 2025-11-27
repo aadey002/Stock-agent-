@@ -82,6 +82,9 @@ jobs:
           # Copy all CSV files from data/
           cp data/*.csv /tmp/deploy/ 2>/dev/null || true
           
+          # Copy voting_log.json (real agent signals)
+          cp data/voting_log.json /tmp/deploy/ 2>/dev/null || true
+          
           # Copy reports
           cp reports/*.csv /tmp/deploy/ 2>/dev/null || true
           
@@ -95,9 +98,10 @@ jobs:
           
           # Copy files (preserve index.html)
           cp /tmp/deploy/*.csv . 2>/dev/null || true
+          cp /tmp/deploy/*.json . 2>/dev/null || true
           
           # Commit and push
-          git add *.csv 2>/dev/null || true
+          git add *.csv *.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes"
           else
