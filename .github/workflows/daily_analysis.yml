@@ -36,10 +36,10 @@ jobs:
       - name: 📂 Create folders
         run: mkdir -p data reports logs
 
-      - name: 📥 Fetch Data from Tiingo
+      - name: 📥 Fetch ALL Symbols from Tiingo
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
-        run: python fetch_data.py
+        run: python fetch_all_symbols.py
 
       - name: 🤖 Run Base Agent
         env:
