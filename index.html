@@ -5634,44 +5634,115 @@ function updateTradeRecommendations(signals) {
     const atr = parseFloat(lastBar.ATR) || price * 0.015;
     
     const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
-    const stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
-    const target1 = signal === 'CALL' ? price + atr * 2 : price - atr * 2;
-    const target2 = signal === 'CALL' ? price + atr * 3 : price - atr * 3;
+    
+    // Calculate all price levels
+    const entryLow = price - atr * 0.3;
+    const entryHigh = price + atr * 0.1;
+    const bestEntry = signal === 'CALL' ? entryLow : entryHigh;
+    const stop05 = signal === 'CALL' ? price - atr * 0.5 : price + atr * 0.5;
+    const stop10 = signal === 'CALL' ? price - atr * 1.0 : price + atr * 1.0;
+    const target1 = signal === 'CALL' ? price + atr * 1.5 : price - atr * 1.5;
+    const target2 = signal === 'CALL' ? price + atr * 2.5 : price - atr * 2.5;
     
     // Calculate optimal strike
     const strike = Math.round(price / 5) * 5; // Round to nearest $5
     
+    // DTE explanation based on mode
+    const dteValue = tradingMode === 'INTRADAY' ? '0-1' : '3-7';
+    const dteExplain = tradingMode === 'INTRADAY' ? 
+        'Expires today/tomorrow. High risk, high reward. Quick profits but rapid time decay.' : 
+        'Expires in 3-7 days. Gives trade time to develop. Less time decay pressure.';
+    
     container.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+            <!-- Main Trade Card -->
             <div style="background: ${signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; padding: 15px; border-radius: 8px; border-left: 4px solid ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span style="font-weight: 700; font-size: 16px;">${currentSymbol}</span>
-                    <span style="background: ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600;">${signal}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: 700; font-size: 18px;">${currentSymbol}</span>
+                    <span style="background: ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'}; color: white; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 700;">${signal}</span>
                 </div>
-                <div style="font-size: 11px; color: var(--muted); line-height: 1.8;">
-                    <div><strong>Entry Zone:</strong> $${(price - atr * 0.5).toFixed(2)} - $${(price + atr * 0.5).toFixed(2)}</div>
-                    <div><strong>Stop Loss:</strong> <span style="color: var(--danger);">$${stop.toFixed(2)}</span></div>
-                    <div><strong>Target 1:</strong> <span style="color: var(--success);">$${target1.toFixed(2)}</span> (2R)</div>
-                    <div><strong>Target 2:</strong> <span style="color: var(--success);">$${target2.toFixed(2)}</span> (3R)</div>
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);">
-                        <strong>Optimal Strike:</strong> $${strike} ${signal}<br>
-                        <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
-                        <strong>Confidence:</strong> ${signals.confidence.toFixed(0)}%
+                
+                <div style="font-size: 12px; line-height: 2;">
+                    <div style="background: rgba(255,255,255,0.5); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
+                        <strong>🎯 Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;font-size:14px;">$${bestEntry.toFixed(2)}</span><br>
+                        <span style="font-size:10px;color:var(--muted);">Wait for pullback to this level for optimal risk/reward</span>
+                    </div>
+                    
+                    <div><strong>Entry Range:</strong> $${entryLow.toFixed(2)} - $${entryHigh.toFixed(2)}</div>
+                    
+                    <div style="margin-top: 6px;">
+                        <strong>⚠️ Stop Loss Options:</strong><br>
+                        <div style="padding-left: 10px; font-size: 11px;">
+                            • Tight (0.5 ATR): <span style="color: var(--danger);font-weight:600;">$${stop05.toFixed(2)}</span> 
+                            <span style="color:var(--muted);">(=$${(atr * 0.5).toFixed(2)} risk)</span><br>
+                            • Standard (1.0 ATR): <span style="color: var(--danger);font-weight:600;">$${stop10.toFixed(2)}</span>
+                            <span style="color:var(--muted);">(=$${atr.toFixed(2)} risk)</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 6px;">
+                        <strong>🎯 Profit Targets:</strong><br>
+                        <div style="padding-left: 10px; font-size: 11px;">
+                            • Target 1: <span style="color: var(--success);font-weight:600;">$${target1.toFixed(2)}</span> (take 50%)<br>
+                            • Target 2: <span style="color: var(--success);font-weight:600;">$${target2.toFixed(2)}</span> (close position)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
+                        <strong>📋 Options Setup:</strong><br>
+                        <div style="padding-left: 10px; font-size: 11px;">
+                            • Strike: <strong>$${strike} ${signal}</strong><br>
+                            • DTE: <strong>${dteValue} DTE</strong> (Days To Expiration)<br>
+                            <span style="color:var(--muted);font-size:10px;">💡 ${dteExplain}</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- Signal Breakdown Card -->
             <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
-                <h4 style="font-size: 12px; margin-bottom: 10px;">📊 Signal Confluence Summary</h4>
-                <div style="font-size: 11px; color: var(--muted); line-height: 1.8;">
-                    <div>• Agents: ${signals.agentConsensus.count}/4 agree on ${signals.agentConsensus.signal}</div>
-                    <div>• Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} ${signals.barCount.count > 0 ? 'bullish' : 'bearish'}</div>
-                    <div>• Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None'}</div>
-                    <div>• Gann: ${signals.gann.detail}</div>
-                    <div>• Fibonacci: ${signals.fibonacci.detail}</div>
-                    <div>• Volume: ${signals.volume.detail}</div>
+                <h4 style="font-size: 13px; margin-bottom: 12px;">📊 Why This Signal?</h4>
+                <div style="font-size: 11px; line-height: 1.9;">
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
+                        <span>🤖 Agent Consensus:</span>
+                        <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)' : 'var(--muted)'};">${signals.agentConsensus.count}/4 → ${signals.agentConsensus.signal}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
+                        <span>🔢 Bar Count:</span>
+                        <strong style="color: ${signals.barCount.count > 0 ? 'var(--success)' : signals.barCount.count < 0 ? 'var(--danger)' : 'var(--muted)'};">${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} bars</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
+                        <span>📐 Patterns:</span>
+                        <strong>${signals.patterns.found.length > 0 ? signals.patterns.found.slice(0,2).join(', ') : 'None'}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
+                        <span>🔮 Gann Cycle:</span>
+                        <strong>${signals.gann.score > 0 ? '🟢 Bullish' : signals.gann.score < 0 ? '🔴 Bearish' : '🟡 Neutral'}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
+                        <span>📐 Fibonacci:</span>
+                        <strong>${signals.fibonacci.level}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+                        <span>📊 Volume:</span>
+                        <strong>${signals.volume.score > 0 ? '🟢 Above Avg' : '🔴 Below Avg'}</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 10px; background: ${signals.confidence >= 70 ? 'rgba(16,185,129,0.15)' : signals.confidence >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)'}; border-radius: 6px; text-align: center;">
+                    <div style="font-size: 10px; color: var(--muted);">Overall Confidence</div>
+                    <div style="font-size: 24px; font-weight: 700; color: ${signals.confidence >= 70 ? 'var(--success)' : signals.confidence >= 50 ? 'var(--warning)' : 'var(--danger)'};">${signals.confidence.toFixed(0)}%</div>
                 </div>
             </div>
+        </div>
+        
+        <!-- ATR Explanation -->
+        <div style="background: rgba(59,130,246,0.05); padding: 12px; border-radius: 6px; margin-top: 15px; font-size: 11px; color: var(--muted);">
+            <strong>📖 Understanding ATR (Average True Range):</strong><br>
+            Current ATR = <strong>$${atr.toFixed(2)}</strong> — This means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
+            • <strong>0.5 ATR stop</strong> = $${(atr * 0.5).toFixed(2)} risk — Tighter stop, less room for normal fluctuation<br>
+            • <strong>1.0 ATR stop</strong> = $${atr.toFixed(2)} risk — Standard stop, accounts for normal daily volatility<br>
+            • Use tighter stops for day trades, wider stops for swing trades
         </div>
     `;
 }
@@ -5688,23 +5759,69 @@ function updateGannAnalysis(price) {
     const cycle90 = dayOfYear % 90;
     const cycle180 = dayOfYear % 180;
     
+    // Get cycle phases with explanations
+    let cycle30Phase, cycle30Action;
+    if (cycle30 < 7) {
+        cycle30Phase = 'Bottoming';
+        cycle30Action = '🟢 Look for reversal longs';
+    } else if (cycle30 > 23) {
+        cycle30Phase = 'Topping';
+        cycle30Action = '🔴 Caution, take profits';
+    } else if (cycle30 < 15) {
+        cycle30Phase = 'Rising';
+        cycle30Action = '🟢 Favor bullish plays';
+    } else {
+        cycle30Phase = 'Declining';
+        cycle30Action = '🟡 Patience, wait for bottom';
+    }
+    
+    let cycle90Phase, cycle90Action;
+    if (cycle90 < 20) {
+        cycle90Phase = 'Accumulation';
+        cycle90Action = '🟢 Smart money buying';
+    } else if (cycle90 > 70) {
+        cycle90Phase = 'Distribution';
+        cycle90Action = '🔴 Smart money selling';
+    } else {
+        cycle90Phase = 'Trend Phase';
+        cycle90Action = '🟢 Ride the momentum';
+    }
+    
     if (timeCyclesEl) {
         timeCyclesEl.innerHTML = `
-            • 30-day cycle: Day ${cycle30}/30 - ${cycle30 < 7 ? 'Bottoming' : cycle30 > 23 ? 'Topping' : 'Mid-cycle'}<br>
-            • 90-day cycle: Day ${cycle90}/90 - ${cycle90 < 20 ? 'Accumulation' : cycle90 > 70 ? 'Distribution' : 'Trend'}<br>
-            • 180-day cycle: Day ${cycle180}/180 - ${cycle180 < 45 ? 'Early' : cycle180 > 135 ? 'Late' : 'Mid'}<br>
-            • Next major date: ${getNextGannDate()}
+            <div style="margin-bottom: 8px;">
+                <strong>30-day cycle:</strong> Day ${cycle30}/30 - <span style="color:var(--primary);font-weight:600;">${cycle30Phase}</span><br>
+                <span style="font-size:10px;color:var(--muted);">${cycle30Action} | ${cycle30Phase === 'Bottoming' ? 'Market finding floor, reversal expected' : cycle30Phase === 'Topping' ? 'Market at peak, reversal risk high' : cycle30Phase === 'Rising' ? 'Upward momentum active' : 'Downward pressure, wait for cycle bottom'}</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>90-day cycle:</strong> Day ${cycle90}/90 - <span style="color:var(--primary);font-weight:600;">${cycle90Phase}</span><br>
+                <span style="font-size:10px;color:var(--muted);">${cycle90Action} | ${cycle90Phase === 'Accumulation' ? 'Institutional buying phase' : cycle90Phase === 'Distribution' ? 'Institutional selling phase' : 'Strong trending, follow direction'}</span>
+            </div>
+            <div>
+                <strong>Next Gann Date:</strong> ${getNextGannDate()}<br>
+                <span style="font-size:10px;color:var(--muted);">💡 Gann dates (equinoxes/solstices) often mark trend reversals</span>
+            </div>
         `;
     }
     
-    // Square of 9 calculations
+    // Square of 9 calculations with explanations
     if (sq9El) {
         const sq9Levels = calculateSquareOf9(price);
         sq9El.innerHTML = `
-            • Resistance 1: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r1.toFixed(2)}</span><br>
-            • Resistance 2: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r2.toFixed(2)}</span><br>
-            • Support 1: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s1.toFixed(2)}</span><br>
-            • Support 2: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s2.toFixed(2)}</span>
+            <div style="margin-bottom: 8px;">
+                <strong>Resistance Levels:</strong><br>
+                • R1: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r1.toFixed(2)}</span> (45° up)<br>
+                • R2: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r2.toFixed(2)}</span> (90° up)
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>Support Levels:</strong><br>
+                • S1: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s1.toFixed(2)}</span> (45° down)<br>
+                • S2: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s2.toFixed(2)}</span> (90° down)
+            </div>
+            <div style="font-size:10px;color:var(--muted);margin-top:8px;">
+                💡 <strong>What is Square of 9?</strong><br>
+                Gann's geometric calculator that finds natural price levels. Each 45° rotation = 1 step. Prices tend to find support/resistance at these harmonic levels.
+            </div>
         `;
     }
 }
@@ -5832,24 +5949,81 @@ function updateAISummary(signals, price) {
     const signalWord = signals.direction === 'BULLISH' ? 'bullish' : signals.direction === 'BEARISH' ? 'bearish' : 'neutral';
     const optionType = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'neutral';
     
+    // Calculate actual price levels
+    const entryLow = (price - atr * 0.3).toFixed(2);
+    const entryHigh = (price + atr * 0.1).toFixed(2);
+    const bestEntry = signals.direction === 'BULLISH' ? entryLow : entryHigh;
+    const stopLoss05ATR = signals.direction === 'BULLISH' ? (price - atr * 0.5).toFixed(2) : (price + atr * 0.5).toFixed(2);
+    const stopLoss10ATR = signals.direction === 'BULLISH' ? (price - atr * 1.0).toFixed(2) : (price + atr * 1.0).toFixed(2);
+    const target1 = signals.direction === 'BULLISH' ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
+    const target2 = signals.direction === 'BULLISH' ? (price + atr * 2.5).toFixed(2) : (price - atr * 2.5).toFixed(2);
+    
+    // Get Gann cycle explanations
+    const gannExplanations = getGannCycleExplanations();
+    
+    // Calculate optimal strike
+    const optimalStrike = Math.round(price / 5) * 5;
+    
     if (currentAnalysisMode === 'morning') {
         summaryEl.innerHTML = `
             <strong>☀️ Morning Analysis (${new Date().toLocaleDateString()}):</strong> 
             Market conditions favor ${signalWord} positions today. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}. 
             Master confluence score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} with ${signals.confidence.toFixed(0)}% confidence.
             <br><br>
-            <strong>🎯 Key Levels to Watch:</strong><br>
-            • Support: $${sq9.s1.toFixed(2)} (Sq9), $${(price - atr).toFixed(2)} (ATR)<br>
-            • Resistance: $${sq9.r1.toFixed(2)} (Sq9), $${(price + atr).toFixed(2)} (ATR)
-            <br><br>
-            <strong>📊 Recommended Strategy:</strong> 
-            ${signals.confidence >= 70 ? 
-                `Focus on ${optionType} spreads on ${currentSymbol}. Entry on pullbacks to support. ${tradingMode === 'INTRADAY' ? 'Use 0-1 DTE for quick moves.' : 'Use 3-7 DTE for swing positions.'}` :
-                'Wait for higher confidence setup. Consider smaller position sizes or sitting out until confluence improves.'
-            }
-            <br><br>
-            <strong>⚠️ Risk Management:</strong> 
-            Position size 1-2% per trade. Stop below $${sq9.s1.toFixed(2)}. Take profits at $${sq9.r1.toFixed(2)} or when signals deteriorate.
+            
+            <strong>🎯 Recommended Entry Zone:</strong><br>
+            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;">$${bestEntry}</span><br>
+                • <strong>Entry Range:</strong> $${entryLow} - $${entryHigh}<br>
+                • <strong>Why this range?</strong> Based on ATR (Average True Range = $${atr.toFixed(2)}), this zone offers optimal risk/reward
+            </div>
+            
+            <strong>📊 Recommended Strategy:</strong><br>
+            ${signals.confidence >= 70 ? `
+            <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Trade:</strong> ${optionType} spreads on ${currentSymbol}<br>
+                • <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
+                • <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
+                <div style="font-size:10px;color:var(--muted);margin-top:5px;">
+                    💡 <em>DTE = Days To Expiration. ${tradingMode === 'INTRADAY' ? 
+                        '0-1 DTE means options expiring today or tomorrow - high risk/reward for quick moves.' : 
+                        '3-7 DTE means 3-7 days until expiration - gives time for the move to develop with less theta decay.'}</em>
+                </div>
+            </div>` : `
+            <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                ⚠️ <strong>Wait for higher confidence setup.</strong> Current confluence is weak.<br>
+                Consider smaller position sizes or sitting out until signals align better.
+            </div>`}
+            
+            <strong>🔮 Gann Cycle Analysis:</strong><br>
+            <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                ${gannExplanations}
+            </div>
+            
+            <strong>⚠️ Stop Loss Levels (with explanations):</strong><br>
+            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Tight Stop (0.5 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss05ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 0.5 × $${atr.toFixed(2)} ATR = $${(atr * 0.5).toFixed(2)} from entry → Stop at $${stopLoss05ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">Use for: Day trades, high confidence setups, smaller position sizes</span><br><br>
+                • <strong>Standard Stop (1.0 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss10ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 1.0 × $${atr.toFixed(2)} ATR = $${atr.toFixed(2)} from entry → Stop at $${stopLoss10ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">Use for: Swing trades, giving room for normal volatility</span>
+            </div>
+            
+            <strong>🎯 Profit Targets:</strong><br>
+            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Target 1 (1.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
+                • <strong>Target 2 (2.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Take remaining position<br>
+                • <strong>Resistance (Sq9):</strong> $${sq9.r1.toFixed(2)} - Major resistance from Square of 9
+            </div>
+            
+            <strong>📖 Key Terms Explained:</strong><br>
+            <div style="font-size:10px;color:var(--muted);line-height:1.6;margin-top:5px;">
+                • <strong>ATR (Average True Range):</strong> Measures volatility. Current ATR = $${atr.toFixed(2)} means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
+                • <strong>DTE (Days To Expiration):</strong> How many days until your option expires. Lower DTE = higher risk but bigger potential gains.<br>
+                • <strong>Sq9 (Square of 9):</strong> Gann's calculator for finding natural support/resistance levels based on price geometry.<br>
+                • <strong>Confluence:</strong> Multiple signals agreeing on the same direction = higher probability trade.
+            </div>
         `;
     } else {
         summaryEl.innerHTML = `
@@ -5857,24 +6031,113 @@ function updateAISummary(signals, price) {
             Today's session ended with ${currentSymbol} at $${price.toFixed(2)}. 
             ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
             <br><br>
+            
             <strong>📋 Day Summary:</strong><br>
-            • Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
-            • Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
-            • Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive bars
-            <br><br>
-            <strong>📅 Tomorrow's Plan:</strong> 
-            ${signals.confidence >= 65 ?
-                `Continue ${signalWord} bias. Watch for gap ${signals.direction === 'BULLISH' ? 'up' : 'down'} at open. Key level: $${sq9.s1.toFixed(2)} support / $${sq9.r1.toFixed(2)} resistance.` :
-                'Low confidence setup for tomorrow. Wait for clearer signals before committing capital.'
-            }
-            <br><br>
-            <strong>🎯 Pre-Market Checklist:</strong><br>
-            • Check futures direction<br>
-            • Review overnight news/events<br>
-            • Confirm agent consensus at 9:35 AM<br>
-            • Size positions based on confidence level
+            <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
+                • Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
+                • Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
+                • Volume: ${signals.volume.detail}
+            </div>
+            
+            <strong>📅 Tomorrow's Trading Plan:</strong><br>
+            <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                ${signals.confidence >= 65 ? `
+                <strong>Bias:</strong> Continue ${signalWord} outlook<br>
+                <strong>Watch for:</strong> Gap ${signals.direction === 'BULLISH' ? 'up' : 'down'} at open<br>
+                <strong>Entry Zone:</strong> $${entryLow} - $${entryHigh}<br>
+                <strong>Best Entry:</strong> $${bestEntry} (wait for pullback to this level)<br>
+                <strong>Stop Loss:</strong> $${stopLoss10ATR} (1 ATR = $${atr.toFixed(2)} below entry)<br>
+                <strong>Target:</strong> $${target1} (first target), $${sq9.r1.toFixed(2)} (Sq9 resistance)
+                ` : `
+                ⚠️ <strong>Low confidence setup for tomorrow.</strong><br>
+                Wait for clearer signals before committing capital.<br>
+                Key levels to watch: Support $${sq9.s1.toFixed(2)} / Resistance $${sq9.r1.toFixed(2)}
+                `}
+            </div>
+            
+            <strong>🔮 Gann Cycle Outlook:</strong><br>
+            <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                ${gannExplanations}
+            </div>
+            
+            <strong>🎯 Pre-Market Checklist for Tomorrow:</strong><br>
+            <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 11px;">
+                ☐ Check overnight futures direction (ES, NQ)<br>
+                ☐ Review any earnings/economic news<br>
+                ☐ Confirm agent consensus at 9:35 AM<br>
+                ☐ Size positions based on confidence (${signals.confidence.toFixed(0)}%)<br>
+                ☐ Set alerts at $${sq9.s1.toFixed(2)} (support) and $${sq9.r1.toFixed(2)} (resistance)
+            </div>
         `;
     }
+}
+
+function getGannCycleExplanations() {
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    
+    const cycle30 = dayOfYear % 30;
+    const cycle90 = dayOfYear % 90;
+    const month = today.getMonth();
+    
+    let explanations = '';
+    
+    // 30-day cycle explanation
+    let cycle30Phase, cycle30Explain;
+    if (cycle30 < 7) {
+        cycle30Phase = 'Bottoming';
+        cycle30Explain = 'Market finding a floor - look for reversal signals to go long';
+    } else if (cycle30 > 23) {
+        cycle30Phase = 'Topping';
+        cycle30Explain = 'Market reaching peak - be cautious of reversals, consider taking profits';
+    } else if (cycle30 < 15) {
+        cycle30Phase = 'Rising';
+        cycle30Explain = 'Upward momentum phase - favor bullish positions';
+    } else {
+        cycle30Phase = 'Declining';
+        cycle30Explain = 'Downward momentum phase - favor bearish positions or wait';
+    }
+    
+    // 90-day cycle explanation
+    let cycle90Phase, cycle90Explain;
+    if (cycle90 < 20) {
+        cycle90Phase = 'Accumulation';
+        cycle90Explain = 'Smart money buying - early bullish opportunity';
+    } else if (cycle90 > 70) {
+        cycle90Phase = 'Distribution';
+        cycle90Explain = 'Smart money selling - late in cycle, increased risk';
+    } else {
+        cycle90Phase = 'Trend Phase';
+        cycle90Explain = 'Strong trending period - follow the momentum';
+    }
+    
+    // Seasonal explanation
+    let seasonal, seasonalExplain;
+    if (month >= 9) { // Oct-Dec
+        seasonal = 'Q4 Bullish';
+        seasonalExplain = 'Historically strongest quarter - Santa Rally, year-end positioning';
+    } else if (month >= 4 && month <= 6) {
+        seasonal = 'Summer Lull';
+        seasonalExplain = '"Sell in May" period - typically lower volatility and returns';
+    } else if (month >= 0 && month <= 2) {
+        seasonal = 'January Effect';
+        seasonalExplain = 'New year inflows, tax-loss harvesting reversals';
+    } else {
+        seasonal = 'Transitional';
+        seasonalExplain = 'Between major seasonal patterns';
+    }
+    
+    explanations = `
+        • <strong>30-Day Cycle:</strong> ${cycle30Phase} (Day ${cycle30}/30)<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${cycle30Explain}</span><br><br>
+        • <strong>90-Day Cycle:</strong> ${cycle90Phase} (Day ${cycle90}/90)<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${cycle90Explain}</span><br><br>
+        • <strong>Seasonal:</strong> ${seasonal}<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${seasonalExplain}</span>
+    `;
+    
+    return explanations;
 }
 
 function updatePlanDateTime() {
