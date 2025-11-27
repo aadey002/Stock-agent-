@@ -1833,7 +1833,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
-                        <select id="multiChartSymbol" onchange="updateAllMultiCharts()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
+                        <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
                             <option value="SPY">SPY</option>
                             <option value="QQQ">QQQ</option>
                             <option value="IWM">IWM</option>
@@ -2329,10 +2329,12 @@ function setTradingMode(mode) {
     document.getElementById('aiContextMode').textContent = mode.toUpperCase();
 }
 
-function changeSymbol() {
-    currentSymbol = document.getElementById('symbolSelect').value;
+async function changeSymbol() {
+    const newSymbol = document.getElementById('symbolSelect').value;
+    console.log(`🔄 Changing symbol from ${currentSymbol} to ${newSymbol}`);
+    currentSymbol = newSymbol;
     
-    // Update ALL symbol displays
+    // Update ALL symbol displays immediately
     document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
     document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
     document.getElementById('tickerSymbol').textContent = currentSymbol;
@@ -2340,9 +2342,19 @@ function changeSymbol() {
     document.getElementById('aiContextSymbol').textContent = currentSymbol;
     
     // Update Bar Count tab symbol display
-    document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
+    const barCountSymbol = document.getElementById('barCountCurrentSymbol');
+    if (barCountSymbol) barCountSymbol.textContent = currentSymbol;
     
-    loadAllData();
+    // Update Multi-Charts symbol selector to match
+    const multiChartSymbol = document.getElementById('multiChartSymbol');
+    if (multiChartSymbol) multiChartSymbol.value = currentSymbol;
+    
+    // Update Daily Analysis symbol display
+    const confluenceSymbol = document.getElementById('confluenceSymbol');
+    if (confluenceSymbol) confluenceSymbol.textContent = currentSymbol + ' Analysis';
+    
+    // Load the new symbol's data and update everything
+    await loadAllData();
 }
 
 function parseCSV(text) {
@@ -2360,19 +2372,68 @@ function parseCSV(text) {
 async function loadAllData() {
     document.getElementById('loadingOverlay').classList.add('active');
     try {
+        // Try to fetch the selected symbol's data
         let r = await fetch(`${currentSymbol}.csv?t=${Date.now()}`).catch(() => null);
-        if (!r?.ok) r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
+        let loadedSymbol = currentSymbol;
+        
+        // If the selected symbol's CSV doesn't exist, fall back to SPY
+        if (!r?.ok) {
+            console.warn(`${currentSymbol}.csv not found, falling back to SPY`);
+            r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
+            loadedSymbol = 'SPY';
+            
+            // Update the symbol selector back to SPY if data not available
+            const select = document.getElementById('symbolSelect');
+            if (select) select.value = 'SPY';
+            currentSymbol = 'SPY';
+            
+            // Show notification
+            showDataNotification(`${currentSymbol} data not available, showing SPY`);
+        }
+        
         if (r?.ok) {
             currentData = parseCSV(await r.text());
             if (currentData.length) {
+                console.log(`✅ Loaded ${currentData.length} bars for ${currentSymbol}`);
+                
+                // Update ALL dashboard components
                 updateDashboard();
                 updateBarCountAnalysis();
                 updateReversalStats();
                 updatePriceChart();
+                
+                // Update Daily Analysis if that tab is active
+                const analysisTab = document.getElementById('daily-analysis');
+                if (analysisTab && analysisTab.classList.contains('active')) {
+                    await loadRealAgentSignals();
+                    generateDailyReport();
+                }
+                
+                // Update Multi-Charts if that tab is active
+                const multiChartsTab = document.getElementById('multi-charts');
+                if (multiChartsTab && multiChartsTab.classList.contains('active')) {
+                    updateAllMultiCharts();
+                }
+                
+                // Update symbol displays
+                document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
+                document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+                document.getElementById('tickerSymbol').textContent = currentSymbol;
+                document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+                document.getElementById('confluenceSymbol').textContent = currentSymbol + ' Analysis';
             }
         }
     } catch (e) { console.error('Error:', e); }
     document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+function showDataNotification(message) {
+    // Create a temporary notification
+    const notif = document.createElement('div');
+    notif.style.cssText = 'position:fixed;top:80px;right:20px;background:var(--warning);color:white;padding:12px 20px;border-radius:8px;font-size:12px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+    notif.textContent = '⚠️ ' + message;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
 }
 
 async function loadAllSymbolsData() {
@@ -4771,6 +4832,20 @@ let multiChartInstances = {
 function initMultiCharts() {
     console.log('Initializing multi-charts...');
     updateAllMultiCharts();
+}
+
+// Sync Multi-Charts symbol with main symbol selector
+async function syncSymbolFromMultiCharts() {
+    const newSymbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
+    
+    // Update main symbol selector
+    const mainSelect = document.getElementById('symbolSelect');
+    if (mainSelect && mainSelect.value !== newSymbol) {
+        mainSelect.value = newSymbol;
+    }
+    
+    // Trigger full symbol change
+    await changeSymbol();
 }
 
 async function updateAllMultiCharts() {
