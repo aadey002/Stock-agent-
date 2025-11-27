@@ -3695,12 +3695,12 @@ Powered by Q5D Options Platform`);
 }
 
 // Initialize trade log when app loads
-function initializeApp() {
+async function initializeApp() {
     initTabs();
-    loadAllData();
-    loadAllSymbolsData();
+    await loadAllData();  // Wait for data to load
+    await loadAllSymbolsData();
     loadTrades(); // Load trade history
-    runHealthCheck(); // Run initial health check
+    runHealthCheck(); // Now run health check AFTER data is loaded
     setInterval(loadAllData, 60000);
     setInterval(runHealthCheck, 300000); // Health check every 5 minutes
 }
