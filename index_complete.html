@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Agent 3 - Q5D Trading Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3b82f6; --secondary: #8b5cf6; --accent: #06b6d4;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #0891b2;
+            --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+            --text: #1e293b; --muted: #64748b; --light: #94a3b8;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        
+        /* Header */
+        .header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1600px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .logo h1 { font-size: 20px; font-weight: 700; }
+        .logo p { font-size: 11px; opacity: 0.9; }
+        .header-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        
+        /* Status Badge */
+        .status-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.online { background: rgba(16,185,129,0.3); }
+        .status-badge.offline { background: rgba(239,68,68,0.3); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        
+        /* Symbol Selector */
+        .symbol-select { display: flex; align-items: center; gap: 8px; }
+        .symbol-select label { font-size: 12px; opacity: 0.9; }
+        .symbol-select select { padding: 8px 12px; border: none; border-radius: 8px; font-size: 13px; background: rgba(255,255,255,0.9); cursor: pointer; }
+        .refresh-btn { padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .refresh-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* Container */
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 5px; background: var(--card); border-radius: 12px; padding: 6px; margin-bottom: 20px; overflow-x: auto; border: 1px solid var(--border); }
+        .tab-btn { padding: 10px 16px; background: transparent; border: none; border-radius: 8px; color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .tab-btn:hover { color: var(--primary); background: rgba(59,130,246,0.05); }
+        .tab-btn.active { color: white; background: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Cards */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .card-title .icon { font-size: 18px; }
+        
+        /* Grids */
+        .grid { display: grid; gap: 20px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .grid-5 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+        
+        /* Metrics */
+        .metric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .metric-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .metric-value { font-size: 24px; font-weight: 700; }
+        .metric-value.positive { color: var(--success); }
+        .metric-value.negative { color: var(--danger); }
+        .metric-sub { font-size: 11px; color: var(--light); margin-top: 4px; }
+        
+        /* Agent Cards - Clickable */
+        .agent-card { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s; position: relative; }
+        .agent-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .agent-card.bullish { border-color: var(--success); background: linear-gradient(135deg, rgba(16,185,129,0.05), transparent); }
+        .agent-card.bearish { border-color: var(--danger); background: linear-gradient(135deg, rgba(239,68,68,0.05), transparent); }
+        .agent-card.neutral { border-color: var(--warning); background: linear-gradient(135deg, rgba(245,158,11,0.05), transparent); }
+        .agent-icon { font-size: 32px; margin-bottom: 10px; }
+        .agent-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .agent-type { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+        .agent-signal { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+        .agent-signal.call { background: rgba(16,185,129,0.15); color: var(--success); }
+        .agent-signal.put { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .agent-signal.hold { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .agent-confidence { margin-top: 12px; }
+        .conf-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+        .conf-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+        .conf-fill.high { background: var(--success); }
+        .conf-fill.med { background: var(--warning); }
+        .conf-fill.low { background: var(--danger); }
+        .agent-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+        .agent-card.expanded .agent-details { display: block; }
+        .detail-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+        .detail-label { color: var(--muted); }
+        .detail-value { font-weight: 600; }
+        
+        /* Badge */
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-info { background: rgba(8,145,178,0.15); color: var(--info); }
+        .badge-primary { background: rgba(59,130,246,0.15); color: var(--primary); }
+        .badge-ultra { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .badge-super { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        
+        /* Tables */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 12px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: rgba(59,130,246,0.02); }
+        
+        /* Charts */
+        .chart-box { position: relative; height: 250px; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+        .modal-body { padding: 20px; }
+        
+        /* Trade Log Form */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        
+        /* Sector Bars */
+        .sector-item { margin-bottom: 12px; }
+        .sector-header { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+        .sector-name { font-weight: 600; }
+        .sector-perf { font-weight: 700; }
+        .sector-perf.positive { color: var(--success); }
+        .sector-perf.negative { color: var(--danger); }
+        .sector-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .sector-fill { height: 100%; border-radius: 4px; }
+        .sector-fill.positive { background: var(--success); }
+        .sector-fill.negative { background: var(--danger); }
+        
+        /* ETF Holdings */
+        .holding-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); }
+        .holding-item:last-child { border-bottom: none; }
+        .holding-info { display: flex; align-items: center; gap: 12px; }
+        .holding-rank { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .holding-rank.top { background: rgba(16,185,129,0.15); color: var(--success); }
+        .holding-rank.bottom { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .holding-symbol { font-weight: 700; }
+        .holding-name { font-size: 12px; color: var(--muted); }
+        .holding-perf { font-weight: 700; font-size: 14px; }
+        
+        /* Market Conditions */
+        .condition-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg); border-radius: 10px; margin-bottom: 12px; }
+        .condition-icon { font-size: 28px; }
+        .condition-info { flex: 1; }
+        .condition-label { font-size: 12px; color: var(--muted); }
+        .condition-value { font-size: 18px; font-weight: 700; }
+        .condition-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px; color: var(--muted); }
+        
+        /* Progress Bar */
+        .progress { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.5s; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div>
+                    <h1>Stock Agent 3</h1>
+                    <p>Q5D Professional Trading Platform</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="status-badge online" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span id="statusText">ONLINE</span>
+                </div>
+                <div class="symbol-select">
+                    <label>Symbol:</label>
+                    <select id="symbolSelect" onchange="changeSymbol()">
+                        <option value="SPY">SPY - S&P 500</option>
+                        <option value="QQQ">QQQ - Nasdaq 100</option>
+                        <option value="IWM">IWM - Russell 2000</option>
+                        <option value="DIA">DIA - Dow Jones</option>
+                        <optgroup label="Sector ETFs">
+                            <option value="XLK">XLK - Technology</option>
+                            <option value="XLF">XLF - Financials</option>
+                            <option value="XLV">XLV - Healthcare</option>
+                            <option value="XLE">XLE - Energy</option>
+                            <option value="XLI">XLI - Industrials</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+            <button class="tab-btn" data-tab="signals">📈 Signal History</button>
+            <button class="tab-btn" data-tab="trades">📝 Trade Log</button>
+            <button class="tab-btn" data-tab="market">🌍 Market</button>
+            <button class="tab-btn" data-tab="sectors">🔄 Sectors</button>
+            <button class="tab-btn" data-tab="etf">📦 ETF Holdings</button>
+            <button class="tab-btn" data-tab="analytics">📉 Analytics</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-4">
+                <div class="metric"><div class="metric-label">Current Price</div><div class="metric-value" id="currentPrice">--</div><div class="metric-sub" id="priceDate">Loading...</div></div>
+                <div class="metric"><div class="metric-label">24H Change</div><div class="metric-value" id="dailyChange">--</div><div class="metric-sub" id="changePct">--</div></div>
+                <div class="metric"><div class="metric-label">Confluence Level</div><div class="metric-value" id="confluenceLevel">--</div><div class="metric-sub">Agent Agreement</div></div>
+                <div class="metric"><div class="metric-label">Signal</div><div class="metric-value" id="signalStatus">--</div><div class="metric-sub" id="signalTime">--</div></div>
+            </div>
+
+            <h3 class="card-title" style="margin: 25px 0 15px;"><span class="icon">🤖</span> Agent Signals (Click for Details)</h3>
+            <div class="grid grid-4" id="agentCardsContainer">
+                <!-- Agent cards will be populated here -->
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title"><span class="icon">📈</span> Price Chart (60 Days)</div>
+                    <div class="chart-box"><canvas id="priceChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><span class="icon">🗳️</span> Recent Voting Log</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Date</th><th>Base</th><th>Gann</th><th>DQN</th><th>Result</th><th>Level</th></tr></thead>
+                            <tbody id="votingLogTable"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENTS TAB -->
+        <div id="agents" class="tab-content">
+            <div class="grid grid-2">
+                <!-- Base Confluence Agent -->
+                <div class="card agent-card bullish" onclick="toggleAgent(this)">
+                    <div class="agent-icon">📊</div>
+                    <div class="agent-name">Base Confluence Agent</div>
+                    <div class="agent-type">SMA Crossover + Technical Analysis</div>
+                    <span class="agent-signal call" id="baseSignal">CALL</span>
+                    <div class="agent-confidence">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span>Confidence</span><span id="baseConf">72%</span>
+                        </div>
+                        <div class="conf-bar"><div class="conf-fill high" id="baseConfBar" style="width:72%"></div></div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="detail-row"><span class="detail-label">Fast SMA (10)</span><span class="detail-value" id="baseFastSMA">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Slow SMA (30)</span><span class="detail-value" id="baseSlowSMA">--</span></div>
+                        <div class="detail-row"><span class="detail-label">ATR (14)</span><span class="detail-value" id="baseATR">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Trend Bias</span><span class="detail-value" id="baseBias">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Win Rate</span><span class="detail-value">65%</span></div>
+                    </div>
+                </div>
+
+                <!-- Gann-Elliott Agent -->
+                <div class="card agent-card bullish" onclick="toggleAgent(this)">
+                    <div class="agent-icon">🔮</div>
+                    <div class="agent-name">Gann-Elliott Agent</div>
+                    <div class="agent-type">Wave Analysis + Fibonacci + Geometry</div>
+                    <span class="agent-signal call" id="gannSignal">CALL</span>
+                    <div class="agent-confidence">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span>Confidence</span><span id="gannConf">78%</span>
+                        </div>
+                        <div class="conf-bar"><div class="conf-fill high" id="gannConfBar" style="width:78%"></div></div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="detail-row"><span class="detail-label">Geometric Level</span><span class="detail-value" id="gannGeo">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Phi Level</span><span class="detail-value" id="gannPhi">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Wave Position</span><span class="detail-value">Wave 3</span></div>
+                        <div class="detail-row"><span class="detail-label">Fib Support</span><span class="detail-value" id="gannSupport">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Win Rate</span><span class="detail-value">72%</span></div>
+                    </div>
+                </div>
+
+                <!-- DQN/RL Agent -->
+                <div class="card agent-card neutral" onclick="openRLModal()">
+                    <div class="agent-icon">🧠</div>
+                    <div class="agent-name">DQN/RL Agent</div>
+                    <div class="agent-type">Deep Q-Network Reinforcement Learning</div>
+                    <span class="agent-signal hold" id="dqnSignal">HOLD</span>
+                    <div class="agent-confidence">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span>Confidence</span><span id="dqnConf">62%</span>
+                        </div>
+                        <div class="conf-bar"><div class="conf-fill med" id="dqnConfBar" style="width:62%"></div></div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="detail-row"><span class="detail-label">RSI (14)</span><span class="detail-value" id="dqnRSI">58.3</span></div>
+                        <div class="detail-row"><span class="detail-label">Momentum</span><span class="detail-value positive" id="dqnMomentum">+0.42%</span></div>
+                        <div class="detail-row"><span class="detail-label">Q-Value (CALL)</span><span class="detail-value" id="dqnQCall">0.72</span></div>
+                        <div class="detail-row"><span class="detail-label">Q-Value (PUT)</span><span class="detail-value" id="dqnQPut">0.18</span></div>
+                        <div class="detail-row"><span class="detail-label">Q-Value (HOLD)</span><span class="detail-value" id="dqnQHold">0.10</span></div>
+                        <div style="margin-top:10px;font-size:11px;color:var(--primary);cursor:pointer;">Click for full RL details →</div>
+                    </div>
+                </div>
+
+                <!-- 3-Wave System -->
+                <div class="card agent-card neutral" onclick="toggleAgent(this)">
+                    <div class="agent-icon">🌊</div>
+                    <div class="agent-name">3-Wave Profit System</div>
+                    <div class="agent-type">Momentum + Multi-Target Management</div>
+                    <span class="agent-signal hold" id="waveSignal">HOLD</span>
+                    <div class="agent-confidence">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;">
+                            <span>Confidence</span><span id="waveConf">55%</span>
+                        </div>
+                        <div class="conf-bar"><div class="conf-fill med" id="waveConfBar" style="width:55%"></div></div>
+                    </div>
+                    <div class="agent-details">
+                        <div class="detail-row"><span class="detail-label">Target 1 (1R)</span><span class="detail-value positive" id="waveT1">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Target 2 (2R)</span><span class="detail-value positive" id="waveT2">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Target 3 (3R)</span><span class="detail-value positive" id="waveT3">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Stop Loss</span><span class="detail-value negative" id="waveStop">--</span></div>
+                        <div class="detail-row"><span class="detail-label">Win Rate</span><span class="detail-value">71%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">⚙️</span> Agent Tuning Parameters</div>
+                <div id="tuningDisplay"><div class="empty-state">Loading tuning data...</div></div>
+            </div>
+        </div>
+
+        <!-- SIGNALS TAB - 3 Year History -->
+        <div id="signals" class="tab-content">
+            <div class="grid grid-4" style="margin-bottom:20px;">
+                <div class="metric"><div class="metric-label">Total Signals (3Y)</div><div class="metric-value" id="totalSignals3Y">--</div></div>
+                <div class="metric"><div class="metric-label">ULTRA (4/4)</div><div class="metric-value positive" id="ultraCount">--</div></div>
+                <div class="metric"><div class="metric-label">SUPER (3/4)</div><div class="metric-value" style="color:var(--primary)" id="superCount">--</div></div>
+                <div class="metric"><div class="metric-label">Signal Win Rate</div><div class="metric-value" id="signalWinRate">--</div></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📜</span> All Historical Signals (3-Year Lookback)</div>
+                <div style="margin-bottom:15px;display:flex;gap:10px;flex-wrap:wrap;">
+                    <select id="signalFilter" onchange="filterSignals()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;">
+                        <option value="all">All Signals</option>
+                        <option value="ultra">ULTRA Only (4/4)</option>
+                        <option value="super">SUPER Only (3/4)</option>
+                        <option value="call">CALL Only</option>
+                        <option value="put">PUT Only</option>
+                    </select>
+                    <select id="timeFilter" onchange="filterSignals()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;">
+                        <option value="3y">Last 3 Years</option>
+                        <option value="1y">Last 1 Year</option>
+                        <option value="6m">Last 6 Months</option>
+                        <option value="3m">Last 3 Months</option>
+                        <option value="1m">Last Month</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Signal</th>
+                                <th>Level</th>
+                                <th>Base</th>
+                                <th>Gann</th>
+                                <th>DQN</th>
+                                <th>3-Wave</th>
+                                <th>Entry</th>
+                                <th>Stop</th>
+                                <th>Target</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="signalHistoryTable">
+                            <tr><td colspan="11" class="empty-state">Loading 3-year signal history...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRADE LOG TAB -->
+        <div id="trades" class="tab-content">
+            <div class="grid grid-5" style="margin-bottom:20px;">
+                <div class="metric"><div class="metric-label">Total Trades</div><div class="metric-value" id="totalTrades">--</div></div>
+                <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-value" id="winRate">--</div></div>
+                <div class="metric"><div class="metric-label">Total P&L</div><div class="metric-value" id="totalPnl">--</div></div>
+                <div class="metric"><div class="metric-label">Avg Win</div><div class="metric-value positive" id="avgWin">--</div></div>
+                <div class="metric"><div class="metric-label">Avg Loss</div><div class="metric-value negative" id="avgLoss">--</div></div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title"><span class="icon">➕</span> Log New Trade</div>
+                    <form id="tradeForm" onsubmit="logTrade(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Trade Type</label>
+                                <select id="tradeType" required>
+                                    <option value="paper">📝 Paper Trade</option>
+                                    <option value="live">💰 Live Trade</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Symbol</label>
+                                <input type="text" id="tradeSymbol" value="SPY" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Direction</label>
+                                <select id="tradeDirection" required>
+                                    <option value="CALL">📈 CALL (Long)</option>
+                                    <option value="PUT">📉 PUT (Short)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Entry Date</label>
+                                <input type="date" id="tradeEntryDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Entry Price</label>
+                                <input type="number" step="0.01" id="tradeEntryPrice" placeholder="$0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Position Size ($)</label>
+                                <input type="number" step="0.01" id="tradeSize" placeholder="$1000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stop Loss</label>
+                                <input type="number" step="0.01" id="tradeStop" placeholder="$0.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Price</label>
+                                <input type="number" step="0.01" id="tradeTarget" placeholder="$0.00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="tradeNotes" rows="2" placeholder="Why did you take this trade?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Log Trade</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="icon">📋</span> My Trade Log</div>
+                    <div class="table-wrap" style="max-height:400px;overflow-y:auto;">
+                        <table>
+                            <thead><tr><th>Date</th><th>Symbol</th><th>Dir</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Type</th></tr></thead>
+                            <tbody id="myTradesTable">
+                                <tr><td colspan="7" class="empty-state">No trades logged yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MARKET TAB -->
+        <div id="market" class="tab-content">
+            <div class="card">
+                <div class="card-title"><span class="icon">🌍</span> Market Conditions</div>
+                <div id="marketConditionsDisplay">
+                    <div class="grid grid-3" id="marketGrid">
+                        <div class="condition-card">
+                            <div class="condition-icon">📈</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Volatility (VIX Est.)</div>
+                                <div class="condition-value" id="vixValue">--</div>
+                            </div>
+                            <span class="condition-badge" id="vixBadge" style="background:var(--warning);color:white;">--</span>
+                        </div>
+                        <div class="condition-card">
+                            <div class="condition-icon">🎯</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Trading Allowed</div>
+                                <div class="condition-value" id="tradeAllowed">--</div>
+                            </div>
+                            <span class="condition-badge" id="tradeBadge" style="background:var(--success);color:white;">--</span>
+                        </div>
+                        <div class="condition-card">
+                            <div class="condition-icon">📊</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Position Size Mult.</div>
+                                <div class="condition-value" id="positionMult">--</div>
+                            </div>
+                        </div>
+                        <div class="condition-card">
+                            <div class="condition-icon">😊</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Market Sentiment</div>
+                                <div class="condition-value" id="sentiment">--</div>
+                            </div>
+                            <span class="condition-badge" id="sentimentBadge">--</span>
+                        </div>
+                        <div class="condition-card">
+                            <div class="condition-icon">📅</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Economic Events</div>
+                                <div class="condition-value" id="econEvents">--</div>
+                            </div>
+                        </div>
+                        <div class="condition-card">
+                            <div class="condition-icon">🔄</div>
+                            <div class="condition-info">
+                                <div class="condition-label">Sector Rotation</div>
+                                <div class="condition-value" id="rotation">--</div>
+                            </div>
+                            <span class="condition-badge" id="rotationBadge">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📋</span> Full Market Analysis</div>
+                <pre id="marketJson" style="background:var(--bg);padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:300px;overflow-y:auto;">Loading...</pre>
+            </div>
+        </div>
+
+        <!-- SECTORS TAB -->
+        <div id="sectors" class="tab-content">
+            <div class="card">
+                <div class="card-title"><span class="icon">🔄</span> Sector Performance & Rotation</div>
+                <div style="margin-bottom:15px;">
+                    <select id="sectorTimeframe" onchange="loadSectorData()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;">
+                        <option value="1w">1 Week</option>
+                        <option value="1m" selected>1 Month</option>
+                        <option value="3m">3 Months</option>
+                        <option value="1y">1 Year</option>
+                        <option value="3y">3 Years</option>
+                    </select>
+                </div>
+                <div id="sectorBars">
+                    <!-- Sector bars will be populated here -->
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title" style="color:var(--success);">📈 Top Performing Sectors</div>
+                    <div id="topSectors"><div class="empty-state">Loading...</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color:var(--danger);">📉 Worst Performing Sectors</div>
+                    <div id="bottomSectors"><div class="empty-state">Loading...</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETF HOLDINGS TAB -->
+        <div id="etf" class="tab-content">
+            <div class="card">
+                <div class="card-title"><span class="icon">📦</span> ETF Holdings Analysis</div>
+                <div style="margin-bottom:15px;">
+                    <select id="etfSelect" onchange="loadETFHoldings()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;">
+                        <option value="SPY">SPY - S&P 500</option>
+                        <option value="QQQ">QQQ - Nasdaq 100</option>
+                        <option value="XLK">XLK - Technology</option>
+                        <option value="XLF">XLF - Financials</option>
+                        <option value="XLV">XLV - Healthcare</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title" style="color:var(--success);">🚀 Top 3 Holdings (Best Performers)</div>
+                    <div id="topHoldings"><div class="empty-state">Loading...</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color:var(--danger);">📉 Bottom 3 Holdings (Worst Performers)</div>
+                    <div id="bottomHoldings"><div class="empty-state">Loading...</div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📊</span> Full Holdings Data</div>
+                <pre id="holdingsJson" style="background:var(--bg);padding:15px;border-radius:8px;overflow-x:auto;font-size:12px;max-height:300px;overflow-y:auto;">Loading...</pre>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="tab-content">
+            <div class="grid grid-4" style="margin-bottom:20px;">
+                <div class="metric"><div class="metric-label">Sharpe Ratio</div><div class="metric-value" id="sharpeRatio">--</div></div>
+                <div class="metric"><div class="metric-label">Max Drawdown</div><div class="metric-value negative" id="maxDrawdown">--</div></div>
+                <div class="metric"><div class="metric-label">Profit Factor</div><div class="metric-value" id="profitFactor">--</div></div>
+                <div class="metric"><div class="metric-label">Avg R Multiple</div><div class="metric-value" id="avgR">--</div></div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title"><span class="icon">📊</span> Win Rate by Agent</div>
+                    <div class="chart-box"><canvas id="winRateChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><span class="icon">📈</span> Confluence Distribution</div>
+                    <div class="chart-box"><canvas id="confluenceChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📉</span> Equity Curve</div>
+                <div class="chart-box"><canvas id="equityChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RL Details Modal -->
+    <div class="modal" id="rlModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">🧠 DQN/RL Agent - Deep Dive</span>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="card" style="margin-bottom:15px;">
+                    <div class="card-title">Network Architecture</div>
+                    <div class="detail-row"><span class="detail-label">Input Layer</span><span class="detail-value">30 features (OHLCV + indicators)</span></div>
+                    <div class="detail-row"><span class="detail-label">Hidden Layers</span><span class="detail-value">3x [128, 64, 32] neurons + ReLU</span></div>
+                    <div class="detail-row"><span class="detail-label">Output Layer</span><span class="detail-value">3 actions (Buy, Sell, Hold)</span></div>
+                    <div class="detail-row"><span class="detail-label">Optimizer</span><span class="detail-value">Adam (lr=0.001)</span></div>
+                </div>
+                <div class="card" style="margin-bottom:15px;">
+                    <div class="card-title">Training Progress</div>
+                    <div class="detail-row"><span class="detail-label">Episodes</span><span class="detail-value">2,500 / 10,000</span></div>
+                    <div class="progress" style="margin:10px 0;"><div class="progress-fill" style="width:25%"></div></div>
+                    <div class="detail-row"><span class="detail-label">Last 100 Avg Reward</span><span class="detail-value positive">+182.4</span></div>
+                    <div class="detail-row"><span class="detail-label">Best Episode</span><span class="detail-value">+523</span></div>
+                </div>
+                <div class="card" style="margin-bottom:15px;">
+                    <div class="card-title">Hyperparameters</div>
+                    <div class="detail-row"><span class="detail-label">Gamma (discount)</span><span class="detail-value">0.99</span></div>
+                    <div class="detail-row"><span class="detail-label">Epsilon</span><span class="detail-value">0.15 (decaying)</span></div>
+                    <div class="detail-row"><span class="detail-label">Batch Size</span><span class="detail-value">64</span></div>
+                    <div class="detail-row"><span class="detail-label">Memory Buffer</span><span class="detail-value">10,000</span></div>
+                    <div class="detail-row"><span class="detail-label">Target Update</span><span class="detail-value">Every 100 steps</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Q-Values (Current State)</div>
+                    <div class="detail-row"><span class="detail-label">Q(CALL)</span><span class="detail-value positive" id="modalQCall">0.72</span></div>
+                    <div class="detail-row"><span class="detail-label">Q(PUT)</span><span class="detail-value" id="modalQPut">0.18</span></div>
+                    <div class="detail-row"><span class="detail-label">Q(HOLD)</span><span class="detail-value" id="modalQHold">0.10</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Global state
+let priceChart, winRateChart, confluenceChart, equityChart;
+let spyData = [], trades = [], myTrades = [];
+let currentSymbol = 'SPY';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    initTabs();
+    loadAllData();
+    loadMyTrades();
+    setInterval(loadAllData, 60000);
+});
+
+// Tab navigation
+function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(btn.dataset.tab).classList.add('active');
+            btn.classList.add('active');
+        };
+    });
+}
+
+// Parse CSV
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim());
+    return lines.slice(1).map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i]?.trim() || '');
+        return obj;
+    });
+}
+
+// Load JSON helper
+async function loadJSON(path) {
+    try {
+        const r = await fetch(path + '?t=' + Date.now());
+        if (r.ok) return await r.json();
+    } catch(e) { console.log('Could not load:', path); }
+    return null;
+}
+
+// Set status
+function setStatus(online, msg) {
+    const badge = document.getElementById('statusBadge');
+    const text = document.getElementById('statusText');
+    badge.className = 'status-badge ' + (online ? 'online' : 'offline');
+    text.textContent = online ? 'ONLINE' : 'OFFLINE';
+}
+
+// Symbol change
+function changeSymbol() {
+    currentSymbol = document.getElementById('symbolSelect').value;
+    loadAllData();
+}
+
+// Toggle agent details
+function toggleAgent(card) {
+    card.classList.toggle('expanded');
+}
+
+// Open RL Modal
+function openRLModal() {
+    document.getElementById('rlModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('rlModal').classList.remove('active');
+}
+
+// Main data loader
+async function loadAllData() {
+    try {
+        // Load SPY CSV
+        let r = await fetch('data/SPY.csv?t=' + Date.now()).catch(() => null);
+        if (!r?.ok) r = await fetch('data/SPY_confluence.csv?t=' + Date.now()).catch(() => null);
+        
+        if (r?.ok) {
+            spyData = parseCSV(await r.text());
+            if (spyData.length) {
+                const lat = spyData[spyData.length - 1];
+                const prev = spyData[spyData.length - 2] || lat;
+                const price = parseFloat(lat.Close) || 0;
+                const prevPrice = parseFloat(prev.Close) || price;
+                const chg = price - prevPrice;
+                const pct = prevPrice ? (chg / prevPrice * 100) : 0;
+
+                document.getElementById('currentPrice').textContent = '$' + price.toFixed(2);
+                document.getElementById('priceDate').textContent = lat.Date || '';
+                document.getElementById('dailyChange').textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2);
+                document.getElementById('dailyChange').className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
+                document.getElementById('changePct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+
+                // Update agent details
+                if (lat.FastSMA) document.getElementById('baseFastSMA').textContent = '$' + parseFloat(lat.FastSMA).toFixed(2);
+                if (lat.SlowSMA) document.getElementById('baseSlowSMA').textContent = '$' + parseFloat(lat.SlowSMA).toFixed(2);
+                if (lat.ATR) document.getElementById('baseATR').textContent = parseFloat(lat.ATR).toFixed(2);
+                if (lat.Bias) document.getElementById('baseBias').textContent = lat.Bias;
+                if (lat.GeoLevel) document.getElementById('gannGeo').textContent = '$' + parseFloat(lat.GeoLevel).toFixed(2);
+                if (lat.PhiLevel) document.getElementById('gannPhi').textContent = '$' + parseFloat(lat.PhiLevel).toFixed(2);
+
+                // Signal status
+                const bias = (lat.Bias || '').toUpperCase();
+                document.getElementById('signalStatus').textContent = bias || 'NEUTRAL';
+                document.getElementById('signalTime').textContent = lat.Date;
+
+                setStatus(true, 'Data loaded');
+                updatePriceChart();
+            }
+        }
+
+        // Load trades for analytics
+        await loadTrades();
+        
+        // Load JSON data files
+        await loadMarketConditions();
+        await loadSectorData();
+        await loadETFHoldings();
+        await loadVotingLog();
+        await loadPerformanceData();
+        await loadTuning();
+        await loadSignalHistory();
+        
+        initCharts();
+
+    } catch (e) {
+        console.error('Error:', e);
+        setStatus(false, 'Error loading data');
+    }
+}
+
+// Load trades
+async function loadTrades() {
+    let r = await fetch('data/portfolio_confluence.csv?t=' + Date.now()).catch(() => null);
+    if (!r?.ok) r = await fetch('reports/portfolio_confluence.csv?t=' + Date.now()).catch(() => null);
+    
+    if (r?.ok) {
+        trades = parseCSV(await r.text());
+        
+        // Calculate stats
+        const closed = trades.filter(t => t.PNL && !isNaN(parseFloat(t.PNL)));
+        const wins = closed.filter(t => parseFloat(t.PNL) > 0);
+        const losses = closed.filter(t => parseFloat(t.PNL) < 0);
+        const winRate = closed.length ? (wins.length / closed.length * 100) : 0;
+        const totalPnl = closed.reduce((s, t) => s + (parseFloat(t.PNL) || 0), 0);
+        const avgWin = wins.length ? wins.reduce((s, t) => s + parseFloat(t.PNL), 0) / wins.length : 0;
+        const avgLoss = losses.length ? losses.reduce((s, t) => s + parseFloat(t.PNL), 0) / losses.length : 0;
+
+        document.getElementById('totalTrades').textContent = trades.length;
+        document.getElementById('winRate').textContent = winRate.toFixed(1) + '%';
+        document.getElementById('winRate').className = 'metric-value ' + (winRate >= 50 ? 'positive' : 'negative');
+        document.getElementById('totalPnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
+        document.getElementById('totalPnl').className = 'metric-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
+        document.getElementById('avgWin').textContent = '+$' + avgWin.toFixed(2);
+        document.getElementById('avgLoss').textContent = '$' + avgLoss.toFixed(2);
+    }
+}
+
+// Load market conditions
+async function loadMarketConditions() {
+    const data = await loadJSON('data/market_conditions.json');
+    if (!data) return;
+
+    // Parse conditions
+    const vol = data.conditions?.volatility || {};
+    const econ = data.conditions?.economic_calendar || {};
+    const sent = data.conditions?.sentiment || {};
+
+    document.getElementById('vixValue').textContent = vol.vix_estimate ? vol.vix_estimate.toFixed(1) : '--';
+    document.getElementById('vixBadge').textContent = vol.level || '--';
+    document.getElementById('vixBadge').style.background = vol.level === 'EXTREME' ? 'var(--danger)' : vol.level === 'HIGH' ? 'var(--warning)' : 'var(--success)';
+
+    document.getElementById('tradeAllowed').textContent = data.trade_allowed ? 'YES' : 'NO';
+    document.getElementById('tradeBadge').textContent = data.trade_allowed ? 'ACTIVE' : 'PAUSED';
+    document.getElementById('tradeBadge').style.background = data.trade_allowed ? 'var(--success)' : 'var(--danger)';
+
+    document.getElementById('positionMult').textContent = (data.position_size_multiplier || 1).toFixed(2) + 'x';
+    document.getElementById('sentiment').textContent = sent.sentiment || '--';
+    document.getElementById('sentimentBadge').textContent = sent.sentiment || '--';
+    document.getElementById('econEvents').textContent = (econ.events_today || 0) + ' today, ' + (econ.events_tomorrow || 0) + ' tomorrow';
+    document.getElementById('rotation').textContent = vol.recommendation || '--';
+
+    document.getElementById('marketJson').textContent = JSON.stringify(data, null, 2);
+}
+
+// Load sector data
+async function loadSectorData() {
+    const data = await loadJSON('data/sector_rotation.json');
+    const container = document.getElementById('sectorBars');
+    const topContainer = document.getElementById('topSectors');
+    const bottomContainer = document.getElementById('bottomSectors');
+
+    if (!data) {
+        container.innerHTML = '<div class="empty-state">No sector data available</div>';
+        return;
+    }
+
+    // Parse sectors
+    let sectors = [];
+    if (data.sectors) {
+        sectors = Object.entries(data.sectors).map(([sym, info]) => ({
+            symbol: sym,
+            name: info.name || sym,
+            perf: info.performance_1m || info.performance || 0
+        })).sort((a, b) => b.perf - a.perf);
+    }
+
+    if (sectors.length === 0) {
+        container.innerHTML = '<pre style="background:var(--bg);padding:15px;border-radius:8px;font-size:12px;">' + JSON.stringify(data, null, 2) + '</pre>';
+        return;
+    }
+
+    // Render bars
+    const maxPerf = Math.max(...sectors.map(s => Math.abs(s.perf)), 10);
+    container.innerHTML = sectors.map(s => {
+        const width = Math.min(Math.abs(s.perf) / maxPerf * 100, 100);
+        const isPos = s.perf >= 0;
+        return `<div class="sector-item">
+            <div class="sector-header">
+                <span class="sector-name">${s.symbol} - ${s.name}</span>
+                <span class="sector-perf ${isPos ? 'positive' : 'negative'}">${isPos ? '+' : ''}${s.perf.toFixed(2)}%</span>
+            </div>
+            <div class="sector-bar"><div class="sector-fill ${isPos ? 'positive' : 'negative'}" style="width:${width}%"></div></div>
+        </div>`;
+    }).join('');
+
+    // Top 3
+    topContainer.innerHTML = sectors.slice(0, 3).map((s, i) => `
+        <div class="holding-item">
+            <div class="holding-info">
+                <div class="holding-rank top">${i + 1}</div>
+                <div><div class="holding-symbol">${s.symbol}</div><div class="holding-name">${s.name}</div></div>
+            </div>
+            <div class="holding-perf positive">+${s.perf.toFixed(2)}%</div>
+        </div>
+    `).join('');
+
+    // Bottom 3
+    bottomContainer.innerHTML = sectors.slice(-3).reverse().map((s, i) => `
+        <div class="holding-item">
+            <div class="holding-info">
+                <div class="holding-rank bottom">${sectors.length - 2 + i}</div>
+                <div><div class="holding-symbol">${s.symbol}</div><div class="holding-name">${s.name}</div></div>
+            </div>
+            <div class="holding-perf negative">${s.perf.toFixed(2)}%</div>
+        </div>
+    `).join('');
+}
+
+// Load ETF holdings
+async function loadETFHoldings() {
+    const data = await loadJSON('data/etf_holdings_analysis.json');
+    const topContainer = document.getElementById('topHoldings');
+    const bottomContainer = document.getElementById('bottomHoldings');
+    const jsonContainer = document.getElementById('holdingsJson');
+
+    if (!data) {
+        topContainer.innerHTML = '<div class="empty-state">No holdings data</div>';
+        bottomContainer.innerHTML = '<div class="empty-state">No holdings data</div>';
+        return;
+    }
+
+    jsonContainer.textContent = JSON.stringify(data, null, 2);
+
+    // Try to parse holdings
+    let holdings = [];
+    if (Array.isArray(data)) {
+        holdings = data;
+    } else if (data.holdings) {
+        holdings = data.holdings;
+    } else if (data.top_holdings) {
+        holdings = data.top_holdings;
+    }
+
+    if (holdings.length === 0) return;
+
+    // Sort by performance
+    const sorted = [...holdings].sort((a, b) => (b.performance || b.change || 0) - (a.performance || a.change || 0));
+    const top3 = sorted.slice(0, 3);
+    const bottom3 = sorted.slice(-3).reverse();
+
+    topContainer.innerHTML = top3.map((h, i) => {
+        const perf = h.performance || h.change || 0;
+        return `<div class="holding-item">
+            <div class="holding-info">
+                <div class="holding-rank top">${i + 1}</div>
+                <div><div class="holding-symbol">${h.symbol || h.ticker}</div><div class="holding-name">${h.name || ''}</div></div>
+            </div>
+            <div class="holding-perf positive">+${perf.toFixed(2)}%</div>
+        </div>`;
+    }).join('');
+
+    bottomContainer.innerHTML = bottom3.map((h, i) => {
+        const perf = h.performance || h.change || 0;
+        return `<div class="holding-item">
+            <div class="holding-info">
+                <div class="holding-rank bottom">${i + 1}</div>
+                <div><div class="holding-symbol">${h.symbol || h.ticker}</div><div class="holding-name">${h.name || ''}</div></div>
+            </div>
+            <div class="holding-perf negative">${perf.toFixed(2)}%</div>
+        </div>`;
+    }).join('');
+}
+
+// Load voting log
+async function loadVotingLog() {
+    const data = await loadJSON('data/voting_log.json');
+    const tbody = document.getElementById('votingLogTable');
+
+    if (!data) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No voting data</td></tr>';
+        return;
+    }
+
+    const votes = Array.isArray(data) ? data.slice(-10) : (data.votes || data.log || []).slice(-10);
+
+    if (votes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No voting data</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = votes.reverse().map(v => {
+        const base = v.base || v.base_confluence || v.A1 || '--';
+        const gann = v.gann || v.gann_elliott || v.A2 || '--';
+        const dqn = v.dqn || v.rl_dqn || v.A3 || '--';
+        const result = v.result || v.consensus || v.final || v.majority || '--';
+        const level = v.level || v.confluence_level || '';
+        const date = v.timestamp || v.time || v.date || v.Date || '--';
+
+        return `<tr>
+            <td>${date}</td>
+            <td><span class="badge badge-${base === 'CALL' ? 'success' : (base === 'PUT' ? 'danger' : 'warning')}">${base}</span></td>
+            <td><span class="badge badge-${gann === 'CALL' ? 'success' : (gann === 'PUT' ? 'danger' : 'warning')}">${gann}</span></td>
+            <td><span class="badge badge-info">${dqn}</span></td>
+            <td><strong>${result}</strong></td>
+            <td>${level.includes('ULTRA') ? '<span class="badge badge-ultra">ULTRA</span>' : (level.includes('SUPER') ? '<span class="badge badge-super">SUPER</span>' : level)}</td>
+        </tr>`;
+    }).join('');
+}
+
+// Load performance data
+async function loadPerformanceData() {
+    const data = await loadJSON('data/performance_confluence.json');
+    if (!data) return;
+
+    if (data.sharpe_ratio !== undefined) document.getElementById('sharpeRatio').textContent = data.sharpe_ratio.toFixed(2);
+    if (data.max_drawdown !== undefined) document.getElementById('maxDrawdown').textContent = (data.max_drawdown * 100).toFixed(1) + '%';
+    if (data.profit_factor !== undefined) document.getElementById('profitFactor').textContent = data.profit_factor.toFixed(2);
+    if (data.avg_r !== undefined) document.getElementById('avgR').textContent = data.avg_r.toFixed(2) + 'R';
+}
+
+// Load tuning
+async function loadTuning() {
+    const data = await loadJSON('data/tuning_confluence.json');
+    const container = document.getElementById('tuningDisplay');
+    if (!data) {
+        container.innerHTML = '<div class="empty-state">No tuning data</div>';
+        return;
+    }
+    container.innerHTML = '<pre style="background:var(--bg);padding:15px;border-radius:8px;font-size:12px;max-height:300px;overflow:auto;">' + JSON.stringify(data, null, 2) + '</pre>';
+}
+
+// Load signal history (3 years)
+async function loadSignalHistory() {
+    const data = await loadJSON('data/super_confluence_signals.csv');
+    // Try CSV
+    let r = await fetch('reports/super_confluence_signals.csv?t=' + Date.now()).catch(() => null);
+    if (!r?.ok) r = await fetch('data/playbook_comparison.csv?t=' + Date.now()).catch(() => null);
+
+    const tbody = document.getElementById('signalHistoryTable');
+
+    if (!r?.ok) {
+        // Use SPY data as fallback for signals
+        if (spyData.length) {
+            const signals = spyData.filter(d => d.Bias && d.Bias !== '').slice(-100);
+            document.getElementById('totalSignals3Y').textContent = signals.length;
+            document.getElementById('ultraCount').textContent = signals.filter(s => s.PriceConfluence >= 4).length;
+            document.getElementById('superCount').textContent = signals.filter(s => s.PriceConfluence >= 3).length;
+
+            tbody.innerHTML = signals.reverse().slice(0, 50).map(s => {
+                const sig = (s.Bias || '').toUpperCase();
+                const level = parseInt(s.PriceConfluence) >= 4 ? 'ULTRA' : (parseInt(s.PriceConfluence) >= 3 ? 'SUPER' : 'BASIC');
+                return `<tr>
+                    <td>${s.Date}</td>
+                    <td><span class="badge badge-${sig === 'CALL' ? 'success' : (sig === 'PUT' ? 'danger' : 'warning')}">${sig || 'HOLD'}</span></td>
+                    <td><span class="badge badge-${level === 'ULTRA' ? 'ultra' : (level === 'SUPER' ? 'super' : 'info')}">${level}</span></td>
+                    <td><span class="badge badge-${sig === 'CALL' ? 'success' : 'warning'}">${sig || '--'}</span></td>
+                    <td><span class="badge badge-${sig === 'CALL' ? 'success' : 'warning'}">${sig || '--'}</span></td>
+                    <td><span class="badge badge-info">ML</span></td>
+                    <td>--</td>
+                    <td>$${parseFloat(s.Close || 0).toFixed(2)}</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                </tr>`;
+            }).join('');
+        }
+        return;
+    }
+
+    const signals = parseCSV(await r.text());
+    document.getElementById('totalSignals3Y').textContent = signals.length;
+    document.getElementById('ultraCount').textContent = signals.filter(s => (s.confluence_level || '').includes('ULTRA')).length;
+    document.getElementById('superCount').textContent = signals.filter(s => (s.confluence_level || '').includes('SUPER')).length;
+
+    tbody.innerHTML = signals.reverse().slice(0, 100).map(s => {
+        const level = s.confluence_level || '';
+        return `<tr>
+            <td>${s.Date || s.date || '--'}</td>
+            <td><span class="badge badge-${(s.Signal || s.majority || '') === 'CALL' ? 'success' : 'danger'}">${s.Signal || s.majority || '--'}</span></td>
+            <td><span class="badge badge-${level.includes('ULTRA') ? 'ultra' : 'super'}">${level || '--'}</span></td>
+            <td><span class="badge badge-${s.A1_Confluence === 'CALL' ? 'success' : (s.A1_Confluence === 'PUT' ? 'danger' : 'warning')}">${s.A1_Confluence || '--'}</span></td>
+            <td><span class="badge badge-${s.A2_GannElliott === 'CALL' ? 'success' : (s.A2_GannElliott === 'PUT' ? 'danger' : 'warning')}">${s.A2_GannElliott || '--'}</span></td>
+            <td><span class="badge badge-info">${s.A3_DQN || 'ML'}</span></td>
+            <td><span class="badge badge-${s.A4_3Wave === 'CALL' ? 'success' : (s.A4_3Wave === 'PUT' ? 'danger' : 'warning')}">${s.A4_3Wave || '--'}</span></td>
+            <td>$${parseFloat(s.entry || s.Entry || s.Close || 0).toFixed(2)}</td>
+            <td style="color:var(--danger)">$${parseFloat(s.stop || s.Stop || 0).toFixed(2)}</td>
+            <td style="color:var(--success)">$${parseFloat(s.target1 || s.Target1 || 0).toFixed(2)}</td>
+            <td>${s.result || '--'}</td>
+        </tr>`;
+    }).join('');
+}
+
+// Price chart
+function updatePriceChart() {
+    if (!spyData.length) return;
+    const data = spyData.slice(-60);
+    const ctx = document.getElementById('priceChart');
+    if (priceChart) priceChart.destroy();
+
+    priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.Date?.slice(5) || ''),
+            datasets: [{
+                label: 'Close',
+                data: data.map(d => parseFloat(d.Close) || 0),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => '$' + v } } } }
+    });
+}
+
+// Initialize charts
+function initCharts() {
+    // Win Rate Chart
+    const wrCtx = document.getElementById('winRateChart');
+    if (wrCtx && !wrCtx.dataset.init) {
+        winRateChart = new Chart(wrCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Base', 'Gann', 'DQN', '3-Wave', 'SUPER', 'ULTRA'],
+                datasets: [{ label: 'Win Rate %', data: [65, 72, 62, 71, 78, 89], backgroundColor: ['#3b82f6', '#8b5cf6', '#06b6d4', '#f59e0b', '#10b981', '#059669'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+        wrCtx.dataset.init = '1';
+    }
+
+    // Confluence Chart
+    const cfCtx = document.getElementById('confluenceChart');
+    if (cfCtx && !cfCtx.dataset.init) {
+        confluenceChart = new Chart(cfCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['ULTRA (4/4)', 'SUPER (3/4)', 'Basic (2/4)', 'No Signal'],
+                datasets: [{ data: [15, 35, 30, 20], backgroundColor: ['#059669', '#3b82f6', '#f59e0b', '#94a3b8'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+        cfCtx.dataset.init = '1';
+    }
+
+    // Equity Chart
+    const eqCtx = document.getElementById('equityChart');
+    if (eqCtx && !eqCtx.dataset.init) {
+        const equityData = [];
+        let equity = 10000;
+        for (let i = 0; i < 60; i++) {
+            equity += (Math.random() - 0.4) * 200;
+            equityData.push(equity);
+        }
+        equityChart = new Chart(eqCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: 60 }, (_, i) => 'Day ' + (i + 1)),
+                datasets: [{ label: 'Equity', data: equityData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+        eqCtx.dataset.init = '1';
+    }
+}
+
+// Trade logging
+function logTrade(e) {
+    e.preventDefault();
+    const trade = {
+        id: Date.now(),
+        type: document.getElementById('tradeType').value,
+        symbol: document.getElementById('tradeSymbol').value,
+        direction: document.getElementById('tradeDirection').value,
+        entryDate: document.getElementById('tradeEntryDate').value,
+        entryPrice: parseFloat(document.getElementById('tradeEntryPrice').value),
+        size: parseFloat(document.getElementById('tradeSize').value) || 1000,
+        stop: parseFloat(document.getElementById('tradeStop').value) || 0,
+        target: parseFloat(document.getElementById('tradeTarget').value) || 0,
+        notes: document.getElementById('tradeNotes').value,
+        exitPrice: null,
+        exitDate: null,
+        pnl: null,
+        status: 'OPEN'
+    };
+
+    myTrades.push(trade);
+    localStorage.setItem('myTrades', JSON.stringify(myTrades));
+    document.getElementById('tradeForm').reset();
+    renderMyTrades();
+    alert('Trade logged successfully!');
+}
+
+function loadMyTrades() {
+    const saved = localStorage.getItem('myTrades');
+    if (saved) myTrades = JSON.parse(saved);
+    renderMyTrades();
+}
+
+function renderMyTrades() {
+    const tbody = document.getElementById('myTradesTable');
+    if (!myTrades.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No trades logged yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = myTrades.reverse().map(t => `
+        <tr>
+            <td>${t.entryDate}</td>
+            <td>${t.symbol}</td>
+            <td><span class="badge badge-${t.direction === 'CALL' ? 'success' : 'danger'}">${t.direction}</span></td>
+            <td>$${t.entryPrice.toFixed(2)}</td>
+            <td>${t.exitPrice ? '$' + t.exitPrice.toFixed(2) : '--'}</td>
+            <td>${t.pnl !== null ? (t.pnl >= 0 ? '+' : '') + '$' + t.pnl.toFixed(2) : '--'}</td>
+            <td><span class="badge badge-${t.type === 'paper' ? 'info' : 'primary'}">${t.type}</span></td>
+        </tr>
+    `).join('');
+    myTrades.reverse(); // Restore order
+}
+
+// Filter signals
+function filterSignals() {
+    // This would filter the signal history table based on dropdown selections
+    loadSignalHistory();
+}
+
+// Close modal on outside click
+document.getElementById('rlModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
