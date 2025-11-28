@@ -5109,7 +5109,7 @@ function renderPointAndFigureChart(panelType, data, canvas) {
     ctx.fillRect(0, 0, width, height);
     
     const avgPrice = data.reduce((sum, bar) => sum + bar.close, 0) / data.length;
-    const boxSize = avgPrice * 0.01;
+    const boxSize = avgPrice * (panelType === 'position' ? 0.05 : panelType === 'swing' ? 0.02 : 0.01);
     const columns = generatePFCols(data, boxSize, 3);
     
     if (columns.length === 0) return;
