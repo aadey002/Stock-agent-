@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
 DATA_DIR = 'data'
 
-def fetch_symbol(symbol, days=500):
+def fetch_symbol(symbol, days=1095):
     """Fetch historical data for a symbol using yfinance"""
     print(f"Fetching {symbol}...")
     try:

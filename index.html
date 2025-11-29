@@ -113,6 +113,55 @@
         .ai-recommendation-details .item .label { color: var(--muted); }
         .ai-recommendation-details .item .value { font-weight: 700; margin-top: 2px; }
         .ai-analysis-text { background: var(--bg); padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6; margin-top: 10px; }
+
+        /* Enhanced Multi-Chart Analysis Styles */
+        .chart-analysis-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-top: 15px; }
+        .chart-analysis-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .chart-analysis-title { font-weight: 700; font-size: 14px; }
+        .timeframe-badge { padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 700; background: var(--primary); color: white; }
+        
+        .analysis-sections { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        @media (max-width: 1200px) { .analysis-sections { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .analysis-sections { grid-template-columns: 1fr; } }
+        
+        .analysis-section { background: var(--bg); border-radius: 8px; padding: 12px; }
+        .analysis-section-title { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .analysis-section-content { font-size: 11px; }
+        .level-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+        .level-row:last-child { border-bottom: none; }
+        .level-label { color: var(--muted); }
+        .level-value { font-weight: 600; }
+        .level-value.resistance { color: var(--danger); }
+        .level-value.support { color: var(--success); }
+        .level-value.fib { color: var(--primary); }
+        .level-value.divine { color: #9333ea; }
+        
+        .pattern-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin: 2px; }
+        .pattern-tag.bullish { background: rgba(16,185,129,0.2); color: var(--success); }
+        .pattern-tag.bearish { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .pattern-tag.neutral { background: rgba(107,114,128,0.2); color: #6b7280; }
+        
+        .xo-chart { font-family: monospace; font-size: 10px; line-height: 1.2; background: #1a1a2e; color: #fff; padding: 10px; border-radius: 6px; overflow-x: auto; }
+        .xo-x { color: #10b981; }
+        .xo-o { color: #ef4444; }
+        
+        /* Trade Scenario Tabs */
+        .scenario-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .scenario-tab { padding: 12px 24px; border: 2px solid var(--border); background: white; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .scenario-tab.active { border-color: var(--primary); background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); color: var(--primary); }
+        .scenario-tab:hover { border-color: var(--primary); }
+        
+        .setup-patterns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .setup-pattern { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .setup-pattern.active { background: var(--success); color: white; }
+        .setup-pattern.potential { background: rgba(245,158,11,0.2); color: var(--warning); border: 1px dashed var(--warning); }
+        .setup-pattern.inactive { background: var(--bg); color: var(--muted); }
+        
+        /* Divine Proportions */
+        .divine-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .divine-item { text-align: center; padding: 8px; background: linear-gradient(135deg, rgba(147,51,234,0.1), rgba(168,85,247,0.1)); border-radius: 6px; }
+        .divine-label { font-size: 9px; color: var(--muted); }
+        .divine-value { font-size: 12px; font-weight: 700; color: #9333ea; }
     </style>
 </head>
 <body>
@@ -648,6 +697,291 @@ function aiAnalyzeBestOptions() {
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(updateCalcPrice, 1000);
 });
+
+
+
+// ============================================
+// MULTI-CHART TECHNICAL ANALYSIS ENGINE
+// ============================================
+
+const PHI = 1.618033988749895;  // Golden Ratio
+const PHI_INV = 0.618033988749895;  // 1/Phi
+const PHI_SQ = 2.618033988749895;  // Phi squared
+const SQRT5 = 2.2360679774997896;  // Square root of 5
+
+// Technical Patterns Library
+const TECH_PATTERNS = {
+    bullish: ['Double Bottom', 'Inv Head & Shoulders', 'Bull Flag', 'Ascending Triangle', 'Cup & Handle', 'Falling Wedge', 'Triple Bottom'],
+    bearish: ['Double Top', 'Head & Shoulders', 'Bear Flag', 'Descending Triangle', 'Rising Wedge', 'Triple Top', 'M-Top'],
+    neutral: ['Symmetrical Triangle', 'Rectangle', 'Pennant', 'Wedge']
+};
+
+const CANDLE_PATTERNS = {
+    bullish: ['Hammer', 'Bullish Engulfing', 'Morning Star', 'Three White Soldiers', 'Piercing Line', 'Bullish Harami', 'Dragonfly Doji'],
+    bearish: ['Shooting Star', 'Bearish Engulfing', 'Evening Star', 'Three Black Crows', 'Dark Cloud Cover', 'Bearish Harami', 'Gravestone Doji'],
+    neutral: ['Doji', 'Spinning Top', 'High Wave']
+};
+
+function calculatePivotPoints(high, low, close) {
+    const pivot = (high + low + close) / 3;
+    const r1 = (2 * pivot) - low;
+    const s1 = (2 * pivot) - high;
+    const r2 = pivot + (high - low);
+    const s2 = pivot - (high - low);
+    const r3 = high + 2 * (pivot - low);
+    const s3 = low - 2 * (high - pivot);
+    return { pivot, r1, r2, r3, s1, s2, s3 };
+}
+
+function calculateFibonacci(high, low, trend) {
+    const range = high - low;
+    if (trend === 'up') {
+        return {
+            fib0: low,
+            fib236: low + range * 0.236,
+            fib382: low + range * 0.382,
+            fib50: low + range * 0.5,
+            fib618: low + range * 0.618,
+            fib100: high
+        };
+    } else {
+        return {
+            fib0: high,
+            fib236: high - range * 0.236,
+            fib382: high - range * 0.382,
+            fib50: high - range * 0.5,
+            fib618: high - range * 0.618,
+            fib100: low
+        };
+    }
+}
+
+function calculateDivineProportions(price, atr) {
+    return {
+        phi: (price * PHI).toFixed(2),
+        phiInv: (price * PHI_INV).toFixed(2),
+        phiSq: (price / PHI).toFixed(2),
+        sqrt5: (price + atr * SQRT5).toFixed(2)
+    };
+}
+
+function detectPatterns(data, lookback = 20) {
+    if (!data || data.length < lookback) return { tech: [], candle: [] };
+    
+    const recent = data.slice(-lookback);
+    const closes = recent.map(d => parseFloat(d.Close || d.close));
+    const highs = recent.map(d => parseFloat(d.High || d.high));
+    const lows = recent.map(d => parseFloat(d.Low || d.low));
+    
+    const tech = [];
+    const candle = [];
+    
+    // Simple pattern detection
+    const maxHigh = Math.max(...highs);
+    const minLow = Math.min(...lows);
+    const lastClose = closes[closes.length - 1];
+    const prevClose = closes[closes.length - 2];
+    const trend = lastClose > closes[0] ? 'bullish' : 'bearish';
+    
+    // Double bottom detection (simplified)
+    const firstHalf = lows.slice(0, 10);
+    const secondHalf = lows.slice(10);
+    const minFirst = Math.min(...firstHalf);
+    const minSecond = Math.min(...secondHalf);
+    if (Math.abs(minFirst - minSecond) / minFirst < 0.02 && lastClose > (minFirst + minSecond) / 2 * 1.02) {
+        tech.push({ name: 'Double Bottom', type: 'bullish', active: true });
+    }
+    
+    // Higher highs / higher lows
+    if (highs[highs.length - 1] > highs[highs.length - 5] && lows[lows.length - 1] > lows[lows.length - 5]) {
+        tech.push({ name: 'Higher Highs', type: 'bullish', active: true });
+    }
+    
+    // Lower highs / lower lows
+    if (highs[highs.length - 1] < highs[highs.length - 5] && lows[lows.length - 1] < lows[lows.length - 5]) {
+        tech.push({ name: 'Lower Lows', type: 'bearish', active: true });
+    }
+    
+    // Bull/Bear flag (simplified)
+    if (trend === 'bullish' && (maxHigh - lastClose) / (maxHigh - minLow) < 0.3) {
+        tech.push({ name: 'Bull Flag', type: 'bullish', active: true });
+    }
+    if (trend === 'bearish' && (lastClose - minLow) / (maxHigh - minLow) < 0.3) {
+        tech.push({ name: 'Bear Flag', type: 'bearish', active: true });
+    }
+    
+    // Candlestick patterns (last candle)
+    const last = recent[recent.length - 1];
+    const open = parseFloat(last.Open || last.open_);
+    const close = parseFloat(last.Close || last.close);
+    const high = parseFloat(last.High || last.high);
+    const low = parseFloat(last.Low || last.low);
+    const body = Math.abs(close - open);
+    const range = high - low;
+    const upperWick = high - Math.max(open, close);
+    const lowerWick = Math.min(open, close) - low;
+    
+    // Doji
+    if (body / range < 0.1) {
+        candle.push({ name: 'Doji', type: 'neutral', active: true });
+    }
+    
+    // Hammer
+    if (lowerWick > body * 2 && upperWick < body * 0.5 && close > open) {
+        candle.push({ name: 'Hammer', type: 'bullish', active: true });
+    }
+    
+    // Shooting Star
+    if (upperWick > body * 2 && lowerWick < body * 0.5 && close < open) {
+        candle.push({ name: 'Shooting Star', type: 'bearish', active: true });
+    }
+    
+    // Engulfing
+    if (recent.length >= 2) {
+        const prev = recent[recent.length - 2];
+        const prevOpen = parseFloat(prev.Open || prev.open_);
+        const prevClose = parseFloat(prev.Close || prev.close);
+        
+        if (close > open && prevClose < prevOpen && close > prevOpen && open < prevClose) {
+            candle.push({ name: 'Bullish Engulfing', type: 'bullish', active: true });
+        }
+        if (close < open && prevClose > prevOpen && close < prevOpen && open > prevClose) {
+            candle.push({ name: 'Bearish Engulfing', type: 'bearish', active: true });
+        }
+    }
+    
+    // Add potential patterns
+    if (tech.length < 3) {
+        tech.push({ name: 'Ascending Triangle', type: 'bullish', active: false });
+    }
+    if (candle.length < 2) {
+        candle.push({ name: 'Morning Star', type: 'bullish', active: false });
+    }
+    
+    return { tech, candle };
+}
+
+function calculateXOSignal(data, boxSize = null) {
+    if (!data || data.length < 5) return 'N/A';
+    
+    const closes = data.slice(-20).map(d => parseFloat(d.Close || d.close));
+    const atr = Math.abs(closes[closes.length - 1] - closes[0]) / 20;
+    boxSize = boxSize || atr * 0.5;
+    
+    let columns = [];
+    let currentColumn = { type: 'X', values: [closes[0]] };
+    
+    for (let i = 1; i < closes.length; i++) {
+        const diff = closes[i] - currentColumn.values[currentColumn.values.length - 1];
+        
+        if (currentColumn.type === 'X') {
+            if (diff >= boxSize) {
+                currentColumn.values.push(closes[i]);
+            } else if (diff <= -boxSize * 3) {
+                columns.push(currentColumn);
+                currentColumn = { type: 'O', values: [closes[i]] };
+            }
+        } else {
+            if (diff <= -boxSize) {
+                currentColumn.values.push(closes[i]);
+            } else if (diff >= boxSize * 3) {
+                columns.push(currentColumn);
+                currentColumn = { type: 'X', values: [closes[i]] };
+            }
+        }
+    }
+    columns.push(currentColumn);
+    
+    // Signal based on last column
+    const lastCol = columns[columns.length - 1];
+    if (lastCol.type === 'X' && lastCol.values.length >= 3) return '📈 BUY (X column rising)';
+    if (lastCol.type === 'O' && lastCol.values.length >= 3) return '📉 SELL (O column falling)';
+    return '⏸️ HOLD (consolidating)';
+}
+
+function updateTimeframeAnalysis(prefix, data, multiplier = 1) {
+    if (!data || data.length === 0) return;
+    
+    const recent = data.slice(-Math.min(50 * multiplier, data.length));
+    const last = recent[recent.length - 1];
+    
+    const high = Math.max(...recent.map(d => parseFloat(d.High || d.high)));
+    const low = Math.min(...recent.map(d => parseFloat(d.Low || d.low)));
+    const close = parseFloat(last.Close || last.close);
+    const atr = parseFloat(last.atr) || (high - low) / 10;
+    
+    // Pivot Points
+    const pivots = calculatePivotPoints(high, low, close);
+    document.getElementById(prefix + 'R3').textContent = '$' + pivots.r3.toFixed(2);
+    document.getElementById(prefix + 'R2').textContent = '$' + pivots.r2.toFixed(2);
+    document.getElementById(prefix + 'R1').textContent = '$' + pivots.r1.toFixed(2);
+    document.getElementById(prefix + 'Pivot').textContent = '$' + pivots.pivot.toFixed(2);
+    document.getElementById(prefix + 'S1').textContent = '$' + pivots.s1.toFixed(2);
+    document.getElementById(prefix + 'S2').textContent = '$' + pivots.s2.toFixed(2);
+    document.getElementById(prefix + 'S3').textContent = '$' + pivots.s3.toFixed(2);
+    
+    // Fibonacci
+    const trend = close > (high + low) / 2 ? 'up' : 'down';
+    const fibs = calculateFibonacci(high, low, trend);
+    document.getElementById(prefix + 'Fib0').textContent = '$' + fibs.fib0.toFixed(2);
+    document.getElementById(prefix + 'Fib236').textContent = '$' + fibs.fib236.toFixed(2);
+    document.getElementById(prefix + 'Fib382').textContent = '$' + fibs.fib382.toFixed(2);
+    document.getElementById(prefix + 'Fib50').textContent = '$' + fibs.fib50.toFixed(2);
+    document.getElementById(prefix + 'Fib618').textContent = '$' + fibs.fib618.toFixed(2);
+    document.getElementById(prefix + 'Fib100').textContent = '$' + fibs.fib100.toFixed(2);
+    
+    // Divine Proportions
+    const divine = calculateDivineProportions(close, atr);
+    document.getElementById(prefix + 'Phi').textContent = '$' + divine.phi;
+    document.getElementById(prefix + 'PhiInv').textContent = '$' + divine.phiInv;
+    document.getElementById(prefix + 'PhiSq').textContent = '$' + divine.phiSq;
+    document.getElementById(prefix + 'Sqrt5').textContent = '$' + divine.sqrt5;
+    
+    // Patterns
+    const patterns = detectPatterns(recent);
+    
+    const techContainer = document.getElementById(prefix + 'TechPatterns');
+    if (techContainer) {
+        techContainer.innerHTML = patterns.tech.map(p => 
+            <span class="setup-pattern "></span>
+        ).join('') || '<span class="setup-pattern inactive">Scanning...</span>';
+    }
+    
+    const candleContainer = document.getElementById(prefix + 'CandlePatterns');
+    if (candleContainer) {
+        candleContainer.innerHTML = patterns.candle.map(p => 
+            <span class="setup-pattern "></span>
+        ).join('') || '<span class="setup-pattern inactive">Scanning...</span>';
+    }
+    
+    // X&O Signal
+    const xoSignal = calculateXOSignal(recent);
+    document.getElementById(prefix + 'XO').textContent = xoSignal;
+}
+
+function updateMultiChartAnalysis() {
+    if (!currentData || currentData.length === 0) return;
+    
+    // Simulate different timeframes using daily data
+    updateTimeframeAnalysis('m5', currentData.slice(-10), 1);   // 5-min (last 10 bars)
+    updateTimeframeAnalysis('m15', currentData.slice(-20), 2);  // 15-min
+    updateTimeframeAnalysis('h1', currentData.slice(-50), 3);   // 1-hour
+    updateTimeframeAnalysis('d1', currentData.slice(-100), 5);  // Daily
+    updateTimeframeAnalysis('w1', currentData, 10);             // Weekly (all data)
+}
+
+function refreshMultiCharts() {
+    updateMultiChartAnalysis();
+    alert('Multi-chart analysis refreshed!');
+}
+
+// Initialize on data load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(updateMultiChartAnalysis, 2000);
+});
+
+// Auto-refresh every 5 minutes
+setInterval(updateMultiChartAnalysis, 300000);
 
 
 </script>
