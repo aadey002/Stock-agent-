@@ -1,6 +1,7 @@
 ﻿#!/usr/bin/env python3
 """
 Multi-Symbol Data Fetcher using yfinance (FREE - no API key needed)
+Fetches 3 years of data for all symbols
 """
 import yfinance as yf
 import pandas as pd
@@ -9,14 +10,15 @@ from datetime import datetime, timedelta
 
 SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
 DATA_DIR = 'data'
+LOOKBACK_DAYS = 1095  # 3 years
 
-def fetch_symbol(symbol, days=1095):
+def fetch_symbol(symbol):
     """Fetch historical data for a symbol using yfinance"""
     print(f"Fetching {symbol}...")
     try:
         ticker = yf.Ticker(symbol)
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=days)
+        start_date = end_date - timedelta(days=LOOKBACK_DAYS)
         
         df = ticker.history(start=start_date.strftime('%Y-%m-%d'))
         
@@ -24,7 +26,7 @@ def fetch_symbol(symbol, days=1095):
             print(f"  WARNING: No data for {symbol}")
             return None
         
-        # Rename columns to match expected format
+        # Reset index and format
         df = df.reset_index()
         df = df.rename(columns={
             'Date': 'Date',
@@ -48,7 +50,8 @@ def fetch_symbol(symbol, days=1095):
 
 def main():
     print("=" * 50)
-    print("MULTI-SYMBOL FETCHER (yfinance)")
+    print("MULTI-SYMBOL FETCHER (yfinance - NO API KEY)")
+    print(f"Fetching {LOOKBACK_DAYS} days (3 years) of data")
     print("=" * 50)
     
     os.makedirs(DATA_DIR, exist_ok=True)
