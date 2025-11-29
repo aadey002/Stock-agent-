@@ -1,0 +1,226 @@
+#!/usr/bin/env python3
+"""
+Fetch daily data for all supported symbols from Tiingo API
+Saves each symbol as a separate CSV file in data/ folder
+"""
+
+import os
+import csv
+import urllib.request
+import urllib.error
+import json
+from datetime import datetime, timedelta
+import time
+
+# All supported symbols
+SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
+
+# Tiingo API token from environment
+TOKEN = os.environ.get('TIINGO_TOKEN', '')
+
+def fetch_symbol_data(symbol, days=750):
+    """Fetch historical data for a symbol from Tiingo"""
+    
+    if not TOKEN:
+        print(f"⚠️ No TIINGO_TOKEN found, skipping {symbol}")
+        return None
+    
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+    
+    url = f"https://api.tiingo.com/tiingo/daily/{symbol}/prices?startDate={start_date}&endDate={end_date}&token={TOKEN}"
+    
+    print(f"📥 Fetching {symbol} data from {start_date} to {end_date}...")
+    
+    try:
+        req = urllib.request.Request(url, headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            data = json.loads(response.read().decode())
+            print(f"   ✅ Got {len(data)} bars for {symbol}")
+            return data
+    except urllib.error.HTTPError as e:
+        print(f"   ❌ HTTP Error for {symbol}: {e.code} - {e.reason}")
+        return None
+    except urllib.error.URLError as e:
+        print(f"   ❌ URL Error for {symbol}: {e.reason}")
+        return None
+    except Exception as e:
+        print(f"   ❌ Error fetching {symbol}: {e}")
+        return None
+
+def calculate_indicators(bars):
+    """Calculate technical indicators for the data"""
+    
+    # Calculate ATR (14-period)
+    for i, bar in enumerate(bars):
+        if i < 14:
+            bar['ATR'] = abs(bar['high'] - bar['low'])
+        else:
+            tr_values = []
+            for j in range(i-13, i+1):
+                high = bars[j]['high']
+                low = bars[j]['low']
+                prev_close = bars[j-1]['close'] if j > 0 else bars[j]['close']
+                tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
+                tr_values.append(tr)
+            bar['ATR'] = sum(tr_values) / len(tr_values)
+    
+    # Calculate SMAs
+    for i, bar in enumerate(bars):
+        # Fast SMA (9-period)
+        if i >= 8:
+            bar['FastSMA'] = sum(bars[j]['close'] for j in range(i-8, i+1)) / 9
+        else:
+            bar['FastSMA'] = bar['close']
+        
+        # Slow SMA (21-period)
+        if i >= 20:
+            bar['SlowSMA'] = sum(bars[j]['close'] for j in range(i-20, i+1)) / 21
+        else:
+            bar['SlowSMA'] = bar['close']
+    
+    # Calculate Bias
+    for bar in bars:
+        if bar['FastSMA'] > bar['SlowSMA']:
+            bar['Bias'] = 'BULLISH'
+        elif bar['FastSMA'] < bar['SlowSMA']:
+            bar['Bias'] = 'BEARISH'
+        else:
+            bar['Bias'] = 'NEUTRAL'
+    
+    # Calculate GeoLevel and PhiLevel (Gann-inspired)
+    for bar in bars:
+        price = bar['close']
+        sqrt_price = price ** 0.5
+        bar['GeoLevel'] = round((sqrt_price + 0.125) ** 2, 2)  # 45-degree angle up
+        bar['PhiLevel'] = round(price * 1.618, 2)  # Golden ratio extension
+    
+    # Calculate PriceConfluence (simplified scoring)
+    for i, bar in enumerate(bars):
+        score = 0
+        
+        # Trend alignment
+        if bar['Bias'] == 'BULLISH' and bar['close'] > bar['FastSMA']:
+            score += 1
+        elif bar['Bias'] == 'BEARISH' and bar['close'] < bar['FastSMA']:
+            score += 1
+        
+        # Momentum
+        if i > 0:
+            if bar['close'] > bars[i-1]['close'] and bar['Bias'] == 'BULLISH':
+                score += 1
+            elif bar['close'] < bars[i-1]['close'] and bar['Bias'] == 'BEARISH':
+                score += 1
+        
+        # Volume confirmation (if volume up on trend day)
+        if i > 0:
+            if bar['volume'] > bars[i-1]['volume']:
+                score += 1
+        
+        # ATR expansion (volatility)
+        if i > 0 and bar['ATR'] > bars[i-1]['ATR']:
+            score += 1
+        
+        bar['PriceConfluence'] = min(score, 4)  # Max 4
+    
+    # TimeConfluence (based on day of week, simplified)
+    for bar in bars:
+        try:
+            dt = datetime.fromisoformat(bar['date'][:10])
+            dow = dt.weekday()
+            # Tuesday-Thursday historically stronger
+            if dow in [1, 2, 3]:
+                bar['TimeConfluence'] = 2
+            else:
+                bar['TimeConfluence'] = 1
+        except:
+            bar['TimeConfluence'] = 1
+    
+    return bars
+
+def save_to_csv(symbol, bars, folder='data'):
+    """Save data to CSV file"""
+    
+    os.makedirs(folder, exist_ok=True)
+    filepath = os.path.join(folder, f'{symbol}.csv')
+    
+    headers = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 
+               'ATR', 'FastSMA', 'SlowSMA', 'Bias', 
+               'GeoLevel', 'PhiLevel', 'PriceConfluence', 'TimeConfluence']
+    
+    with open(filepath, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        
+        for bar in bars:
+            row = [
+                bar['date'][:10],
+                round(bar['open'], 2),
+                round(bar['high'], 2),
+                round(bar['low'], 2),
+                round(bar['close'], 2),
+                int(bar['volume']),
+                round(bar.get('ATR', 0), 4),
+                round(bar.get('FastSMA', 0), 2),
+                round(bar.get('SlowSMA', 0), 2),
+                bar.get('Bias', 'NEUTRAL'),
+                round(bar.get('GeoLevel', 0), 2),
+                round(bar.get('PhiLevel', 0), 2),
+                bar.get('PriceConfluence', 0),
+                bar.get('TimeConfluence', 1)
+            ]
+            writer.writerow(row)
+    
+    print(f"   💾 Saved {len(bars)} bars to {filepath}")
+    return filepath
+
+def main():
+    print("=" * 50)
+    print("📊 MULTI-SYMBOL DATA FETCHER")
+    print(f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 50)
+    
+    if not TOKEN:
+        print("\n❌ ERROR: TIINGO_TOKEN not set!")
+        print("Please set the TIINGO_TOKEN environment variable")
+        return
+    
+    successful = []
+    failed = []
+    
+    for symbol in SYMBOLS:
+        print(f"\n{'='*30}")
+        print(f"Processing {symbol}...")
+        
+        # Fetch data
+        raw_data = fetch_symbol_data(symbol)
+        
+        if raw_data and len(raw_data) > 0:
+            # Calculate indicators
+            enriched_data = calculate_indicators(raw_data)
+            
+            # Save to CSV
+            save_to_csv(symbol, enriched_data)
+            successful.append(symbol)
+        else:
+            failed.append(symbol)
+        
+        # Small delay between requests
+        time.sleep(0.5)
+    
+    print("\n" + "=" * 50)
+    print("📊 SUMMARY")
+    print("=" * 50)
+    print(f"✅ Successful: {', '.join(successful) if successful else 'None'}")
+    print(f"❌ Failed: {', '.join(failed) if failed else 'None'}")
+    
+    # List files created
+    print("\n📁 Files in data/:")
+    if os.path.exists('data'):
+        for f in sorted(os.listdir('data')):
+            filepath = os.path.join('data', f)
+            size = os.path.getsize(filepath)
+            print(f"   {f}: {size:,} bytes")
+
+if __name__ == '__main__':
+    main()

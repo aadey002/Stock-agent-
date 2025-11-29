@@ -2,94 +2,54 @@ name: Q5D Daily Analysis
 
 on:
   schedule:
-    # Run at 9:30 PM UTC (4:30 PM ET after market close)
-    - cron: '30 21 * * 1-5'
-  workflow_dispatch:  # Manual trigger
+    - cron: '35 14 * * 1-5'
+    - cron: '05 21 * * 1-5'
+    - cron: '00 23 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    
+    env:
+      TZ: America/New_York
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          pip install pandas numpy requests
-      
-      - name: Fetch latest SPY data
+
+      - run: pip install pandas numpy requests --quiet
+
+      - run: mkdir -p data reports logs
+
+      - name: Fetch ALL Symbols
         env:
           TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
+        run: python fetch_all_symbols.py
+
+      - run: ls -la data/
+
+      - name: Push to main
         run: |
-          python fetch_data.py
-      
-      - name: Run Q5D Orchestrator
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Data update"
+          git push --force origin main || true
+
+      - name: Deploy to gh-pages
         run: |
-          python orchestrator.py
-      
-      - name: Check for new signals
-        id: check_signals
-        run: |
-          if [ -f "reports/super_confluence_signals.csv" ]; then
-            SIGNAL_COUNT=$(tail -n 1 reports/super_confluence_signals.csv | cut -d',' -f1)
-            echo "signal_found=true" >> $GITHUB_OUTPUT
-            echo "Latest signal date: $SIGNAL_COUNT"
-          else
-            echo "signal_found=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Commit results
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add data/ reports/
-          git diff --staged --quiet || git commit -m "Daily analysis: $(date +'%Y-%m-%d')"
-      
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-      
-      - name: Create issue for approved trade
-        if: steps.check_signals.outputs.signal_found == 'true'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            
-            // Read latest signal
-            const csv = fs.readFileSync('reports/super_confluence_signals.csv', 'utf8');
-            const lines = csv.trim().split('\n');
-            const lastLine = lines[lines.length - 1];
-            const parts = lastLine.split(',');
-            
-            const date = parts[0];
-            const signal = parts[12];  // final column
-            const entry = parts[14];
-            const stop = parts[15];
-            const target1 = parts[16];
-            
-            // Only create issue if today's date
-            const today = new Date().toISOString().split('T')[0];
-            if (date.includes(today.replace(/-/g, ''))) {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: `🚨 TRADE ALERT: ${signal} Signal on ${today}`,
-                body: `## Super Confluence Signal Approved\n\n` +
-                      `**Signal:** ${signal}\n` +
-                      `**Entry:** $${entry}\n` +
-                      `**Stop:** $${stop}\n` +
-                      `**Target 1:** $${target1}\n\n` +
-                      `Both System A and System B agree. R:R ratio meets 2:1 minimum.\n\n` +
-                      `*This is an automated alert. Review before trading.*`,
-                labels: ['trade-alert', signal.toLowerCase()]
-              });
-            }
+          mkdir -p /tmp/deploy
+          cp data/*.csv /tmp/deploy/ 2>/dev/null || true
+          git fetch origin gh-pages || true
+          git checkout gh-pages || git checkout --orphan gh-pages
+          cp /tmp/deploy/*.csv . 2>/dev/null || true
+          git add *.csv 2>/dev/null || true
+          git diff --staged --quiet || (git config user.name "github-actions[bot]" && git config user.email "github-actions[bot]@users.noreply.github.com" && git commit -m "Data update" && git push --force origin gh-pages)

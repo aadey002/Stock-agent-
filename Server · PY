@@ -1,0 +1,442 @@
+#!/usr/bin/env python3
+"""
+Stock Agent 3 - Backend Server
+Handles Tiingo API calls, data processing, and agent signal generation
+Runs on local machine or GitHub Actions
+"""
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import requests
+import pandas as pd
+import os
+from datetime import datetime, timedelta
+import json
+import logging
+from dotenv import load_dotenv
+import numpy as np
+
+# Load environment variables
+load_dotenv()
+
+# Configure Flask
+app = Flask(__name__)
+CORS(app)  # Enable CORS for dashboard requests
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Configuration
+TIINGO_API_KEY = os.getenv('TIINGO_API_KEY', 'YOUR_TIINGO_API_KEY_HERE')
+TIINGO_BASE_URL = 'https://api.tiingo.com/tiingo/daily'
+PORT = int(os.getenv('PORT', 5000))
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+# Cache for API responses (to reduce API calls)
+_cache = {}
+_cache_time = {}
+CACHE_DURATION = 300  # 5 minutes
+
+class ConfluenceAgent:
+    """Base Confluence Agent - Geometry + Phi + Time"""
+    
+    @staticmethod
+    def calculate_geometric_level(price, history):
+        """Calculate geometric level support/resistance"""
+        if len(history) < 2:
+            return None
+        high = max(history[-20:]) if len(history) >= 20 else max(history)
+        low = min(history[-20:]) if len(history) >= 20 else min(history)
+        return (high * low) ** 0.5
+    
+    @staticmethod
+    def calculate_phi_level(price, history):
+        """Calculate golden ratio (Phi) level"""
+        if len(history) < 2:
+            return None
+        high = max(history[-20:]) if len(history) >= 20 else max(history)
+        low = min(history[-20:]) if len(history) >= 20 else min(history)
+        phi = 1.618034
+        return low + (high - low) / phi
+    
+    @staticmethod
+    def generate_signal(price, geo_level, phi_level, current_trend):
+        """Generate trading signal based on confluence"""
+        if geo_level is None or phi_level is None:
+            return None
+        
+        # Simple confluence logic
+        distance_to_geo = abs(price - geo_level) / price * 100
+        distance_to_phi = abs(price - phi_level) / price * 100
+        
+        # Signal when price is near confluence levels
+        if distance_to_geo < 1 and distance_to_phi < 1:
+            if price > geo_level:
+                return 'CALL'
+            else:
+                return 'PUT'
+        return None
+
+
+class GannElliotAgent:
+    """Gann-Elliott Agent - Elliott Waves + Square of 9"""
+    
+    @staticmethod
+    def detect_wave_pattern(history):
+        """Detect Elliott wave patterns"""
+        if len(history) < 5:
+            return None
+        
+        # Simple wave detection
+        recent = history[-5:]
+        if len(recent) >= 3:
+            # Check for uptrend
+            if recent[-1] > recent[-2] > recent[-3]:
+                return 'UPTREND'
+            elif recent[-1] < recent[-2] < recent[-3]:
+                return 'DOWNTREND'
+        return 'NEUTRAL'
+    
+    @staticmethod
+    def calculate_square_of_9(price):
+        """Calculate Square of 9 resistance/support"""
+        sqrt_price = int(price ** 0.5)
+        # Calculate nearby squares
+        support = (sqrt_price - 1) ** 2
+        resistance = (sqrt_price + 1) ** 2
+        return support, resistance
+    
+    @staticmethod
+    def generate_signal(price, wave_pattern, support, resistance):
+        """Generate trading signal based on Gann levels"""
+        if wave_pattern == 'UPTREND' and price > support:
+            return 'CALL'
+        elif wave_pattern == 'DOWNTREND' and price < resistance:
+            return 'PUT'
+        return None
+
+
+class RLDQNAgent:
+    """RL/DQN Agent - Machine Learning (placeholder)"""
+    
+    @staticmethod
+    def predict_signal(price, history, volume_history):
+        """Simple ML-based signal prediction"""
+        if len(history) < 10:
+            return None
+        
+        # Calculate simple momentum
+        momentum = (history[-1] - history[-10]) / history[-10] * 100
+        
+        # Simple decision logic
+        if momentum > 2:
+            return 'CALL'
+        elif momentum < -2:
+            return 'PUT'
+        return None
+
+
+def get_cached(key):
+    """Get value from cache if not expired"""
+    if key in _cache_time:
+        if datetime.now() - _cache_time[key] < timedelta(seconds=CACHE_DURATION):
+            return _cache.get(key)
+    return None
+
+
+def set_cache(key, value):
+    """Set cache value with timestamp"""
+    _cache[key] = value
+    _cache_time[key] = datetime.now()
+
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'api_key_set': bool(TIINGO_API_KEY and TIINGO_API_KEY != 'YOUR_TIINGO_API_KEY_HERE')
+    }), 200
+
+
+@app.route('/api/price/<symbol>', methods=['GET'])
+def get_price(symbol):
+    """Get current price for symbol"""
+    try:
+        # Check cache first
+        cache_key = f'price_{symbol}'
+        cached = get_cached(cache_key)
+        if cached:
+            return jsonify(cached), 200
+        
+        # Fetch from Tiingo
+        url = f'{TIINGO_BASE_URL}/{symbol}'
+        params = {'token': TIINGO_API_KEY, 'startDate': (datetime.now() - timedelta(days=60)).strftime('%Y-%m-%d')}
+        
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if isinstance(data, list) and len(data) > 0:
+            latest = data[0]
+            result = {
+                'symbol': symbol,
+                'price': latest.get('close'),
+                'open': latest.get('open'),
+                'high': latest.get('high'),
+                'low': latest.get('low'),
+                'volume': latest.get('volume'),
+                'date': latest.get('date'),
+                'change': latest.get('close', 0) - latest.get('open', 0),
+                'change_percent': ((latest.get('close', 0) - latest.get('open', 0)) / latest.get('open', 1) * 100) if latest.get('open', 0) != 0 else 0
+            }
+            
+            # Cache the result
+            set_cache(cache_key, result)
+            
+            return jsonify(result), 200
+        else:
+            return jsonify({'error': 'No data found for symbol'}), 404
+            
+    except requests.exceptions.Timeout:
+        return jsonify({'error': 'Tiingo API request timeout'}), 504
+    except requests.exceptions.RequestException as e:
+        logger.error(f'Tiingo API error: {str(e)}')
+        return jsonify({'error': f'API error: {str(e)}'}), 500
+    except Exception as e:
+        logger.error(f'Error fetching price: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/historical/<symbol>', methods=['GET'])
+def get_historical(symbol):
+    """Get historical OHLCV data"""
+    try:
+        days = request.args.get('days', 60, type=int)
+        
+        # Check cache
+        cache_key = f'historical_{symbol}_{days}'
+        cached = get_cached(cache_key)
+        if cached:
+            return jsonify(cached), 200
+        
+        # Fetch from Tiingo
+        url = f'{TIINGO_BASE_URL}/{symbol}'
+        params = {
+            'token': TIINGO_API_KEY,
+            'startDate': (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+        }
+        
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if isinstance(data, list) and len(data) > 0:
+            # Calculate technical indicators
+            prices = [d['close'] for d in data]
+            volumes = [d['volume'] for d in data]
+            
+            # SMA calculations
+            sma20 = None
+            sma50 = None
+            sma200 = None
+            
+            if len(prices) >= 20:
+                sma20 = sum(prices[-20:]) / 20
+            if len(prices) >= 50:
+                sma50 = sum(prices[-50:]) / 50
+            if len(prices) >= 200:
+                sma200 = sum(prices[-200:]) / 200
+            
+            # ATR calculation
+            atr = None
+            if len(data) >= 14:
+                tr_values = []
+                for i in range(1, len(data)):
+                    high = data[i]['high']
+                    low = data[i]['low']
+                    close_prev = data[i-1]['close']
+                    tr = max(high - low, abs(high - close_prev), abs(low - close_prev))
+                    tr_values.append(tr)
+                atr = sum(tr_values[-14:]) / 14
+            
+            result = {
+                'symbol': symbol,
+                'data': [{
+                    'date': d['date'],
+                    'open': d['open'],
+                    'high': d['high'],
+                    'low': d['low'],
+                    'close': d['close'],
+                    'volume': d['volume']
+                } for d in data],
+                'latest_price': data[0]['close'],
+                'indicators': {
+                    'sma20': sma20,
+                    'sma50': sma50,
+                    'sma200': sma200,
+                    'atr': atr
+                }
+            }
+            
+            # Cache the result
+            set_cache(cache_key, result)
+            
+            return jsonify(result), 200
+        else:
+            return jsonify({'error': 'No historical data found'}), 404
+            
+    except Exception as e:
+        logger.error(f'Error fetching historical data: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/signal/<symbol>', methods=['GET'])
+def get_signal(symbol):
+    """Generate trading signal using all three agents"""
+    try:
+        # Fetch historical data
+        url = f'{TIINGO_BASE_URL}/{symbol}'
+        params = {
+            'token': TIINGO_API_KEY,
+            'startDate': (datetime.now() - timedelta(days=60)).strftime('%Y-%m-%d')
+        }
+        
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        if not data or len(data) == 0:
+            return jsonify({'error': 'No data for signal generation'}), 404
+        
+        # Extract prices and prepare for analysis
+        prices = [d['close'] for d in data]
+        volumes = [d['volume'] for d in data]
+        current_price = prices[0]
+        
+        # Base Confluence Agent
+        geo_level = ConfluenceAgent.calculate_geometric_level(current_price, prices)
+        phi_level = ConfluenceAgent.calculate_phi_level(current_price, prices)
+        confluence_signal = ConfluenceAgent.generate_signal(current_price, geo_level, phi_level, 'UPTREND')
+        
+        # Gann-Elliott Agent
+        wave_pattern = GannElliotAgent.detect_wave_pattern(prices)
+        support, resistance = GannElliotAgent.calculate_square_of_9(current_price)
+        gann_signal = GannElliotAgent.generate_signal(current_price, wave_pattern, support, resistance)
+        
+        # RL/DQN Agent
+        rl_signal = RLDQNAgent.predict_signal(current_price, prices, volumes)
+        
+        # Calculate confluence
+        signals = [s for s in [confluence_signal, gann_signal, rl_signal] if s]
+        agreement_count = len(signals)
+        
+        # Determine final signal strength
+        if agreement_count == 3:
+            strength = 'ULTRA'
+            confidence = 0.89
+        elif agreement_count >= 2:
+            strength = 'SUPER'
+            confidence = 0.78
+        elif agreement_count == 1:
+            strength = 'SINGLE'
+            confidence = 0.65
+        else:
+            strength = 'NONE'
+            confidence = 0.0
+        
+        result = {
+            'symbol': symbol,
+            'timestamp': datetime.now().isoformat(),
+            'current_price': current_price,
+            'agents': {
+                'base_confluence': {
+                    'signal': confluence_signal,
+                    'geometric_level': geo_level,
+                    'phi_level': phi_level
+                },
+                'gann_elliott': {
+                    'signal': gann_signal,
+                    'wave_pattern': wave_pattern,
+                    'support': support,
+                    'resistance': resistance
+                },
+                'rl_dqn': {
+                    'signal': rl_signal
+                }
+            },
+            'confluence': {
+                'agreement': agreement_count,
+                'strength': strength,
+                'confidence': confidence,
+                'final_signal': signals[0] if signals else None
+            }
+        }
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        logger.error(f'Error generating signal: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/status', methods=['GET'])
+def get_status():
+    """Get system status"""
+    try:
+        # Test API connectivity
+        test_url = f'{TIINGO_BASE_URL}/SPY'
+        test_params = {'token': TIINGO_API_KEY}
+        
+        response = requests.get(test_url, params=test_params, timeout=5)
+        api_working = response.status_code == 200
+        
+        return jsonify({
+            'status': 'operational' if api_working else 'degraded',
+            'tiingo_api': 'connected' if api_working else 'disconnected',
+            'server_time': datetime.now().isoformat(),
+            'agents': {
+                'base_confluence': 'ready',
+                'gann_elliott': 'ready',
+                'rl_dqn': 'ready'
+            },
+            'cache_entries': len(_cache)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f'Error getting status: {str(e)}')
+        return jsonify({'status': 'error', 'error': str(e)}), 500
+
+
+@app.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors"""
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    """Handle 500 errors"""
+    return jsonify({'error': 'Internal server error'}), 500
+
+
+if __name__ == '__main__':
+    logger.info(f'Starting Stock Agent 3 Backend Server')
+    logger.info(f'Tiingo API Key: {"SET" if TIINGO_API_KEY != "YOUR_TIINGO_API_KEY_HERE" else "NOT SET"}')
+    logger.info(f'Debug mode: {DEBUG}')
+    logger.info(f'Running on port {PORT}')
+    
+    # Run Flask app
+    app.run(
+        host='0.0.0.0',
+        port=PORT,
+        debug=DEBUG,
+        use_reloader=False
+    )
