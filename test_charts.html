@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TradingView Charts Test</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; color: #333; font-family: Arial, sans-serif; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 20px; color: #1a1a2e; }
+        .charts-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .chart-panel { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .chart-title { font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .chart-title .label { font-weight: bold; color: #1a1a2e; }
+        .chart-title .price { color: #26a69a; font-weight: bold; }
+        .chart-title .price.down { color: #ef5350; }
+        .chart-box { height: 420px; background: #fff; border-radius: 8px; border: 1px solid #e0e0e0; }
+        select { padding: 5px 10px; border-radius: 5px; background: white; color: #333; border: 1px solid #ccc; cursor: pointer; font-size: 12px; }
+        .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .legend { display: flex; gap: 15px; margin-top: 10px; font-size: 11px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-color { width: 12px; height: 3px; border-radius: 2px; }
+        .signal-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-left: 10px; }
+        .signal-badge.call { background: #26a69a; color: white; }
+        .signal-badge.put { background: #ef5350; color: white; }
+        .signal-badge.neutral { background: #888; color: white; }
+        .fib-levels { margin-top: 10px; font-size: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .fib-level { padding: 3px 6px; border-radius: 3px; text-align: center; }
+        .fib-level.support { background: rgba(38, 166, 154, 0.1); color: #26a69a; }
+        .fib-level.resistance { background: rgba(239, 83, 80, 0.1); color: #ef5350; }
+        .settings-btn { background: #6366f1; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; }
+        .settings-btn:hover { background: #4f46e5; }
+        .settings-panel { display: none; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 11px; }
+        .settings-panel.show { display: block; }
+        .settings-row { display: flex; align-items: center; gap: 10px; margin: 5px 0; flex-wrap: wrap; }
+        .settings-row label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        .settings-row input[type="checkbox"] { cursor: pointer; }
+        .pattern-alert { margin-top: 8px; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .pattern-alert.bullish { background: rgba(38, 166, 154, 0.15); color: #00875a; border-left: 3px solid #26a69a; }
+        .pattern-alert.bearish { background: rgba(239, 83, 80, 0.15); color: #c62828; border-left: 3px solid #ef5350; }
+        .pattern-alert.neutral { background: rgba(100, 100, 100, 0.1); color: #555; border-left: 3px solid #888; }
+        @media (max-width: 1200px) { .charts-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .charts-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <h1>📊 TradingView Charts Test - SPY</h1>
+    
+    <div class="charts-container">
+        <div class="chart-panel">
+            <div class="chart-title">
+                <div>
+                    <span class="label">⚡ Intraday (15 Min)</span>
+                    <span class="price" id="intradayPrice">$679.68</span>
+                    <span class="signal-badge call" id="intradaySignal">CALL</span>
+                </div>
+                <div class="controls">
+                    <select id="intradayType" onchange="updateIntraday()">
+                        <option value="candle">Candlestick</option>
+                        <option value="heikinashi">Heikin Ashi</option>
+                        <option value="line">Line</option>
+                        <option value="pf">Point & Figure</option>
+                    </select>
+                    <button class="settings-btn" onclick="toggleSettings('intraday')">⚙️</button>
+                </div>
+            </div>
+            <div class="settings-panel" id="intradaySettings">
+                <div class="settings-row">
+                    <label><input type="checkbox" id="intradayShowGrid" checked onchange="updateIntraday()"> Grid</label>
+                    <label><input type="checkbox" id="intradayShowPriceLabels" checked onchange="updateIntraday()"> Price Labels</label>
+                    <label><input type="checkbox" id="intradayShowPatterns" checked onchange="updateIntraday()"> Patterns</label>
+                    <label><input type="checkbox" id="intradayShowTrendlines" checked onchange="updateIntraday()"> Trendlines</label>
+                </div>
+            </div>
+            <div class="chart-box" id="intradayChart"></div>
+            <div class="legend" id="intradayLegend">
+                <div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div> EMA 9</div>
+                <div class="legend-item"><div class="legend-color" style="background:#3b82f6;"></div> EMA 21</div>
+                <div class="legend-item"><div class="legend-color" style="background:#8b5cf6;"></div> EMA 50</div>
+            </div>
+            <div id="intradayPattern" class="pattern-alert" style="display:none;"></div>
+            <div class="fib-levels" id="intradayFib"></div>
+        </div>
+        
+        <div class="chart-panel">
+            <div class="chart-title">
+                <div>
+                    <span class="label">📈 Swing (Daily)</span>
+                    <span class="price" id="swingPrice">$679.68</span>
+                    <span class="signal-badge call" id="swingSignal">CALL</span>
+                </div>
+                <div class="controls">
+                    <select id="swingType" onchange="updateSwing()">
+                        <option value="candle">Candlestick</option>
+                        <option value="heikinashi">Heikin Ashi</option>
+                        <option value="line">Line</option>
+                        <option value="pf">Point & Figure</option>
+                    </select>
+                    <button class="settings-btn" onclick="toggleSettings('swing')">⚙️</button>
+                </div>
+            </div>
+            <div class="settings-panel" id="swingSettings">
+                <div class="settings-row">
+                    <label><input type="checkbox" id="swingShowGrid" checked onchange="updateSwing()"> Grid</label>
+                    <label><input type="checkbox" id="swingShowPriceLabels" checked onchange="updateSwing()"> Price Labels</label>
+                    <label><input type="checkbox" id="swingShowPatterns" checked onchange="updateSwing()"> Patterns</label>
+                    <label><input type="checkbox" id="swingShowTrendlines" checked onchange="updateSwing()"> Trendlines</label>
+                </div>
+            </div>
+            <div class="chart-box" id="swingChart"></div>
+            <div class="legend" id="swingLegend">
+                <div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div> EMA 9</div>
+                <div class="legend-item"><div class="legend-color" style="background:#3b82f6;"></div> EMA 21</div>
+                <div class="legend-item"><div class="legend-color" style="background:#8b5cf6;"></div> EMA 50</div>
+            </div>
+            <div id="swingPattern" class="pattern-alert" style="display:none;"></div>
+            <div class="fib-levels" id="swingFib"></div>
+        </div>
+        
+        <div class="chart-panel">
+            <div class="chart-title">
+                <div>
+                    <span class="label">🎯 Position (Monthly)</span>
+                    <span class="price" id="positionPrice">$679.68</span>
+                    <span class="signal-badge put" id="positionSignal">PUT</span>
+                </div>
+                <div class="controls">
+                    <select id="positionType" onchange="updatePosition()">
+                        <option value="candle">Candlestick</option>
+                        <option value="heikinashi">Heikin Ashi</option>
+                        <option value="line">Line</option>
+                        <option value="pf">Point & Figure</option>
+                    </select>
+                    <button class="settings-btn" onclick="toggleSettings('position')">⚙️</button>
+                </div>
+            </div>
+            <div class="settings-panel" id="positionSettings">
+                <div class="settings-row">
+                    <label><input type="checkbox" id="positionShowGrid" checked onchange="updatePosition()"> Grid</label>
+                    <label><input type="checkbox" id="positionShowPriceLabels" checked onchange="updatePosition()"> Price Labels</label>
+                    <label><input type="checkbox" id="positionShowPatterns" checked onchange="updatePosition()"> Patterns</label>
+                    <label><input type="checkbox" id="positionShowTrendlines" checked onchange="updatePosition()"> Trendlines</label>
+                </div>
+            </div>
+            <div class="chart-box" id="positionChart"></div>
+            <div class="legend" id="positionLegend">
+                <div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div> EMA 9</div>
+                <div class="legend-item"><div class="legend-color" style="background:#3b82f6;"></div> EMA 21</div>
+                <div class="legend-item"><div class="legend-color" style="background:#8b5cf6;"></div> EMA 50</div>
+            </div>
+            <div id="positionPattern" class="pattern-alert" style="display:none;"></div>
+            <div class="fib-levels" id="positionFib"></div>
+        </div>
+    </div>
+
+    <script>
+        let charts = { intraday: null, swing: null, position: null };
+        let chartData = { intraday: [], swing: [], position: [] };
+        
+        function toggleSettings(panel) {
+            const settingsEl = document.getElementById(`${panel}Settings`);
+            settingsEl.classList.toggle('show');
+        }
+        
+        function getSettings(panel) {
+            return {
+                showGrid: document.getElementById(`${panel}ShowGrid`)?.checked ?? true,
+                showPriceLabels: document.getElementById(`${panel}ShowPriceLabels`)?.checked ?? true,
+                showPatterns: document.getElementById(`${panel}ShowPatterns`)?.checked ?? true,
+                showTrendlines: document.getElementById(`${panel}ShowTrendlines`)?.checked ?? true
+            };
+        }
+        
+        function generateSampleData(count, basePrice, volatility, isMonthly) {
+            const data = [];
+            let price = basePrice;
+            const now = Math.floor(Date.now() / 1000);
+            const interval = isMonthly ? 86400 * 30 : 86400;
+            
+            for (let i = 0; i < count; i++) {
+                const change = (Math.random() - 0.48) * volatility;
+                const open = price;
+                const close = price + change;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                
+                data.push({
+                    time: now - (count - i) * interval,
+                    open: parseFloat(open.toFixed(2)),
+                    high: parseFloat(high.toFixed(2)),
+                    low: parseFloat(low.toFixed(2)),
+                    close: parseFloat(close.toFixed(2)),
+                    volume: Math.floor(Math.random() * 10000000) + 1000000
+                });
+                price = close;
+            }
+            return data;
+        }
+        
+        function generateIntradayData() {
+            const data = [];
+            let price = 679;
+            const today = new Date();
+            today.setHours(9, 30, 0, 0);
+            
+            for (let i = 0; i < 78; i++) {
+                const time = new Date(today.getTime() + i * 5 * 60 * 1000);
+                const change = (Math.random() - 0.48) * 1.5;
+                const open = price;
+                const close = price + change;
+                const high = Math.max(open, close) + Math.random() * 0.5;
+                const low = Math.min(open, close) - Math.random() * 0.5;
+                
+                data.push({
+                    time: Math.floor(time.getTime() / 1000),
+                    open: parseFloat(open.toFixed(2)),
+                    high: parseFloat(high.toFixed(2)),
+                    low: parseFloat(low.toFixed(2)),
+                    close: parseFloat(close.toFixed(2)),
+                    volume: Math.floor(Math.random() * 1000000) + 100000
+                });
+                price = close;
+            }
+            return data;
+        }
+        
+        // P&F Pattern Detection
+        function detectPFPatterns(columns) {
+            if (columns.length < 3) return { pattern: null, signal: 'HOLD' };
+            
+            const patterns = [];
+            const len = columns.length;
+            
+            // Get last few columns for pattern detection
+            const c1 = columns[len - 1]; // Current
+            const c2 = columns[len - 2]; // Previous
+            const c3 = columns[len - 3]; // Before that
+            const c4 = len >= 4 ? columns[len - 4] : null;
+            const c5 = len >= 5 ? columns[len - 5] : null;
+            
+            // Double Top Breakout (Bullish)
+            if (c1.type === 'X' && c3.type === 'X') {
+                const c1High = Math.max(...c1.boxes);
+                const c3High = Math.max(...c3.boxes);
+                if (c1High > c3High) {
+                    patterns.push({ name: 'Double Top Breakout', type: 'bullish', strength: 85 });
+                }
+            }
+            
+            // Double Bottom Breakdown (Bearish)
+            if (c1.type === 'O' && c3.type === 'O') {
+                const c1Low = Math.min(...c1.boxes);
+                const c3Low = Math.min(...c3.boxes);
+                if (c1Low < c3Low) {
+                    patterns.push({ name: 'Double Bottom Breakdown', type: 'bearish', strength: 85 });
+                }
+            }
+            
+            // Triple Top Breakout (Strong Bullish)
+            if (c5 && c1.type === 'X' && c3.type === 'X' && c5.type === 'X') {
+                const c1High = Math.max(...c1.boxes);
+                const c3High = Math.max(...c3.boxes);
+                const c5High = Math.max(...c5.boxes);
+                if (c1High > c3High && c1High > c5High && Math.abs(c3High - c5High) < c1High * 0.02) {
+                    patterns.push({ name: 'Triple Top Breakout', type: 'bullish', strength: 95 });
+                }
+            }
+            
+            // Triple Bottom Breakdown (Strong Bearish)
+            if (c5 && c1.type === 'O' && c3.type === 'O' && c5.type === 'O') {
+                const c1Low = Math.min(...c1.boxes);
+                const c3Low = Math.min(...c3.boxes);
+                const c5Low = Math.min(...c5.boxes);
+                if (c1Low < c3Low && c1Low < c5Low && Math.abs(c3Low - c5Low) < c1Low * 0.02) {
+                    patterns.push({ name: 'Triple Bottom Breakdown', type: 'bearish', strength: 95 });
+                }
+            }
+            
+            // Ascending Triple Top (Bullish)
+            if (c5 && c1.type === 'X' && c3.type === 'X' && c5.type === 'X') {
+                const c1High = Math.max(...c1.boxes);
+                const c3High = Math.max(...c3.boxes);
+                const c5High = Math.max(...c5.boxes);
+                if (c1High > c3High && c3High > c5High) {
+                    patterns.push({ name: 'Ascending Triple Top', type: 'bullish', strength: 90 });
+                }
+            }
+            
+            // Descending Triple Bottom (Bearish)
+            if (c5 && c1.type === 'O' && c3.type === 'O' && c5.type === 'O') {
+                const c1Low = Math.min(...c1.boxes);
+                const c3Low = Math.min(...c3.boxes);
+                const c5Low = Math.min(...c5.boxes);
+                if (c1Low < c3Low && c3Low < c5Low) {
+                    patterns.push({ name: 'Descending Triple Bottom', type: 'bearish', strength: 90 });
+                }
+            }
+            
+            // Bullish Catapult
+            if (c5 && c1.type === 'X') {
+                const c1High = Math.max(...c1.boxes);
+                const c3High = c3.type === 'X' ? Math.max(...c3.boxes) : 0;
+                const c5High = c5.type === 'X' ? Math.max(...c5.boxes) : 0;
+                if (c3High > 0 && c5High > 0 && c1High > c3High && c3High > c5High) {
+                    patterns.push({ name: 'Bullish Catapult', type: 'bullish', strength: 92 });
+                }
+            }
+            
+            // Bearish Catapult
+            if (c5 && c1.type === 'O') {
+                const c1Low = Math.min(...c1.boxes);
+                const c3Low = c3.type === 'O' ? Math.min(...c3.boxes) : Infinity;
+                const c5Low = c5.type === 'O' ? Math.min(...c5.boxes) : Infinity;
+                if (c3Low < Infinity && c5Low < Infinity && c1Low < c3Low && c3Low < c5Low) {
+                    patterns.push({ name: 'Bearish Catapult', type: 'bearish', strength: 92 });
+                }
+            }
+            
+            // Simple trend detection if no patterns found
+            if (patterns.length === 0) {
+                if (c1.type === 'X') {
+                    patterns.push({ name: 'Uptrend in Progress', type: 'bullish', strength: 60 });
+                } else {
+                    patterns.push({ name: 'Downtrend in Progress', type: 'bearish', strength: 60 });
+                }
+            }
+            
+            // Return the strongest pattern
+            const strongest = patterns.sort((a, b) => b.strength - a.strength)[0];
+            const signal = strongest.type === 'bullish' ? 'CALL' : strongest.type === 'bearish' ? 'PUT' : 'HOLD';
+            
+            return { pattern: strongest, signal, allPatterns: patterns };
+        }
+        
+        // StockCharts-style Point & Figure
+        function renderPointAndFigure(container, data, panel, settings) {
+            container.innerHTML = '';
+            const canvas = document.createElement('canvas');
+            canvas.width = container.clientWidth || 400;
+            canvas.height = container.clientHeight || 420;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (!data || data.length < 10) {
+                ctx.fillStyle = '#666';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Not enough data', width/2, height/2);
+                return { columns: [], pattern: null };
+            }
+            
+            const avgPrice = data.reduce((sum, bar) => sum + bar.close, 0) / data.length;
+            let boxSize;
+            if (avgPrice < 5) boxSize = 0.25;
+            else if (avgPrice < 20) boxSize = 0.50;
+            else if (avgPrice < 100) boxSize = 1.00;
+            else if (avgPrice < 200) boxSize = 2.00;
+            else if (avgPrice < 500) boxSize = 4.00;
+            else boxSize = 8.00;
+            
+            if (panel === 'intraday') boxSize = boxSize * 0.5;
+            if (panel === 'position') boxSize = boxSize * 1.5;
+            
+            const reversal = 3;
+            
+            const columns = [];
+            let currentCol = { type: null, boxes: [] };
+            let lastBoxPrice = Math.floor(data[0].close / boxSize) * boxSize;
+            
+            for (let i = 0; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                
+                if (currentCol.type === null) {
+                    const highBox = Math.floor(high / boxSize) * boxSize;
+                    const lowBox = Math.floor(low / boxSize) * boxSize;
+                    
+                    if (highBox > lastBoxPrice) {
+                        currentCol.type = 'X';
+                        for (let p = lastBoxPrice; p <= highBox; p += boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = highBox;
+                    } else if (lowBox < lastBoxPrice) {
+                        currentCol.type = 'O';
+                        for (let p = lastBoxPrice; p >= lowBox; p -= boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = lowBox;
+                    }
+                    continue;
+                }
+                
+                if (currentCol.type === 'X') {
+                    const highBox = Math.floor(high / boxSize) * boxSize;
+                    const lowBox = Math.floor(low / boxSize) * boxSize;
+                    
+                    if (highBox > lastBoxPrice) {
+                        for (let p = lastBoxPrice + boxSize; p <= highBox; p += boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = highBox;
+                    } else if (lowBox <= lastBoxPrice - boxSize * reversal) {
+                        columns.push({ ...currentCol, boxes: [...currentCol.boxes] });
+                        currentCol = { type: 'O', boxes: [] };
+                        for (let p = lastBoxPrice - boxSize; p >= lowBox; p -= boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = lowBox;
+                    }
+                } else {
+                    const highBox = Math.floor(high / boxSize) * boxSize;
+                    const lowBox = Math.floor(low / boxSize) * boxSize;
+                    
+                    if (lowBox < lastBoxPrice) {
+                        for (let p = lastBoxPrice - boxSize; p >= lowBox; p -= boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = lowBox;
+                    } else if (highBox >= lastBoxPrice + boxSize * reversal) {
+                        columns.push({ ...currentCol, boxes: [...currentCol.boxes] });
+                        currentCol = { type: 'X', boxes: [] };
+                        for (let p = lastBoxPrice + boxSize; p <= highBox; p += boxSize) {
+                            currentCol.boxes.push(p);
+                        }
+                        lastBoxPrice = highBox;
+                    }
+                }
+            }
+            
+            if (currentCol.boxes.length > 0) {
+                columns.push(currentCol);
+            }
+            
+            // Detect patterns
+            const patternResult = detectPFPatterns(columns);
+            
+            if (columns.length === 0) {
+                ctx.fillStyle = '#666';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No P&F reversals', width/2, height/2);
+                return { columns: [], pattern: null };
+            }
+            
+            let minPrice = Infinity, maxPrice = -Infinity;
+            columns.forEach(col => {
+                col.boxes.forEach(p => {
+                    minPrice = Math.min(minPrice, p);
+                    maxPrice = Math.max(maxPrice, p);
+                });
+            });
+            
+            minPrice -= boxSize * 2;
+            maxPrice += boxSize * 2;
+            
+            const padding = { top: 50, right: 55, bottom: 25, left: 55 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            const numRows = Math.ceil((maxPrice - minPrice) / boxSize);
+            const rowHeight = Math.min(14, chartHeight / numRows);
+            
+            const maxCols = Math.min(columns.length, 35);
+            const dispCols = columns.slice(-maxCols);
+            const colWidth = Math.min(14, chartWidth / dispCols.length);
+            
+            // Draw grid
+            if (settings.showGrid) {
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 0.5;
+                
+                for (let p = minPrice; p <= maxPrice; p += boxSize) {
+                    const y = padding.top + chartHeight - ((p - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                for (let i = 0; i <= dispCols.length; i++) {
+                    const x = padding.left + i * colWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding.top);
+                    ctx.lineTo(x, height - padding.bottom);
+                    ctx.stroke();
+                }
+            }
+            
+            // Price labels
+            if (settings.showPriceLabels) {
+                ctx.fillStyle = '#333';
+                ctx.font = '9px Arial';
+                
+                const labelStep = Math.max(1, Math.floor(numRows / 12)) * boxSize;
+                for (let p = Math.ceil(minPrice / labelStep) * labelStep; p <= maxPrice; p += labelStep) {
+                    const y = padding.top + chartHeight - ((p - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                    ctx.textAlign = 'right';
+                    ctx.fillText(p.toFixed(2), padding.left - 5, y + 3);
+                    ctx.textAlign = 'left';
+                    ctx.fillText(p.toFixed(2), width - padding.right + 5, y + 3);
+                }
+            }
+            
+            // Draw trendlines
+            if (settings.showTrendlines && dispCols.length >= 3) {
+                // Bullish support line (connecting O column lows)
+                const oColumns = dispCols.map((col, idx) => ({ ...col, idx })).filter(c => c.type === 'O');
+                if (oColumns.length >= 2) {
+                    const first = oColumns[0];
+                    const last = oColumns[oColumns.length - 1];
+                    const firstLow = Math.min(...first.boxes);
+                    const lastLow = Math.min(...last.boxes);
+                    
+                    if (lastLow >= firstLow) {
+                        ctx.strokeStyle = 'rgba(38, 166, 154, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        const x1 = padding.left + (first.idx + 0.5) * colWidth;
+                        const y1 = padding.top + chartHeight - ((firstLow - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                        const x2 = padding.left + (last.idx + 0.5) * colWidth;
+                        const y2 = padding.top + chartHeight - ((lastLow - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+                
+                // Bearish resistance line (connecting X column highs)
+                const xColumns = dispCols.map((col, idx) => ({ ...col, idx })).filter(c => c.type === 'X');
+                if (xColumns.length >= 2) {
+                    const first = xColumns[0];
+                    const last = xColumns[xColumns.length - 1];
+                    const firstHigh = Math.max(...first.boxes);
+                    const lastHigh = Math.max(...last.boxes);
+                    
+                    if (lastHigh <= firstHigh) {
+                        ctx.strokeStyle = 'rgba(239, 83, 80, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        const x1 = padding.left + (first.idx + 0.5) * colWidth;
+                        const y1 = padding.top + chartHeight - ((firstHigh - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                        const x2 = padding.left + (last.idx + 0.5) * colWidth;
+                        const y2 = padding.top + chartHeight - ((lastHigh - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Draw X's and O's
+            const fontSize = Math.max(8, Math.min(12, Math.min(colWidth, rowHeight) - 1));
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            dispCols.forEach((col, colIdx) => {
+                const x = padding.left + (colIdx + 0.5) * colWidth;
+                
+                col.boxes.forEach(price => {
+                    const y = padding.top + chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                    ctx.fillStyle = col.type === 'X' ? '#00aa00' : '#cc0000';
+                    ctx.fillText(col.type, x, y);
+                });
+            });
+            
+            // Pattern marker on chart
+            if (settings.showPatterns && patternResult.pattern) {
+                const lastCol = dispCols[dispCols.length - 1];
+                const lastX = padding.left + (dispCols.length - 0.5) * colWidth;
+                const lastPrice = lastCol.type === 'X' ? Math.max(...lastCol.boxes) : Math.min(...lastCol.boxes);
+                const lastY = padding.top + chartHeight - ((lastPrice - minPrice) / (maxPrice - minPrice)) * chartHeight;
+                
+                // Draw pattern indicator
+                ctx.beginPath();
+                ctx.arc(lastX, lastY + (lastCol.type === 'X' ? -15 : 15), 8, 0, Math.PI * 2);
+                ctx.fillStyle = patternResult.pattern.type === 'bullish' ? '#26a69a' : '#ef5350';
+                ctx.fill();
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText(patternResult.pattern.type === 'bullish' ? '▲' : '▼', lastX, lastY + (lastCol.type === 'X' ? -15 : 15));
+            }
+            
+            // Title bar
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`P&F Pattern`, padding.left, 15);
+            ctx.font = '10px Arial';
+            ctx.fillStyle = '#666';
+            ctx.fillText(`Box: $${boxSize.toFixed(2)} | Rev: ${reversal}`, padding.left + 75, 15);
+            
+            // Pattern name on chart
+            if (settings.showPatterns && patternResult.pattern) {
+                ctx.font = 'bold 10px Arial';
+                ctx.fillStyle = patternResult.pattern.type === 'bullish' ? '#00875a' : '#c62828';
+                ctx.textAlign = 'center';
+                ctx.fillText(patternResult.pattern.name, width / 2, 32);
+            }
+            
+            // Current price
+            const lastPrice = data[data.length - 1].close;
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 10px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(`Last: $${lastPrice.toFixed(2)}`, width - padding.right, 15);
+            
+            return { columns, pattern: patternResult };
+        }
+        
+        function convertToHeikinAshi(data) {
+            const ha = [];
+            for (let i = 0; i < data.length; i++) {
+                const d = data[i];
+                const haClose = (d.open + d.high + d.low + d.close) / 4;
+                const haOpen = i === 0 ? (d.open + d.close) / 2 : (ha[i-1].open + ha[i-1].close) / 2;
+                const haHigh = Math.max(d.high, haOpen, haClose);
+                const haLow = Math.min(d.low, haOpen, haClose);
+                ha.push({
+                    time: d.time,
+                    open: parseFloat(haOpen.toFixed(2)),
+                    high: parseFloat(haHigh.toFixed(2)),
+                    low: parseFloat(haLow.toFixed(2)),
+                    close: parseFloat(haClose.toFixed(2)),
+                    volume: d.volume
+                });
+            }
+            return ha;
+        }
+        
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            const result = [];
+            let ema = data[0]?.close || 0;
+            for (let i = 0; i < data.length; i++) {
+                ema = i === 0 ? data[i].close : data[i].close * k + ema * (1 - k);
+                result.push({ time: data[i].time, value: parseFloat(ema.toFixed(2)) });
+            }
+            return result;
+        }
+        
+        function calculateFibonacci(data) {
+            const high = Math.max(...data.map(d => d.high));
+            const low = Math.min(...data.map(d => d.low));
+            const range = high - low;
+            return {
+                high, low,
+                level236: high - range * 0.236,
+                level382: high - range * 0.382,
+                level500: high - range * 0.5,
+                level618: high - range * 0.618,
+                level786: high - range * 0.786
+            };
+        }
+        
+        function displayFibLevels(id, fib) {
+            document.getElementById(id).innerHTML = `
+                <div class="fib-level resistance">R: $${fib.high.toFixed(2)}</div>
+                <div class="fib-level resistance">23.6%: $${fib.level236.toFixed(2)}</div>
+                <div class="fib-level resistance">38.2%: $${fib.level382.toFixed(2)}</div>
+                <div class="fib-level support">50%: $${fib.level500.toFixed(2)}</div>
+                <div class="fib-level support">61.8%: $${fib.level618.toFixed(2)}</div>
+                <div class="fib-level support">78.6%: $${fib.level786.toFixed(2)}</div>
+                <div class="fib-level support">S: $${fib.low.toFixed(2)}</div>
+            `;
+        }
+        
+        function createChart(containerId) {
+            const container = document.getElementById(containerId);
+            return LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: container.clientHeight,
+                layout: { background: { color: '#ffffff' }, textColor: '#333' },
+                grid: { vertLines: { color: '#e0e0e0' }, horzLines: { color: '#e0e0e0' } },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                    vertLine: { color: '#758696', width: 1, style: 2, labelBackgroundColor: '#f0f0f0' },
+                    horzLine: { color: '#758696', width: 1, style: 2, labelBackgroundColor: '#f0f0f0' }
+                },
+                rightPriceScale: { borderColor: '#e0e0e0', scaleMargins: { top: 0.1, bottom: 0.2 } },
+                timeScale: { borderColor: '#e0e0e0', timeVisible: true, secondsVisible: false }
+            });
+        }
+        
+        function addChartSeries(chart, data, type, fib) {
+            let mainSeries;
+            
+            if (type === 'candle' || type === 'heikinashi') {
+                mainSeries = chart.addCandlestickSeries({
+                    upColor: '#26a69a', downColor: '#ef5350',
+                    borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+                });
+                mainSeries.setData(data);
+            } else {
+                mainSeries = chart.addLineSeries({ color: '#2962FF', lineWidth: 2 });
+                mainSeries.setData(data.map(d => ({ time: d.time, value: d.close })));
+            }
+            
+            const ema9 = chart.addLineSeries({ color: '#f59e0b', lineWidth: 1, crosshairMarkerVisible: false, priceLineVisible: false, lastValueVisible: false });
+            ema9.setData(calculateEMA(data, 9));
+            
+            const ema21 = chart.addLineSeries({ color: '#3b82f6', lineWidth: 1, crosshairMarkerVisible: false, priceLineVisible: false, lastValueVisible: false });
+            ema21.setData(calculateEMA(data, 21));
+            
+            const ema50 = chart.addLineSeries({ color: '#8b5cf6', lineWidth: 1, crosshairMarkerVisible: false, priceLineVisible: false, lastValueVisible: false });
+            ema50.setData(calculateEMA(data, 50));
+            
+            if (fib && mainSeries) {
+                [
+                    { price: fib.level236, color: 'rgba(239,83,80,0.5)', title: '23.6%' },
+                    { price: fib.level382, color: 'rgba(239,83,80,0.4)', title: '38.2%' },
+                    { price: fib.level500, color: 'rgba(156,39,176,0.5)', title: '50%' },
+                    { price: fib.level618, color: 'rgba(38,166,154,0.4)', title: '61.8%' },
+                    { price: fib.level786, color: 'rgba(38,166,154,0.5)', title: '78.6%' }
+                ].forEach(l => mainSeries.createPriceLine({ price: l.price, color: l.color, lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: l.title }));
+            }
+            
+            const volSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '', scaleMargins: { top: 0.85, bottom: 0 } });
+            volSeries.setData(data.map(d => ({ time: d.time, value: d.volume, color: d.close >= d.open ? 'rgba(38,166,154,0.5)' : 'rgba(239,83,80,0.5)' })));
+            
+            const markers = [];
+            for (let i = 3; i < data.length; i++) {
+                if (data[i-2].close < data[i-2].open && data[i-1].close < data[i-1].open && data[i].close > data[i].open) {
+                    markers.push({ time: data[i].time, position: 'belowBar', color: '#26a69a', shape: 'arrowUp', text: 'BUY' });
+                }
+                if (data[i-2].close > data[i-2].open && data[i-1].close > data[i-1].open && data[i].close < data[i].open) {
+                    markers.push({ time: data[i].time, position: 'aboveBar', color: '#ef5350', shape: 'arrowDown', text: 'SELL' });
+                }
+            }
+            if (markers.length > 0 && mainSeries) mainSeries.setMarkers(markers.slice(-5));
+            
+            chart.timeScale().fitContent();
+            
+            const signal = data[data.length-1].close > data[data.length-2]?.close ? 'CALL' : 'PUT';
+            return { mainSeries, signal };
+        }
+        
+        function displayPattern(panel, patternResult) {
+            const patternEl = document.getElementById(`${panel}Pattern`);
+            if (!patternResult || !patternResult.pattern) {
+                patternEl.style.display = 'none';
+                return;
+            }
+            
+            const p = patternResult.pattern;
+            patternEl.style.display = 'block';
+            patternEl.className = `pattern-alert ${p.type}`;
+            patternEl.innerHTML = `
+                <span style="font-size:14px;">${p.type === 'bullish' ? '🟢' : '🔴'}</span>
+                <strong>${p.name}</strong> 
+                <span style="float:right;">Strength: ${p.strength}%</span>
+            `;
+        }
+        
+        function updateChart(panel) {
+            const type = document.getElementById(`${panel}Type`).value;
+            const priceEl = document.getElementById(`${panel}Price`);
+            const signalEl = document.getElementById(`${panel}Signal`);
+            const container = document.getElementById(`${panel}Chart`);
+            const legendEl = document.getElementById(`${panel}Legend`);
+            const fibEl = document.getElementById(`${panel}Fib`);
+            const settings = getSettings(panel);
+            
+            let data = chartData[panel];
+            
+            if (type === 'pf') {
+                if (charts[panel]) { charts[panel].remove(); charts[panel] = null; }
+                const result = renderPointAndFigure(container, data, panel, settings);
+                legendEl.style.display = 'none';
+                fibEl.innerHTML = '';
+                priceEl.textContent = `$${data[data.length-1].close.toFixed(2)}`;
+                
+                // Display pattern
+                if (settings.showPatterns) {
+                    displayPattern(panel, result.pattern);
+                    if (result.pattern) {
+                        signalEl.textContent = result.pattern.signal;
+                        signalEl.className = `signal-badge ${result.pattern.signal.toLowerCase()}`;
+                    }
+                } else {
+                    document.getElementById(`${panel}Pattern`).style.display = 'none';
+                }
+                return;
+            }
+            
+            document.getElementById(`${panel}Pattern`).style.display = 'none';
+            legendEl.style.display = 'flex';
+            if (type === 'heikinashi') data = convertToHeikinAshi(chartData[panel]);
+            
+            if (charts[panel]) charts[panel].remove();
+            charts[panel] = createChart(`${panel}Chart`);
+            
+            const fib = calculateFibonacci(data);
+            displayFibLevels(`${panel}Fib`, fib);
+            
+            const { signal } = addChartSeries(charts[panel], data, type, fib);
+            
+            const lastPrice = data[data.length-1].close;
+            const prevPrice = data[data.length-2]?.close || lastPrice;
+            priceEl.textContent = `$${lastPrice.toFixed(2)}`;
+            priceEl.className = lastPrice >= prevPrice ? 'price' : 'price down';
+            signalEl.textContent = signal;
+            signalEl.className = `signal-badge ${signal.toLowerCase()}`;
+        }
+        
+        function updateIntraday() { updateChart('intraday'); }
+        function updateSwing() { updateChart('swing'); }
+        function updatePosition() { updateChart('position'); }
+        
+        function init() {
+            chartData.intraday = generateIntradayData();
+            chartData.swing = generateSampleData(120, 650, 8, false);
+            chartData.position = generateSampleData(60, 500, 25, true);
+            updateIntraday();
+            updateSwing();
+            updatePosition();
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
