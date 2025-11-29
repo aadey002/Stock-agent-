@@ -3,10 +3,9 @@
 on:
   workflow_dispatch:
   schedule:
-    # Every 15 mins during market hours (9:30 AM - 4:00 PM ET = 14:30 - 21:00 UTC)
-    - cron: "30,45 14 * * 1-5"          # 9:30, 9:45 AM ET
-    - cron: "0,15,30,45 15-20 * * 1-5"  # 10 AM - 3:45 PM ET
-    - cron: "0 21 * * 1-5"              # 4:00 PM ET close
+    - cron: "30,45 14 * * 1-5"
+    - cron: "0,15,30,45 15-20 * * 1-5"
+    - cron: "0 21 * * 1-5"
 
 permissions:
   contents: write
@@ -34,11 +33,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas numpy yfinance matplotlib python-dateutil
 
+      - name: Fetch all symbols
+        run: python fetch_all_symbols.py
+
       - name: Run agent
-        env:
-          SYMBOLS: SPY
         run: |
-          echo "[INFO] Running agent.py with yfinance..."
+          echo "[INFO] Running agent.py..."
           python agent.py
 
       - name: Copy CSVs for dashboard
