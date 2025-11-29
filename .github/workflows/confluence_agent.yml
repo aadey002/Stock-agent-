@@ -1,9 +1,12 @@
-name: Stock Agent Daily
+﻿name: Confluence Agent
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30 22 * * 1-5"   # Mon–Fri 22:30 UTC
+    # Every 15 mins during market hours (9:30 AM - 4:00 PM ET = 14:30 - 21:00 UTC)
+    - cron: "30,45 14 * * 1-5"          # 9:30, 9:45 AM ET
+    - cron: "0,15,30,45 15-20 * * 1-5"  # 10 AM - 3:45 PM ET
+    - cron: "0 21 * * 1-5"              # 4:00 PM ET close
 
 permissions:
   contents: write
@@ -17,9 +20,6 @@ concurrency:
 jobs:
   run-agent:
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -29,28 +29,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      # We keep this simple: always install what we need
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy yfinance matplotlib python-dateutil
+
       - name: Run agent
         env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
           SYMBOLS: SPY
-      run: echo 'Starting agent execution'
-          echo "[INFO] Python version:"
-          python --version
-
-          echo "[INFO] Upgrading pip and installing dependencies..."
-          python -m pip install --upgrade pip
-          pip install pandas numpy requests matplotlib python-dateutil
-
-          echo "[INFO] Showing pandas installation info..."
-          python -c "import pandas as pd; print('pandas version:', pd.__version__)"
-
-		  echo "[INFO] Running health check..."
-    	  python monitoring/health_monitor.py 
-		  echo "[WARNING] Health check failed, 	 	  
-		  continuing anyway"
-
-          echo "[INFO] Running agent.py..."
+        run: |
+          echo "[INFO] Running agent.py with yfinance..."
           python agent.py
 
       - name: Copy CSVs for dashboard
