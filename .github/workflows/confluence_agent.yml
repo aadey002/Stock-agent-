@@ -1,11 +1,12 @@
-﻿name: Confluence Agent
+name: Confluence Agent
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30,45 14 * * 1-5"
-    - cron: "0,15,30,45 15-20 * * 1-5"
-    - cron: "0 21 * * 1-5"
+    # Every 15 mins during market hours (9:30 AM - 4:00 PM ET)
+    - cron: "30,45 14 * * 1-5"   # 9:30, 9:45 AM ET
+    - cron: "0,15,30,45 15-20 * * 1-5"  # 10 AM - 3:45 PM ET
+    - cron: "0 21 * * 1-5"       # 4:00 PM ET close
 
 permissions:
   contents: write
@@ -19,9 +20,6 @@ concurrency:
 jobs:
   run-agent:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -36,12 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas numpy yfinance matplotlib python-dateutil
 
-      - name: Fetch all symbols
-        run: python fetch_all_symbols.py
-
       - name: Run agent
+        env:
+          SYMBOLS: SPY
         run: |
-          echo "[INFO] Running agent.py..."
+          echo "[INFO] Running agent.py with yfinance..."
           python agent.py
 
       - name: Copy CSVs for dashboard
