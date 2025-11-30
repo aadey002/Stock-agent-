@@ -862,12 +862,6 @@
         </header>
 
     <div class="container">
-        <div class="mode-toggle-container">
-            <div class="mode-toggle">
-                <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">⚡ INTRADAY</button>
-                <button class="mode-btn swing" onclick="setTradingMode('swing')">🌊 SWING</button>
-            </div>
-        </div>
 
         <div class="symbol-banner intraday-mode" id="symbolBanner">
             <div><strong id="currentSymbolDisplay">SPY</strong> - <span id="currentSymbolName">S&P 500 ETF</span> | <span id="currentModeDisplay">INTRADAY</span></div>
@@ -1588,6 +1582,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="analysis-time">
                     <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
                     <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
+                </div>
+                <div class="analysis-time" style="margin-left: 15px; border-left: 2px solid var(--border); padding-left: 15px;">
+                    <button class="analysis-time-btn" onclick="switchTradeMode('intraday')" id="intradayModeBtn" style="background: linear-gradient(135deg, var(--intraday), #d97706); color: white;">⚡ Intraday</button>
+                    <button class="analysis-time-btn" onclick="switchTradeMode('swing')" id="swingModeBtn">🌊 Swing</button>
                 </div>
                 <div class="report-actions">
                     <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
@@ -6894,6 +6892,38 @@ function generateReportHTML() {
 </html>
     `;
 }
+
+// TRADE MODE SWITCHING
+function switchTradeMode(mode) {
+    const intradayBtn = document.getElementById('intradayModeBtn');
+    const swingBtn = document.getElementById('swingModeBtn');
+    if (intradayBtn && swingBtn) {
+        if (mode === 'intraday') {
+            intradayBtn.style.background = 'linear-gradient(135deg, var(--intraday), #d97706)';
+            intradayBtn.style.color = 'white';
+            swingBtn.style.background = 'transparent';
+            swingBtn.style.color = 'var(--muted)';
+        } else {
+            swingBtn.style.background = 'linear-gradient(135deg, var(--swing), #6d28d9)';
+            swingBtn.style.color = 'white';
+            intradayBtn.style.background = 'transparent';
+            intradayBtn.style.color = 'var(--muted)';
+        }
+    }
+    document.querySelectorAll('#intradayTradeSection').forEach(el => el.style.display = mode === 'intraday' ? 'block' : 'none');
+    document.querySelectorAll('#swingTradeSection').forEach(el => el.style.display = mode === 'swing' ? 'block' : 'none');
+}
+
+// Charts tab handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('[data-tab="charts"]')?.addEventListener('click', () => {
+        setTimeout(() => { if (typeof updatePriceChart === 'function') updatePriceChart(); }, 300);
+    });
+    document.querySelector('[data-tab="patterns"]')?.addEventListener('click', () => {
+        setTimeout(() => { if (typeof updateFibonacciLevels === 'function' && currentData?.length) updateFibonacciLevels(currentData); }, 300);
+    });
+});
+
 </script>
 </body>
 </html>
