@@ -851,7 +851,7 @@
                             </optgroup>
                         </select>
                     </div>
-                    <button class="refresh-btn" onclick="loadAllData()">â†» Refresh</button>
+                    <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh</button>
                     <div class="user-info">
                         <div class="user-avatar">ðŸ‘¤</div>
                         <span id="loggedInUser">User</span>
@@ -864,8 +864,8 @@
     <div class="container">
         <div class="mode-toggle-container">
             <div class="mode-toggle">
-                <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">âš¡ INTRADAY</button>
-                <button class="mode-btn swing" onclick="setTradingMode('swing')">ðŸŒŠ SWING</button>
+                <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">⚡ INTRADAY</button>
+                <button class="mode-btn swing" onclick="setTradingMode('swing')">📈 SWING</button>
             </div>
         </div>
 
@@ -875,17 +875,17 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" data-tab="overview">ðŸ“Š Overview</button>
-            <button class="tab-btn" data-tab="charts">ðŸ“ˆ Charts</button>
-            <button class="tab-btn" data-tab="barcount">ðŸ”¢ Bar Count</button>
-            <button class="tab-btn" data-tab="signals">ðŸŽ¯ Signals</button>
-            <button class="tab-btn" data-tab="agents">ðŸ¤– Agents</button>
-            <button class="tab-btn" data-tab="patterns">ðŸ“ Patterns</button>
-            <button class="tab-btn" data-tab="trades">ðŸ“ Trades</button>
-            <button class="tab-btn health-tab" data-tab="health">ðŸ¥ Health</button>
-            <button class="tab-btn ai-tab" data-tab="ai-assistant">ðŸ§  AI Assistant</button>
-            <button class="tab-btn analysis-tab" data-tab="daily-analysis">ðŸ“‹ Daily Analysis</button>
-            <button class="tab-btn charts-tab" data-tab="multi-charts">ðŸ“Š Multi-Charts</button>
+            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+            <button class="tab-btn" data-tab="charts">📈 Charts</button>
+            <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
+            <button class="tab-btn" data-tab="signals">🎯 Signals</button>
+            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+            <button class="tab-btn" data-tab="patterns">📐 Patterns</button>
+            <button class="tab-btn" data-tab="trades">📝 Trades</button>
+            <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
+            <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
+            <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
+            <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -900,7 +900,7 @@
 
             <div class="dual-signal-container">
                 <div class="signal-panel intraday">
-                    <div class="signal-panel-title intraday">âš¡ INTRADAY (0-1 DTE)</div>
+                    <div class="signal-panel-title intraday">⚡ INTRADAY (0-1 DTE)</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                         <div>
                             <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="intradaySignal">CALL</span></div>
@@ -915,7 +915,7 @@
                     </div>
                 </div>
                 <div class="signal-panel swing">
-                    <div class="signal-panel-title swing">ðŸŒŠ SWING (3-5 DTE)</div>
+                    <div class="signal-panel-title swing">📈 SWING (3-5 DTE)</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                         <div>
                             <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
@@ -979,7 +979,7 @@
         <!-- BAR COUNT TAB - FIXED -->
         <div id="barcount" class="tab-content">
             <div class="card">
-                <div class="card-title">ðŸ”¢ Bar Count Analysis</div>
+                <div class="card-title">🔢 Bar Count Analysis</div>
                 <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
                     <div>
                         <label style="font-size:11px;color:var(--muted);">Bars to Analyze:</label>
@@ -1035,7 +1035,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">ðŸ“ˆ Bar Count History</div>
+                <div class="card-title">🔢 Bar Count History</div>
                 <div class="table-wrap" style="max-height:300px;overflow-y:auto;">
                     <table>
                         <thead><tr><th>#</th><th>Date</th><th>O/H/L/C</th><th>Dir</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Avg</th></tr></thead>
@@ -1051,7 +1051,7 @@
                 <div class="card-title">âš¡ Intraday vs ðŸŒŠ Swing Parameters</div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">âš¡ INTRADAY</th><th style="color:var(--swing);">ðŸŒŠ SWING</th></tr></thead>
+                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">📈 SWING</th></tr></thead>
                         <tbody>
                             <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
                             <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
@@ -1087,7 +1087,7 @@
         <!-- PATTERNS TAB -->
         <div id="patterns" class="tab-content">
             <div class="card">
-                <div class="card-title">ðŸ“ Fibonacci Levels</div>
+                <div class="card-title">📐 Fibonacci Levels</div>
                 <div class="grid grid-2">
                     <div><div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3">--</span></div><div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2">--</span></div><div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1">--</span></div></div>
                     <div><div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div><div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div><div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div></div>
@@ -1303,7 +1303,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">ðŸŽ¯ Agent Consensus Analysis</div>
+                <div class="card-title">🤖 Agent Consensus Analysis</div>
                 <div id="consensusAnalysis" class="grid grid-4">
                     <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
                         <div style="font-size:11px;color:var(--muted);">4/4 ULTRA</div>
@@ -1563,7 +1563,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <button class="quick-action-btn" onclick="askAi('What are the best PUT options for the next 2 days?')">ðŸ“‰ Best PUTs</button>
                         <button class="quick-action-btn" onclick="askAi('What is the optimal strike for ' + currentSymbol + '?')">ðŸŽ¯ Optimal Strike</button>
                         <button class="quick-action-btn" onclick="askAi('When is the best time to trade options?')">â° Best Time to Trade</button>
-                        <button class="quick-action-btn" onclick="askAi('Show bar count for all ETFs')">ðŸ”¢ Bar Count</button>
+                        <button class="quick-action-btn" onclick="askAi('Show bar count for all ETFs')">🔢 Bar Count</button>
                     </div>
                     
                     <div class="ai-data-context">
@@ -1582,24 +1582,24 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         <div id="daily-analysis" class="tab-content">
             <div class="analysis-header">
                 <div>
-                    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">ðŸ“‹ Daily Trading Analysis</h2>
+                    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">📋 Daily Trading Analysis</h2>
                     <p style="font-size: 12px; color: var(--muted);">Comprehensive signal confluence with Gann & Fibonacci analysis</p>
                 </div>
                 <div class="analysis-time">
-                    <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">â˜€ï¸ Morning Plan</button>
-                    <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">ðŸŒ™ Evening Review</button>
+                    <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
+                    <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
                 </div>
                 <div class="report-actions">
-                    <button class="report-btn primary" onclick="generateDailyReport()">ðŸ“„ Generate Report</button>
-                    <button class="report-btn success" onclick="downloadReport()">â¬‡ï¸ Download PDF</button>
-                    <button class="report-btn warning" onclick="refreshAnalysis()">ðŸ”„ Refresh</button>
+                    <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
+                    <button class="report-btn success" onclick="downloadReport()">⬇️ Download PDF</button>
+                    <button class="report-btn warning" onclick="refreshAnalysis()">🔄 Refresh</button>
                 </div>
             </div>
 
             <!-- Signal Confluence Score -->
             <div class="signal-confluence-card">
                 <div style="text-align: center;">
-                    <h3 style="font-size: 14px; color: var(--muted); margin-bottom: 5px;">ðŸ“Š MASTER SIGNAL CONFLUENCE</h3>
+                    <h3 style="font-size: 14px; color: var(--muted); margin-bottom: 5px;">📊 MASTER SIGNAL CONFLUENCE</h3>
                     <div style="font-size: 12px; color: var(--muted);" id="confluenceSymbol">SPY Analysis</div>
                 </div>
                 <div class="confluence-score bullish" id="masterConfluenceScore">+7.5</div>
@@ -1611,42 +1611,42 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="signal-breakdown">
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ¤– Agent Consensus</span>
+                            <span class="signal-item-name">🤖 Agent Consensus</span>
                             <span class="signal-item-score bullish" id="agentScore">4/4</span>
                         </div>
                         <div class="signal-item-detail" id="agentDetail">All 4 agents agree: CALL signal</div>
                     </div>
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ”¢ Bar Count</span>
+                            <span class="signal-item-name">🔢 Bar Count</span>
                             <span class="signal-item-score bullish" id="barCountScore">+12</span>
                         </div>
                         <div class="signal-item-detail" id="barCountDetail">12 consecutive bullish bars</div>
                     </div>
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ“ Pattern Score</span>
+                            <span class="signal-item-name">📐 Pattern Score</span>
                             <span class="signal-item-score bullish" id="patternScore">+3</span>
                         </div>
                         <div class="signal-item-detail" id="patternDetail">Bull flag + Golden cross detected</div>
                     </div>
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ”® Gann Cycle</span>
+                            <span class="signal-item-name">🔮 Gann Cycle</span>
                             <span class="signal-item-score bullish" id="gannScore">+2</span>
                         </div>
                         <div class="signal-item-detail" id="gannDetail">Time cycle supports upside</div>
                     </div>
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ“ Fibonacci</span>
+                            <span class="signal-item-name">📐 Fibonacci</span>
                             <span class="signal-item-score neutral" id="fibScore">0</span>
                         </div>
                         <div class="signal-item-detail" id="fibDetail">At 50% retracement level</div>
                     </div>
                     <div class="signal-item">
                         <div class="signal-item-header">
-                            <span class="signal-item-name">ðŸ“Š Volume</span>
+                            <span class="signal-item-name">📊 Volume</span>
                             <span class="signal-item-score bullish" id="volumeScore">+1.5</span>
                         </div>
                         <div class="signal-item-detail" id="volumeDetail">Above average volume confirmed</div>
@@ -1798,7 +1798,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div class="trading-plan-header" style="background: linear-gradient(135deg, #1e3a5f, #2d1b4e);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <h3 style="font-size: 16px; margin-bottom: 4px;">ðŸŒ™ Evening Review & Next Day Plan</h3>
+                                <h3 style="font-size: 16px; margin-bottom: 4px;">🌙 Evening Review & Next Day Plan</h3>
                                 <div style="font-size: 11px; opacity: 0.9;" id="eveningDate">Wednesday, November 26, 2025</div>
                             </div>
                             <div style="text-align: right;">
@@ -1878,7 +1878,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <option value="IWM">IWM</option>
                             <option value="DIA">DIA</option>
                         </select>
-                        <button onclick="refreshAllCharts()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">ðŸ”„ Refresh All</button>
+                        <button onclick="refreshAllCharts()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
                     </div>
                 </div>
             </div>
@@ -2412,8 +2412,8 @@ SIGNAL CLASSIFICATION:
 â€¢ 4/4 agree = ULTRA (highest) ðŸŽ¯
 
 DUAL TIMEFRAME:
-â€¢ INTRADAY: 0-1 DTE, 5-15 min, tight stops
-â€¢ SWING: 3-5 DTE, daily, wider stops
+⚡ INTRADAY: 0-1 DTE, 5-15 min, tight stops
+📈 SWING: 3-5 DTE, daily, wider stops
 
 WHY MULTI-AGENT WORKS:
 - Reduces false signals
@@ -3029,7 +3029,7 @@ function generateLocalResponse(message, context) {
 
 This could mean:
 â€¢ Markets are consolidating
-â€¢ Agents are conflicting
+🤖 Agents are conflicting
 â€¢ Wait for clearer signals
 
 ðŸ’¡ TIP: Check individual symbols for developing setups, or review the Bar Count tab for trend direction.`;
@@ -3441,7 +3441,7 @@ function generateBreakoutResponse() {
     response += `â€¢ Price above open âœ“\n`;
     response += `â€¢ Near session high âœ“\n`;
     response += `â€¢ Above 5-day high âœ“âœ“\n`;
-    response += `â€¢ Volume > 120% avg âœ“\n`;
+    response += `📊 Volume > 120% avg âœ“\n`;
     response += `â€¢ Move > 0.5% âœ“\n`;
     
     response += `\n**â° BEST TIME:** Trade breakouts 9:45-10:30 AM ET`;
@@ -3825,7 +3825,7 @@ function generateTradeRecommendation() {
 
 Current market conditions don't show clear setups:
 â€¢ No symbols have 3/4 or 4/4 consensus
-â€¢ Agents are conflicting
+🤖 Agents are conflicting
 â€¢ Consider staying flat or reducing size
 
 **WHAT TO DO:**
@@ -4385,7 +4385,7 @@ function shareTrades() {
     const winRate = closedTrades.length > 0 ? ((wins / closedTrades.length) * 100).toFixed(1) : 0;
     const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
     
-    const text = `ðŸ“Š Stock Agent 4 - Trade Summary
+    const text = `📊 Stock Agent 4 - Trade Summary
 
 ðŸ“ˆ Total Trades: ${trades.length}
 ðŸŽ¯ Win Rate: ${winRate}%
@@ -5656,7 +5656,7 @@ function switchAnalysisMode(mode) {
     // Update title
     const planTitle = document.getElementById('planTitle');
     if (planTitle) {
-        planTitle.textContent = mode === 'morning' ? 'â˜€ï¸ Morning Trading Plan' : 'ðŸŒ™ Evening Review & Next Day Plan';
+        planTitle.textContent = mode === 'morning' ? 'â˜€ï¸ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
     }
     
     generateDailyReport();
@@ -6338,23 +6338,23 @@ function updateTradeRecommendations(signals) {
                 <!-- Other Signals -->
                 <div style="font-size: 11px; line-height: 1.9;">
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                        <span>ðŸ”¢ Bar Count:</span>
+                        <span>🔢 Bar Count:</span>
                         <strong style="color: ${signals.barCount.count > 0 ? 'var(--success)' : signals.barCount.count < 0 ? 'var(--danger)' : 'var(--muted)'};">${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} bars</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                        <span>ðŸ“ Patterns:</span>
+                        <span>📐 Patterns:</span>
                         <strong>${signals.patterns.found.length > 0 ? signals.patterns.found.slice(0,2).join(', ') : 'None'}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                        <span>ðŸ”® Gann Cycle:</span>
+                        <span>🔮 Gann Cycle:</span>
                         <strong>${signals.gann.score > 0 ? 'ðŸŸ¢ Bullish' : signals.gann.score < 0 ? 'ðŸ”´ Bearish' : 'ðŸŸ¡ Neutral'}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                        <span>ðŸ“ Fibonacci:</span>
+                        <span>📐 Fibonacci:</span>
                         <strong>${signals.fibonacci.level}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                        <span>ðŸ“Š Volume:</span>
+                        <span>📊 Volume:</span>
                         <strong>${signals.volume.score > 0 ? 'ðŸŸ¢ Above Avg' : 'ðŸ”´ Below Avg'}</strong>
                     </div>
                 </div>
@@ -6625,7 +6625,7 @@ function updateAISummary(signals, price) {
                 Consider smaller position sizes or sitting out until signals align better.
             </div>`}
             
-            <strong>ðŸ”® Gann Cycle Analysis:</strong><br>
+            <strong>🔮 Gann Cycle Analysis:</strong><br>
             <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${gannExplanations}
             </div>
@@ -6657,7 +6657,7 @@ function updateAISummary(signals, price) {
         `;
     } else {
         summaryEl.innerHTML = `
-            <strong>ðŸŒ™ Evening Review (${new Date().toLocaleDateString()}):</strong> 
+            <strong>🌙 Evening Review (${new Date().toLocaleDateString()}):</strong> 
             Today's session ended with ${currentSymbol} at $${price.toFixed(2)}. 
             ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
             <br><br>
@@ -6665,9 +6665,9 @@ function updateAISummary(signals, price) {
             <strong>ðŸ“‹ Day Summary:</strong><br>
             <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 â€¢ Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
-                â€¢ Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
-                â€¢ Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
-                â€¢ Volume: ${signals.volume.detail}
+                📐 Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
+                🔢 Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
+                📊 Volume: ${signals.volume.detail}
             </div>
             
             <strong>ðŸ“… Tomorrow's Trading Plan:</strong><br>
@@ -6686,7 +6686,7 @@ function updateAISummary(signals, price) {
                 `}
             </div>
             
-            <strong>ðŸ”® Gann Cycle Outlook:</strong><br>
+            <strong>🔮 Gann Cycle Outlook:</strong><br>
             <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${gannExplanations}
             </div>
@@ -6847,7 +6847,7 @@ function generateReportHTML() {
     <div class="header">
         <div>
             <h1>ðŸ“Š Q5D Trading Report</h1>
-            <p><strong>${currentAnalysisMode === 'morning' ? 'â˜€ï¸ Morning Plan' : 'ðŸŒ™ Evening Review'}</strong></p>
+            <p><strong>${currentAnalysisMode === 'morning' ? '☀️ Morning Plan' : '🌙 Evening Review'}</strong></p>
         </div>
         <div style="text-align: right;">
             <p><strong>${currentSymbol}</strong></p>
@@ -6862,12 +6862,12 @@ function generateReportHTML() {
     <h2>ðŸ“Š Signal Breakdown</h2>
     <table>
         <tr><th>Signal Component</th><th>Score</th><th>Details</th></tr>
-        <tr><td>ðŸ¤– Agent Consensus</td><td>${signals.agentConsensus.count}/4</td><td>${signals.agentConsensus.detail}</td></tr>
-        <tr><td>ðŸ”¢ Bar Count</td><td>${signals.barCount.score > 0 ? '+' : ''}${signals.barCount.score.toFixed(1)}</td><td>${signals.barCount.detail}</td></tr>
-        <tr><td>ðŸ“ Patterns</td><td>${signals.patterns.score > 0 ? '+' : ''}${signals.patterns.score.toFixed(1)}</td><td>${signals.patterns.detail}</td></tr>
-        <tr><td>ðŸ”® Gann Cycles</td><td>${signals.gann.score > 0 ? '+' : ''}${signals.gann.score.toFixed(1)}</td><td>${signals.gann.detail}</td></tr>
-        <tr><td>ðŸ“ Fibonacci</td><td>${signals.fibonacci.score > 0 ? '+' : ''}${signals.fibonacci.score.toFixed(1)}</td><td>${signals.fibonacci.detail}</td></tr>
-        <tr><td>ðŸ“Š Volume</td><td>${signals.volume.score > 0 ? '+' : ''}${signals.volume.score.toFixed(1)}</td><td>${signals.volume.detail}</td></tr>
+        <tr><td>🤖 Agent Consensus</td><td>${signals.agentConsensus.count}/4</td><td>${signals.agentConsensus.detail}</td></tr>
+        <tr><td>🔢 Bar Count</td><td>${signals.barCount.score > 0 ? '+' : ''}${signals.barCount.score.toFixed(1)}</td><td>${signals.barCount.detail}</td></tr>
+        <tr><td>📐 Patterns</td><td>${signals.patterns.score > 0 ? '+' : ''}${signals.patterns.score.toFixed(1)}</td><td>${signals.patterns.detail}</td></tr>
+        <tr><td>🔮 Gann Cycles</td><td>${signals.gann.score > 0 ? '+' : ''}${signals.gann.score.toFixed(1)}</td><td>${signals.gann.detail}</td></tr>
+        <tr><td>📐 Fibonacci</td><td>${signals.fibonacci.score > 0 ? '+' : ''}${signals.fibonacci.score.toFixed(1)}</td><td>${signals.fibonacci.detail}</td></tr>
+        <tr><td>📊 Volume</td><td>${signals.volume.score > 0 ? '+' : ''}${signals.volume.score.toFixed(1)}</td><td>${signals.volume.detail}</td></tr>
     </table>
     
     <h2>ðŸŽ¯ Trade Recommendation</h2>
