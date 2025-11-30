@@ -1700,6 +1700,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
                     <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
                 </div>
+                <div class="mode-toggle" style="margin-left: 20px;">
+                    <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">⚡ INTRADAY</button>
+                    <button class="mode-btn swing" onclick="setTradingMode('swing')">🌊 SWING</button>
+                </div>
                 <div class="report-actions">
                     <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
                     <button class="report-btn success" onclick="downloadReport()">⬇️ Download PDF</button>
@@ -7371,6 +7375,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
