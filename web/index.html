@@ -5649,6 +5649,12 @@ function switchAnalysisMode(mode) {
     const tradeModeDiv = document.getElementById('intradayModeBtn')?.parentElement;
     if (tradeModeDiv) tradeModeDiv.style.display = mode === 'morning' ? 'flex' : 'none';
     
+    // Show/hide Morning vs Evening sections
+    const tradingPlan = document.getElementById('tradingPlanContainer');
+    const eveningSection = document.getElementById('eveningReviewSection');
+    if (tradingPlan) tradingPlan.style.display = mode === 'morning' ? 'block' : 'none';
+    if (eveningSection) eveningSection.style.display = mode === 'evening' ? 'block' : 'none';
+    
     // Update title
     const planTitle = document.getElementById('planTitle');
     if (planTitle) {
@@ -6939,6 +6945,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
