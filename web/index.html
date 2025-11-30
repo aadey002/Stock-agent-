@@ -876,7 +876,6 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-tab="overview">📊 Overview</button>
-            <button class="tab-btn" data-tab="charts">📈 Charts</button>
             <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
             <button class="tab-btn" data-tab="signals">🎯 Signals</button>
             <button class="tab-btn" data-tab="agents">🤖 Agents</button>
@@ -949,28 +948,6 @@
                     <div style="background:var(--bg);border-radius:6px;padding:10px;">
                         <div class="ref-data-row"><span class="ref-label">Fibonacci Zone</span><span class="badge badge-info" id="fibZone">--</span></div>
                         <div class="ref-data-row"><span class="ref-label">Trend</span><span class="badge" id="trendBadge">--</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CHARTS TAB -->
-        <div id="charts" class="tab-content">
-            <div class="card">
-                <div class="card-title">📈 Price Chart with Fibonacci Levels</div>
-                <div class="chart-box"><canvas id="priceChart"></canvas></div>
-                <div class="grid grid-2" style="margin-top:12px;">
-                    <div style="background:rgba(239,68,68,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--danger);margin-bottom:8px;">Resistance</h4>
-                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="chartR3">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="chartR2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="chartR1">--</span></div>
-                    </div>
-                    <div style="background:rgba(16,185,129,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--success);margin-bottom:8px;">Support</h4>
-                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="chartS1">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="chartS2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="chartS3">--</span></div>
                     </div>
                 </div>
             </div>
@@ -1669,6 +1646,119 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
                 <div class="trading-plan-body">
+
+            <!-- Intraday Trade Section -->
+            <div id="intradayTradeSection" class="trade-type-section" style="margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 2px solid var(--intraday); border-radius: 12px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, var(--intraday), #d97706); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 16px; margin: 0;">⚡ INTRADAY TRADE (0-1 DTE)</h3>
+                            <div style="font-size: 11px; opacity: 0.9;">Same-day or next-day expiration</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800;" id="intradaySignalBadge">CALL</div>
+                            <div style="font-size: 11px;" id="intradayConfidenceDA">Confidence: 78%</div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Entry Zone</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="intradayEntryZone">$682.50 - $683.50</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Strike</div>
+                                <div style="font-size: 18px; font-weight: 700;" id="intradayStrikeDA">$685 CALL</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">DTE</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--intraday);" id="intradayDTE">0-1 Days</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Risk:Reward</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="intradayRR">1:2.0</div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--danger);">Stop Loss</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--danger);" id="intradayStopDA">$680.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 1</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="intradayTarget1">$687.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 2</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="intradayTarget2">$690.00</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(245,158,11,0.1); padding: 12px; border-radius: 8px;">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--intraday); margin-bottom: 6px;">📋 Trade Reasoning:</div>
+                            <div style="font-size: 12px; color: var(--text); line-height: 1.6;" id="intradayReasoning">
+                                Strong momentum with 3/4 agent consensus. Price breaking above morning resistance. Volume confirming breakout. Best for quick scalp with tight stop.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swing Trade Section -->
+            <div id="swingTradeSection" class="trade-type-section" style="margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.05)); border: 2px solid var(--swing); border-radius: 12px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 16px; margin: 0;">🌊 SWING TRADE (3-14 DTE)</h3>
+                            <div style="font-size: 11px; opacity: 0.9;">Multi-day position trade</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800;" id="swingSignalBadge">CALL</div>
+                            <div style="font-size: 11px;" id="swingConfidenceDA">Confidence: 82%</div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Entry Zone</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="swingEntryZone">$680.00 - $685.00</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Strike</div>
+                                <div style="font-size: 18px; font-weight: 700;" id="swingStrikeDA">$690 CALL</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">DTE</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--swing);" id="swingDTE">5-7 Days</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Risk:Reward</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="swingRR">1:3.0</div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--danger);">Stop Loss</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--danger);" id="swingStopDA">$675.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 1</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="swingTarget1">$695.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 2</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="swingTarget2">$705.00</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px;">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--swing); margin-bottom: 6px;">📋 Trade Reasoning:</div>
+                            <div style="font-size: 12px; color: var(--text); line-height: 1.6;" id="swingReasoning">
+                                Bullish trend continuation with Fibonacci support at 38.2%. Gann cycle in accumulation phase. 4/4 agent consensus on daily timeframe. Wider stops allow for normal volatility.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                     <!-- Top Trade Recommendations -->
                     <div class="plan-section">
                         <div class="plan-section-title">🎯 Top Trade Recommendations</div>
@@ -1808,6 +1898,119 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         </div>
                     </div>
                     <div class="trading-plan-body">
+
+            <!-- Intraday Trade Section -->
+            <div id="intradayTradeSection" class="trade-type-section" style="margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 2px solid var(--intraday); border-radius: 12px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, var(--intraday), #d97706); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 16px; margin: 0;">⚡ INTRADAY TRADE (0-1 DTE)</h3>
+                            <div style="font-size: 11px; opacity: 0.9;">Same-day or next-day expiration</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800;" id="intradaySignalBadge">CALL</div>
+                            <div style="font-size: 11px;" id="intradayConfidenceDA">Confidence: 78%</div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Entry Zone</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="intradayEntryZone">$682.50 - $683.50</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Strike</div>
+                                <div style="font-size: 18px; font-weight: 700;" id="intradayStrikeDA">$685 CALL</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">DTE</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--intraday);" id="intradayDTE">0-1 Days</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Risk:Reward</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="intradayRR">1:2.0</div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--danger);">Stop Loss</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--danger);" id="intradayStopDA">$680.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 1</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="intradayTarget1">$687.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 2</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="intradayTarget2">$690.00</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(245,158,11,0.1); padding: 12px; border-radius: 8px;">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--intraday); margin-bottom: 6px;">📋 Trade Reasoning:</div>
+                            <div style="font-size: 12px; color: var(--text); line-height: 1.6;" id="intradayReasoning">
+                                Strong momentum with 3/4 agent consensus. Price breaking above morning resistance. Volume confirming breakout. Best for quick scalp with tight stop.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swing Trade Section -->
+            <div id="swingTradeSection" class="trade-type-section" style="margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.05)); border: 2px solid var(--swing); border-radius: 12px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="font-size: 16px; margin: 0;">🌊 SWING TRADE (3-14 DTE)</h3>
+                            <div style="font-size: 11px; opacity: 0.9;">Multi-day position trade</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 24px; font-weight: 800;" id="swingSignalBadge">CALL</div>
+                            <div style="font-size: 11px;" id="swingConfidenceDA">Confidence: 82%</div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Entry Zone</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="swingEntryZone">$680.00 - $685.00</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Strike</div>
+                                <div style="font-size: 18px; font-weight: 700;" id="swingStrikeDA">$690 CALL</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">DTE</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--swing);" id="swingDTE">5-7 Days</div>
+                            </div>
+                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted); text-transform: uppercase;">Risk:Reward</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="swingRR">1:3.0</div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--danger);">Stop Loss</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--danger);" id="swingStopDA">$675.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 1</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="swingTarget1">$695.00</div>
+                            </div>
+                            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--success);">Target 2</div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="swingTarget2">$705.00</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px;">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--swing); margin-bottom: 6px;">📋 Trade Reasoning:</div>
+                            <div style="font-size: 12px; color: var(--text); line-height: 1.6;" id="swingReasoning">
+                                Bullish trend continuation with Fibonacci support at 38.2%. Gann cycle in accumulation phase. 4/4 agent consensus on daily timeframe. Wider stops allow for normal volatility.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                         <!-- Today's Performance -->
                         <div class="plan-section">
                             <div class="plan-section-title">📈 Today's Performance</div>
@@ -5685,6 +5888,13 @@ function generateDailyReport() {
     updateAISummary(signals, price);
     updatePlanDateTime();
     
+    // Update Intraday/Swing sections
+    if (currentData && currentData.length > 0) {
+        const lastBarDA = currentData[currentData.length - 1];
+        const atrDA = parseFloat(lastBarDA.ATR) || price * 0.015;
+        updateIntradaySwingSections(signals, price, atrDA);
+    }
+    
     // Store for download
     dailyAnalysisData = {
         mode: currentAnalysisMode,
@@ -6893,6 +7103,68 @@ function generateReportHTML() {
 </body>
 </html>
     `;
+}
+
+// Update Intraday/Swing Trade Sections in Daily Analysis
+function updateIntradaySwingSections(signals, price, atr) {
+    const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
+    const signalColor = signal === 'CALL' ? '#10b981' : signal === 'PUT' ? '#ef4444' : '#f59e0b';
+    
+    // Intraday Section
+    const updateEl = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    const updateStyle = (id, prop, value) => { const el = document.getElementById(id); if (el) el.style[prop] = value; };
+    
+    updateEl('intradaySignalBadge', signal);
+    updateStyle('intradaySignalBadge', 'color', signalColor);
+    updateEl('intradayConfidenceDA', 'Confidence: ' + Math.round(signals.confidence * 0.95) + '%');
+    updateEl('intradayEntryZone', '
+</html>
+ + (price - atr * 0.3).toFixed(2) + ' - 
+</html>
+ + (price + atr * 0.1).toFixed(2));
+    updateEl('intradayStrikeDA', '
+</html>
+ + Math.round(price) + ' ' + signal);
+    updateEl('intradayDTE', '0-1 Days');
+    updateEl('intradayRR', '1:' + (1.5).toFixed(1));
+    updateEl('intradayStopDA', '
+</html>
+ + (signal === 'CALL' ? price - atr * 0.5 : price + atr * 0.5).toFixed(2));
+    updateEl('intradayTarget1', '
+</html>
+ + (signal === 'CALL' ? price + atr * 1.0 : price - atr * 1.0).toFixed(2));
+    updateEl('intradayTarget2', '
+</html>
+ + (signal === 'CALL' ? price + atr * 1.5 : price - atr * 1.5).toFixed(2));
+    updateEl('intradayReasoning', signals.agentConsensus.count + '/4 agent consensus. ' + 
+        (signals.patterns.found.length > 0 ? signals.patterns.found[0] + ' pattern. ' : '') +
+        'ATR-based stops for quick scalp. Best for experienced traders.');
+    
+    // Swing Section
+    updateEl('swingSignalBadge', signal);
+    updateStyle('swingSignalBadge', 'color', signalColor);
+    updateEl('swingConfidenceDA', 'Confidence: ' + Math.round(signals.confidence) + '%');
+    updateEl('swingEntryZone', '
+</html>
+ + (price - atr * 1.0).toFixed(2) + ' - 
+</html>
+ + (price + atr * 0.5).toFixed(2));
+    updateEl('swingStrikeDA', '
+</html>
+ + (Math.round(price/5)*5) + ' ' + signal);
+    updateEl('swingDTE', '5-7 Days');
+    updateEl('swingRR', '1:' + (2.5).toFixed(1));
+    updateEl('swingStopDA', '
+</html>
+ + (signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5).toFixed(2));
+    updateEl('swingTarget1', '
+</html>
+ + (signal === 'CALL' ? price + atr * 2.5 : price - atr * 2.5).toFixed(2));
+    updateEl('swingTarget2', '
+</html>
+ + (signal === 'CALL' ? price + atr * 4.0 : price - atr * 4.0).toFixed(2));
+    updateEl('swingReasoning', signals.direction + ' trend. ' + signals.gann.detail + '. ' + 
+        signals.fibonacci.detail + '. Wider stops for multi-day hold.');
 }
 </script>
 </body>
