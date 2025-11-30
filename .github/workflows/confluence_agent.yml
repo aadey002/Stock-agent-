@@ -1,8 +1,9 @@
-﻿name: Confluence Agent
+name: Confluence Agent
 
 on:
   workflow_dispatch:
   schedule:
+    # Market hours (EST): 9:30 AM - 4:00 PM = 14:30 - 21:00 UTC
     - cron: "30,45 14 * * 1-5"
     - cron: "0,15,30,45 15-20 * * 1-5"
     - cron: "0 21 * * 1-5"
@@ -22,6 +23,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -38,14 +40,43 @@ jobs:
 
       - name: Run agent
         run: |
-          echo "[INFO] Running agent.py with yfinance..."
+          echo "========================================"
+          echo "🚀 Running Stock Agent with yfinance"
+          echo "========================================"
           python agent.py
+          echo ""
+          echo "📁 Files created in data/:"
+          ls -la data/ || echo "No data folder"
+          echo ""
+          echo "📁 Files created in reports/:"
+          ls -la reports/ || echo "No reports folder"
 
-      - name: Copy CSVs for dashboard
+      - name: Copy CSVs to web root for dashboard
         run: |
+          echo "========================================"
+          echo "📋 Copying CSVs to web/ root"
+          echo "========================================"
+          
+          # Copy data CSVs to web root (where dashboard expects them)
+          cp -f data/*.csv web/ 2>/dev/null && echo "✅ Copied data/*.csv to web/" || echo "⚠️ No data/*.csv files"
+          
+          # Copy report CSVs to web root
+          cp -f reports/*.csv web/ 2>/dev/null && echo "✅ Copied reports/*.csv to web/" || echo "⚠️ No reports/*.csv files"
+          
+          # Also copy to web/data/ as backup location
           mkdir -p web/data
-          cp -f data/*.csv web/data/ || true
-          cp -f reports/*.csv web/data/ || true
+          cp -f data/*.csv web/data/ 2>/dev/null || true
+          cp -f reports/*.csv web/data/ 2>/dev/null || true
+          
+          echo ""
+          echo "📁 Final web/ folder contents:"
+          ls -la web/
+          echo ""
+          echo "📁 web/data/ contents:"
+          ls -la web/data/ || echo "Empty"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v3
@@ -55,3 +86,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
+      - name: Deployment summary
+        run: |
+          echo "========================================"
+          echo "✅ DEPLOYMENT COMPLETE"
+          echo "========================================"
+          echo "🌐 Dashboard: https://aadey002.github.io/Stock-agent-/"
+          echo "📊 Data files deployed to root of site"
+          echo "========================================"
