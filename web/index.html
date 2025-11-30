@@ -2733,6 +2733,7 @@ async function loadAllData() {
                 updateDashboard();
                 updateBarCountAnalysis();
                 updateReversalStats();
+                updateFibonacciLevels(currentData);
                 updatePriceChart();
                 
                 // Update Daily Analysis if that tab is active
@@ -2886,6 +2887,21 @@ function updateFibonacci() {
     document.getElementById('fibS2').textContent = '$' + fib500.toFixed(2);
     document.getElementById('fibS3').textContent = '$' + fib618.toFixed(2);
     
+   // Also update Charts tab Fibonacci levels
+    const chartR1 = document.getElementById('chartR1');
+    const chartR2 = document.getElementById('chartR2');
+    const chartR3 = document.getElementById('chartR3');
+    const chartS1 = document.getElementById('chartS1');
+    const chartS2 = document.getElementById('chartS2');
+    const chartS3 = document.getElementById('chartS3');
+    
+    if (chartR1) chartR1.textContent = '$' + fib100.toFixed(2);
+    if (chartR2) chartR2.textContent = '$' + fib1272.toFixed(2);
+    if (chartR3) chartR3.textContent = '$' + fib1618.toFixed(2);
+    if (chartS1) chartS1.textContent = '$' + fib382.toFixed(2);
+    if (chartS2) chartS2.textContent = '$' + fib500.toFixed(2);
+    if (chartS3) chartS3.textContent = '$' + fib618.toFixed(2);
+    
     document.getElementById('chartR1').textContent = '$' + fib100.toFixed(2);
     document.getElementById('chartR2').textContent = '$' + fib1272.toFixed(2);
     document.getElementById('chartR3').textContent = '$' + fib1618.toFixed(2);
@@ -2907,8 +2923,20 @@ function updateFibonacci() {
     document.getElementById('trendBadge').className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
     
     window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, swingHigh, swingLow };
-}
-
+}   
+// Update Charts tab Fibonacci levels
+    const chartR1 = document.getElementById('chartR1');
+    const chartR2 = document.getElementById('chartR2');
+    const chartR3 = document.getElementById('chartR3');
+    const chartS1 = document.getElementById('chartS1');
+    const chartS2 = document.getElementById('chartS2');
+    const chartS3 = document.getElementById('chartS3');
+    if (chartR1) chartR1.textContent = '$' + fib100.toFixed(2);
+    if (chartR2) chartR2.textContent = '$' + fib1272.toFixed(2);
+    if (chartR3) chartR3.textContent = '$' + fib1618.toFixed(2);
+    if (chartS1) chartS1.textContent = '$' + fib382.toFixed(2);
+    if (chartS2) chartS2.textContent = '$' + fib500.toFixed(2);
+    if (chartS3) chartS3.textContent = '$' + fib618.toFixed(2);
 // FIXED: Bar Count now uses currentSymbol
 function updateBarCountAnalysis() {
     const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
@@ -7375,6 +7403,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
