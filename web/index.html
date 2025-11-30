@@ -7015,17 +7015,72 @@ function setOptionType(type) {
 }
 
 function useAgentSignal() {
+    // Get current price from dashboard
     const priceEl = document.getElementById('currentPrice');
-    if (priceEl) {
-        const price = parseFloat(priceEl.textContent.replace('$', ''));
+    if (priceEl && priceEl.textContent !== '--') {
+        const price = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
         if (price > 0) {
             document.getElementById('calcStockPrice').value = price.toFixed(2);
             document.getElementById('calcStrikePrice').value = Math.round(price);
         }
     }
+    
+    // Get signal direction if available
+    const signalEl = document.getElementById('signalStatus');
+    if (signalEl) {
+        const signal = signalEl.textContent.toUpperCase();
+        if (signal.includes('CALL') || signal.includes('BULL')) {
+            setOptionType('call');
+        } else if (signal.includes('PUT') || signal.includes('BEAR')) {
+            setOptionType('put');
+        }
+    }
+    
+    // Get ATR for premium estimate if available
+    const atrEl = document.getElementById('atrDisplay') || document.getElementById('atrValue');
+    if (atrEl) {
+        const atr = parseFloat(atrEl.textContent);
+        if (atr > 0) {
+            document.getElementById('calcPremium').value = (atr * 0.4).toFixed(2);
+        }
+    }
+    
     calculateOptionsProfit();
 }
 
+// Auto-update Options Calculator when symbol changes
+function updateOptionsCalcPrice() {
+    const priceEl = document.getElementById('currentPrice');
+    const symbolEl = document.getElementById('symbolSelect');
+    
+    if (priceEl && priceEl.textContent !== '--' && priceEl.textContent !== 'Loading...') {
+        const price = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
+        if (price > 0) {
+            document.getElementById('calcStockPrice').value = price.toFixed(2);
+            document.getElementById('calcStrikePrice').value = Math.round(price);
+        }
+    }
+}
+
+// Hook into symbol change
+const origChangeSymbol = typeof changeSymbol === 'function' ? changeSymbol : null;
+if (origChangeSymbol) {
+    changeSymbol = function() {
+        origChangeSymbol();
+        setTimeout(updateOptionsCalcPrice, 1500); // Wait for price to load
+    };
+}
+
+// Update price when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const optionsTab = document.querySelector('[data-tab="options-calc"]');
+    if (optionsTab) {
+        optionsTab.addEventListener('click', function() {
+            setTimeout(updateOptionsCalcPrice, 500);
+        });
+    }
+});
+   
 function calculateOptionsProfit() {
     const stockPrice = parseFloat(document.getElementById('calcStockPrice').value);
     const strikePrice = parseFloat(document.getElementById('calcStrikePrice').value);
@@ -7129,6 +7184,7 @@ function aiAnalyzeBestOptions() {
 </script>
 </body>
 </html>
+
 
 
 
