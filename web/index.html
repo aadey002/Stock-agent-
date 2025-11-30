@@ -6232,8 +6232,10 @@ function updateTradeRecommendations(signals) {
     const entryLow = price - atr * mult;
     const entryHigh = price + atr * 0.1;
     const bestEntry = signal === 'CALL' ? entryLow : entryHigh;
-    const stop05 = signal === 'CALL' ? price - atr * 0.5 : price + atr * 0.5;
-    const stop10 = signal === 'CALL' ? price - atr * 1.0 : price + atr * 1.0;
+    const stopMult1 = isMorning ? (isIntraday ? 0.5 : 0.8) : 1.0;
+    const stopMult2 = isMorning ? (isIntraday ? 1.0 : 1.5) : 2.0;
+    const stop05 = signal === 'CALL' ? price - atr * stopMult1 : price + atr * stopMult1;
+    const stop10 = signal === 'CALL' ? price - atr * stopMult2 : price + atr * stopMult2;
     const target1 = signal === 'CALL' ? price + atr * 1.5 : price - atr * 1.5;
     const target2 = signal === 'CALL' ? price + atr * 2.5 : price - atr * 2.5;
     
@@ -6930,5 +6932,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
