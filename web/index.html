@@ -6235,7 +6235,7 @@ function updateTradeRecommendations(signals) {
     const isIntraday = typeof currentTradeMode !== 'undefined' ? currentTradeMode === 'intraday' : true;
     const mult = isMorning ? (isIntraday ? 0.3 : 0.5) : 0.6;
     const entryLow = price - atr * mult;
-    const entryHigh = price + atr * 0.1;
+    const entryHigh = price + atr * (mult * 0.4);
     const bestEntry = signal === 'CALL' ? entryLow : entryHigh;
     const stopMult1 = isMorning ? (isIntraday ? 0.5 : 0.8) : 1.0;
     const stopMult2 = isMorning ? (isIntraday ? 1.0 : 1.5) : 2.0;
@@ -6939,6 +6939,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
