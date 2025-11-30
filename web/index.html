@@ -957,26 +957,136 @@
 
         <!-- CHARTS TAB -->
         <div id="charts" class="tab-content">
-            <div class="card">
-                <div class="card-title">📈 Price Chart with Fibonacci Levels</div>
-                <div class="chart-box"><canvas id="priceChart"></canvas></div>
-                <div class="grid grid-2" style="margin-top:12px;">
-                    <div style="background:rgba(239,68,68,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--danger);margin-bottom:8px;">Resistance</h4>
-                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="chartR3">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="chartR2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="chartR1">--</span></div>
+            <div class="card" style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div class="card-title" style="margin: 0;">📈 Price Chart with Fibonacci Levels</div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
+                        <select id="mainChartSymbol" onchange="updateMainChart()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
                     </div>
-                    <div style="background:rgba(16,185,129,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--success);margin-bottom:8px;">Support</h4>
-                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="chartS1">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="chartS2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="chartS3">--</span></div>
+                </div>
+            </div>
+            
+            <div class="chart-panel" style="margin-bottom: 20px;">
+                <div class="chart-panel-header">
+                    <div class="chart-panel-title">
+                        <span class="icon" style="font-size: 18px;">📊</span>
+                        <span>Main Chart</span>
+                        <span class="signal-badge-mtf call" id="mainChartSignal">CALL</span>
+                    </div>
+                    <div class="chart-controls">
+                        <select id="mainChartTimeframe" class="chart-select" onchange="updateMainChart()">
+                            <option value="15">15 Min</option>
+                            <option value="30">30 Min</option>
+                            <option value="60">1 Hour</option>
+                            <option value="D" selected>Daily</option>
+                            <option value="W">Weekly</option>
+                        </select>
+                        <select id="mainChartType" class="chart-select" onchange="updateMainChart()">
+                            <option value="candlestick" selected>Candlestick</option>
+                            <option value="heikinashi">Heikin Ashi</option>
+                            <option value="line">Line</option>
+                        </select>
+                        <button class="settings-btn-mtf" onclick="toggleMainChartSettings()">⚙️</button>
+                    </div>
+                </div>
+                <div class="settings-panel-mtf" id="mainChartSettings" style="display: none;">
+                    <div class="settings-row-mtf">
+                        <label><input type="checkbox" id="mainShowEMA" checked onchange="updateMainChart()"> EMAs</label>
+                        <label><input type="checkbox" id="mainShowFib" checked onchange="updateMainChart()"> Fib Levels</label>
+                        <label><input type="checkbox" id="mainShowPatterns" checked onchange="updateMainChart()"> Patterns</label>
+                        <label><input type="checkbox" id="mainShowVolume" checked onchange="updateMainChart()"> Volume</label>
+                        <label><input type="checkbox" id="mainShowDivine" onchange="updateMainChart()"> Divine Proportions</label>
+                    </div>
+                </div>
+                <div id="mainChartPattern" class="pattern-alert-mtf" style="display:none;"></div>
+                <div class="chart-body" id="mainChartBody" style="height: 450px;">
+                    <div class="chart-legend">
+                        <span class="symbol" id="mainChartSymbolDisplay">SPY</span>
+                        <span class="price" id="mainChartPrice">--</span>
+                    </div>
+                    <div class="chart-canvas-container" id="mainChartContainer" style="height: 400px;"></div>
+                    <div class="chart-loading" id="mainChartLoading">Loading chart...</div>
+                </div>
+                <div class="mtf-legend" id="mainChartLegend">
+                    <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
+                    <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
+                    <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                </div>
+                <div class="fib-levels-mtf" id="mainChartFib"></div>
+            </div>
+            
+            <!-- Fibonacci & Divine Proportions Display -->
+            <div class="grid grid-2" style="margin-top: 15px;">
+                <div class="card">
+                    <div class="card-title" style="color: var(--danger);">📉 Fibonacci Resistance Levels</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                        <div style="background: rgba(239,68,68,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">R1 (23.6%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--danger);" id="fibR1">--</div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.15); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">R2 (38.2%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--danger);" id="fibR2">--</div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.2); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">R3 (61.8%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--danger);" id="fibR3">--</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title" style="color: var(--success);">📈 Fibonacci Support Levels</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                        <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">S1 (23.6%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="fibS1">--</div>
+                        </div>
+                        <div style="background: rgba(16,185,129,0.15); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">S2 (38.2%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="fibS2">--</div>
+                        </div>
+                        <div style="background: rgba(16,185,129,0.2); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: var(--muted);">S3 (61.8%)</div>
+                            <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="fibS3">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Divine Proportions -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">🔮 Divine Proportions (Golden Ratio)</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 10px;">
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05)); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid rgba(139,92,246,0.2);">
+                        <div style="font-size: 11px; color: var(--muted);">Φ (Phi)</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--secondary);" id="divinePhi">--</div>
+                        <div style="font-size: 10px; color: var(--light);">1.618</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05)); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid rgba(139,92,246,0.2);">
+                        <div style="font-size: 11px; color: var(--muted);">1/Φ</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--secondary);" id="divineInvPhi">--</div>
+                        <div style="font-size: 10px; color: var(--light);">0.618</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05)); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid rgba(139,92,246,0.2);">
+                        <div style="font-size: 11px; color: var(--muted);">Φ²</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--secondary);" id="divinePhiSq">--</div>
+                        <div style="font-size: 10px; color: var(--light);">2.618</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05)); padding: 15px; border-radius: 10px; text-align: center; border: 1px solid rgba(139,92,246,0.2);">
+                        <div style="font-size: 11px; color: var(--muted);">√5</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--secondary);" id="divineSqrt5">--</div>
+                        <div style="font-size: 10px; color: var(--light);">2.236</div>
                     </div>
                 </div>
             </div>
         </div>
-
+       
         <!-- BAR COUNT TAB - FIXED -->
         <div id="barcount" class="tab-content">
             <div class="card">
@@ -7180,10 +7290,88 @@ function aiAnalyzeBestOptions() {
     document.getElementById('calcStrikePrice').value = best.strike;
     document.getElementById('calcPremium').value = best.premium;
     calculateOptionsProfit();
-}   
+} 
+    // ============================================
+// MAIN CHART TAB FUNCTIONS
+// ============================================
+
+function toggleMainChartSettings() {
+    const panel = document.getElementById('mainChartSettings');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateMainChart() {
+    const symbol = document.getElementById('mainChartSymbol')?.value || 'SPY';
+    const timeframe = document.getElementById('mainChartTimeframe')?.value || 'D';
+    const chartType = document.getElementById('mainChartType')?.value || 'candlestick';
+    
+    // Update symbol display
+    const symbolDisplay = document.getElementById('mainChartSymbolDisplay');
+    if (symbolDisplay) symbolDisplay.textContent = symbol;
+    
+    // Sync with main symbol selector
+    const mainSelect = document.getElementById('symbolSelect');
+    if (mainSelect && mainSelect.value !== symbol) {
+        mainSelect.value = symbol;
+        if (typeof changeSymbol === 'function') changeSymbol();
+    }
+    
+    // Update price from current data
+    const priceEl = document.getElementById('currentPrice');
+    const mainChartPrice = document.getElementById('mainChartPrice');
+    if (priceEl && mainChartPrice) {
+        mainChartPrice.textContent = priceEl.textContent;
+    }
+    
+    // Update Fibonacci levels
+    updateChartFibLevels();
+    
+    // Update chart container using existing MTF chart logic if available
+    if (typeof createMTFChart === 'function') {
+        createMTFChart('mainChart', symbol, timeframe, chartType);
+    }
+}
+
+function updateChartFibLevels() {
+    const priceEl = document.getElementById('currentPrice');
+    if (!priceEl || priceEl.textContent === '--') return;
+    
+    const price = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
+    if (isNaN(price) || price <= 0) return;
+    
+    // Calculate Fibonacci levels (assuming ~2% range)
+    const range = price * 0.02;
+    
+    // Resistance levels
+    document.getElementById('fibR1').textContent = '$' + (price + range * 0.236).toFixed(2);
+    document.getElementById('fibR2').textContent = '$' + (price + range * 0.382).toFixed(2);
+    document.getElementById('fibR3').textContent = '$' + (price + range * 0.618).toFixed(2);
+    
+    // Support levels
+    document.getElementById('fibS1').textContent = '$' + (price - range * 0.236).toFixed(2);
+    document.getElementById('fibS2').textContent = '$' + (price - range * 0.382).toFixed(2);
+    document.getElementById('fibS3').textContent = '$' + (price - range * 0.618).toFixed(2);
+    
+    // Divine proportions
+    document.getElementById('divinePhi').textContent = '$' + (price * 1.618).toFixed(2);
+    document.getElementById('divineInvPhi').textContent = '$' + (price * 0.618).toFixed(2);
+    document.getElementById('divinePhiSq').textContent = '$' + (price * 2.618).toFixed(2);
+    document.getElementById('divineSqrt5').textContent = '$' + (price * 2.236).toFixed(2);
+}
+
+// Initialize main chart when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    const chartsTab = document.querySelector('[data-tab="charts"]');
+    if (chartsTab) {
+        chartsTab.addEventListener('click', function() {
+            setTimeout(updateMainChart, 500);
+        });
+    }
+});
 </script>
 </body>
 </html>
+
 
 
 
