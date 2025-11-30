@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -772,7 +772,7 @@
     <!-- LOGIN SCREEN -->
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
-            <div class="login-logo">ðŸ“Š</div>
+            <div class="login-logo">📊</div>
             <h1 class="login-title">Stock Agent 4</h1>
             <p class="login-subtitle">Q5D Options Trading Platform</p>
             
@@ -802,7 +802,7 @@
             </form>
             
             <div class="login-footer">
-                <p>ðŸ”’ Secure Access | Powered by Gann Principles</p>
+                <p>🔒 Secure Access | Powered by Gann Principles</p>
             </div>
         </div>
     </div>
@@ -817,7 +817,7 @@
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">ðŸ“Š</div>
+                    <div class="logo-icon">📊</div>
                     <div><h1>Stock Agent 4</h1><p>Q5D Options Platform</p></div>
                 </div>
                 
@@ -851,9 +851,9 @@
                             </optgroup>
                         </select>
                     </div>
-                    <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh</button>
+                    <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
                     <div class="user-info">
-                        <div class="user-avatar">ðŸ‘¤</div>
+                        <div class="user-avatar">👤</div>
                         <span id="loggedInUser">User</span>
                     </div>
                     <button class="logout-btn" onclick="handleLogout()">Logout</button>
@@ -865,13 +865,13 @@
         <div class="mode-toggle-container">
             <div class="mode-toggle">
                 <button class="mode-btn intraday active" onclick="setTradingMode('intraday')">⚡ INTRADAY</button>
-                <button class="mode-btn swing" onclick="setTradingMode('swing')">📈 SWING</button>
+                <button class="mode-btn swing" onclick="setTradingMode('swing')">🌊 SWING</button>
             </div>
         </div>
 
         <div class="symbol-banner intraday-mode" id="symbolBanner">
             <div><strong id="currentSymbolDisplay">SPY</strong> - <span id="currentSymbolName">S&P 500 ETF</span> | <span id="currentModeDisplay">INTRADAY</span></div>
-            <div style="font-size:11px;">ðŸ“… <span id="dataDate">--</span> ðŸ• <span id="dataTime">--</span></div>
+            <div style="font-size:11px;">📅 <span id="dataDate">--</span> 🕐 <span id="dataTime">--</span></div>
         </div>
 
         <div class="tabs">
@@ -915,7 +915,7 @@
                     </div>
                 </div>
                 <div class="signal-panel swing">
-                    <div class="signal-panel-title swing">📈 SWING (3-5 DTE)</div>
+                    <div class="signal-panel-title swing">🌊 SWING (3-5 DTE)</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                         <div>
                             <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
@@ -932,7 +932,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">ðŸ“‹ Reference Data</div>
+                <div class="card-title">📋 Reference Data</div>
                 <div class="grid grid-4">
                     <div style="background:var(--bg);border-radius:6px;padding:10px;">
                         <div class="ref-data-row"><span class="ref-label">52W High</span><span class="ref-value positive" id="week52High">--</span></div>
@@ -957,7 +957,7 @@
         <!-- CHARTS TAB -->
         <div id="charts" class="tab-content">
             <div class="card">
-                <div class="card-title">ðŸ“ˆ Price Chart with Fibonacci Levels</div>
+                <div class="card-title">📈 Price Chart with Fibonacci Levels</div>
                 <div class="chart-box"><canvas id="priceChart"></canvas></div>
                 <div class="grid grid-2" style="margin-top:12px;">
                     <div style="background:rgba(239,68,68,0.05);border-radius:6px;padding:10px;">
@@ -998,22 +998,22 @@
                 
                 <div class="bar-count-display">
                     <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">ðŸ“Š Base Confluence</div>
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📊 Base Confluence</div>
                         <div class="bar-count-value" id="baseBarCount">+5</div>
                         <div class="bar-count-label">Consecutive Bars</div>
                     </div>
                     <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">ðŸ”® Gann-Elliott</div>
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🔮 Gann-Elliott</div>
                         <div class="bar-count-value" id="gannBarCount">+7</div>
                         <div class="bar-count-label">Wave Progress</div>
                     </div>
                     <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">ðŸ§  DQN/RL</div>
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🧠 DQN/RL</div>
                         <div class="bar-count-value" id="dqnBarCount">+2</div>
                         <div class="bar-count-label">Momentum</div>
                     </div>
                     <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">ðŸŒŠ 3-Wave</div>
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🌊 3-Wave</div>
                         <div class="bar-count-value" id="waveBarCount">+4</div>
                         <div class="bar-count-label">Impulse</div>
                     </div>
@@ -1022,7 +1022,7 @@
 
             <!-- Trend Reversal Statistics -->
             <div class="card">
-                <div class="card-title">ðŸ“Š Trend Reversal Statistics</div>
+                <div class="card-title">📊 Trend Reversal Statistics</div>
                 <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Average bars before trend reversal based on historical data</p>
                 <div class="table-wrap">
                     <table>
@@ -1035,7 +1035,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">🔢 Bar Count History</div>
+                <div class="card-title">📈 Bar Count History</div>
                 <div class="table-wrap" style="max-height:300px;overflow-y:auto;">
                     <table>
                         <thead><tr><th>#</th><th>Date</th><th>O/H/L/C</th><th>Dir</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Avg</th></tr></thead>
@@ -1048,10 +1048,10 @@
         <!-- SIGNALS TAB -->
         <div id="signals" class="tab-content">
             <div class="card">
-                <div class="card-title">âš¡ Intraday vs ðŸŒŠ Swing Parameters</div>
+                <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">📈 SWING</th></tr></thead>
+                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th></tr></thead>
                         <tbody>
                             <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
                             <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
@@ -1068,15 +1068,15 @@
         <!-- AGENTS TAB -->
         <div id="agents" class="tab-content">
             <div class="card">
-                <div class="card-title">ðŸ¤– Agent Signals</div>
+                <div class="card-title">🤖 Agent Signals</div>
                 <div class="table-wrap">
                     <table>
                         <thead><tr><th>Agent</th><th>Intraday</th><th>Conf</th><th>Swing</th><th>Conf</th></tr></thead>
                         <tbody>
-                            <tr><td>ðŸ“Š Base Confluence</td><td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td><td id="baseIntradayConf">72%</td><td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td><td id="baseSwingConf">68%</td></tr>
-                            <tr><td>ðŸ”® Gann-Elliott</td><td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td><td id="gannIntradayConf">75%</td><td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td><td id="gannSwingConf">70%</td></tr>
-                            <tr><td>ðŸ§  DQN/RL</td><td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td><td id="dqnIntradayConf">58%</td><td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td><td id="dqnSwingConf">65%</td></tr>
-                            <tr><td>ðŸŒŠ 3-Wave</td><td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td><td id="waveIntradayConf">68%</td><td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td><td id="waveSwingConf">72%</td></tr>
+                            <tr><td>📊 Base Confluence</td><td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td><td id="baseIntradayConf">72%</td><td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td><td id="baseSwingConf">68%</td></tr>
+                            <tr><td>🔮 Gann-Elliott</td><td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td><td id="gannIntradayConf">75%</td><td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td><td id="gannSwingConf">70%</td></tr>
+                            <tr><td>🧠 DQN/RL</td><td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td><td id="dqnIntradayConf">58%</td><td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td><td id="dqnSwingConf">65%</td></tr>
+                            <tr><td>🌊 3-Wave</td><td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td><td id="waveIntradayConf">68%</td><td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td><td id="waveSwingConf">72%</td></tr>
                             <tr style="background:var(--bg);"><td><strong>CONSENSUS</strong></td><td><span class="badge badge-ultra" id="intradayConsensus">3/4</span></td><td id="intradayConsensusConf">68%</td><td><span class="badge badge-ultra" id="swingConsensus">4/4</span></td><td id="swingConsensusConf">69%</td></tr>
                         </tbody>
                     </table>
@@ -1094,9 +1094,9 @@
                 </div>
             </div>
             <div class="grid grid-3">
-                <div class="card"><div class="card-title">ðŸ“Š Technical</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
-                <div class="card"><div class="card-title">ðŸ•¯ï¸ Candlestick</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
-                <div class="card"><div class="card-title">â¬› Point & Figure</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div></div>
+                <div class="card"><div class="card-title">📊 Technical</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
+                <div class="card"><div class="card-title">🕯️ Candlestick</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
+                <div class="card"><div class="card-title">⬛ Point & Figure</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div></div>
             </div>
         </div>
 
@@ -1133,7 +1133,7 @@
 
             <!-- Log New Trade Form -->
             <div class="card">
-                <div class="card-title">ðŸ“ Log New Trade</div>
+                <div class="card-title">📝 Log New Trade</div>
                 <form id="tradeForm" onsubmit="logTrade(event)">
                     <div class="grid grid-4" style="margin-bottom:12px;">
                         <div class="form-group-trade">
@@ -1156,15 +1156,15 @@
                         <div class="form-group-trade">
                             <label>Direction</label>
                             <select id="tradeDirection" required>
-                                <option value="CALL">ðŸ“ˆ CALL</option>
-                                <option value="PUT">ðŸ“‰ PUT</option>
+                                <option value="CALL">📈 CALL</option>
+                                <option value="PUT">📉 PUT</option>
                             </select>
                         </div>
                         <div class="form-group-trade">
                             <label>Trade Type</label>
                             <select id="tradeType" required>
-                                <option value="INTRADAY">âš¡ Intraday (0DTE)</option>
-                                <option value="SWING">ðŸŒŠ Swing (3-5 DTE)</option>
+                                <option value="INTRADAY">⚡ Intraday (0DTE)</option>
+                                <option value="SWING">🌊 Swing (3-5 DTE)</option>
                             </select>
                         </div>
                     </div>
@@ -1206,9 +1206,9 @@
                         <div class="form-group-trade">
                             <label>Status</label>
                             <select id="tradeStatus" onchange="toggleExitField()">
-                                <option value="CLOSED">âœ… Closed</option>
-                                <option value="OPEN">ðŸ”µ Open</option>
-                                <option value="STOPPED">ðŸ›‘ Stopped Out</option>
+                                <option value="CLOSED">✅ Closed</option>
+                                <option value="OPEN">🔵 Open</option>
+                                <option value="STOPPED">🛑 Stopped Out</option>
                             </select>
                         </div>
                         <div class="form-group-trade">
@@ -1217,7 +1217,7 @@
                         </div>
                     </div>
                     <div style="display:flex;gap:10px;">
-                        <button type="submit" class="trade-btn primary">âž• Log Trade</button>
+                        <button type="submit" class="trade-btn primary">➕ Log Trade</button>
                         <button type="button" class="trade-btn secondary" onclick="clearTradeForm()">Clear Form</button>
                     </div>
                 </form>
@@ -1248,18 +1248,18 @@
                         </select>
                     </div>
                     <div style="display:flex;gap:8px;">
-                        <button class="action-btn" onclick="printTrades()">ðŸ–¨ï¸ Print</button>
-                        <button class="action-btn" onclick="exportCSV()">ðŸ“Š Export CSV</button>
-                        <button class="action-btn" onclick="shareTrades()">ðŸ“¤ Share</button>
-                        <button class="action-btn" onclick="emailTrades()">ðŸ“§ Email</button>
-                        <button class="action-btn danger" onclick="clearAllTrades()">ðŸ—‘ï¸ Clear All</button>
+                        <button class="action-btn" onclick="printTrades()">🖨️ Print</button>
+                        <button class="action-btn" onclick="exportCSV()">📊 Export CSV</button>
+                        <button class="action-btn" onclick="shareTrades()">📤 Share</button>
+                        <button class="action-btn" onclick="emailTrades()">📧 Email</button>
+                        <button class="action-btn danger" onclick="clearAllTrades()">🗑️ Clear All</button>
                     </div>
                 </div>
             </div>
 
             <!-- Trade History Table -->
             <div class="card">
-                <div class="card-title">ðŸ“‹ Trade History <span id="tradeCount" style="font-size:11px;color:var(--muted);margin-left:8px;">(0 trades)</span></div>
+                <div class="card-title">📋 Trade History <span id="tradeCount" style="font-size:11px;color:var(--muted);margin-left:8px;">(0 trades)</span></div>
                 <div class="table-wrap" style="max-height:400px;overflow-y:auto;">
                     <table id="tradeTable">
                         <thead>
@@ -1289,13 +1289,13 @@
             <!-- Trade Analytics -->
             <div class="grid grid-2">
                 <div class="card">
-                    <div class="card-title">ðŸ“Š Performance by Symbol</div>
+                    <div class="card-title">📊 Performance by Symbol</div>
                     <div id="symbolPerformance">
                         <p style="color:var(--muted);font-size:12px;">Log trades to see performance breakdown</p>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-title">ðŸ“ˆ Performance by Direction</div>
+                    <div class="card-title">📈 Performance by Direction</div>
                     <div id="directionPerformance">
                         <p style="color:var(--muted);font-size:12px;">Log trades to see CALL vs PUT performance</p>
                     </div>
@@ -1303,7 +1303,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title">🤖 Agent Consensus Analysis</div>
+                <div class="card-title">🎯 Agent Consensus Analysis</div>
                 <div id="consensusAnalysis" class="grid grid-4">
                     <div style="background:var(--bg);padding:12px;border-radius:6px;text-align:center;">
                         <div style="font-size:11px;color:var(--muted);">4/4 ULTRA</div>
@@ -1333,36 +1333,36 @@
         <div id="health" class="tab-content">
             <!-- System Status Banner -->
             <div class="health-banner" id="healthBanner">
-                <div class="health-banner-icon" id="healthBannerIcon">ðŸŸ¢</div>
+                <div class="health-banner-icon" id="healthBannerIcon">🟢</div>
                 <div class="health-banner-content">
                     <div class="health-banner-title" id="healthBannerTitle">System Healthy</div>
                     <div class="health-banner-subtitle" id="healthBannerSubtitle">All systems operational</div>
                 </div>
-                <button class="refresh-health-btn" onclick="runHealthCheck()">ðŸ”„ Run Check</button>
+                <button class="refresh-health-btn" onclick="runHealthCheck()">🔄 Run Check</button>
             </div>
 
             <!-- Health Metrics Grid -->
             <div class="grid grid-4">
                 <div class="health-metric" id="healthDataFresh">
-                    <div class="health-metric-icon">ðŸ“Š</div>
+                    <div class="health-metric-icon">📊</div>
                     <div class="health-metric-label">Data Freshness</div>
                     <div class="health-metric-value" id="dataFreshnessValue">Checking...</div>
                     <div class="health-metric-status" id="dataFreshnessStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthMarket">
-                    <div class="health-metric-icon">ðŸ›ï¸</div>
+                    <div class="health-metric-icon">🏛️</div>
                     <div class="health-metric-label">Market Status</div>
                     <div class="health-metric-value" id="marketStatusValue">Checking...</div>
                     <div class="health-metric-status" id="marketStatusStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthWorkflow">
-                    <div class="health-metric-icon">âš™ï¸</div>
+                    <div class="health-metric-icon">⚙️</div>
                     <div class="health-metric-label">Agent Workflow</div>
                     <div class="health-metric-value" id="workflowStatusValue">Checking...</div>
                     <div class="health-metric-status" id="workflowStatusStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthDataQuality">
-                    <div class="health-metric-icon">âœ…</div>
+                    <div class="health-metric-icon">✅</div>
                     <div class="health-metric-label">Data Quality</div>
                     <div class="health-metric-value" id="dataQualityValue">Checking...</div>
                     <div class="health-metric-status" id="dataQualityStatus">--</div>
@@ -1372,7 +1372,7 @@
             <!-- Detailed Status Cards -->
             <div class="grid grid-2">
                 <div class="card">
-                    <div class="card-title">ðŸ“… Data Timeline</div>
+                    <div class="card-title">📅 Data Timeline</div>
                     <div class="health-timeline">
                         <div class="timeline-item">
                             <span class="timeline-label">Last Data Point:</span>
@@ -1398,25 +1398,25 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">ðŸ”Œ Connection Status</div>
+                    <div class="card-title">🔌 Connection Status</div>
                     <div class="connection-grid">
                         <div class="connection-item">
-                            <span class="connection-indicator" id="connGitHub">â—</span>
+                            <span class="connection-indicator" id="connGitHub">●</span>
                             <span>GitHub Pages</span>
                             <span class="connection-status" id="connGitHubStatus">--</span>
                         </div>
                         <div class="connection-item">
-                            <span class="connection-indicator" id="connData">â—</span>
+                            <span class="connection-indicator" id="connData">●</span>
                             <span>Data Feed (SPY.csv)</span>
                             <span class="connection-status" id="connDataStatus">--</span>
                         </div>
                         <div class="connection-item">
-                            <span class="connection-indicator" id="connPortfolio">â—</span>
+                            <span class="connection-indicator" id="connPortfolio">●</span>
                             <span>Portfolio Feed</span>
                             <span class="connection-status" id="connPortfolioStatus">--</span>
                         </div>
                         <div class="connection-item">
-                            <span class="connection-indicator" id="connLocalStorage">â—</span>
+                            <span class="connection-indicator" id="connLocalStorage">●</span>
                             <span>Local Storage</span>
                             <span class="connection-status" id="connLocalStorageStatus">--</span>
                         </div>
@@ -1426,10 +1426,10 @@
 
             <!-- Alerts & Issues -->
             <div class="card">
-                <div class="card-title">âš ï¸ Alerts & Issues</div>
+                <div class="card-title">⚠️ Alerts & Issues</div>
                 <div id="healthAlerts" class="health-alerts">
                     <div class="health-alert info">
-                        <span class="alert-icon">â„¹ï¸</span>
+                        <span class="alert-icon">ℹ️</span>
                         <span>Running initial health check...</span>
                     </div>
                 </div>
@@ -1437,7 +1437,7 @@
 
             <!-- System Info -->
             <div class="card">
-                <div class="card-title">â„¹ï¸ System Information</div>
+                <div class="card-title">ℹ️ System Information</div>
                 <div class="grid grid-3">
                     <div class="sys-info-item">
                         <div class="sys-info-label">Platform Version</div>
@@ -1468,11 +1468,11 @@
 
             <!-- Troubleshooting Guide -->
             <div class="card">
-                <div class="card-title">ðŸ”§ Troubleshooting Guide</div>
+                <div class="card-title">🔧 Troubleshooting Guide</div>
                 <div class="troubleshoot-accordion">
                     <div class="troubleshoot-item">
                         <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
-                            <span>â“ Data Not Updating</span>
+                            <span>❓ Data Not Updating</span>
                             <span class="troubleshoot-toggle">+</span>
                         </div>
                         <div class="troubleshoot-content">
@@ -1480,14 +1480,14 @@
                                 <li>Check GitHub Actions: <a href="https://github.com/aadey002/Stock-agent-/actions" target="_blank">View Workflows</a></li>
                                 <li>Verify TIINGO_TOKEN secret is set in repository settings</li>
                                 <li>Check if market was open (no updates on weekends/holidays)</li>
-                                <li>Manually trigger workflow: Actions â†’ Run workflow</li>
+                                <li>Manually trigger workflow: Actions → Run workflow</li>
                                 <li>Check workflow logs for errors</li>
                             </ol>
                         </div>
                     </div>
                     <div class="troubleshoot-item">
                         <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
-                            <span>â“ Dashboard Shows Stale Data</span>
+                            <span>❓ Dashboard Shows Stale Data</span>
                             <span class="troubleshoot-toggle">+</span>
                         </div>
                         <div class="troubleshoot-content">
@@ -1501,7 +1501,7 @@
                     </div>
                     <div class="troubleshoot-item">
                         <div class="troubleshoot-header" onclick="toggleTroubleshoot(this)">
-                            <span>â“ Workflow Failing</span>
+                            <span>❓ Workflow Failing</span>
                             <span class="troubleshoot-toggle">+</span>
                         </div>
                         <div class="troubleshoot-content">
@@ -1522,25 +1522,25 @@
             <div class="ai-assistant-container">
                 <div class="ai-chat-panel">
                     <div class="ai-chat-header">
-                        <div class="ai-avatar">ðŸ§ </div>
+                        <div class="ai-avatar">🧠</div>
                         <div>
                             <div style="font-weight:700;">Gann Trading Assistant</div>
-                            <div style="font-size:10px;opacity:0.9;">Tunnel Through the Air â€¢ Mystifying Square â€¢ Divine Proportions</div>
+                            <div style="font-size:10px;opacity:0.9;">Tunnel Through the Air • Mystifying Square • Divine Proportions</div>
                         </div>
                     </div>
                     <div class="ai-chat-messages" id="aiChatMessages">
                         <div class="ai-message assistant">
-                            <div class="message-content">Welcome to the Gann Trading Assistant! ðŸŽ¯
+                            <div class="message-content">Welcome to the Gann Trading Assistant! 🎯
 
 I'm trained on W.D. Gann's principles from "Tunnel Through the Air", the Mystifying Square (Square of 9), and Divine Proportions (Fibonacci/Golden Ratio).
 
 I can help you with:
-â€¢ ðŸ“Š Analyze any ETF/stock on the dashboard
-â€¢ ðŸŽ¯ Find high-consensus trades (3/4, 4/4)
-â€¢ ðŸ“ˆ Recommend optimal strikes
-â€¢ ðŸ”® Gann time cycles & Square of 9
-â€¢ ðŸ“ Divine Proportions (Phi/Fibonacci)
-â€¢ ðŸ“‹ Generate custom reports
+• 📊 Analyze any ETF/stock on the dashboard
+• 🎯 Find high-consensus trades (3/4, 4/4)
+• 📈 Recommend optimal strikes
+• 🔮 Gann time cycles & Square of 9
+• 📐 Divine Proportions (Phi/Fibonacci)
+• 📋 Generate custom reports
 
 Try: "Show me all ETFs with 4/4 consensus"</div>
                         </div>
@@ -1553,21 +1553,21 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 
                 <div class="ai-sidebar">
                     <div class="ai-quick-actions">
-                        <h4>ðŸš€ Quick Actions</h4>
-                        <button class="quick-action-btn" onclick="askAi('Show me all ETFs with 3/4 or 4/4 agent consensus today')">ðŸ“Š High Consensus Trades</button>
-                        <button class="quick-action-btn" onclick="askAi('Which ETFs are breaking out today?')">ðŸš€ Morning Breakouts</button>
-                        <button class="quick-action-btn" onclick="askAi('Scan for all patterns')">ðŸ” Pattern Scan</button>
-                        <button class="quick-action-btn" onclick="askAi('Show momentum rankings')">ðŸ“ˆ Momentum Leaders</button>
-                        <button class="quick-action-btn" onclick="askAi('Any reversal patterns forming?')">ðŸ”„ Reversal Scan</button>
-                        <button class="quick-action-btn" onclick="askAi('What are the best CALL options for the next 2 days?')">ðŸ“ˆ Best CALLs</button>
-                        <button class="quick-action-btn" onclick="askAi('What are the best PUT options for the next 2 days?')">ðŸ“‰ Best PUTs</button>
-                        <button class="quick-action-btn" onclick="askAi('What is the optimal strike for ' + currentSymbol + '?')">ðŸŽ¯ Optimal Strike</button>
-                        <button class="quick-action-btn" onclick="askAi('When is the best time to trade options?')">â° Best Time to Trade</button>
+                        <h4>🚀 Quick Actions</h4>
+                        <button class="quick-action-btn" onclick="askAi('Show me all ETFs with 3/4 or 4/4 agent consensus today')">📊 High Consensus Trades</button>
+                        <button class="quick-action-btn" onclick="askAi('Which ETFs are breaking out today?')">🚀 Morning Breakouts</button>
+                        <button class="quick-action-btn" onclick="askAi('Scan for all patterns')">🔍 Pattern Scan</button>
+                        <button class="quick-action-btn" onclick="askAi('Show momentum rankings')">📈 Momentum Leaders</button>
+                        <button class="quick-action-btn" onclick="askAi('Any reversal patterns forming?')">🔄 Reversal Scan</button>
+                        <button class="quick-action-btn" onclick="askAi('What are the best CALL options for the next 2 days?')">📈 Best CALLs</button>
+                        <button class="quick-action-btn" onclick="askAi('What are the best PUT options for the next 2 days?')">📉 Best PUTs</button>
+                        <button class="quick-action-btn" onclick="askAi('What is the optimal strike for ' + currentSymbol + '?')">🎯 Optimal Strike</button>
+                        <button class="quick-action-btn" onclick="askAi('When is the best time to trade options?')">⏰ Best Time to Trade</button>
                         <button class="quick-action-btn" onclick="askAi('Show bar count for all ETFs')">🔢 Bar Count</button>
                     </div>
                     
                     <div class="ai-data-context">
-                        <h4>ðŸ“Š Current Context</h4>
+                        <h4>📊 Current Context</h4>
                         <div class="context-item"><span>Symbol:</span><span id="aiContextSymbol">SPY</span></div>
                         <div class="context-item"><span>Price:</span><span id="aiContextPrice">$675.02</span></div>
                         <div class="context-item"><span>Signal:</span><span id="aiContextSignal">CALL</span></div>
@@ -1659,7 +1659,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="trading-plan-header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h3 style="font-size: 16px; margin-bottom: 4px;" id="planTitle">â˜€ï¸ Morning Trading Plan</h3>
+                            <h3 style="font-size: 16px; margin-bottom: 4px;" id="planTitle">☀️ Morning Trading Plan</h3>
                             <div style="font-size: 11px; opacity: 0.9;" id="planDate">Wednesday, November 26, 2025</div>
                         </div>
                         <div style="text-align: right;">
@@ -1671,7 +1671,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="trading-plan-body">
                     <!-- Top Trade Recommendations -->
                     <div class="plan-section">
-                        <div class="plan-section-title">ðŸŽ¯ Top Trade Recommendations</div>
+                        <div class="plan-section-title">🎯 Top Trade Recommendations</div>
                         <div id="tradeRecommendations">
                             <!-- Generated dynamically -->
                         </div>
@@ -1679,25 +1679,25 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                     <!-- Gann Analysis -->
                     <div class="plan-section">
-                        <div class="plan-section-title">ðŸ”® Gann Time Cycles & Square of 9</div>
+                        <div class="plan-section-title">🔮 Gann Time Cycles & Square of 9</div>
                         <div class="gann-analysis" id="gannAnalysis">
                             <div class="grid grid-2" style="gap: 20px;">
                                 <div>
-                                    <h4 style="font-size: 12px; margin-bottom: 10px;">â° Time Cycles</h4>
+                                    <h4 style="font-size: 12px; margin-bottom: 10px;">⏰ Time Cycles</h4>
                                     <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="gannTimeCycles">
-                                        â€¢ 30-day cycle: Bottoming phase<br>
-                                        â€¢ 90-day cycle: Mid-cycle thrust<br>
-                                        â€¢ 180-day cycle: Bullish continuation<br>
-                                        â€¢ Annual cycle: Q4 strength expected
+                                        • 30-day cycle: Bottoming phase<br>
+                                        • 90-day cycle: Mid-cycle thrust<br>
+                                        • 180-day cycle: Bullish continuation<br>
+                                        • Annual cycle: Q4 strength expected
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 style="font-size: 12px; margin-bottom: 10px;">ðŸ”¢ Square of 9 Levels</h4>
+                                    <h4 style="font-size: 12px; margin-bottom: 10px;">🔢 Square of 9 Levels</h4>
                                     <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="squareOf9">
-                                        â€¢ Resistance 1: <span style="color:var(--danger);font-weight:600;">$685.00</span><br>
-                                        â€¢ Resistance 2: <span style="color:var(--danger);font-weight:600;">$692.50</span><br>
-                                        â€¢ Support 1: <span style="color:var(--success);font-weight:600;">$672.00</span><br>
-                                        â€¢ Support 2: <span style="color:var(--success);font-weight:600;">$665.00</span>
+                                        • Resistance 1: <span style="color:var(--danger);font-weight:600;">$685.00</span><br>
+                                        • Resistance 2: <span style="color:var(--danger);font-weight:600;">$692.50</span><br>
+                                        • Support 1: <span style="color:var(--success);font-weight:600;">$672.00</span><br>
+                                        • Support 2: <span style="color:var(--success);font-weight:600;">$665.00</span>
                                     </div>
                                 </div>
                             </div>
@@ -1706,7 +1706,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                     <!-- Divine Proportions -->
                     <div class="plan-section">
-                        <div class="plan-section-title">ðŸ“ Divine Proportions (Phi/Fibonacci)</div>
+                        <div class="plan-section-title">📐 Divine Proportions (Phi/Fibonacci)</div>
                         <div class="phi-levels" id="phiLevels">
                             <div class="phi-level">
                                 <div class="phi-level-name">23.6% Retrace</div>
@@ -1737,7 +1737,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                     <!-- High Consensus Trades -->
                     <div class="plan-section">
-                        <div class="plan-section-title">ðŸ† High Consensus Trades (3/4 or 4/4)</div>
+                        <div class="plan-section-title">🏆 High Consensus Trades (3/4 or 4/4)</div>
                         <div class="table-wrap">
                             <table>
                                 <thead>
@@ -1761,7 +1761,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                     <!-- Market Context -->
                     <div class="plan-section">
-                        <div class="plan-section-title">ðŸ“Š Market Context</div>
+                        <div class="plan-section-title">📊 Market Context</div>
                         <div class="grid grid-3" style="gap: 15px;" id="marketContext">
                             <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
                                 <div style="font-size: 10px; color: var(--muted);">Overall Bias</div>
@@ -1780,7 +1780,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                     <!-- AI Summary -->
                     <div class="plan-section" style="border-bottom: none;">
-                        <div class="plan-section-title">ðŸ§  AI Trading Summary</div>
+                        <div class="plan-section-title">🧠 AI Trading Summary</div>
                         <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="aiSummary">
                             <strong>Morning Analysis:</strong> Market conditions favor bullish positions today. SPY showing strong momentum with 4/4 agent consensus. Key levels to watch: Support at $672 (50% Fib), Resistance at $685 (Square of 9). 
                             <br><br>
@@ -1810,7 +1810,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div class="trading-plan-body">
                         <!-- Today's Performance -->
                         <div class="plan-section">
-                            <div class="plan-section-title">ðŸ“ˆ Today's Performance</div>
+                            <div class="plan-section-title">📈 Today's Performance</div>
                             <div class="grid grid-4" style="gap: 15px;" id="todayPerformance">
                                 <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center;">
                                     <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="spyChange">+0.85%</div>
@@ -1833,18 +1833,18 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                         <!-- Signal Accuracy -->
                         <div class="plan-section">
-                            <div class="plan-section-title">ðŸŽ¯ Signal Accuracy Review</div>
+                            <div class="plan-section-title">🎯 Signal Accuracy Review</div>
                             <div id="signalAccuracy" style="font-size: 12px; line-height: 1.8; color: var(--muted);">
-                                â€¢ Morning CALL signal on SPY: âœ… Correct (+0.85%)<br>
-                                â€¢ QQQ breakout prediction: âœ… Correct (+1.20%)<br>
-                                â€¢ IWM neutral signal: âš ï¸ Missed downside<br>
-                                â€¢ Overall accuracy today: <span style="color: var(--success); font-weight: 700;">75%</span>
+                                • Morning CALL signal on SPY: ✅ Correct (+0.85%)<br>
+                                • QQQ breakout prediction: ✅ Correct (+1.20%)<br>
+                                • IWM neutral signal: ⚠️ Missed downside<br>
+                                • Overall accuracy today: <span style="color: var(--success); font-weight: 700;">75%</span>
                             </div>
                         </div>
 
                         <!-- Tomorrow's Outlook -->
                         <div class="plan-section">
-                            <div class="plan-section-title">ðŸ”® Tomorrow's Outlook</div>
+                            <div class="plan-section-title">🔮 Tomorrow's Outlook</div>
                             <div id="tomorrowOutlook" style="background: var(--bg); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;">
                                 <strong>Key Events:</strong> Pre-Thanksgiving trading, expect lower volume<br>
                                 <strong>Bias:</strong> Continuation of bullish momentum likely<br>
@@ -1855,7 +1855,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                         <!-- Next Day Trade Setups -->
                         <div class="plan-section" style="border-bottom: none;">
-                            <div class="plan-section-title">ðŸ“‹ Next Day Trade Setups</div>
+                            <div class="plan-section-title">📋 Next Day Trade Setups</div>
                             <div id="nextDaySetups">
                                 <!-- Generated dynamically -->
                             </div>
@@ -1869,7 +1869,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div id="multi-charts" class="tab-content">
             <div class="card" style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div class="card-title" style="margin: 0;">ðŸ“Š Multi-Timeframe Chart Analysis</div>
+                    <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
                         <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
@@ -1885,22 +1885,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
             <!-- MTF Bias Summary -->
             <div class="mtf-summary">
-                <div class="mtf-summary-title">ðŸ“ˆ Multi-Timeframe Bias Summary</div>
+                <div class="mtf-summary-title">📈 Multi-Timeframe Bias Summary</div>
                 <div class="mtf-summary-grid">
                     <div class="mtf-summary-item">
-                        <div class="title">âš¡ Intraday</div>
+                        <div class="title">⚡ Intraday</div>
                         <div class="value bullish" id="intradayBias">BULLISH</div>
                     </div>
                     <div class="mtf-summary-item">
-                        <div class="title">ðŸ“ˆ Swing</div>
+                        <div class="title">📈 Swing</div>
                         <div class="value bullish" id="swingBias">BULLISH</div>
                     </div>
                     <div class="mtf-summary-item">
-                        <div class="title">ðŸŽ¯ Position</div>
+                        <div class="title">🎯 Position</div>
                         <div class="value bearish" id="positionBias">BEARISH</div>
                     </div>
                     <div class="mtf-summary-item">
-                        <div class="title">ðŸ”¥ Confluence</div>
+                        <div class="title">🔥 Confluence</div>
                         <div class="value bullish" id="overallBias">2/3 BULLISH</div>
                     </div>
                 </div>
@@ -1911,7 +1911,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="chart-panel">
                     <div class="chart-panel-header">
                         <div class="chart-panel-title">
-                            <span class="icon intraday">âš¡</span>
+                            <span class="icon intraday">⚡</span>
                             <span>Intraday</span>
                             <span class="signal-badge-mtf call" id="intradaySignal">CALL</span>
                         </div>
@@ -1927,7 +1927,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="line">Line</option>
                                 <option value="pf">Point & Figure</option>
                             </select>
-                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('intraday')">âš™ï¸</button>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('intraday')">⚙️</button>
                         </div>
                     </div>
                     <div class="settings-panel-mtf" id="intradaySettings">
@@ -1959,7 +1959,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="chart-panel">
                     <div class="chart-panel-header">
                         <div class="chart-panel-title">
-                            <span class="icon swing">ðŸ“ˆ</span>
+                            <span class="icon swing">📈</span>
                             <span>Swing</span>
                             <span class="signal-badge-mtf call" id="swingSignal">CALL</span>
                         </div>
@@ -1974,7 +1974,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="line">Line</option>
                                 <option value="pf">Point & Figure</option>
                             </select>
-                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('swing')">âš™ï¸</button>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('swing')">⚙️</button>
                         </div>
                     </div>
                     <div class="settings-panel-mtf" id="swingSettings">
@@ -2006,7 +2006,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="chart-panel">
                     <div class="chart-panel-header">
                         <div class="chart-panel-title">
-                            <span class="icon position">ðŸŽ¯</span>
+                            <span class="icon position">🎯</span>
                             <span>Position</span>
                             <span class="signal-badge-mtf put" id="positionSignal">PUT</span>
                         </div>
@@ -2021,7 +2021,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="line">Line</option>
                                 <option value="pf">Point & Figure</option>
                             </select>
-                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('position')">âš™ï¸</button>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('position')">⚙️</button>
                         </div>
                     </div>
                     <div class="settings-panel-mtf" id="positionSettings">
@@ -2052,37 +2052,37 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
             <!-- Chart Info Card -->
             <div class="card">
-                <div class="card-title">ðŸ“‹ Chart Type Guide</div>
+                <div class="card-title">📋 Chart Type Guide</div>
                 <div class="grid grid-3" style="gap: 15px;">
                     <div style="background: rgba(245,158,11,0.1); padding: 12px; border-radius: 8px;">
-                        <h4 style="font-size: 12px; color: var(--intraday); margin-bottom: 6px;">âš¡ Intraday (5-15 min)</h4>
+                        <h4 style="font-size: 12px; color: var(--intraday); margin-bottom: 6px;">⚡ Intraday (5-15 min)</h4>
                         <p style="font-size: 11px; color: var(--muted);">Short-term scalping & day trading. Best for 0-1 DTE options.</p>
                     </div>
                     <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px;">
-                        <h4 style="font-size: 12px; color: var(--swing); margin-bottom: 6px;">ðŸ“ˆ Swing (Daily/Weekly)</h4>
+                        <h4 style="font-size: 12px; color: var(--swing); margin-bottom: 6px;">📈 Swing (Daily/Weekly)</h4>
                         <p style="font-size: 11px; color: var(--muted);">Medium-term swing trades. Best for 3-14 DTE options.</p>
                     </div>
                     <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 8px;">
-                        <h4 style="font-size: 12px; color: var(--success); margin-bottom: 6px;">ðŸŽ¯ Position (Monthly)</h4>
+                        <h4 style="font-size: 12px; color: var(--success); margin-bottom: 6px;">🎯 Position (Monthly)</h4>
                         <p style="font-size: 11px; color: var(--muted);">Long-term position trades. Best for 30+ DTE options.</p>
                     </div>
                 </div>
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
                     <div class="grid grid-4" style="gap: 15px;">
                         <div>
-                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">ðŸ“Š Candlestick</h4>
+                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">📊 Candlestick</h4>
                             <p style="font-size: 10px; color: var(--muted);">Traditional OHLC candles showing price action.</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">ðŸ”¥ Heikin Ashi</h4>
+                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">🔥 Heikin Ashi</h4>
                             <p style="font-size: 10px; color: var(--muted);">Smoothed candles that filter noise.</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">ðŸ“ˆ Line</h4>
+                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">📈 Line</h4>
                             <p style="font-size: 10px; color: var(--muted);">Simple line chart for trend clarity.</p>
                         </div>
                         <div>
-                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">â­• Point & Figure</h4>
+                            <h4 style="font-size: 11px; color: var(--text); margin-bottom: 4px;">⭕ Point & Figure</h4>
                             <p style="font-size: 10px; color: var(--muted);">X's and O's with pattern detection.</p>
                         </div>
                     </div>
@@ -2250,7 +2250,7 @@ const TRADING_PARAMS = {
 // ============================================
 
 const GANN_KNOWLEDGE = {
-    tunnelThroughAir: `ðŸ“š "THE TUNNEL THROUGH THE AIR" (1927) by W.D. Gann
+    tunnelThroughAir: `📚 "THE TUNNEL THROUGH THE AIR" (1927) by W.D. Gann
 
 This novel encodes Gann's most powerful trading secrets through allegory and hidden meanings.
 
@@ -2266,22 +2266,22 @@ CORE PRINCIPLES:
 3. THE WHEEL OF TIME
    - 360 degrees = 1 year cycle
    - Each degree = 1 day
-   - Major turns at 90Â°, 180Â°, 270Â°, 360Â°
+   - Major turns at 90°, 180°, 270°, 360°
 
 KEY CYCLES:
-â€¢ 7-year cycle (Biblical/Saturn)
-â€¢ 10-year cycle (Decade)
-â€¢ 20-year cycle (Jupiter-Saturn)
-â€¢ 30-year cycle (Saturn return)
-â€¢ 60-year cycle (Major)
-â€¢ 90-year cycle (Master)
+• 7-year cycle (Biblical/Saturn)
+• 10-year cycle (Decade)
+• 20-year cycle (Jupiter-Saturn)
+• 30-year cycle (Saturn return)
+• 60-year cycle (Major)
+• 90-year cycle (Master)
 
 TRADING APPLICATION:
 - Count days from major highs/lows
 - Watch for turns at 30, 45, 60, 90, 120, 144, 180, 270, 360 days
 - Anniversary dates of major moves often repeat`,
 
-    mystifyingSquare: `â¬œ THE MYSTIFYING SQUARE (SQUARE OF 9)
+    mystifyingSquare: `⬜ THE MYSTIFYING SQUARE (SQUARE OF 9)
 
 The Square of 9 is Gann's most powerful tool - a spiral of numbers revealing price/time relationships.
 
@@ -2289,24 +2289,24 @@ STRUCTURE:
 - Center starts at 1
 - Numbers spiral outward counter-clockwise
 - Cardinal cross (N,S,E,W) = strongest levels
-- 45Â° angles mark important support/resistance
+- 45° angles mark important support/resistance
 
 HOW TO CALCULATE:
-1. Take square root of current price: âˆšPrice
+1. Take square root of current price: √Price
 2. Add/subtract for target:
-   - Â±0.125 = 45Â° move (1/8 turn)
-   - Â±0.25 = 90Â° move (1/4 turn)
-   - Â±0.5 = 180Â° move (1/2 turn)
-   - Â±1.0 = 360Â° move (full turn)
-   - Â±2.0 = 720Â° move (2 full turns)
-3. Square the result: ResultÂ²
+   - ±0.125 = 45° move (1/8 turn)
+   - ±0.25 = 90° move (1/4 turn)
+   - ±0.5 = 180° move (1/2 turn)
+   - ±1.0 = 360° move (full turn)
+   - ±2.0 = 720° move (2 full turns)
+3. Square the result: Result²
 
 EXAMPLE FOR SPY @ $675:
-âˆš675 = 25.98
-â€¢ +0.25 (90Â°) = 26.23Â² = $688.01 (resistance)
-â€¢ +0.5 (180Â°) = 26.48Â² = $701.19 (major resistance)
-â€¢ -0.25 (90Â°) = 25.73Â² = $662.03 (support)
-â€¢ -0.5 (180Â°) = 25.48Â² = $649.23 (major support)
+√675 = 25.98
+• +0.25 (90°) = 26.23² = $688.01 (resistance)
+• +0.5 (180°) = 26.48² = $701.19 (major resistance)
+• -0.25 (90°) = 25.73² = $662.03 (support)
+• -0.5 (180°) = 25.48² = $649.23 (major support)
 
 CARDINAL CROSS LEVELS:
 Numbers on same angle have harmonic relationship
@@ -2316,34 +2316,34 @@ Numbers on same angle have harmonic relationship
 TIME APPLICATION:
 Same math applies to time (trading days from pivot)`,
 
-    divineProportions: `ðŸ“ DIVINE PROPORTIONS (PHI & FIBONACCI)
+    divineProportions: `📐 DIVINE PROPORTIONS (PHI & FIBONACCI)
 
 The Golden Ratio (Phi = 1.618) is nature's blueprint that markets follow.
 
 THE GOLDEN RATIO:
-â€¢ Phi (Ï†) = 1.618033988...
-â€¢ Inverse = 0.618033988...
-â€¢ Square = 2.618
-â€¢ âˆšPhi = 1.272
+• Phi (φ) = 1.618033988...
+• Inverse = 0.618033988...
+• Square = 2.618
+• √Phi = 1.272
 
 FIBONACCI SEQUENCE:
 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377...
 
-Each number Ã· previous â‰ˆ 1.618 (approaches Phi)
+Each number ÷ previous ≈ 1.618 (approaches Phi)
 
 KEY RETRACEMENT LEVELS:
-â€¢ 23.6% - Minor pullback
-â€¢ 38.2% - First major support (Phi inverse)
-â€¢ 50.0% - Halfway (Gann's favorite)
-â€¢ 61.8% - Golden ratio (strongest)
-â€¢ 78.6% - Deep retracement (âˆš0.618)
+• 23.6% - Minor pullback
+• 38.2% - First major support (Phi inverse)
+• 50.0% - Halfway (Gann's favorite)
+• 61.8% - Golden ratio (strongest)
+• 78.6% - Deep retracement (√0.618)
 
 EXTENSION LEVELS:
-â€¢ 100% - Equal move
-â€¢ 127.2% - âˆšPhi extension
-â€¢ 161.8% - Phi extension (primary target)
-â€¢ 200% - Double move
-â€¢ 261.8% - Phi squared
+• 100% - Equal move
+• 127.2% - √Phi extension
+• 161.8% - Phi extension (primary target)
+• 200% - Double move
+• 261.8% - Phi squared
 
 GANN'S USE OF PHI:
 - Combined with Square of 9
@@ -2352,42 +2352,42 @@ GANN'S USE OF PHI:
 - 144 days (Fibonacci) = sacred number
 
 DIVINE PROPORTION IN OPTIONS:
-â€¢ Entry at 61.8% retracement
-â€¢ Target at 161.8% extension
-â€¢ Stop below 78.6% retracement`,
+• Entry at 61.8% retracement
+• Target at 161.8% extension
+• Stop below 78.6% retracement`,
 
-    timeCycles: `â° GANN TIME CYCLES
+    timeCycles: `⏰ GANN TIME CYCLES
 
 "When time is up, the trend changes."
 
 NATURAL TIME DIVISIONS:
-â€¢ 7 days (week)
-â€¢ 30 days (month)
-â€¢ 90 days (quarter)
-â€¢ 365 days (year)
+• 7 days (week)
+• 30 days (month)
+• 90 days (quarter)
+• 365 days (year)
 
 GANN'S KEY NUMBERS:
-â€¢ 30 - Minor cycle
-â€¢ 45 - Important (1/8 year)
-â€¢ 60 - Significant (2 months)
-â€¢ 90 - Major (quarter)
-â€¢ 120 - Important (1/3 year)
-â€¢ 144 - Fibonacci/sacred
-â€¢ 180 - Half year
-â€¢ 270 - 3/4 year
-â€¢ 360 - Full year/circle
+• 30 - Minor cycle
+• 45 - Important (1/8 year)
+• 60 - Significant (2 months)
+• 90 - Major (quarter)
+• 120 - Important (1/3 year)
+• 144 - Fibonacci/sacred
+• 180 - Half year
+• 270 - 3/4 year
+• 360 - Full year/circle
 
 ANNIVERSARY DATES:
 Major tops/bottoms repeat on:
-â€¢ Same calendar date
-â€¢ 30, 60, 90... days later
-â€¢ 1, 2, 3... years later
+• Same calendar date
+• 30, 60, 90... days later
+• 1, 2, 3... years later
 
 SEASONAL DATES:
-â€¢ March 21 - Spring equinox
-â€¢ June 21 - Summer solstice
-â€¢ September 21 - Fall equinox
-â€¢ December 21 - Winter solstice
+• March 21 - Spring equinox
+• June 21 - Summer solstice
+• September 21 - Fall equinox
+• December 21 - Winter solstice
 
 TRADING APPLICATION:
 1. Mark major high/low date
@@ -2395,25 +2395,25 @@ TRADING APPLICATION:
 3. Watch for reversals on those dates
 4. Combine with price levels`,
 
-    platformPrinciples: `ðŸŽ¯ Q5D PLATFORM CORE PRINCIPLES
+    platformPrinciples: `🎯 Q5D PLATFORM CORE PRINCIPLES
 
 MULTI-AGENT CONSENSUS SYSTEM:
 4 independent agents must agree before trading:
 
-1. ðŸ“Š BASE CONFLUENCE - SMA crossover with ATR stops
-2. ðŸ”® GANN-ELLIOTT - Gann geometry + Elliott waves
-3. ðŸ§  DQN/RL - Reinforcement learning AI
-4. ðŸŒŠ 3-WAVE - Simplified impulse detection
+1. 📊 BASE CONFLUENCE - SMA crossover with ATR stops
+2. 🔮 GANN-ELLIOTT - Gann geometry + Elliott waves
+3. 🧠 DQN/RL - Reinforcement learning AI
+4. 🌊 3-WAVE - Simplified impulse detection
 
 SIGNAL CLASSIFICATION:
-â€¢ 1/4 agree = NO TRADE âŒ
-â€¢ 2/4 agree = SINGLE (weak) âš ï¸
-â€¢ 3/4 agree = SUPER (tradeable) âœ…
-â€¢ 4/4 agree = ULTRA (highest) ðŸŽ¯
+• 1/4 agree = NO TRADE ❌
+• 2/4 agree = SINGLE (weak) ⚠️
+• 3/4 agree = SUPER (tradeable) ✅
+• 4/4 agree = ULTRA (highest) 🎯
 
 DUAL TIMEFRAME:
-⚡ INTRADAY: 0-1 DTE, 5-15 min, tight stops
-📈 SWING: 3-5 DTE, daily, wider stops
+• INTRADAY: 0-1 DTE, 5-15 min, tight stops
+• SWING: 3-5 DTE, daily, wider stops
 
 WHY MULTI-AGENT WORKS:
 - Reduces false signals
@@ -2447,7 +2447,7 @@ function setTradingMode(mode) {
 
 async function changeSymbol() {
     const newSymbol = document.getElementById('symbolSelect').value;
-    console.log(`ðŸ”„ Changing symbol from ${currentSymbol} to ${newSymbol}`);
+    console.log(`🔄 Changing symbol from ${currentSymbol} to ${newSymbol}`);
     currentSymbol = newSymbol;
     
     // Update ALL symbol displays immediately
@@ -2510,7 +2510,7 @@ async function loadAllData() {
         if (r?.ok) {
             currentData = parseCSV(await r.text());
             if (currentData.length) {
-                console.log(`âœ… Loaded ${currentData.length} bars for ${currentSymbol}`);
+                console.log(`✅ Loaded ${currentData.length} bars for ${currentSymbol}`);
                 
                 // Update ALL dashboard components
                 updateDashboard();
@@ -2547,7 +2547,7 @@ function showDataNotification(message) {
     // Create a temporary notification
     const notif = document.createElement('div');
     notif.style.cssText = 'position:fixed;top:80px;right:20px;background:var(--warning);color:white;padding:12px 20px;border-radius:8px;font-size:12px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
-    notif.textContent = 'âš ï¸ ' + message;
+    notif.textContent = '⚠️ ' + message;
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 3000);
 }
@@ -2734,7 +2734,7 @@ function updateBarCountAnalysis() {
             <td>${data.length - i}</td>
             <td>${date}</td>
             <td style="font-size:10px;">${o.toFixed(0)}/${(parseFloat(d.High)||0).toFixed(0)}/${(parseFloat(d.Low)||0).toFixed(0)}/${c.toFixed(0)}</td>
-            <td>${isBullish ? 'ðŸ“ˆ' : 'ðŸ“‰'}</td>
+            <td>${isBullish ? '📈' : '📉'}</td>
             <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
             <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
             <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
@@ -2798,7 +2798,7 @@ function updateReversalStats() {
         
         const isCurrentSymbol = symbol === currentSymbol;
         html += `<tr ${isCurrentSymbol ? 'style="background:rgba(59,130,246,0.1);font-weight:600;"' : ''}>
-            <td>${isCurrentSymbol ? 'âž¤ ' : ''}${symbol}</td>
+            <td>${isCurrentSymbol ? '➤ ' : ''}${symbol}</td>
             <td>${avgBullish} bars</td>
             <td>${avgBearish} bars</td>
             <td>${currentRun} (${currentDir})</td>
@@ -2952,10 +2952,10 @@ function buildDashboardContext() {
         // Square of 9 levels
         const sqrtPrice = Math.sqrt(price);
         context += `Square of 9 for ${currentSymbol}:\n`;
-        context += `â€¢ +90Â° (${(sqrtPrice + 0.25)}Â²) = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)}\n`;
-        context += `â€¢ +180Â° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)}\n`;
-        context += `â€¢ -90Â° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)}\n`;
-        context += `â€¢ -180Â° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)}\n\n`;
+        context += `• +90° (${(sqrtPrice + 0.25)}²) = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)}\n`;
+        context += `• +180° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)}\n`;
+        context += `• -90° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)}\n`;
+        context += `• -180° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)}\n\n`;
     }
     
     context += `ALL SYMBOLS:\n`;
@@ -3025,27 +3025,27 @@ function generateLocalResponse(message, context) {
         }
         
         if (trades.length === 0) {
-            return `ðŸ“Š No ETFs currently have 3/4 or 4/4 consensus.
+            return `📊 No ETFs currently have 3/4 or 4/4 consensus.
 
 This could mean:
-â€¢ Markets are consolidating
-🤖 Agents are conflicting
-â€¢ Wait for clearer signals
+• Markets are consolidating
+• Agents are conflicting
+• Wait for clearer signals
 
-ðŸ’¡ TIP: Check individual symbols for developing setups, or review the Bar Count tab for trend direction.`;
+💡 TIP: Check individual symbols for developing setups, or review the Bar Count tab for trend direction.`;
         }
         
-        let response = `ðŸ“Š **HIGH CONSENSUS TRADES TODAY:**\n\n`;
+        let response = `📊 **HIGH CONSENSUS TRADES TODAY:**\n\n`;
         trades.sort((a, b) => b.consensus - a.consensus);
         trades.forEach(t => {
-            const emoji = t.consensus === 4 ? 'ðŸŽ¯' : 'âœ…';
+            const emoji = t.consensus === 4 ? '🎯' : '✅';
             response += `${emoji} **${t.symbol}** - ${t.signal} (${t.consensus}/4)\n`;
             response += `   Price: $${t.price} | Strike: $${t.strike} | Target: $${t.target}\n\n`;
         });
         
         const ultra = trades.filter(t => t.consensus === 4);
         if (ultra.length) {
-            response += `ðŸŽ¯ **TOP PICK:** ${ultra[0].symbol} has ULTRA signal (4/4 consensus)`;
+            response += `🎯 **TOP PICK:** ${ultra[0].symbol} has ULTRA signal (4/4 consensus)`;
         }
         
         return response;
@@ -3066,80 +3066,80 @@ This could mean:
         const price = currentData.length ? parseFloat(currentData[currentData.length - 1].Close) : 675;
         const sqrtPrice = Math.sqrt(price);
         
-        return `â¬œ **MYSTIFYING SQUARE (SQUARE OF 9) FOR ${currentSymbol}**
+        return `⬜ **MYSTIFYING SQUARE (SQUARE OF 9) FOR ${currentSymbol}**
 
 Current Price: $${price.toFixed(2)}
 Square Root: ${sqrtPrice.toFixed(4)}
 
 **RESISTANCE LEVELS (Price Targets):**
-â€¢ +45Â° = $${Math.pow(sqrtPrice + 0.125, 2).toFixed(2)} (minor)
-â€¢ +90Â° = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)} (important)
-â€¢ +180Â° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)} (major)
-â€¢ +360Â° = $${Math.pow(sqrtPrice + 1.0, 2).toFixed(2)} (full cycle)
+• +45° = $${Math.pow(sqrtPrice + 0.125, 2).toFixed(2)} (minor)
+• +90° = $${Math.pow(sqrtPrice + 0.25, 2).toFixed(2)} (important)
+• +180° = $${Math.pow(sqrtPrice + 0.5, 2).toFixed(2)} (major)
+• +360° = $${Math.pow(sqrtPrice + 1.0, 2).toFixed(2)} (full cycle)
 
 **SUPPORT LEVELS (Stop Areas):**
-â€¢ -45Â° = $${Math.pow(sqrtPrice - 0.125, 2).toFixed(2)} (minor)
-â€¢ -90Â° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)} (important)
-â€¢ -180Â° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)} (major)
+• -45° = $${Math.pow(sqrtPrice - 0.125, 2).toFixed(2)} (minor)
+• -90° = $${Math.pow(sqrtPrice - 0.25, 2).toFixed(2)} (important)
+• -180° = $${Math.pow(sqrtPrice - 0.5, 2).toFixed(2)} (major)
 
-ðŸ’¡ **HOW TO USE:**
+💡 **HOW TO USE:**
 - Buy at support levels
 - Take profits at resistance
-- 90Â° moves are most common
-- 180Â° = major reversal zones`;
+- 90° moves are most common
+- 180° = major reversal zones`;
     }
     
     // DIVINE PROPORTIONS / FIBONACCI
     if (lowerMsg.includes('divine') || lowerMsg.includes('proportion') || lowerMsg.includes('phi') || lowerMsg.includes('golden')) {
         const fib = window.fibLevels || {};
-        return `ðŸ“ **DIVINE PROPORTIONS (PHI/FIBONACCI)**
+        return `📐 **DIVINE PROPORTIONS (PHI/FIBONACCI)**
 
-The Golden Ratio (Î¦ = 1.618) governs natural growth patterns and markets follow these proportions.
+The Golden Ratio (Φ = 1.618) governs natural growth patterns and markets follow these proportions.
 
 **${currentSymbol} FIBONACCI LEVELS:**
 
-ðŸ“ˆ Resistance (Targets):
-â€¢ R1 (100%) = $${fib.fib100?.toFixed(2) || '--'} (Swing High)
-â€¢ R2 (127.2%) = $${fib.fib1272?.toFixed(2) || '--'} (âˆšÎ¦ extension)
-â€¢ R3 (161.8%) = $${fib.fib1618?.toFixed(2) || '--'} (Î¦ extension)
+📈 Resistance (Targets):
+• R1 (100%) = $${fib.fib100?.toFixed(2) || '--'} (Swing High)
+• R2 (127.2%) = $${fib.fib1272?.toFixed(2) || '--'} (√Φ extension)
+• R3 (161.8%) = $${fib.fib1618?.toFixed(2) || '--'} (Φ extension)
 
-ðŸ“‰ Support (Stops):
-â€¢ S1 (38.2%) = $${fib.fib382?.toFixed(2) || '--'} (First support)
-â€¢ S2 (50.0%) = $${fib.fib500?.toFixed(2) || '--'} (Key level)
-â€¢ S3 (61.8%) = $${fib.fib618?.toFixed(2) || '--'} (Golden ratio)
+📉 Support (Stops):
+• S1 (38.2%) = $${fib.fib382?.toFixed(2) || '--'} (First support)
+• S2 (50.0%) = $${fib.fib500?.toFixed(2) || '--'} (Key level)
+• S3 (61.8%) = $${fib.fib618?.toFixed(2) || '--'} (Golden ratio)
 
 **TRADING RULES:**
-â€¢ Enter CALL at 61.8% retracement
-â€¢ Target 161.8% extension
-â€¢ Stop below 78.6% level
+• Enter CALL at 61.8% retracement
+• Target 161.8% extension
+• Stop below 78.6% level
 
 **PHI RELATIONSHIPS:**
-â€¢ 1.618 Ã— 1.618 = 2.618
-â€¢ 1/1.618 = 0.618
-â€¢ âˆš1.618 = 1.272`;
+• 1.618 × 1.618 = 2.618
+• 1/1.618 = 0.618
+• √1.618 = 1.272`;
     }
     
     // TIME CYCLES
     if (lowerMsg.includes('time cycle') || lowerMsg.includes('gann cycle') || lowerMsg.includes('when')) {
-        return `â° **GANN TIME CYCLES**
+        return `⏰ **GANN TIME CYCLES**
 
 "When time is up, the trend changes" - W.D. Gann
 
 **KEY CYCLE LENGTHS:**
-â€¢ 30 days - Minor cycle
-â€¢ 45 days - Important (1/8 year)
-â€¢ 60 days - Significant
-â€¢ 90 days - Major (quarter)
-â€¢ 120 days - 1/3 year
-â€¢ 144 days - Fibonacci/sacred
-â€¢ 180 days - Half year
-â€¢ 360 days - Full annual cycle
+• 30 days - Minor cycle
+• 45 days - Important (1/8 year)
+• 60 days - Significant
+• 90 days - Major (quarter)
+• 120 days - 1/3 year
+• 144 days - Fibonacci/sacred
+• 180 days - Half year
+• 360 days - Full annual cycle
 
 **SEASONAL TURN DATES:**
-â€¢ Mar 21 - Spring Equinox
-â€¢ Jun 21 - Summer Solstice
-â€¢ Sep 21 - Fall Equinox
-â€¢ Dec 21 - Winter Solstice
+• Mar 21 - Spring Equinox
+• Jun 21 - Summer Solstice
+• Sep 21 - Fall Equinox
+• Dec 21 - Winter Solstice
 
 **HOW TO APPLY:**
 1. Mark the last major high or low date
@@ -3157,25 +3157,25 @@ The Golden Ratio (Î¦ = 1.618) governs natural growth patterns and markets foll
             const signal = lat.Bias || 'CALL';
             const sqrtPrice = Math.sqrt(price);
             
-            return `ðŸŽ¯ **OPTIMAL STRIKE FOR ${currentSymbol}**
+            return `🎯 **OPTIMAL STRIKE FOR ${currentSymbol}**
 
 Current Price: $${price.toFixed(2)}
 Signal: ${signal}
 ATR: $${atr.toFixed(2)}
 
 **INTRADAY (0DTE):**
-â€¢ ATM Strike: $${Math.round(price)} (Delta ~0.50)
-â€¢ Target: $${(signal === 'PUT' ? price - atr : price + atr).toFixed(2)}
-â€¢ Stop: $${(signal === 'PUT' ? price + atr * 0.5 : price - atr * 0.5).toFixed(2)}
+• ATM Strike: $${Math.round(price)} (Delta ~0.50)
+• Target: $${(signal === 'PUT' ? price - atr : price + atr).toFixed(2)}
+• Stop: $${(signal === 'PUT' ? price + atr * 0.5 : price - atr * 0.5).toFixed(2)}
 
 **SWING (3-5 DTE):**
-â€¢ Strike: $${Math.round(price/5)*5} (slightly OTM)
-â€¢ Target: $${(signal === 'PUT' ? price - atr * 2.5 : price + atr * 2.5).toFixed(2)}
-â€¢ Stop: $${(signal === 'PUT' ? price + atr * 1.5 : price - atr * 1.5).toFixed(2)}
+• Strike: $${Math.round(price/5)*5} (slightly OTM)
+• Target: $${(signal === 'PUT' ? price - atr * 2.5 : price + atr * 2.5).toFixed(2)}
+• Stop: $${(signal === 'PUT' ? price + atr * 1.5 : price - atr * 1.5).toFixed(2)}
 
 **SQUARE OF 9 TARGETS:**
-â€¢ 90Â° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.25 : 0.25), 2).toFixed(2)}
-â€¢ 180Â° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.5 : 0.5), 2).toFixed(2)}`;
+• 90° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.25 : 0.25), 2).toFixed(2)}
+• 180° target: $${Math.pow(sqrtPrice + (signal === 'PUT' ? -0.5 : 0.5), 2).toFixed(2)}`;
         }
         return "Please select a symbol to calculate optimal strike.";
     }
@@ -3195,17 +3195,17 @@ ATR: $${atr.toFixed(2)}
         
         sectors.sort((a, b) => parseFloat(b.perf) - parseFloat(a.perf));
         
-        let response = `ðŸŒ **SECTOR COMPARISON (20-Day Performance)**\n\n`;
+        let response = `🌍 **SECTOR COMPARISON (20-Day Performance)**\n\n`;
         sectors.forEach((s, i) => {
-            const emoji = i === 0 ? 'ðŸ¥‡' : (i === 1 ? 'ðŸ¥ˆ' : (i === 2 ? 'ðŸ¥‰' : 'ðŸ“Š'));
+            const emoji = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : '📊'));
             const perfColor = parseFloat(s.perf) >= 0 ? '+' : '';
             response += `${emoji} **${s.name}** (${s.symbol})\n`;
             response += `   ${perfColor}${s.perf}% | ${s.signal} | ${s.consensus}/4 consensus\n\n`;
         });
         
-        response += `\nðŸ’¡ **RECOMMENDATION:**\n`;
-        response += `â€¢ Strongest: ${sectors[0].symbol} - consider for CALL trades\n`;
-        response += `â€¢ Weakest: ${sectors[sectors.length-1].symbol} - consider for PUT trades`;
+        response += `\n💡 **RECOMMENDATION:**\n`;
+        response += `• Strongest: ${sectors[0].symbol} - consider for CALL trades\n`;
+        response += `• Weakest: ${sectors[sectors.length-1].symbol} - consider for PUT trades`;
         
         return response;
     }
@@ -3276,18 +3276,18 @@ function generateOptionRecommendations(direction) {
     recommendations.sort((a, b) => b.consensus - a.consensus);
     
     if (recommendations.length === 0) {
-        return `ðŸ“Š No strong ${direction} signals found across ETFs.
+        return `📊 No strong ${direction} signals found across ETFs.
 
 The agents are not aligned for ${direction} trades currently. Consider:
-â€¢ Waiting for better setups
-â€¢ Checking individual symbols
-â€¢ Looking at the opposite direction`;
+• Waiting for better setups
+• Checking individual symbols
+• Looking at the opposite direction`;
     }
     
-    let response = `ðŸ“ˆ **BEST ${direction} OPTIONS (Next 2 Days)**\n\n`;
+    let response = `📈 **BEST ${direction} OPTIONS (Next 2 Days)**\n\n`;
     
     recommendations.slice(0, 5).forEach((r, i) => {
-        const emoji = r.consensus >= 3 ? 'ðŸŽ¯' : 'ðŸ“Š';
+        const emoji = r.consensus >= 3 ? '🎯' : '📊';
         response += `${emoji} **#${i+1} ${r.symbol}** (${r.consensus}/4 consensus)\n`;
         response += `   Strike: $${r.strike} ${direction}\n`;
         response += `   Entry: $${r.price} | Target: $${r.target} | Stop: $${r.stop}\n`;
@@ -3296,9 +3296,9 @@ The agents are not aligned for ${direction} trades currently. Consider:
     
     if (recommendations.length > 0) {
         const best = recommendations[0];
-        response += `\nðŸ’¡ **TOP PICK:** ${best.symbol} $${best.strike} ${direction}\n`;
-        response += `â€¢ ${best.consensus}/4 agent consensus\n`;
-        response += `â€¢ Target: $${best.target} (${best.rr}:1 R/R)`;
+        response += `\n💡 **TOP PICK:** ${best.symbol} $${best.strike} ${direction}\n`;
+        response += `• ${best.consensus}/4 agent consensus\n`;
+        response += `• Target: $${best.target} (${best.rr}:1 R/R)`;
     }
     
     return response;
@@ -3306,7 +3306,7 @@ The agents are not aligned for ${direction} trades currently. Consider:
 
 // NEW: Generate Bar Count Response with actual data
 function generateBarCountResponse() {
-    let response = `ðŸ”¢ **BAR COUNT ANALYSIS (as of last close)**\n\n`;
+    let response = `🔢 **BAR COUNT ANALYSIS (as of last close)**\n\n`;
     
     for (const symbol of SYMBOLS) {
         const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
@@ -3336,8 +3336,8 @@ function generateBarCountResponse() {
         const lat = data[data.length - 1];
         const price = parseFloat(lat.Close).toFixed(2);
         const signal = lat.Bias || 'HOLD';
-        const streakDir = lastDir ? 'ðŸ“ˆ Bullish' : 'ðŸ“‰ Bearish';
-        const streakEmoji = currentStreak >= 5 ? 'ðŸ”¥' : (currentStreak >= 3 ? 'âœ…' : '');
+        const streakDir = lastDir ? '📈 Bullish' : '📉 Bearish';
+        const streakEmoji = currentStreak >= 5 ? '🔥' : (currentStreak >= 3 ? '✅' : '');
         
         response += `**${symbol}** - $${price} | ${signal}\n`;
         response += `   Current Streak: ${currentStreak} bars ${streakDir} ${streakEmoji}\n`;
@@ -3345,10 +3345,10 @@ function generateBarCountResponse() {
     }
     
     // Add interpretation
-    response += `\nðŸ“Š **INTERPRETATION:**\n`;
-    response += `â€¢ 5+ consecutive bars = Strong trend, consider continuation\n`;
-    response += `â€¢ 7+ consecutive bars = Possible exhaustion, watch for reversal\n`;
-    response += `â€¢ Mixed (1-2 bars) = Choppy market, wait for direction`;
+    response += `\n📊 **INTERPRETATION:**\n`;
+    response += `• 5+ consecutive bars = Strong trend, consider continuation\n`;
+    response += `• 7+ consecutive bars = Possible exhaustion, watch for reversal\n`;
+    response += `• Mixed (1-2 bars) = Choppy market, wait for direction`;
     
     return response;
 }
@@ -3413,16 +3413,16 @@ function generateBreakoutResponse() {
         }
     }
     
-    let response = `ðŸš€ **MORNING BREAKOUT SCAN**\n\n`;
+    let response = `🚀 **MORNING BREAKOUT SCAN**\n\n`;
     
     if (breakouts.length > 0) {
-        response += `**ðŸ”¥ CONFIRMED BREAKOUTS:**\n`;
+        response += `**🔥 CONFIRMED BREAKOUTS:**\n`;
         breakouts.sort((a, b) => b.score - a.score);
         breakouts.forEach(b => {
-            response += `\n**${b.symbol}** - BREAKOUT! â¬†ï¸\n`;
+            response += `\n**${b.symbol}** - BREAKOUT! ⬆️\n`;
             response += `   Price: $${b.price} (+${b.change}%)\n`;
-            response += `   Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? 'ðŸ”¥' : ''}\n`;
-            response += `   Breaking 5-day high: ${b.above5Day ? 'âœ… YES' : 'âŒ No'}\n`;
+            response += `   Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? '🔥' : ''}\n`;
+            response += `   Breaking 5-day high: ${b.above5Day ? '✅ YES' : '❌ No'}\n`;
             response += `   Agent Signal: ${b.signal} (${b.consensus}/4)\n`;
             response += `   Target: $${b.target} | Stop: $${b.stop}\n`;
         });
@@ -3431,20 +3431,20 @@ function generateBreakoutResponse() {
     }
     
     if (potentialBreakouts.length > 0) {
-        response += `\n**ðŸ‘€ POTENTIAL BREAKOUTS (Watch List):**\n`;
+        response += `\n**👀 POTENTIAL BREAKOUTS (Watch List):**\n`;
         potentialBreakouts.sort((a, b) => b.score - a.score).slice(0, 4).forEach(b => {
-            response += `â€¢ ${b.symbol}: $${b.price} (+${b.change}%) - ${b.signal}\n`;
+            response += `• ${b.symbol}: $${b.price} (+${b.change}%) - ${b.signal}\n`;
         });
     }
     
-    response += `\n**ðŸ“‹ BREAKOUT CRITERIA:**\n`;
-    response += `â€¢ Price above open âœ“\n`;
-    response += `â€¢ Near session high âœ“\n`;
-    response += `â€¢ Above 5-day high âœ“âœ“\n`;
-    response += `📊 Volume > 120% avg âœ“\n`;
-    response += `â€¢ Move > 0.5% âœ“\n`;
+    response += `\n**📋 BREAKOUT CRITERIA:**\n`;
+    response += `• Price above open ✓\n`;
+    response += `• Near session high ✓\n`;
+    response += `• Above 5-day high ✓✓\n`;
+    response += `• Volume > 120% avg ✓\n`;
+    response += `• Move > 0.5% ✓\n`;
     
-    response += `\n**â° BEST TIME:** Trade breakouts 9:45-10:30 AM ET`;
+    response += `\n**⏰ BEST TIME:** Trade breakouts 9:45-10:30 AM ET`;
     
     return response;
 }
@@ -3501,28 +3501,28 @@ function generatePatternScanResponse() {
         }
     }
     
-    let response = `ðŸ“Š **PATTERN SCAN RESULTS**\n\n`;
+    let response = `📊 **PATTERN SCAN RESULTS**\n\n`;
     
     if (patterns.breakout.length) {
-        response += `**ðŸš€ BREAKOUT PATTERNS:**\n`;
+        response += `**🚀 BREAKOUT PATTERNS:**\n`;
         patterns.breakout.forEach(p => {
-            response += `â€¢ ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
+            response += `• ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
         });
         response += `\n`;
     }
     
     if (patterns.pullback.length) {
-        response += `**ðŸ“‰ PULLBACK/RETRACEMENT:**\n`;
+        response += `**📉 PULLBACK/RETRACEMENT:**\n`;
         patterns.pullback.forEach(p => {
-            response += `â€¢ ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
+            response += `• ${p.symbol}: ${p.type} @ $${p.price} (${p.consensus}/4)\n`;
         });
         response += `\n`;
     }
     
     if (patterns.consolidation.length) {
-        response += `**ðŸ“¦ CONSOLIDATION (Watch for breakout):**\n`;
+        response += `**📦 CONSOLIDATION (Watch for breakout):**\n`;
         patterns.consolidation.forEach(p => {
-            response += `â€¢ ${p.symbol}: ${p.type} @ $${p.price}\n`;
+            response += `• ${p.symbol}: ${p.type} @ $${p.price}\n`;
         });
         response += `\n`;
     }
@@ -3531,7 +3531,7 @@ function generatePatternScanResponse() {
         response += `No clear patterns detected. Market may be choppy.\n\n`;
     }
     
-    response += `ðŸ’¡ **TIP:** Breakouts need volume confirmation. Pullbacks offer better risk/reward.`;
+    response += `💡 **TIP:** Breakouts need volume confirmation. Pullbacks offer better risk/reward.`;
     
     return response;
 }
@@ -3584,25 +3584,25 @@ function generateMomentumResponse() {
     // Sort by momentum score
     momentum.sort((a, b) => b.score - a.score);
     
-    let response = `ðŸ“ˆ **MOMENTUM RANKINGS**\n\n`;
+    let response = `📈 **MOMENTUM RANKINGS**\n\n`;
     
-    response += `**ðŸ”¥ STRONGEST (Bullish Momentum):**\n`;
+    response += `**🔥 STRONGEST (Bullish Momentum):**\n`;
     momentum.slice(0, 3).forEach((m, i) => {
-        const emoji = i === 0 ? 'ðŸ¥‡' : (i === 1 ? 'ðŸ¥ˆ' : 'ðŸ¥‰');
+        const emoji = i === 0 ? '🥇' : (i === 1 ? '🥈' : '🥉');
         response += `${emoji} **${m.symbol}** - $${m.price}\n`;
         response += `   5-Day: ${parseFloat(m.chg5) >= 0 ? '+' : ''}${m.chg5}% | 20-Day: ${parseFloat(m.chg20) >= 0 ? '+' : ''}${m.chg20}%\n`;
         response += `   Streak: ${m.streak > 0 ? '+' : ''}${m.streak} bars | Signal: ${m.signal} (${m.consensus}/4)\n\n`;
     });
     
-    response += `**ðŸ“‰ WEAKEST (Bearish Momentum):**\n`;
+    response += `**📉 WEAKEST (Bearish Momentum):**\n`;
     momentum.slice(-3).reverse().forEach((m, i) => {
         response += `${i + 1}. **${m.symbol}** - $${m.price}\n`;
         response += `   5-Day: ${parseFloat(m.chg5) >= 0 ? '+' : ''}${m.chg5}% | Streak: ${m.streak > 0 ? '+' : ''}${m.streak} bars\n\n`;
     });
     
-    response += `ðŸ’¡ **TRADING TIP:**\n`;
-    response += `â€¢ Strong momentum + 3/4 consensus = High probability CALL\n`;
-    response += `â€¢ Weak momentum + PUT signal = Consider PUT trades`;
+    response += `💡 **TRADING TIP:**\n`;
+    response += `• Strong momentum + 3/4 consensus = High probability CALL\n`;
+    response += `• Weak momentum + PUT signal = Consider PUT trades`;
     
     return response;
 }
@@ -3676,36 +3676,36 @@ function generateReversalResponse() {
         }
     }
     
-    let response = `ðŸ”„ **REVERSAL PATTERN SCAN**\n\n`;
+    let response = `🔄 **REVERSAL PATTERN SCAN**\n\n`;
     
     if (reversals.length === 0) {
         response += `No clear reversal patterns detected.\n\n`;
         response += `**What to look for:**\n`;
-        response += `â€¢ 5+ bar downtrend + bullish candle = Potential bottom\n`;
-        response += `â€¢ 5+ bar uptrend + bearish candle = Potential top\n`;
-        response += `â€¢ Engulfing patterns at key Fibonacci levels\n`;
+        response += `• 5+ bar downtrend + bullish candle = Potential bottom\n`;
+        response += `• 5+ bar uptrend + bearish candle = Potential top\n`;
+        response += `• Engulfing patterns at key Fibonacci levels\n`;
     } else {
         const bullish = reversals.filter(r => r.direction === 'BULLISH');
         const bearish = reversals.filter(r => r.direction === 'BEARISH');
         
         if (bullish.length) {
-            response += `**ðŸ“ˆ BULLISH REVERSALS (Potential Bottoms):**\n`;
+            response += `**📈 BULLISH REVERSALS (Potential Bottoms):**\n`;
             bullish.forEach(r => {
-                response += `â€¢ **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
+                response += `• **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
                 response += `  Prior downtrend: ${r.priorStreak} bars | Signal: ${r.signal}\n\n`;
             });
         }
         
         if (bearish.length) {
-            response += `**ðŸ“‰ BEARISH REVERSALS (Potential Tops):**\n`;
+            response += `**📉 BEARISH REVERSALS (Potential Tops):**\n`;
             bearish.forEach(r => {
-                response += `â€¢ **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
+                response += `• **${r.symbol}**: ${r.pattern} @ $${r.price}\n`;
                 response += `  Prior uptrend: ${r.priorStreak} bars | Signal: ${r.signal}\n\n`;
             });
         }
     }
     
-    response += `âš ï¸ **CAUTION:** Reversals need confirmation. Wait for follow-through!`;
+    response += `⚠️ **CAUTION:** Reversals need confirmation. Wait for follow-through!`;
     
     return response;
 }
@@ -3716,63 +3716,63 @@ function generateOptimalTimeResponse() {
     const price = lat ? parseFloat(lat.Close).toFixed(2) : '--';
     const signal = lat ? (lat.Bias || 'HOLD') : '--';
     
-    return `â° **OPTIMAL TIMES TO TRADE ${currentSymbol} OPTIONS**
+    return `⏰ **OPTIMAL TIMES TO TRADE ${currentSymbol} OPTIONS**
 
 **INTRADAY (0DTE) BEST WINDOWS:**
 
-ðŸŒ… **9:30-10:00 AM ET - Opening Range**
-â€¢ Highest volatility & liquidity
-â€¢ Wait for first 5-15 min to establish range
-â€¢ Best for momentum plays
-â€¢ âš ï¸ Avoid trading first 5 minutes (too erratic)
+🌅 **9:30-10:00 AM ET - Opening Range**
+• Highest volatility & liquidity
+• Wait for first 5-15 min to establish range
+• Best for momentum plays
+• ⚠️ Avoid trading first 5 minutes (too erratic)
 
-ðŸ“Š **10:00-11:30 AM ET - Morning Trend**
-â€¢ Trend typically established
-â€¢ Best time for directional trades
-â€¢ Options premiums still reasonable
-â€¢ âœ… RECOMMENDED for 0DTE entries
+📊 **10:00-11:30 AM ET - Morning Trend**
+• Trend typically established
+• Best time for directional trades
+• Options premiums still reasonable
+• ✅ RECOMMENDED for 0DTE entries
 
-â˜€ï¸ **11:30 AM-2:00 PM ET - Midday Lull**
-â€¢ Lower volatility, choppy action
-â€¢ âš ï¸ Avoid new positions
-â€¢ Good for managing existing trades
+☀️ **11:30 AM-2:00 PM ET - Midday Lull**
+• Lower volatility, choppy action
+• ⚠️ Avoid new positions
+• Good for managing existing trades
 
-ðŸš€ **2:00-3:00 PM ET - Power Hour Setup**
-â€¢ Institutional positioning begins
-â€¢ Good for swing entries (1-5 DTE)
-â€¢ Watch for trend continuation/reversal
+🚀 **2:00-3:00 PM ET - Power Hour Setup**
+• Institutional positioning begins
+• Good for swing entries (1-5 DTE)
+• Watch for trend continuation/reversal
 
-ðŸ”¥ **3:00-4:00 PM ET - Power Hour**
-â€¢ High volume, strong moves
-â€¢ Last chance for 0DTE
-â€¢ âš ï¸ Wide spreads near close
-â€¢ Best for experienced traders
+🔥 **3:00-4:00 PM ET - Power Hour**
+• High volume, strong moves
+• Last chance for 0DTE
+• ⚠️ Wide spreads near close
+• Best for experienced traders
 
 **SWING TRADES (3-5 DTE) BEST TIMES:**
-â€¢ Enter: 10:00-11:00 AM (after opening noise)
-â€¢ Avoid: Fridays (weekend theta decay)
-â€¢ Best days: Tuesday-Thursday
+• Enter: 10:00-11:00 AM (after opening noise)
+• Avoid: Fridays (weekend theta decay)
+• Best days: Tuesday-Thursday
 
 **CURRENT ${currentSymbol} STATUS:**
-â€¢ Price: $${price}
-â€¢ Signal: ${signal}
-â€¢ Mode: ${tradingMode.toUpperCase()}
+• Price: $${price}
+• Signal: ${signal}
+• Mode: ${tradingMode.toUpperCase()}
 
 **GANN TIME FACTORS:**
-â€¢ Strongest moves: First hour, last hour
-â€¢ Weakest: 12:00-1:00 PM (lunch hour)
-â€¢ Watch 90-minute cycles intraday (Gann)
+• Strongest moves: First hour, last hour
+• Weakest: 12:00-1:00 PM (lunch hour)
+• Watch 90-minute cycles intraday (Gann)
 
-**ðŸŽ¯ MY RECOMMENDATION:**
+**🎯 MY RECOMMENDATION:**
 For ${currentSymbol} ${signal} signal:
-${signal === 'CALL' ? 'â€¢ Enter on pullback to support 10:00-11:00 AM' : 'â€¢ Enter on rally to resistance 10:00-11:00 AM'}
-â€¢ Set stop based on ATR ($${lat ? parseFloat(lat.ATR).toFixed(2) : '--'})
-â€¢ Take profits before 3:30 PM for 0DTE`;
+${signal === 'CALL' ? '• Enter on pullback to support 10:00-11:00 AM' : '• Enter on rally to resistance 10:00-11:00 AM'}
+• Set stop based on ATR ($${lat ? parseFloat(lat.ATR).toFixed(2) : '--'})
+• Take profits before 3:30 PM for 0DTE`;
 }
 
 // Current Status Response
 function generateCurrentStatusResponse() {
-    let response = `ðŸ“Š **CURRENT MARKET STATUS**\n\n`;
+    let response = `📊 **CURRENT MARKET STATUS**\n\n`;
     
     for (const symbol of SYMBOLS) {
         const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
@@ -3787,7 +3787,7 @@ function generateCurrentStatusResponse() {
             const consensus = lat.PriceConfluence || 0;
             const isCurrentSym = symbol === currentSymbol;
             
-            response += `${isCurrentSym ? 'âž¤ ' : ''}**${symbol}**: $${price.toFixed(2)} (${chg >= 0 ? '+' : ''}${pct}%)\n`;
+            response += `${isCurrentSym ? '➤ ' : ''}**${symbol}**: $${price.toFixed(2)} (${chg >= 0 ? '+' : ''}${pct}%)\n`;
             response += `   Signal: ${signal} | Consensus: ${consensus}/4\n\n`;
         }
     }
@@ -3821,17 +3821,17 @@ function generateTradeRecommendation() {
     }
     
     if (!bestTrade || bestScore < 2) {
-        return `ðŸ¤” **NO STRONG TRADE RECOMMENDATIONS RIGHT NOW**
+        return `🤔 **NO STRONG TRADE RECOMMENDATIONS RIGHT NOW**
 
 Current market conditions don't show clear setups:
-â€¢ No symbols have 3/4 or 4/4 consensus
-🤖 Agents are conflicting
-â€¢ Consider staying flat or reducing size
+• No symbols have 3/4 or 4/4 consensus
+• Agents are conflicting
+• Consider staying flat or reducing size
 
 **WHAT TO DO:**
-â€¢ Wait for clearer signals
-â€¢ Review the Bar Count tab for trend direction
-â€¢ Check back after market open for fresh data`;
+• Wait for clearer signals
+• Review the Bar Count tab for trend direction
+• Check back after market open for fresh data`;
     }
     
     const strike = Math.round(bestTrade.price);
@@ -3842,27 +3842,27 @@ Current market conditions don't show clear setups:
         ? bestTrade.price - bestTrade.atr
         : bestTrade.price + bestTrade.atr;
     
-    return `ðŸŽ¯ **TODAY'S TOP TRADE RECOMMENDATION**
+    return `🎯 **TODAY'S TOP TRADE RECOMMENDATION**
 
 **${bestTrade.symbol} ${bestTrade.signal}**
-Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? 'âœ…' : 'âš ï¸'}
+Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? '✅' : '⚠️'}
 
-ðŸ“ **ENTRY:**
-â€¢ Price: $${bestTrade.price.toFixed(2)}
-â€¢ Strike: $${strike} ${bestTrade.signal}
-â€¢ Mode: ${tradingMode === 'intraday' ? '0DTE' : '3-5 DTE'}
+📍 **ENTRY:**
+• Price: $${bestTrade.price.toFixed(2)}
+• Strike: $${strike} ${bestTrade.signal}
+• Mode: ${tradingMode === 'intraday' ? '0DTE' : '3-5 DTE'}
 
-ðŸŽ¯ **TARGETS:**
-â€¢ Target 1: $${(bestTrade.signal === 'CALL' ? bestTrade.price + bestTrade.atr : bestTrade.price - bestTrade.atr).toFixed(2)}
-â€¢ Target 2: $${target.toFixed(2)}
+🎯 **TARGETS:**
+• Target 1: $${(bestTrade.signal === 'CALL' ? bestTrade.price + bestTrade.atr : bestTrade.price - bestTrade.atr).toFixed(2)}
+• Target 2: $${target.toFixed(2)}
 
-ðŸ›‘ **RISK:**
-â€¢ Stop Loss: $${stop.toFixed(2)}
-â€¢ Risk/Reward: 1:2
+🛑 **RISK:**
+• Stop Loss: $${stop.toFixed(2)}
+• Risk/Reward: 1:2
 
-â° **TIMING:**
-â€¢ Best entry: 10:00-11:00 AM ET
-â€¢ Avoid: First 15 min, last 30 min (0DTE)`;
+⏰ **TIMING:**
+• Best entry: 10:00-11:00 AM ET
+• Avoid: First 15 min, last 30 min (0DTE)`;
 }
 
 // Risk Management Response
@@ -3871,33 +3871,33 @@ function generateRiskManagementResponse() {
     const price = lat ? parseFloat(lat.Close) : 675;
     const atr = lat ? parseFloat(lat.ATR) || 5 : 5;
     
-    return `ðŸ›¡ï¸ **RISK MANAGEMENT GUIDELINES**
+    return `🛡️ **RISK MANAGEMENT GUIDELINES**
 
 **POSITION SIZING (Kelly Criterion):**
-â€¢ Risk 0.5-1% per trade (intraday)
-â€¢ Risk 1-2% per trade (swing)
-â€¢ Never risk more than 5% daily
+• Risk 0.5-1% per trade (intraday)
+• Risk 1-2% per trade (swing)
+• Never risk more than 5% daily
 
 **EXAMPLE for $10,000 Account:**
-â€¢ 1% risk = $100 max loss per trade
-â€¢ If stop is $${atr.toFixed(2)} away (1 ATR)
-â€¢ Max position = $100 Ã· $${atr.toFixed(2)} = ${(100/atr).toFixed(0)} contracts
+• 1% risk = $100 max loss per trade
+• If stop is $${atr.toFixed(2)} away (1 ATR)
+• Max position = $100 ÷ $${atr.toFixed(2)} = ${(100/atr).toFixed(0)} contracts
 
 **STOP LOSS PLACEMENT:**
-â€¢ Intraday: 0.5-1.0 ATR = $${(atr * 0.75).toFixed(2)}
-â€¢ Swing: 1.5-2.0 ATR = $${(atr * 1.5).toFixed(2)}
+• Intraday: 0.5-1.0 ATR = $${(atr * 0.75).toFixed(2)}
+• Swing: 1.5-2.0 ATR = $${(atr * 1.5).toFixed(2)}
 
 **${currentSymbol} CURRENT LEVELS:**
-â€¢ Price: $${price.toFixed(2)}
-â€¢ ATR: $${atr.toFixed(2)}
-â€¢ Intraday Stop: $${(price - atr * 0.75).toFixed(2)} (CALL) / $${(price + atr * 0.75).toFixed(2)} (PUT)
-â€¢ Swing Stop: $${(price - atr * 1.5).toFixed(2)} (CALL) / $${(price + atr * 1.5).toFixed(2)} (PUT)
+• Price: $${price.toFixed(2)}
+• ATR: $${atr.toFixed(2)}
+• Intraday Stop: $${(price - atr * 0.75).toFixed(2)} (CALL) / $${(price + atr * 0.75).toFixed(2)} (PUT)
+• Swing Stop: $${(price - atr * 1.5).toFixed(2)} (CALL) / $${(price + atr * 1.5).toFixed(2)} (PUT)
 
 **GANN'S RISK RULES:**
-â€¢ Never let a profit turn into a loss
-â€¢ Move stop to breakeven after 1 ATR profit
-â€¢ Scale out: 50% at T1, 50% at T2
-â€¢ Max 3 losses in a row = stop trading for day`;
+• Never let a profit turn into a loss
+• Move stop to breakeven after 1 ATR profit
+• Scale out: 50% at T1, 50% at T2
+• Max 3 losses in a row = stop trading for day`;
 }
 
 // Market Update Response
@@ -3915,24 +3915,24 @@ function generateMarketUpdateResponse() {
     }
     
     const marketBias = bullish > bearish ? 'BULLISH' : (bearish > bullish ? 'BEARISH' : 'MIXED');
-    const biasEmoji = marketBias === 'BULLISH' ? 'ðŸ“ˆ' : (marketBias === 'BEARISH' ? 'ðŸ“‰' : 'â†”ï¸');
+    const biasEmoji = marketBias === 'BULLISH' ? '📈' : (marketBias === 'BEARISH' ? '📉' : '↔️');
     
-    return `ðŸ“° **MARKET UPDATE**
+    return `📰 **MARKET UPDATE**
 
 ${biasEmoji} **OVERALL BIAS: ${marketBias}**
-â€¢ Bullish signals: ${bullish}/${SYMBOLS.length} ETFs
-â€¢ Bearish signals: ${bearish}/${SYMBOLS.length} ETFs
-â€¢ Neutral: ${neutral}/${SYMBOLS.length} ETFs
+• Bullish signals: ${bullish}/${SYMBOLS.length} ETFs
+• Bearish signals: ${bearish}/${SYMBOLS.length} ETFs
+• Neutral: ${neutral}/${SYMBOLS.length} ETFs
 
 **SECTOR BREAKDOWN:**
 ${generateQuickSectorSummary()}
 
 **TRADING IMPLICATION:**
-${marketBias === 'BULLISH' ? 'â€¢ Favor CALL trades\nâ€¢ Look for pullbacks to support\nâ€¢ Sector leaders: Check XLK, XLF' : 
-  marketBias === 'BEARISH' ? 'â€¢ Favor PUT trades\nâ€¢ Look for rallies to resistance\nâ€¢ Defensive sectors may outperform' :
-  'â€¢ Mixed signals - reduce position size\nâ€¢ Wait for clearer direction\nâ€¢ Focus on highest consensus trades'}
+${marketBias === 'BULLISH' ? '• Favor CALL trades\n• Look for pullbacks to support\n• Sector leaders: Check XLK, XLF' : 
+  marketBias === 'BEARISH' ? '• Favor PUT trades\n• Look for rallies to resistance\n• Defensive sectors may outperform' :
+  '• Mixed signals - reduce position size\n• Wait for clearer direction\n• Focus on highest consensus trades'}
 
-ðŸ’¡ Use "high consensus trades" to find specific setups.`;
+💡 Use "high consensus trades" to find specific setups.`;
 }
 
 function generateQuickSectorSummary() {
@@ -3942,7 +3942,7 @@ function generateQuickSectorSummary() {
         if (data && data.length) {
             const lat = data[data.length - 1];
             const signal = lat.Bias || 'HOLD';
-            const emoji = signal === 'CALL' ? 'ðŸ“ˆ' : (signal === 'PUT' ? 'ðŸ“‰' : 'âž¡ï¸');
+            const emoji = signal === 'CALL' ? '📈' : (signal === 'PUT' ? '📉' : '➡️');
             summary += `${emoji} ${SYMBOL_NAMES[symbol]}: ${signal}\n`;
         }
     }
@@ -3951,39 +3951,39 @@ function generateQuickSectorSummary() {
 
 // Help Response
 function generateHelpResponse() {
-    return `ðŸ†˜ **HOW TO USE THE AI ASSISTANT**
+    return `🆘 **HOW TO USE THE AI ASSISTANT**
 
 **QUICK ACTIONS (Click the buttons!):**
-â€¢ ðŸ“Š High Consensus - Find best trades
-â€¢ ðŸ“ˆ Best CALLs - Top bullish plays
-â€¢ ðŸ“‰ Best PUTs - Top bearish plays
-â€¢ ðŸŽ¯ Optimal Strike - Get strike recommendations
+• 📊 High Consensus - Find best trades
+• 📈 Best CALLs - Top bullish plays
+• 📉 Best PUTs - Top bearish plays
+• 🎯 Optimal Strike - Get strike recommendations
 
 **EXAMPLE QUESTIONS:**
 
-ðŸ“Š **Data & Analysis:**
-â€¢ "Show me bar count for all ETFs"
-â€¢ "What's the current status?"
-â€¢ "Compare all sectors"
+📊 **Data & Analysis:**
+• "Show me bar count for all ETFs"
+• "What's the current status?"
+• "Compare all sectors"
 
-ðŸŽ¯ **Trade Ideas:**
-â€¢ "What should I trade today?"
-â€¢ "Best CALL options for 2 days"
-â€¢ "Optimal strike for SPY"
-â€¢ "Show high consensus trades"
+🎯 **Trade Ideas:**
+• "What should I trade today?"
+• "Best CALL options for 2 days"
+• "Optimal strike for SPY"
+• "Show high consensus trades"
 
-â° **Timing:**
-â€¢ "When is the best time to trade?"
-â€¢ "What are Gann time cycles?"
+⏰ **Timing:**
+• "When is the best time to trade?"
+• "What are Gann time cycles?"
 
-ðŸ“š **Education:**
-â€¢ "Explain Square of 9"
-â€¢ "What is Divine Proportions?"
-â€¢ "Tunnel Through the Air principles"
+📚 **Education:**
+• "Explain Square of 9"
+• "What is Divine Proportions?"
+• "Tunnel Through the Air principles"
 
-ðŸ›¡ï¸ **Risk:**
-â€¢ "How should I size my position?"
-â€¢ "Where to place stop loss?"
+🛡️ **Risk:**
+• "How should I size my position?"
+• "Where to place stop loss?"
 
 Just type naturally - I understand most trading questions!`;
 }
@@ -3996,7 +3996,7 @@ function generateSmartDefaultResponse(message, context) {
     // Check for symbol mentions
     const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase()));
     
-    let response = `ðŸ¤” I want to help! Let me clarify...\n\n`;
+    let response = `🤔 I want to help! Let me clarify...\n\n`;
     response += `You asked: "${message}"\n\n`;
     
     if (mentionedSymbol) {
@@ -4004,19 +4004,19 @@ function generateSmartDefaultResponse(message, context) {
         if (data && data.length) {
             const lat = data[data.length - 1];
             response += `**${mentionedSymbol} Quick Info:**\n`;
-            response += `â€¢ Price: $${parseFloat(lat.Close).toFixed(2)}\n`;
-            response += `â€¢ Signal: ${lat.Bias || 'HOLD'}\n`;
-            response += `â€¢ Consensus: ${lat.PriceConfluence || 0}/4\n\n`;
+            response += `• Price: $${parseFloat(lat.Close).toFixed(2)}\n`;
+            response += `• Signal: ${lat.Bias || 'HOLD'}\n`;
+            response += `• Consensus: ${lat.PriceConfluence || 0}/4\n\n`;
         }
     }
     
     response += `**Try asking:**\n`;
-    response += `â€¢ "What should I trade today?"\n`;
-    response += `â€¢ "Show me ${currentSymbol} bar count"\n`;
-    response += `â€¢ "Best time to trade options"\n`;
-    response += `â€¢ "Calculate Square of 9 for ${currentSymbol}"\n`;
-    response += `â€¢ "High consensus trades"\n\n`;
-    response += `Or click a Quick Action button on the right â†’`;
+    response += `• "What should I trade today?"\n`;
+    response += `• "Show me ${currentSymbol} bar count"\n`;
+    response += `• "Best time to trade options"\n`;
+    response += `• "Calculate Square of 9 for ${currentSymbol}"\n`;
+    response += `• "High consensus trades"\n\n`;
+    response += `Or click a Quick Action button on the right →`;
     
     return response;
 }
@@ -4083,7 +4083,7 @@ function logTrade(event) {
     clearTradeForm();
     
     // Show success message
-    alert('âœ… Trade logged successfully!');
+    alert('✅ Trade logged successfully!');
 }
 
 function clearTradeForm() {
@@ -4131,8 +4131,8 @@ function renderTrades() {
         const pnlClass = trade.pnl > 0 ? 'pnl-positive' : (trade.pnl < 0 ? 'pnl-negative' : '');
         const pnlDisplay = trade.pnl !== null ? `${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}` : '--';
         const statusClass = trade.status.toLowerCase();
-        const directionEmoji = trade.direction === 'CALL' ? 'ðŸ“ˆ' : 'ðŸ“‰';
-        const typeEmoji = trade.type === 'INTRADAY' ? 'âš¡' : 'ðŸŒŠ';
+        const directionEmoji = trade.direction === 'CALL' ? '📈' : '📉';
+        const typeEmoji = trade.type === 'INTRADAY' ? '⚡' : '🌊';
         
         html += `<tr>
             <td>${filteredTrades.length - index}</td>
@@ -4148,8 +4148,8 @@ function renderTrades() {
             <td><span class="status-badge-trade ${statusClass}">${trade.status}</span></td>
             <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${trade.notes || ''}">${trade.notes || '--'}</td>
             <td>
-                <button class="trade-action-btn edit" onclick="editTrade(${trade.id})">âœï¸</button>
-                <button class="trade-action-btn delete" onclick="deleteTrade(${trade.id})">ðŸ—‘ï¸</button>
+                <button class="trade-action-btn edit" onclick="editTrade(${trade.id})">✏️</button>
+                <button class="trade-action-btn delete" onclick="deleteTrade(${trade.id})">🗑️</button>
             </td>
         </tr>`;
     });
@@ -4195,7 +4195,7 @@ function deleteTrade(id) {
 }
 
 function clearAllTrades() {
-    if (!confirm('âš ï¸ Are you sure you want to delete ALL trades? This cannot be undone!')) return;
+    if (!confirm('⚠️ Are you sure you want to delete ALL trades? This cannot be undone!')) return;
     if (!confirm('This will permanently delete your entire trade history. Continue?')) return;
     
     trades = [];
@@ -4309,14 +4309,14 @@ function updateDirectionPerformance() {
         <div style="display:flex;flex-direction:column;gap:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(16,185,129,0.1);border-radius:6px;border-left:4px solid var(--success);">
                 <div>
-                    <div style="font-weight:700;font-size:14px;">ðŸ“ˆ CALLS</div>
+                    <div style="font-weight:700;font-size:14px;">📈 CALLS</div>
                     <div style="font-size:11px;color:var(--muted);">${calls.length} trades | ${callWinRate}% win rate</div>
                 </div>
                 <div style="font-size:18px;font-weight:700;" class="${callPnL >= 0 ? 'positive' : 'negative'}">${callPnL >= 0 ? '+' : ''}$${callPnL.toFixed(2)}</div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(239,68,68,0.1);border-radius:6px;border-left:4px solid var(--danger);">
                 <div>
-                    <div style="font-weight:700;font-size:14px;">ðŸ“‰ PUTS</div>
+                    <div style="font-weight:700;font-size:14px;">📉 PUTS</div>
                     <div style="font-size:11px;color:var(--muted);">${puts.length} trades | ${putWinRate}% win rate</div>
                 </div>
                 <div style="font-size:18px;font-weight:700;" class="${putPnL >= 0 ? 'positive' : 'negative'}">${putPnL >= 0 ? '+' : ''}$${putPnL.toFixed(2)}</div>
@@ -4387,12 +4387,12 @@ function shareTrades() {
     
     const text = `📊 Stock Agent 4 - Trade Summary
 
-ðŸ“ˆ Total Trades: ${trades.length}
-ðŸŽ¯ Win Rate: ${winRate}%
-ðŸ’° Total P&L: ${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}
-ðŸ“… Period: ${trades.length > 0 ? trades[trades.length-1].date : 'N/A'} to ${trades.length > 0 ? trades[0].date : 'N/A'}
+📈 Total Trades: ${trades.length}
+🎯 Win Rate: ${winRate}%
+💰 Total P&L: ${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}
+📅 Period: ${trades.length > 0 ? trades[trades.length-1].date : 'N/A'} to ${trades.length > 0 ? trades[0].date : 'N/A'}
 
-Powered by Q5D Options Platform & Gann Principles ðŸ”®`;
+Powered by Q5D Options Platform & Gann Principles 🔮`;
 
     if (navigator.share) {
         navigator.share({
@@ -4402,7 +4402,7 @@ Powered by Q5D Options Platform & Gann Principles ðŸ”®`;
     } else {
         // Fallback - copy to clipboard
         navigator.clipboard.writeText(text).then(() => {
-            alert('ðŸ“‹ Trade summary copied to clipboard!');
+            alert('📋 Trade summary copied to clipboard!');
         }).catch(() => {
             prompt('Copy this trade summary:', text);
         });
@@ -4478,7 +4478,7 @@ function runHealthCheck() {
 }
 
 function checkDataFreshness() {
-    console.log('ðŸ” checkDataFreshness running...');
+    console.log('🔍 checkDataFreshness running...');
     
     // Get elements directly
     const lastDateEl = document.getElementById('lastDataDate');
@@ -4492,7 +4492,7 @@ function checkDataFreshness() {
     
     // Check if we have data
     if (!currentData || currentData.length === 0) {
-        console.log('âŒ No data available');
+        console.log('❌ No data available');
         if (valueEl) valueEl.textContent = 'No Data';
         if (statusEl) statusEl.textContent = 'CRITICAL';
         healthStatus.dataFreshness = 'critical';
@@ -4500,12 +4500,12 @@ function checkDataFreshness() {
         return;
     }
     
-    console.log('ðŸ“Š Data length:', currentData.length);
+    console.log('📊 Data length:', currentData.length);
     
     // Get last bar directly
     const lastBar = currentData[currentData.length - 1];
-    console.log('ðŸ“… Last bar:', lastBar);
-    console.log('ðŸ“… Last bar Date:', lastBar.Date);
+    console.log('📅 Last bar:', lastBar);
+    console.log('📅 Last bar Date:', lastBar.Date);
     
     // Parse the date - handle ISO format WITHOUT timezone conversion
     let lastDate;
@@ -4514,11 +4514,11 @@ function checkDataFreshness() {
         const dateStr = lastBar.Date.split('T')[0];
         const [year, month, day] = dateStr.split('-').map(Number);
         lastDate = new Date(year, month - 1, day); // month is 0-indexed
-        console.log('ðŸ“… Parsed lastDate (no TZ):', lastDate);
+        console.log('📅 Parsed lastDate (no TZ):', lastDate);
     }
     
     if (!lastDate || isNaN(lastDate.getTime())) {
-        console.log('âŒ Invalid date');
+        console.log('❌ Invalid date');
         if (valueEl) valueEl.textContent = 'Invalid Date';
         healthStatus.dataFreshness = 'critical';
         return;
@@ -4529,8 +4529,8 @@ function checkDataFreshness() {
     const diffMs = now - lastDate;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     
-    console.log('ðŸ“… Now:', now);
-    console.log('ðŸ“… Diff days:', diffDays);
+    console.log('📅 Now:', now);
+    console.log('📅 Diff days:', diffDays);
     
     // Format the date string
     const dateStr = lastDate.toLocaleDateString('en-US', { 
@@ -4539,21 +4539,21 @@ function checkDataFreshness() {
         day: 'numeric', 
         year: 'numeric' 
     });
-    console.log('ðŸ“… Formatted date:', dateStr);
+    console.log('📅 Formatted date:', dateStr);
     
     // UPDATE THE ELEMENTS DIRECTLY
     if (lastDateEl) {
         lastDateEl.textContent = dateStr;
         lastDateEl.innerHTML = dateStr;
-        console.log('âœ… Updated lastDataDate to:', dateStr);
+        console.log('✅ Updated lastDataDate to:', dateStr);
     } else {
-        console.log('âŒ lastDataDate element not found!');
+        console.log('❌ lastDataDate element not found!');
     }
     
     if (daysSinceEl) {
         const daysText = diffDays === 0 ? 'Today' : (diffDays === 1 ? '1 day ago' : diffDays + ' days ago');
         daysSinceEl.textContent = daysText;
-        console.log('âœ… Updated daysSinceUpdate to:', daysText);
+        console.log('✅ Updated daysSinceUpdate to:', daysText);
     }
     
     if (totalBarsEl) {
@@ -4609,7 +4609,7 @@ function checkDataFreshness() {
         healthStatus.alerts.push({ type: 'critical', message: 'Data is ' + diffDays + ' days old!' });
     }
     
-    console.log('âœ… checkDataFreshness complete');
+    console.log('✅ checkDataFreshness complete');
 }
 
 function checkMarketStatus() {
@@ -4797,17 +4797,17 @@ function updateOverallHealth() {
     
     if (statuses.includes('critical')) {
         banner.className = 'health-banner critical';
-        icon.textContent = 'ðŸ”´';
+        icon.textContent = '🔴';
         title.textContent = 'System Issues Detected';
         subtitle.textContent = 'Critical issues require attention';
     } else if (statuses.includes('warning')) {
         banner.className = 'health-banner warning';
-        icon.textContent = 'ðŸŸ¡';
+        icon.textContent = '🟡';
         title.textContent = 'System Warning';
         subtitle.textContent = 'Some components need attention';
     } else {
         banner.className = 'health-banner';
-        icon.textContent = 'ðŸŸ¢';
+        icon.textContent = '🟢';
         title.textContent = 'System Healthy';
         subtitle.textContent = 'All systems operational';
     }
@@ -4825,7 +4825,7 @@ function renderHealthAlerts() {
     if (healthStatus.alerts.length === 0) {
         container.innerHTML = `
             <div class="health-alert success">
-                <span class="alert-icon">âœ…</span>
+                <span class="alert-icon">✅</span>
                 <span>No issues detected - system running normally</span>
             </div>
         `;
@@ -4834,10 +4834,10 @@ function renderHealthAlerts() {
     
     let html = '';
     healthStatus.alerts.forEach(alert => {
-        const iconMap = { critical: 'ðŸš¨', warning: 'âš ï¸', info: 'â„¹ï¸', success: 'âœ…' };
+        const iconMap = { critical: '🚨', warning: '⚠️', info: 'ℹ️', success: '✅' };
         html += `
             <div class="health-alert ${alert.type}">
-                <span class="alert-icon">${iconMap[alert.type] || 'â„¹ï¸'}</span>
+                <span class="alert-icon">${iconMap[alert.type] || 'ℹ️'}</span>
                 <span>${alert.message}</span>
             </div>
         `;
@@ -4888,7 +4888,7 @@ function toggleTroubleshoot(header) {
         toggle.textContent = '+';
     } else {
         content.classList.add('show');
-        toggle.textContent = 'âˆ’';
+        toggle.textContent = '−';
     }
 }
 
@@ -5292,7 +5292,7 @@ function renderEnhancedPF(panelType, data, container, settings) {
     if (settings.showPatterns && patternResult.pattern) {
         patternEl.style.display = 'block';
         patternEl.className = `pattern-alert-mtf ${patternResult.pattern.type}`;
-        patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? 'ðŸŸ¢' : 'ðŸ”´'} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
+        patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? '🟢' : '🔴'} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
         updateMTFSignal(panelType, patternResult.signal);
     } else {
         patternEl.style.display = 'none';
@@ -5646,17 +5646,10 @@ function switchAnalysisMode(mode) {
     document.getElementById('morningBtn')?.classList.toggle('active', mode === 'morning');
     document.getElementById('eveningBtn')?.classList.toggle('active', mode === 'evening');
     
-    
-    // Toggle visibility of Morning Plan vs Evening Review sections
-    const morningSection = document.getElementById('tradingPlanContainer');
-    const eveningSection = document.getElementById('eveningReviewSection');
-    if (morningSection) morningSection.style.display = mode === 'morning' ? 'block' : 'none';
-    if (eveningSection) eveningSection.style.display = mode === 'evening' ? 'block' : 'none';
-    
     // Update title
     const planTitle = document.getElementById('planTitle');
     if (planTitle) {
-        planTitle.textContent = mode === 'morning' ? 'â˜€ï¸ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
+        planTitle.textContent = mode === 'morning' ? '☀️ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
     }
     
     generateDailyReport();
@@ -5728,29 +5721,29 @@ function calculateAllSignals(data, price, prevClose) {
     // 2. Bar Count Score
     const barCount = calculateBarCountSignal(data);
     signals.barCount.count = barCount.count;
-    signals.barCount.score = Math.min(Math.abs(barCount.count) / 5, 2) * (barCount.count > 0 ? 1 : -1); // Max Â±2
+    signals.barCount.score = Math.min(Math.abs(barCount.count) / 5, 2) * (barCount.count > 0 ? 1 : -1); // Max ±2
     signals.barCount.detail = `${barCount.count > 0 ? '+' : ''}${barCount.count} consecutive ${barCount.direction} bars`;
     
     // 3. Pattern Score
     const patterns = detectAllPatterns(data);
     signals.patterns.found = patterns.found;
-    signals.patterns.score = patterns.score; // Max Â±3
+    signals.patterns.score = patterns.score; // Max ±3
     signals.patterns.detail = patterns.found.length > 0 ? patterns.found.join(', ') : 'No patterns detected';
     
     // 4. Gann Cycle Score
     const gann = calculateGannCycleScore(data, price);
-    signals.gann.score = gann.score; // Max Â±2
+    signals.gann.score = gann.score; // Max ±2
     signals.gann.detail = gann.detail;
     
     // 5. Fibonacci Score
     const fib = calculateFibonacciScore(data, price);
-    signals.fibonacci.score = fib.score; // Max Â±2
+    signals.fibonacci.score = fib.score; // Max ±2
     signals.fibonacci.detail = fib.detail;
     signals.fibonacci.level = fib.level;
     
     // 6. Volume Score
     const volume = calculateVolumeScore(data);
-    signals.volume.score = volume.score; // Max Â±1.5
+    signals.volume.score = volume.score; // Max ±1.5
     signals.volume.detail = volume.detail;
     
     // Calculate Master Score
@@ -5787,11 +5780,11 @@ async function loadRealAgentSignals() {
         if (response.ok) {
             const data = await response.json();
             realAgentVotes = data;
-            console.log('âœ… Loaded real agent signals from voting_log.json');
+            console.log('✅ Loaded real agent signals from voting_log.json');
             return true;
         }
     } catch (e) {
-        console.log('âš ï¸ voting_log.json not available, using calculated signals');
+        console.log('⚠️ voting_log.json not available, using calculated signals');
     }
     return false;
 }
@@ -6263,36 +6256,36 @@ function updateTradeRecommendations(signals) {
                 
                 <div style="font-size: 12px; line-height: 2;">
                     <div style="background: rgba(255,255,255,0.5); padding: 8px; border-radius: 4px; margin-bottom: 8px;">
-                        <strong>ðŸŽ¯ Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;font-size:14px;">$${bestEntry.toFixed(2)}</span><br>
+                        <strong>🎯 Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;font-size:14px;">$${bestEntry.toFixed(2)}</span><br>
                         <span style="font-size:10px;color:var(--muted);">Wait for pullback to this level for optimal risk/reward</span>
                     </div>
                     
                     <div><strong>Entry Range:</strong> $${entryLow.toFixed(2)} - $${entryHigh.toFixed(2)}</div>
                     
                     <div style="margin-top: 6px;">
-                        <strong>âš ï¸ Stop Loss Options:</strong><br>
+                        <strong>⚠️ Stop Loss Options:</strong><br>
                         <div style="padding-left: 10px; font-size: 11px;">
-                            â€¢ Tight (0.5 ATR): <span style="color: var(--danger);font-weight:600;">$${stop05.toFixed(2)}</span> 
+                            • Tight (0.5 ATR): <span style="color: var(--danger);font-weight:600;">$${stop05.toFixed(2)}</span> 
                             <span style="color:var(--muted);">(=$${(atr * 0.5).toFixed(2)} risk)</span><br>
-                            â€¢ Standard (1.0 ATR): <span style="color: var(--danger);font-weight:600;">$${stop10.toFixed(2)}</span>
+                            • Standard (1.0 ATR): <span style="color: var(--danger);font-weight:600;">$${stop10.toFixed(2)}</span>
                             <span style="color:var(--muted);">(=$${atr.toFixed(2)} risk)</span>
                         </div>
                     </div>
                     
                     <div style="margin-top: 6px;">
-                        <strong>ðŸŽ¯ Profit Targets:</strong><br>
+                        <strong>🎯 Profit Targets:</strong><br>
                         <div style="padding-left: 10px; font-size: 11px;">
-                            â€¢ Target 1: <span style="color: var(--success);font-weight:600;">$${target1.toFixed(2)}</span> (take 50%)<br>
-                            â€¢ Target 2: <span style="color: var(--success);font-weight:600;">$${target2.toFixed(2)}</span> (close position)
+                            • Target 1: <span style="color: var(--success);font-weight:600;">$${target1.toFixed(2)}</span> (take 50%)<br>
+                            • Target 2: <span style="color: var(--success);font-weight:600;">$${target2.toFixed(2)}</span> (close position)
                         </div>
                     </div>
                     
                     <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
-                        <strong>ðŸ“‹ Options Setup:</strong><br>
+                        <strong>📋 Options Setup:</strong><br>
                         <div style="padding-left: 10px; font-size: 11px;">
-                            â€¢ Strike: <strong>$${strike} ${signal}</strong><br>
-                            â€¢ DTE: <strong>${dteValue} DTE</strong> (Days To Expiration)<br>
-                            <span style="color:var(--muted);font-size:10px;">ðŸ’¡ ${dteExplain}</span>
+                            • Strike: <strong>$${strike} ${signal}</strong><br>
+                            • DTE: <strong>${dteValue} DTE</strong> (Days To Expiration)<br>
+                            <span style="color:var(--muted);font-size:10px;">💡 ${dteExplain}</span>
                         </div>
                     </div>
                 </div>
@@ -6301,36 +6294,36 @@ function updateTradeRecommendations(signals) {
             <!-- Signal Breakdown Card -->
             <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
                 <h4 style="font-size: 13px; margin-bottom: 12px;">
-                    ðŸ“Š Why This Signal? 
+                    📊 Why This Signal? 
                     ${signals.agentConsensus.isReal ? '<span style="background: var(--success); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">LIVE DATA</span>' : '<span style="background: var(--muted); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">CALCULATED</span>'}
                 </h4>
                 
                 <!-- Individual Agent Breakdown -->
                 <div style="background: white; border-radius: 6px; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border);">
-                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--text);">ðŸ¤– Individual Agent Votes:</div>
+                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--text);">🤖 Individual Agent Votes:</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 10px;">
                         ${signals.agentConsensus.agentDetails ? `
                         <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
-                            <span>ðŸ“Š Base Confluence:</span>
+                            <span>📊 Base Confluence:</span>
                             <strong style="color: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.base.signal} (${signals.agentConsensus.agentDetails.base.confidence.toFixed(0)}%)</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
-                            <span>ðŸ”® Gann-Elliott:</span>
+                            <span>🔮 Gann-Elliott:</span>
                             <strong style="color: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.gann.signal} (${signals.agentConsensus.agentDetails.gann.confidence.toFixed(0)}%)</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
-                            <span>ðŸ§  DQN (ML):</span>
+                            <span>🧠 DQN (ML):</span>
                             <strong style="color: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.dqn.signal} (${signals.agentConsensus.agentDetails.dqn.confidence.toFixed(0)}%)</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
-                            <span>ðŸŒŠ 3-Wave:</span>
+                            <span>🌊 3-Wave:</span>
                             <strong style="color: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.wave.signal} (${signals.agentConsensus.agentDetails.wave.confidence.toFixed(0)}%)</strong>
                         </div>
                         ` : '<div style="grid-column: span 2; text-align: center; color: var(--muted);">Agent data not available</div>'}
                     </div>
                     <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); text-align: center;">
                         <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)' : 'var(--warning)'};">
-                            Consensus: ${signals.agentConsensus.count}/4 agents â†’ ${signals.agentConsensus.signal}
+                            Consensus: ${signals.agentConsensus.count}/4 agents → ${signals.agentConsensus.signal}
                         </strong>
                     </div>
                 </div>
@@ -6347,7 +6340,7 @@ function updateTradeRecommendations(signals) {
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
                         <span>🔮 Gann Cycle:</span>
-                        <strong>${signals.gann.score > 0 ? 'ðŸŸ¢ Bullish' : signals.gann.score < 0 ? 'ðŸ”´ Bearish' : 'ðŸŸ¡ Neutral'}</strong>
+                        <strong>${signals.gann.score > 0 ? '🟢 Bullish' : signals.gann.score < 0 ? '🔴 Bearish' : '🟡 Neutral'}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
                         <span>📐 Fibonacci:</span>
@@ -6355,7 +6348,7 @@ function updateTradeRecommendations(signals) {
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 4px 0;">
                         <span>📊 Volume:</span>
-                        <strong>${signals.volume.score > 0 ? 'ðŸŸ¢ Above Avg' : 'ðŸ”´ Below Avg'}</strong>
+                        <strong>${signals.volume.score > 0 ? '🟢 Above Avg' : '🔴 Below Avg'}</strong>
                     </div>
                 </div>
                 
@@ -6368,11 +6361,11 @@ function updateTradeRecommendations(signals) {
         
         <!-- ATR Explanation -->
         <div style="background: rgba(59,130,246,0.05); padding: 12px; border-radius: 6px; margin-top: 15px; font-size: 11px; color: var(--muted);">
-            <strong>ðŸ“– Understanding ATR (Average True Range):</strong><br>
-            Current ATR = <strong>$${atr.toFixed(2)}</strong> â€” This means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
-            â€¢ <strong>0.5 ATR stop</strong> = $${(atr * 0.5).toFixed(2)} risk â€” Tighter stop, less room for normal fluctuation<br>
-            â€¢ <strong>1.0 ATR stop</strong> = $${atr.toFixed(2)} risk â€” Standard stop, accounts for normal daily volatility<br>
-            â€¢ Use tighter stops for day trades, wider stops for swing trades
+            <strong>📖 Understanding ATR (Average True Range):</strong><br>
+            Current ATR = <strong>$${atr.toFixed(2)}</strong> — This means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
+            • <strong>0.5 ATR stop</strong> = $${(atr * 0.5).toFixed(2)} risk — Tighter stop, less room for normal fluctuation<br>
+            • <strong>1.0 ATR stop</strong> = $${atr.toFixed(2)} risk — Standard stop, accounts for normal daily volatility<br>
+            • Use tighter stops for day trades, wider stops for swing trades
         </div>
     `;
 }
@@ -6393,28 +6386,28 @@ function updateGannAnalysis(price) {
     let cycle30Phase, cycle30Action;
     if (cycle30 < 7) {
         cycle30Phase = 'Bottoming';
-        cycle30Action = 'ðŸŸ¢ Look for reversal longs';
+        cycle30Action = '🟢 Look for reversal longs';
     } else if (cycle30 > 23) {
         cycle30Phase = 'Topping';
-        cycle30Action = 'ðŸ”´ Caution, take profits';
+        cycle30Action = '🔴 Caution, take profits';
     } else if (cycle30 < 15) {
         cycle30Phase = 'Rising';
-        cycle30Action = 'ðŸŸ¢ Favor bullish plays';
+        cycle30Action = '🟢 Favor bullish plays';
     } else {
         cycle30Phase = 'Declining';
-        cycle30Action = 'ðŸŸ¡ Patience, wait for bottom';
+        cycle30Action = '🟡 Patience, wait for bottom';
     }
     
     let cycle90Phase, cycle90Action;
     if (cycle90 < 20) {
         cycle90Phase = 'Accumulation';
-        cycle90Action = 'ðŸŸ¢ Smart money buying';
+        cycle90Action = '🟢 Smart money buying';
     } else if (cycle90 > 70) {
         cycle90Phase = 'Distribution';
-        cycle90Action = 'ðŸ”´ Smart money selling';
+        cycle90Action = '🔴 Smart money selling';
     } else {
         cycle90Phase = 'Trend Phase';
-        cycle90Action = 'ðŸŸ¢ Ride the momentum';
+        cycle90Action = '🟢 Ride the momentum';
     }
     
     if (timeCyclesEl) {
@@ -6429,7 +6422,7 @@ function updateGannAnalysis(price) {
             </div>
             <div>
                 <strong>Next Gann Date:</strong> ${getNextGannDate()}<br>
-                <span style="font-size:10px;color:var(--muted);">ðŸ’¡ Gann dates (equinoxes/solstices) often mark trend reversals</span>
+                <span style="font-size:10px;color:var(--muted);">💡 Gann dates (equinoxes/solstices) often mark trend reversals</span>
             </div>
         `;
     }
@@ -6440,17 +6433,17 @@ function updateGannAnalysis(price) {
         sq9El.innerHTML = `
             <div style="margin-bottom: 8px;">
                 <strong>Resistance Levels:</strong><br>
-                â€¢ R1: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r1.toFixed(2)}</span> (45Â° up)<br>
-                â€¢ R2: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r2.toFixed(2)}</span> (90Â° up)
+                • R1: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r1.toFixed(2)}</span> (45° up)<br>
+                • R2: <span style="color:var(--danger);font-weight:600;">$${sq9Levels.r2.toFixed(2)}</span> (90° up)
             </div>
             <div style="margin-bottom: 8px;">
                 <strong>Support Levels:</strong><br>
-                â€¢ S1: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s1.toFixed(2)}</span> (45Â° down)<br>
-                â€¢ S2: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s2.toFixed(2)}</span> (90Â° down)
+                • S1: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s1.toFixed(2)}</span> (45° down)<br>
+                • S2: <span style="color:var(--success);font-weight:600;">$${sq9Levels.s2.toFixed(2)}</span> (90° down)
             </div>
             <div style="font-size:10px;color:var(--muted);margin-top:8px;">
-                ðŸ’¡ <strong>What is Square of 9?</strong><br>
-                Gann's geometric calculator that finds natural price levels. Each 45Â° rotation = 1 step. Prices tend to find support/resistance at these harmonic levels.
+                💡 <strong>What is Square of 9?</strong><br>
+                Gann's geometric calculator that finds natural price levels. Each 45° rotation = 1 step. Prices tend to find support/resistance at these harmonic levels.
             </div>
         `;
     }
@@ -6596,32 +6589,32 @@ function updateAISummary(signals, price) {
     
     if (currentAnalysisMode === 'morning') {
         summaryEl.innerHTML = `
-            <strong>â˜€ï¸ Morning Analysis (${new Date().toLocaleDateString()}):</strong> 
+            <strong>☀️ Morning Analysis (${new Date().toLocaleDateString()}):</strong> 
             Market conditions favor ${signalWord} positions today. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}. 
             Master confluence score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} with ${signals.confidence.toFixed(0)}% confidence.
             <br><br>
             
-            <strong>ðŸŽ¯ Recommended Entry Zone:</strong><br>
+            <strong>🎯 Recommended Entry Zone:</strong><br>
             <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                â€¢ <strong>Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;">$${bestEntry}</span><br>
-                â€¢ <strong>Entry Range:</strong> $${entryLow} - $${entryHigh}<br>
-                â€¢ <strong>Why this range?</strong> Based on ATR (Average True Range = $${atr.toFixed(2)}), this zone offers optimal risk/reward
+                • <strong>Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;">$${bestEntry}</span><br>
+                • <strong>Entry Range:</strong> $${entryLow} - $${entryHigh}<br>
+                • <strong>Why this range?</strong> Based on ATR (Average True Range = $${atr.toFixed(2)}), this zone offers optimal risk/reward
             </div>
             
-            <strong>ðŸ“Š Recommended Strategy:</strong><br>
+            <strong>📊 Recommended Strategy:</strong><br>
             ${signals.confidence >= 70 ? `
             <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                â€¢ <strong>Trade:</strong> ${optionType} spreads on ${currentSymbol}<br>
-                â€¢ <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
-                â€¢ <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
+                • <strong>Trade:</strong> ${optionType} spreads on ${currentSymbol}<br>
+                • <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
+                • <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
                 <div style="font-size:10px;color:var(--muted);margin-top:5px;">
-                    ðŸ’¡ <em>DTE = Days To Expiration. ${tradingMode === 'INTRADAY' ? 
+                    💡 <em>DTE = Days To Expiration. ${tradingMode === 'INTRADAY' ? 
                         '0-1 DTE means options expiring today or tomorrow - high risk/reward for quick moves.' : 
                         '3-7 DTE means 3-7 days until expiration - gives time for the move to develop with less theta decay.'}</em>
                 </div>
             </div>` : `
             <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                âš ï¸ <strong>Wait for higher confidence setup.</strong> Current confluence is weak.<br>
+                ⚠️ <strong>Wait for higher confidence setup.</strong> Current confluence is weak.<br>
                 Consider smaller position sizes or sitting out until signals align better.
             </div>`}
             
@@ -6630,29 +6623,29 @@ function updateAISummary(signals, price) {
                 ${gannExplanations}
             </div>
             
-            <strong>âš ï¸ Stop Loss Levels (with explanations):</strong><br>
+            <strong>⚠️ Stop Loss Levels (with explanations):</strong><br>
             <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                â€¢ <strong>Tight Stop (0.5 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss05ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">ðŸ’¡ 0.5 Ã— $${atr.toFixed(2)} ATR = $${(atr * 0.5).toFixed(2)} from entry â†’ Stop at $${stopLoss05ATR}</span><br>
+                • <strong>Tight Stop (0.5 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss05ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 0.5 × $${atr.toFixed(2)} ATR = $${(atr * 0.5).toFixed(2)} from entry → Stop at $${stopLoss05ATR}</span><br>
                   <span style="font-size:10px;color:var(--muted);">Use for: Day trades, high confidence setups, smaller position sizes</span><br><br>
-                â€¢ <strong>Standard Stop (1.0 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss10ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">ðŸ’¡ 1.0 Ã— $${atr.toFixed(2)} ATR = $${atr.toFixed(2)} from entry â†’ Stop at $${stopLoss10ATR}</span><br>
+                • <strong>Standard Stop (1.0 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss10ATR}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 1.0 × $${atr.toFixed(2)} ATR = $${atr.toFixed(2)} from entry → Stop at $${stopLoss10ATR}</span><br>
                   <span style="font-size:10px;color:var(--muted);">Use for: Swing trades, giving room for normal volatility</span>
             </div>
             
-            <strong>ðŸŽ¯ Profit Targets:</strong><br>
+            <strong>🎯 Profit Targets:</strong><br>
             <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                â€¢ <strong>Target 1 (1.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
-                â€¢ <strong>Target 2 (2.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Take remaining position<br>
-                â€¢ <strong>Resistance (Sq9):</strong> $${sq9.r1.toFixed(2)} - Major resistance from Square of 9
+                • <strong>Target 1 (1.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
+                • <strong>Target 2 (2.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Take remaining position<br>
+                • <strong>Resistance (Sq9):</strong> $${sq9.r1.toFixed(2)} - Major resistance from Square of 9
             </div>
             
-            <strong>ðŸ“– Key Terms Explained:</strong><br>
+            <strong>📖 Key Terms Explained:</strong><br>
             <div style="font-size:10px;color:var(--muted);line-height:1.6;margin-top:5px;">
-                â€¢ <strong>ATR (Average True Range):</strong> Measures volatility. Current ATR = $${atr.toFixed(2)} means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
-                â€¢ <strong>DTE (Days To Expiration):</strong> How many days until your option expires. Lower DTE = higher risk but bigger potential gains.<br>
-                â€¢ <strong>Sq9 (Square of 9):</strong> Gann's calculator for finding natural support/resistance levels based on price geometry.<br>
-                â€¢ <strong>Confluence:</strong> Multiple signals agreeing on the same direction = higher probability trade.
+                • <strong>ATR (Average True Range):</strong> Measures volatility. Current ATR = $${atr.toFixed(2)} means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
+                • <strong>DTE (Days To Expiration):</strong> How many days until your option expires. Lower DTE = higher risk but bigger potential gains.<br>
+                • <strong>Sq9 (Square of 9):</strong> Gann's calculator for finding natural support/resistance levels based on price geometry.<br>
+                • <strong>Confluence:</strong> Multiple signals agreeing on the same direction = higher probability trade.
             </div>
         `;
     } else {
@@ -6662,15 +6655,15 @@ function updateAISummary(signals, price) {
             ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
             <br><br>
             
-            <strong>ðŸ“‹ Day Summary:</strong><br>
+            <strong>📋 Day Summary:</strong><br>
             <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                â€¢ Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
-                📐 Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
-                🔢 Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
-                📊 Volume: ${signals.volume.detail}
+                • Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
+                • Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
+                • Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
+                • Volume: ${signals.volume.detail}
             </div>
             
-            <strong>ðŸ“… Tomorrow's Trading Plan:</strong><br>
+            <strong>📅 Tomorrow's Trading Plan:</strong><br>
             <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${signals.confidence >= 65 ? `
                 <strong>Bias:</strong> Continue ${signalWord} outlook<br>
@@ -6680,7 +6673,7 @@ function updateAISummary(signals, price) {
                 <strong>Stop Loss:</strong> $${stopLoss10ATR} (1 ATR = $${atr.toFixed(2)} below entry)<br>
                 <strong>Target:</strong> $${target1} (first target), $${sq9.r1.toFixed(2)} (Sq9 resistance)
                 ` : `
-                âš ï¸ <strong>Low confidence setup for tomorrow.</strong><br>
+                ⚠️ <strong>Low confidence setup for tomorrow.</strong><br>
                 Wait for clearer signals before committing capital.<br>
                 Key levels to watch: Support $${sq9.s1.toFixed(2)} / Resistance $${sq9.r1.toFixed(2)}
                 `}
@@ -6691,13 +6684,13 @@ function updateAISummary(signals, price) {
                 ${gannExplanations}
             </div>
             
-            <strong>ðŸŽ¯ Pre-Market Checklist for Tomorrow:</strong><br>
+            <strong>🎯 Pre-Market Checklist for Tomorrow:</strong><br>
             <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 11px;">
-                â˜ Check overnight futures direction (ES, NQ)<br>
-                â˜ Review any earnings/economic news<br>
-                â˜ Confirm agent consensus at 9:35 AM<br>
-                â˜ Size positions based on confidence (${signals.confidence.toFixed(0)}%)<br>
-                â˜ Set alerts at $${sq9.s1.toFixed(2)} (support) and $${sq9.r1.toFixed(2)} (resistance)
+                ☐ Check overnight futures direction (ES, NQ)<br>
+                ☐ Review any earnings/economic news<br>
+                ☐ Confirm agent consensus at 9:35 AM<br>
+                ☐ Size positions based on confidence (${signals.confidence.toFixed(0)}%)<br>
+                ☐ Set alerts at $${sq9.s1.toFixed(2)} (support) and $${sq9.r1.toFixed(2)} (resistance)
             </div>
         `;
     }
@@ -6759,12 +6752,12 @@ function getGannCycleExplanations() {
     }
     
     explanations = `
-        â€¢ <strong>30-Day Cycle:</strong> ${cycle30Phase} (Day ${cycle30}/30)<br>
-          <span style="font-size:10px;color:var(--muted);">ðŸ’¡ ${cycle30Explain}</span><br><br>
-        â€¢ <strong>90-Day Cycle:</strong> ${cycle90Phase} (Day ${cycle90}/90)<br>
-          <span style="font-size:10px;color:var(--muted);">ðŸ’¡ ${cycle90Explain}</span><br><br>
-        â€¢ <strong>Seasonal:</strong> ${seasonal}<br>
-          <span style="font-size:10px;color:var(--muted);">ðŸ’¡ ${seasonalExplain}</span>
+        • <strong>30-Day Cycle:</strong> ${cycle30Phase} (Day ${cycle30}/30)<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${cycle30Explain}</span><br><br>
+        • <strong>90-Day Cycle:</strong> ${cycle90Phase} (Day ${cycle90}/90)<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${cycle90Explain}</span><br><br>
+        • <strong>Seasonal:</strong> ${seasonal}<br>
+          <span style="font-size:10px;color:var(--muted);">💡 ${seasonalExplain}</span>
     `;
     
     return explanations;
@@ -6846,7 +6839,7 @@ function generateReportHTML() {
 <body>
     <div class="header">
         <div>
-            <h1>ðŸ“Š Q5D Trading Report</h1>
+            <h1>📊 Q5D Trading Report</h1>
             <p><strong>${currentAnalysisMode === 'morning' ? '☀️ Morning Plan' : '🌙 Evening Review'}</strong></p>
         </div>
         <div style="text-align: right;">
@@ -6859,7 +6852,7 @@ function generateReportHTML() {
     <div class="score ${signals.direction.toLowerCase()}">${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)}</div>
     <p style="text-align: center; font-size: 18px;"><strong>${signals.direction} BIAS</strong> | Confidence: ${signals.confidence.toFixed(0)}%</p>
     
-    <h2>ðŸ“Š Signal Breakdown</h2>
+    <h2>📊 Signal Breakdown</h2>
     <table>
         <tr><th>Signal Component</th><th>Score</th><th>Details</th></tr>
         <tr><td>🤖 Agent Consensus</td><td>${signals.agentConsensus.count}/4</td><td>${signals.agentConsensus.detail}</td></tr>
@@ -6870,7 +6863,7 @@ function generateReportHTML() {
         <tr><td>📊 Volume</td><td>${signals.volume.score > 0 ? '+' : ''}${signals.volume.score.toFixed(1)}</td><td>${signals.volume.detail}</td></tr>
     </table>
     
-    <h2>ðŸŽ¯ Trade Recommendation</h2>
+    <h2>🎯 Trade Recommendation</h2>
     <div class="card">
         <p><strong>Symbol:</strong> ${currentSymbol} | <strong>Current Price:</strong> $${price.toFixed(2)}</p>
         <p><strong>Signal:</strong> <span class="signal-${signals.direction === 'BULLISH' ? 'call' : 'put'}">${signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD'}</span></p>
@@ -6879,7 +6872,7 @@ function generateReportHTML() {
         <p><strong>Target:</strong> $${sq9.r1.toFixed(2)}</p>
     </div>
     
-    <h2>ðŸ”® Gann Square of 9 Levels</h2>
+    <h2>🔮 Gann Square of 9 Levels</h2>
     <div class="grid">
         <div class="card">
             <h3>Resistance</h3>
@@ -6895,7 +6888,7 @@ function generateReportHTML() {
     
     <div class="footer">
         <p>Generated by Q5D Options Trading Platform | ${new Date().toISOString()}</p>
-        <p>âš ï¸ This report is for educational purposes only. Always do your own research before trading.</p>
+        <p>⚠️ This report is for educational purposes only. Always do your own research before trading.</p>
     </div>
 </body>
 </html>
