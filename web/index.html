@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,144 +18,6 @@
             --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
-        
-        /* LOGIN SCREEN STYLES */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 50%, #1a1a2e 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .login-screen.hidden { display: none; }
-        
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-        }
-        
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-        }
-        
-        .login-title {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        
-        .login-subtitle {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        
-        .login-form { text-align: left; }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.3s;
-            outline: none;
-        }
-        
-        .form-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-        
-        .form-group input.error {
-            border-color: var(--danger);
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-        }
-        
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .login-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .login-error.show { display: block; }
-        
-        .login-footer {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--muted);
-        }
-        
-        .login-footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
         
         /* Remember me checkbox */
         .remember-me {
@@ -769,44 +631,6 @@
     </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
-    <div class="login-screen hidden" id="loginScreen">
-        <div class="login-container">
-            <div class="login-logo">ðŸ“Š</div>
-            <h1 class="login-title">Stock Agent 4</h1>
-            <p class="login-subtitle">Q5D Options Trading Platform</p>
-            
-            <div class="login-error" id="loginError">
-                Invalid username or password. Please try again.
-            </div>
-            
-            <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
-                </div>
-                
-                <div class="remember-me">
-                    <input type="checkbox" id="rememberMe" checked>
-                    <label for="rememberMe">Remember me (stay logged in)</label>
-                </div>
-                
-                <button type="submit" class="login-btn" id="loginBtn">
-                    Sign In
-                </button>
-            </form>
-            
-            <div class="login-footer">
-                <p>ðŸ”’ Secure Access | Powered by Gann Principles</p>
-            </div>
-        </div>
-    </div>
-
     <!-- MAIN APPLICATION (Hidden until login) -->
     <div class="main-app" id="mainApp">
         <div class="loading-overlay" id="loadingOverlay">
@@ -2345,31 +2169,7 @@ function checkAuth() {
 }
 
 // Handle login form submission
-function handleLogin(event) {
-    event.preventDefault();
-    
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('rememberMe').checked;
-    const loginBtn = document.getElementById('loginBtn');
-    const loginError = document.getElementById('loginError');
-    
-    // Disable button during validation
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Signing in...';
-    
-    // Simulate slight delay for security feel
-    setTimeout(() => {
-        // Validate credentials
-        if (VALID_CREDENTIALS[username] && VALID_CREDENTIALS[username] === password) {
-            // Success - create session
-            const expiry = new Date().getTime() + (rememberMe ? SESSION_DURATION_FOREVER : SESSION_DURATION_DEFAULT);
-            const sessionData = {
-                username: username,
-                expiry: expiry,
-                rememberMe: rememberMe,
-                loginTime: new Date().toISOString()
-            };
+;
             
             localStorage.setItem('sa4_session', JSON.stringify(sessionData));
             
@@ -2405,14 +2205,14 @@ function handleLogout() {
 
 // Show login screen
 function showLoginScreen() {
-    document.getElementById('loginScreen').classList.remove('hidden');
+    
     document.getElementById('mainApp').classList.remove('visible');
     document.getElementById('username').focus();
 }
 
 // Show main application
 function showMainApp(username) {
-    document.getElementById('loginScreen').classList.add('hidden');
+    
     document.getElementById('mainApp').classList.add('visible');
     document.getElementById('loggedInUser').textContent = username;
     
