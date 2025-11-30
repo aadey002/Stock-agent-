@@ -6225,8 +6225,11 @@ function updateTradeRecommendations(signals) {
     
     const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
     
-    // Calculate all price levels
-    const entryLow = price - atr * 0.3;
+    // Calculate all price levels - varies by mode
+    const isMorning = typeof currentAnalysisMode !== 'undefined' ? currentAnalysisMode === 'morning' : true;
+    const isIntraday = typeof currentTradeMode !== 'undefined' ? currentTradeMode === 'intraday' : true;
+    const mult = isMorning ? (isIntraday ? 0.3 : 0.5) : 0.6;
+    const entryLow = price - atr * mult;
     const entryHigh = price + atr * 0.1;
     const bestEntry = signal === 'CALL' ? entryLow : entryHigh;
     const stop05 = signal === 'CALL' ? price - atr * 0.5 : price + atr * 0.5;
@@ -6927,4 +6930,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
