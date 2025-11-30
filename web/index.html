@@ -2097,7 +2097,109 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
     <!-- END CONTAINER -->
     </div>
     <!-- END MAIN APP -->
+<!-- OPTIONS CALCULATOR TAB -->
+        <div id="options-calc" class="tab-content">
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">💰 AI-Powered Options Profit Calculator</div>
+                <p style="font-size: 12px; color: var(--muted);">Calculate potential profit/loss and get AI recommendations for optimal strikes.</p>
+            </div>
 
+            <div style="display: grid; grid-template-columns: 350px 1fr; gap: 20px;">
+                <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px; color: var(--primary);">📝 Trade Setup</h3>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <button id="callBtn" class="calc-type-btn" onclick="setOptionType('call')" style="flex:1; padding:12px; border:2px solid var(--success); background:rgba(16,185,129,0.1); color:var(--success); border-radius:8px; font-weight:700; cursor:pointer;">📈 CALL</button>
+                        <button id="putBtn" class="calc-type-btn" onclick="setOptionType('put')" style="flex:1; padding:12px; border:2px solid var(--border); background:white; border-radius:8px; font-weight:700; cursor:pointer;">📉 PUT</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Current Stock Price ($)</label>
+                        <input type="number" id="calcStockPrice" value="600" step="0.01" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Strike Price ($)</label>
+                        <input type="number" id="calcStrikePrice" value="600" step="1" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Option Premium ($)</label>
+                        <input type="number" id="calcPremium" value="5.00" step="0.01" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Number of Contracts</label>
+                        <input type="number" id="calcContracts" value="1" min="1" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Days to Expiration</label>
+                        <select id="calcDTE" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                            <option value="0">0 DTE (Same Day)</option>
+                            <option value="1">1 DTE</option>
+                            <option value="5" selected>5 DTE (Weekly)</option>
+                            <option value="14">14 DTE</option>
+                            <option value="30">30 DTE (Monthly)</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px;">Expected Move (%)</label>
+                        <input type="number" id="calcExpectedMove" value="2" step="0.5" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    </div>
+                    
+                    <button onclick="calculateOptionsProfit()" style="width:100%; padding:14px; background:linear-gradient(135deg, var(--primary), var(--secondary)); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-bottom:10px;">📊 Calculate P&L</button>
+                    <button onclick="aiAnalyzeBestOptions()" style="width:100%; padding:14px; background:linear-gradient(135deg, #667eea, #764ba2); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-bottom:10px;">🤖 AI Find Best Options</button>
+                    <button onclick="useAgentSignal()" style="width:100%; padding:14px; background:var(--secondary); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">🎯 Use Agent Signal</button>
+                </div>
+
+                <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+                    <h3 style="margin-bottom: 15px;">📊 Profit/Loss Analysis</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div style="text-align:center; padding:15px; background:var(--bg); border-radius:8px;">
+                            <div style="font-size:11px; color:var(--muted);">Max Profit</div>
+                            <div style="font-size:20px; font-weight:700; color:var(--success);" id="calcMaxProfit">--</div>
+                        </div>
+                        <div style="text-align:center; padding:15px; background:var(--bg); border-radius:8px;">
+                            <div style="font-size:11px; color:var(--muted);">Max Loss</div>
+                            <div style="font-size:20px; font-weight:700; color:var(--danger);" id="calcMaxLoss">--</div>
+                        </div>
+                        <div style="text-align:center; padding:15px; background:var(--bg); border-radius:8px;">
+                            <div style="font-size:11px; color:var(--muted);">Break-Even</div>
+                            <div style="font-size:20px; font-weight:700;" id="calcBreakEven">--</div>
+                        </div>
+                        <div style="text-align:center; padding:15px; background:var(--bg); border-radius:8px;">
+                            <div style="font-size:11px; color:var(--muted);">Risk/Reward</div>
+                            <div style="font-size:20px; font-weight:700;" id="calcRiskReward">--</div>
+                        </div>
+                    </div>
+
+                    <div style="height:300px; background:var(--bg); border-radius:8px; padding:15px; margin-bottom:15px;">
+                        <canvas id="optionsPnLChart"></canvas>
+                    </div>
+
+                    <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                        <thead>
+                            <tr style="background:var(--bg);">
+                                <th style="padding:8px; text-align:center;">Stock Price</th>
+                                <th style="padding:8px; text-align:center;">Option Value</th>
+                                <th style="padding:8px; text-align:center;">P&L</th>
+                                <th style="padding:8px; text-align:center;">% Return</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pnlTableBody"></tbody>
+                    </table>
+                    
+                    <div id="aiOptionsPanel" style="display:none; background:linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border:1px solid rgba(102,126,234,0.3); border-radius:12px; padding:20px; margin-top:20px;">
+                        <h3 style="color:#764ba2; margin-bottom:15px;">🤖 AI Recommendations</h3>
+                        <div id="aiRecommendations"></div>
+                        <div id="aiAnalysisText" style="margin-top:15px; padding:12px; background:var(--bg); border-radius:8px; font-size:12px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 <script>
 // ============================================
 // AUTHENTICATION SYSTEM
@@ -6895,8 +6997,138 @@ function generateReportHTML() {
 </html>
     `;
 }
+ // ============================================
+// OPTIONS CALCULATOR
+// ============================================
+
+let optionType = 'call';
+let optionsPnLChart = null;
+
+function setOptionType(type) {
+    optionType = type;
+    document.getElementById('callBtn').style.borderColor = type === 'call' ? 'var(--success)' : 'var(--border)';
+    document.getElementById('callBtn').style.background = type === 'call' ? 'rgba(16,185,129,0.1)' : 'white';
+    document.getElementById('callBtn').style.color = type === 'call' ? 'var(--success)' : 'var(--text)';
+    document.getElementById('putBtn').style.borderColor = type === 'put' ? 'var(--danger)' : 'var(--border)';
+    document.getElementById('putBtn').style.background = type === 'put' ? 'rgba(239,68,68,0.1)' : 'white';
+    document.getElementById('putBtn').style.color = type === 'put' ? 'var(--danger)' : 'var(--text)';
+}
+
+function useAgentSignal() {
+    const priceEl = document.getElementById('currentPrice');
+    if (priceEl) {
+        const price = parseFloat(priceEl.textContent.replace('$', ''));
+        if (price > 0) {
+            document.getElementById('calcStockPrice').value = price.toFixed(2);
+            document.getElementById('calcStrikePrice').value = Math.round(price);
+        }
+    }
+    calculateOptionsProfit();
+}
+
+function calculateOptionsProfit() {
+    const stockPrice = parseFloat(document.getElementById('calcStockPrice').value);
+    const strikePrice = parseFloat(document.getElementById('calcStrikePrice').value);
+    const premium = parseFloat(document.getElementById('calcPremium').value);
+    const contracts = parseInt(document.getElementById('calcContracts').value);
+    
+    const costBasis = premium * 100 * contracts;
+    let breakEven, maxProfit, maxLoss;
+    
+    if (optionType === 'call') {
+        breakEven = strikePrice + premium;
+        maxLoss = costBasis;
+        maxProfit = 'Unlimited';
+    } else {
+        breakEven = strikePrice - premium;
+        maxLoss = costBasis;
+        maxProfit = (strikePrice - premium) * 100 * contracts;
+    }
+    
+    document.getElementById('calcMaxProfit').textContent = typeof maxProfit === 'number' ? '$' + maxProfit.toFixed(0) : maxProfit;
+    document.getElementById('calcMaxLoss').textContent = '-$' + maxLoss.toFixed(0);
+    document.getElementById('calcBreakEven').textContent = '$' + breakEven.toFixed(2);
+    
+    const expectedMove = parseFloat(document.getElementById('calcExpectedMove').value) / 100;
+    const targetPrice = optionType === 'call' ? stockPrice * (1 + expectedMove) : stockPrice * (1 - expectedMove);
+    let targetProfit = optionType === 'call' 
+        ? Math.max(0, (targetPrice - strikePrice - premium)) * 100 * contracts
+        : Math.max(0, (strikePrice - targetPrice - premium)) * 100 * contracts;
+    
+    const riskReward = maxLoss > 0 ? (targetProfit / maxLoss).toFixed(2) : 0;
+    document.getElementById('calcRiskReward').textContent = riskReward + ':1';
+    
+    generatePnLTable(stockPrice, strikePrice, premium, contracts);
+    generatePnLChart(stockPrice, strikePrice, premium, contracts);
+}
+
+function generatePnLTable(stockPrice, strikePrice, premium, contracts) {
+    const tbody = document.getElementById('pnlTableBody');
+    tbody.innerHTML = '';
+    const range = stockPrice * 0.10;
+    for (let p = stockPrice - range; p <= stockPrice + range; p += range/4) {
+        const price = Math.round(p);
+        const optionValue = optionType === 'call' ? Math.max(0, price - strikePrice) : Math.max(0, strikePrice - price);
+        const pnl = (optionValue - premium) * 100 * contracts;
+        const pctReturn = premium > 0 ? ((optionValue - premium) / premium * 100) : 0;
+        const pnlClass = pnl >= 0 ? 'color:var(--success)' : 'color:var(--danger)';
+        tbody.innerHTML += '<tr><td style="padding:8px;text-align:center;border-bottom:1px solid var(--border);">$' + price + '</td><td style="padding:8px;text-align:center;border-bottom:1px solid var(--border);">$' + optionValue.toFixed(2) + '</td><td style="padding:8px;text-align:center;border-bottom:1px solid var(--border);' + pnlClass + '">$' + pnl.toFixed(0) + '</td><td style="padding:8px;text-align:center;border-bottom:1px solid var(--border);' + pnlClass + '">' + pctReturn.toFixed(0) + '%</td></tr>';
+    }
+}
+
+function generatePnLChart(stockPrice, strikePrice, premium, contracts) {
+    const ctx = document.getElementById('optionsPnLChart');
+    if (!ctx) return;
+    if (optionsPnLChart) optionsPnLChart.destroy();
+    const range = stockPrice * 0.15;
+    const labels = [], data = [];
+    for (let p = stockPrice - range; p <= stockPrice + range; p += range/15) {
+        labels.push(p.toFixed(0));
+        const pnl = optionType === 'call' 
+            ? (Math.max(0, p - strikePrice) - premium) * 100 * contracts
+            : (Math.max(0, strikePrice - p) - premium) * 100 * contracts;
+        data.push(pnl);
+    }
+    optionsPnLChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'P&L ($)', data, borderColor: optionType === 'call' ? '#10b981' : '#ef4444', backgroundColor: optionType === 'call' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', fill: true, tension: 0.1 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Stock Price' } }, y: { title: { display: true, text: 'P&L ($)' } } } }
+    });
+}
+
+function aiAnalyzeBestOptions() {
+    const stockPrice = parseFloat(document.getElementById('calcStockPrice').value);
+    const expectedMove = parseFloat(document.getElementById('calcExpectedMove').value) / 100;
+    const dte = parseInt(document.getElementById('calcDTE').value);
+    document.getElementById('aiOptionsPanel').style.display = 'block';
+    const atrEstimate = stockPrice * 0.012;
+    const recommendations = [];
+    const strikes = [{ offset: -5, label: 'Deep ITM' }, { offset: -2, label: 'ITM' }, { offset: 0, label: 'ATM' }, { offset: 2, label: 'OTM' }, { offset: 5, label: 'Far OTM' }];
+    strikes.forEach(s => {
+        const strike = Math.round(stockPrice + s.offset);
+        const intrinsic = optionType === 'call' ? Math.max(0, stockPrice - strike) : Math.max(0, strike - stockPrice);
+        const timeValue = atrEstimate * Math.sqrt(dte / 365) * 8;
+        const premium = Math.max(0.5, intrinsic + timeValue);
+        const targetPrice = optionType === 'call' ? stockPrice * (1 + expectedMove) : stockPrice * (1 - expectedMove);
+        const optionValue = optionType === 'call' ? Math.max(0, targetPrice - strike) : Math.max(0, strike - targetPrice);
+        const expectedPnL = (optionValue - premium) * 100;
+        const riskReward = premium > 0 ? expectedPnL / (premium * 100) : 0;
+        const pctReturn = premium > 0 ? (expectedPnL / (premium * 100)) * 100 : 0;
+        let score = Math.min(50, Math.max(0, riskReward * 25)) + Math.min(30, Math.max(0, pctReturn / 3)) + 20;
+        recommendations.push({ strike, label: s.label, premium: premium.toFixed(2), expectedPnL: expectedPnL.toFixed(0), riskReward: riskReward.toFixed(2), pctReturn: pctReturn.toFixed(0), score: score.toFixed(0) });
+    });
+    recommendations.sort((a, b) => b.score - a.score);
+    const container = document.getElementById('aiRecommendations');
+    container.innerHTML = recommendations.map((r, i) => '<div style="background:white; border-radius:8px; padding:15px; margin-bottom:10px; border-left:4px solid ' + (i === 0 ? 'var(--success)' : 'var(--border)') + ';"><strong>$' + r.strike + ' ' + r.label + '</strong> - Score: ' + r.score + '/100<br>Premium: $' + r.premium + ' | Expected P&L: $' + r.expectedPnL + ' | R:R: ' + r.riskReward + ':1 | Return: ' + r.pctReturn + '%</div>').join('');
+    const best = recommendations[0];
+    document.getElementById('aiAnalysisText').innerHTML = '<strong>🤖 AI Recommendation:</strong> Buy ' + optionType.toUpperCase() + ' at $' + best.strike + ' strike.<br>Expected return: ' + best.pctReturn + '% with ' + best.riskReward + ':1 risk/reward ratio.';
+    document.getElementById('calcStrikePrice').value = best.strike;
+    document.getElementById('calcPremium').value = best.premium;
+    calculateOptionsProfit();
+}   
 </script>
 </body>
 </html>
+
 
 
