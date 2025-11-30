@@ -6236,9 +6236,11 @@ function updateTradeRecommendations(signals) {
     const stopMult2 = isMorning ? (isIntraday ? 1.0 : 1.5) : 2.0;
     const stop05 = signal === 'CALL' ? price - atr * stopMult1 : price + atr * stopMult1;
     const stop10 = signal === 'CALL' ? price - atr * stopMult2 : price + atr * stopMult2;
-    const target1 = signal === 'CALL' ? price + atr * 1.5 : price - atr * 1.5;
-    const target2 = signal === 'CALL' ? price + atr * 2.5 : price - atr * 2.5;
-    
+    const tgtMult1 = isMorning ? (isIntraday ? 1.0 : 2.0) : 2.5;
+    const tgtMult2 = isMorning ? (isIntraday ? 1.8 : 3.5) : 4.5;
+    const target1 = signal === 'CALL' ? price + atr * tgtMult1 : price - atr * tgtMult1;
+    const target2 = signal === 'CALL' ? price + atr * tgtMult2 : price - atr * tgtMult2;
+   
     // Calculate optimal strike
     const strike = Math.round(price / 5) * 5; // Round to nearest $5
     
@@ -6932,6 +6934,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
 
 
 
