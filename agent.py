@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 SPY Data Fetcher using yfinance (FREE - no API key needed)
 """
@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 # Try to import yfinance
 try:
     import yfinance as yf
-    print("✅ yfinance imported successfully")
+    print("yfinance imported successfully")
 except ImportError:
-    print("❌ yfinance not installed. Installing...")
+    print("yfinance not installed. Installing...")
     os.system("pip install yfinance")
     import yfinance as yf
 
@@ -20,24 +20,25 @@ SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
 
 def fetch_symbol_data(symbol, days=1095):
     """Fetch historical data using yfinance"""
-    print(f"📥 Fetching {symbol} data...")
+    print(f"Fetching {symbol} data...")
     
     try:
         ticker = yf.Ticker(symbol)
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
         
-        df = ticker.history(start=start_date.strftime('%Y-%m-%d'), 
-                           end=end_date.strftime('%Y-%m-%d'))
+        # Add 1 day to end_date because yfinance 'end' is exclusive
+        df = ticker.history(start=start_date.strftime('%Y-%m-%d'),
+                           end=(end_date + timedelta(days=1)).strftime('%Y-%m-%d'))
         
         if df.empty:
-            print(f"   ❌ No data for {symbol}")
+            print(f"   No data for {symbol}")
             return None
         
-        print(f"   ✅ Got {len(df)} bars for {symbol}")
+        print(f"   Got {len(df)} bars for {symbol}")
         return df
     except Exception as e:
-        print(f"   ❌ Error fetching {symbol}: {e}")
+        print(f"   Error fetching {symbol}: {e}")
         return None
 
 def calculate_indicators(df):
@@ -91,13 +92,13 @@ def save_to_csv(symbol, df, folder='data'):
     output_df.index.name = 'Date'
     output_df.to_csv(filepath)
     
-    print(f"   💾 Saved {len(output_df)} bars to {filepath}")
+    print(f"   Saved {len(output_df)} bars to {filepath}")
     return filepath
 
 def main():
     print("=" * 50)
-    print("📊 YFINANCE DATA FETCHER (FREE)")
-    print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("YFINANCE DATA FETCHER (FREE)")
+    print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 50)
     
     for symbol in SYMBOLS:
@@ -108,11 +109,11 @@ def main():
             df = calculate_indicators(df)
             save_to_csv(symbol, df)
     
-    print("\n✅ COMPLETE!")
+    print("\nCOMPLETE!")
     
     # Show latest data
     if os.path.exists('data/SPY.csv'):
-        print("\n📈 Latest SPY data:")
+        print("\nLatest SPY data:")
         with open('data/SPY.csv', 'r') as f:
             lines = f.readlines()
             for line in lines[-3:]:
