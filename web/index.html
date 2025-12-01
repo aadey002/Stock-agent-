@@ -2399,21 +2399,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                         📚 Playbook Comparison
                         <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from playbook_comparison.csv</span>
+                        <span id="playbookCount" style="font-size: 10px; color: var(--primary); font-weight: normal;"></span>
                     </h4>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
+                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                        <table style="width: 100%;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 1;">
                                 <tr>
-                                    <th>Strategy</th>
+                                    <th>Date</th>
                                     <th>Signal</th>
-                                    <th>Win Rate</th>
-                                    <th>Avg Return</th>
-                                    <th>Risk/Reward</th>
-                                    <th>Trades</th>
-                                    <th>Status</th>
+                                    <th>Confluence</th>
+                                    <th>Entry</th>
+                                    <th>Stop</th>
+                                    <th>Target</th>
+                                    <th>Confidence</th>
                                 </tr>
                             </thead>
-                            <tbody id="playbookTable">
+                            <tbody id="playbookComparisonBody">
                                 <tr>
                                     <td colspan="7" style="text-align: center; color: var(--muted);">Loading playbook data...</td>
                                 </tr>
@@ -2427,24 +2428,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                         🎯 Ultra Confluence Signals (4/4 Consensus)
                         <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from ultra_confluence_4of4.csv</span>
+                        <span id="ultraConfluenceTotal" style="font-size: 10px; color: var(--primary); font-weight: normal;"></span>
                     </h4>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
+                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                        <table style="width: 100%;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 1;">
                                 <tr>
-                                    <th>Symbol</th>
+                                    <th>Date</th>
                                     <th>Signal</th>
-                                    <th>Confluence Score</th>
-                                    <th>Entry Zone</th>
-                                    <th>Stop Loss</th>
-                                    <th>Target 1</th>
-                                    <th>Target 2</th>
-                                    <th>Timestamp</th>
+                                    <th>Votes</th>
+                                    <th>Wave/Trend</th>
+                                    <th>Confidence</th>
                                 </tr>
                             </thead>
-                            <tbody id="ultraConfluenceTable">
+                            <tbody id="ultraConfluenceBody">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; color: var(--muted);">Loading ultra confluence data...</td>
+                                    <td colspan="5" style="text-align: center; color: var(--muted);">Loading ultra confluence data...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2454,46 +2453,41 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <!-- Sector Rotation Section -->
                 <div style="margin-bottom: 25px;">
                     <h4 style="font-size: 14px; margin-bottom: 10px;">🔄 Sector Rotation Analysis</h4>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="sectorRotationGrid">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;" id="sectorRotationGrid">
                         <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--success);">
                             <div style="font-size: 11px; color: var(--muted);">Leading Sectors</div>
-                            <div style="font-size: 14px; font-weight: 600; color: var(--success);" id="leadingSectors">XLK, XLY</div>
-                        </div>
-                        <div style="background: rgba(59,130,246,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--primary);">
-                            <div style="font-size: 11px; color: var(--muted);">Improving Sectors</div>
-                            <div style="font-size: 14px; font-weight: 600; color: var(--primary);" id="improvingSectors">XLF, XLI</div>
-                        </div>
-                        <div style="background: rgba(245,158,11,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--warning);">
-                            <div style="font-size: 11px; color: var(--muted);">Weakening Sectors</div>
-                            <div style="font-size: 14px; font-weight: 600; color: var(--warning);" id="weakeningSectors">XLE, XLB</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--success);" id="sectorLeadersReport">-</div>
                         </div>
                         <div style="background: rgba(239,68,68,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--danger);">
                             <div style="font-size: 11px; color: var(--muted);">Lagging Sectors</div>
-                            <div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="laggingSectors">XLU, XLP</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="sectorLaggardsReport">-</div>
+                        </div>
+                        <div style="background: rgba(59,130,246,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--primary);">
+                            <div style="font-size: 11px; color: var(--muted);">Rotation Signal</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--primary);" id="sectorRotationSignal">-</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sector Performance Table -->
                 <div>
-                    <h4 style="font-size: 14px; margin-bottom: 10px;">📊 Sector Performance Rankings</h4>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
+                    <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        📊 Sector Performance Rankings
+                        <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from sector_rotation.csv</span>
+                    </h4>
+                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                        <table style="width: 100%;">
+                            <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 1;">
                                 <tr>
-                                    <th>Rank</th>
                                     <th>Sector</th>
-                                    <th>Symbol</th>
-                                    <th>1D %</th>
-                                    <th>1W %</th>
-                                    <th>1M %</th>
-                                    <th>Signal</th>
-                                    <th>Rotation Phase</th>
+                                    <th>Bias</th>
+                                    <th>Type</th>
+                                    <th>Performance</th>
                                 </tr>
                             </thead>
-                            <tbody id="sectorPerformanceTable">
+                            <tbody id="sectorRotationBody">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; color: var(--muted);">Loading sector data...</td>
+                                    <td colspan="4" style="text-align: center; color: var(--muted);">Loading sector data...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -7764,15 +7758,13 @@ function exportTradeJournal() {
 // REPORTS TAB FUNCTIONS
 // ==========================================
 const GITHUB_PAGES_BASE = 'https://aadey002.github.io/Stock-agent-/data/';
-const MAX_CSV_ROWS = 50; // Limit rows to parse for performance
 
-// CSV Parser helper - parses only first N rows
-function parseCSV(csvText, maxRows = MAX_CSV_ROWS) {
+// CSV Parser helper - parses ALL rows
+function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const headers = lines[0].split(',');
     const data = [];
-    const rowLimit = Math.min(lines.length, maxRows + 1); // +1 for header
-    for (let i = 1; i < rowLimit; i++) {
+    for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
         const row = {};
         headers.forEach((header, idx) => {
@@ -7799,6 +7791,8 @@ async function updatePlaybookComparison() {
     // Show loading state
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Loading playbook data...</td></tr>';
 
+    const countEl = document.getElementById('playbookCount');
+
     try {
         const response = await fetch(GITHUB_PAGES_BASE + 'playbook_comparison.csv');
         if (!response.ok) throw new Error('Failed to fetch');
@@ -7806,12 +7800,17 @@ async function updatePlaybookComparison() {
         const csvText = await response.text();
         const data = parseCSV(csvText);
 
-        // Get last 20 signals for display
-        const recentSignals = data.slice(-20).reverse();
+        if (data.length === 0) throw new Error('No data');
 
-        if (recentSignals.length === 0) throw new Error('No data');
+        // Show ALL data, sorted by date descending (most recent first)
+        const allSignals = data.reverse();
 
-        tbody.innerHTML = recentSignals.map(row => {
+        // Update count display
+        if (countEl) {
+            countEl.textContent = `(${allSignals.length} signals)`;
+        }
+
+        tbody.innerHTML = allSignals.map(row => {
             const date = new Date(row.date).toLocaleDateString();
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
@@ -7834,6 +7833,7 @@ async function updatePlaybookComparison() {
         console.error('Playbook fetch error:', error);
         console.error('URL attempted:', GITHUB_PAGES_BASE + 'playbook_comparison.csv');
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:20px;">Data unavailable - check console for errors</td></tr>';
+        if (countEl) countEl.textContent = '';
     }
 }
 
@@ -7852,12 +7852,12 @@ async function updateUltraConfluence() {
         const csvText = await response.text();
         const data = parseCSV(csvText);
 
-        // Get last 15 ultra confluence signals
-        const recentSignals = data.slice(-15).reverse();
+        if (data.length === 0) throw new Error('No data');
 
-        if (recentSignals.length === 0) throw new Error('No data');
+        // Show ALL data, sorted by date descending (most recent first)
+        const allSignals = data.reverse();
 
-        tbody.innerHTML = recentSignals.map(row => {
+        tbody.innerHTML = allSignals.map(row => {
             const date = new Date(row.date).toLocaleDateString();
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
@@ -7877,9 +7877,9 @@ async function updateUltraConfluence() {
 
         // Update total count
         if (totalEl) {
-            const callCount = recentSignals.filter(r => r.majority === 'CALL').length;
-            const putCount = recentSignals.filter(r => r.majority === 'PUT').length;
-            totalEl.textContent = `Ultra Confluence Signals: ${recentSignals.length} total (${callCount} CALL, ${putCount} PUT)`;
+            const callCount = allSignals.filter(r => r.majority === 'CALL').length;
+            const putCount = allSignals.filter(r => r.majority === 'PUT').length;
+            totalEl.textContent = `(${allSignals.length} signals: ${callCount} CALL, ${putCount} PUT)`;
             totalEl.style.color = callCount > putCount ? 'var(--success)' : putCount > callCount ? 'var(--danger)' : 'var(--primary)';
         }
 
@@ -7888,8 +7888,7 @@ async function updateUltraConfluence() {
         console.error('URL attempted:', GITHUB_PAGES_BASE + 'ultra_confluence_4of4.csv');
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:20px;">Data unavailable - check console for errors</td></tr>';
         if (totalEl) {
-            totalEl.textContent = 'Ultra Confluence: Data unavailable';
-            totalEl.style.color = 'var(--danger)';
+            totalEl.textContent = '';
         }
     }
 }
