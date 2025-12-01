@@ -1583,7 +1583,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
                     <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
                 </div>
-                <div class="analysis-time" style="margin-left: 15px; border-left: 2px solid var(--border); padding-left: 15px;">
+                <div class="analysis-time" id="intradaySwingContainer" style="margin-left: 15px; border-left: 2px solid var(--border); padding-left: 15px; display: none;">
                     <button class="analysis-time-btn" onclick="switchTradeMode('intraday')" id="intradayModeBtn" style="background: linear-gradient(135deg, var(--intraday), #d97706); color: white;">⚡ Intraday</button>
                     <button class="analysis-time-btn" onclick="switchTradeMode('swing')" id="swingModeBtn">🌊 Swing</button>
                 </div>
@@ -1594,6 +1594,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- Daily Analysis Main Content (shown by default) -->
+            <div id="dailyAnalysisMain">
             <!-- Signal Confluence Score -->
             <div class="signal-confluence-card">
                 <div style="text-align: center;">
@@ -1651,14 +1653,20 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Trading Plan -->
-            <div class="trading-plan" id="tradingPlanContainer">
+            <div class="trading-plan" id="tradingPlanContainer" style="display: none;">
                 <div class="trading-plan-header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h3 style="font-size: 16px; margin-bottom: 4px;" id="planTitle">☀️ Morning Trading Plan</h3>
-                            <div style="font-size: 11px; opacity: 0.9;" id="planDate">Wednesday, November 26, 2025</div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <button onclick="switchAnalysisMode('main')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                <span>←</span> Back
+                            </button>
+                            <div>
+                                <h3 style="font-size: 16px; margin-bottom: 4px;" id="planTitle">☀️ Morning Trading Plan</h3>
+                                <div style="font-size: 11px; opacity: 0.9;" id="planDate">Wednesday, November 26, 2025</div>
+                            </div>
                         </div>
                         <div style="text-align: right;">
                             <div style="font-size: 11px; opacity: 0.9;">Generated at</div>
@@ -1795,9 +1803,14 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="trading-plan">
                     <div class="trading-plan-header" style="background: linear-gradient(135deg, #1e3a5f, #2d1b4e);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h3 style="font-size: 16px; margin-bottom: 4px;">🌙 Evening Review & Next Day Plan</h3>
-                                <div style="font-size: 11px; opacity: 0.9;" id="eveningDate">Wednesday, November 26, 2025</div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <button onclick="switchAnalysisMode('main')" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                    <span>←</span> Back
+                                </button>
+                                <div>
+                                    <h3 style="font-size: 16px; margin-bottom: 4px;">🌙 Evening Review & Next Day Plan</h3>
+                                    <div style="font-size: 11px; opacity: 0.9;" id="eveningDate">Wednesday, November 26, 2025</div>
+                                </div>
                             </div>
                             <div style="text-align: right;">
                                 <div style="font-size: 11px; opacity: 0.9;">Market Close</div>
@@ -2430,6 +2443,11 @@ function initTabs() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(btn.dataset.tab).classList.add('active');
             btn.classList.add('active');
+
+            // Default to 'main' view when Daily Analysis tab is clicked
+            if (btn.dataset.tab === 'daily-analysis') {
+                switchAnalysisMode('main');
+            }
         };
     });
 }
@@ -5640,28 +5658,43 @@ function checkScheduledAnalysis() {
 
 function switchAnalysisMode(mode) {
     currentAnalysisMode = mode;
-    
+
+    const dailyAnalysisMain = document.getElementById('dailyAnalysisMain');
+    const tradingPlanContainer = document.getElementById('tradingPlanContainer');
+    const eveningReviewSection = document.getElementById('eveningReviewSection');
+    const intradaySwingBtns = document.getElementById('intradaySwingContainer');
+
     // Update button states
     document.getElementById('morningBtn')?.classList.toggle('active', mode === 'morning');
-    document.getElementById('eveningBtn')?.classList.toggle('active', mode === 'evening');  
-   
-    // Show Intraday/Swing only in Morning mode
-    const tradeModeDiv = document.getElementById('intradayModeBtn')?.parentElement;
-    if (tradeModeDiv) tradeModeDiv.style.display = mode === 'morning' ? 'flex' : 'none';
-    
-    // Show/hide Morning vs Evening sections
-    const tradingPlan = document.getElementById('tradingPlanContainer');
-    const eveningSection = document.getElementById('eveningReviewSection');
-    if (tradingPlan) tradingPlan.style.display = mode === 'morning' ? 'block' : 'none';
-    if (eveningSection) eveningSection.style.display = mode === 'evening' ? 'block' : 'none';
-    
-    // Update title
-    const planTitle = document.getElementById('planTitle');
-    if (planTitle) {
-        planTitle.textContent = mode === 'morning' ? '☀️ Morning Trading Plan' : '🌙 Evening Review & Next Day Plan';
+    document.getElementById('eveningBtn')?.classList.toggle('active', mode === 'evening');
+
+    // Show/hide sections based on mode
+    if (mode === 'main') {
+        if (dailyAnalysisMain) dailyAnalysisMain.style.display = 'block';
+        if (tradingPlanContainer) tradingPlanContainer.style.display = 'none';
+        if (eveningReviewSection) eveningReviewSection.style.display = 'none';
+        if (intradaySwingBtns) intradaySwingBtns.style.display = 'none';
+        // Clear active state on morning/evening buttons when in main view
+        document.getElementById('morningBtn')?.classList.remove('active');
+        document.getElementById('eveningBtn')?.classList.remove('active');
+    } else if (mode === 'morning') {
+        if (dailyAnalysisMain) dailyAnalysisMain.style.display = 'none';
+        if (tradingPlanContainer) tradingPlanContainer.style.display = 'block';
+        if (eveningReviewSection) eveningReviewSection.style.display = 'none';
+        if (intradaySwingBtns) intradaySwingBtns.style.display = 'flex';
+        // Update title
+        const planTitle = document.getElementById('planTitle');
+        if (planTitle) {
+            planTitle.textContent = '☀️ Morning Trading Plan';
+        }
+        generateDailyReport();
+    } else if (mode === 'evening') {
+        if (dailyAnalysisMain) dailyAnalysisMain.style.display = 'none';
+        if (tradingPlanContainer) tradingPlanContainer.style.display = 'none';
+        if (eveningReviewSection) eveningReviewSection.style.display = 'block';
+        if (intradaySwingBtns) intradaySwingBtns.style.display = 'none';
+        generateDailyReport();
     }
-    
-    generateDailyReport();
 }
 
 function refreshAnalysis() {
