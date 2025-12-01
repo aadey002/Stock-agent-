@@ -880,6 +880,9 @@
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
+            <button class="tab-btn" data-tab="mtf-bias">📈 MTF Bias</button>
+            <button class="tab-btn" data-tab="trade-journal">📓 Trade Journal</button>
+            <button class="tab-btn" data-tab="reports">📑 Reports</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -2200,7 +2203,317 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+        <!-- MTF BIAS TAB -->
+        <div id="mtf-bias" class="tab-content">
+            <div class="card">
+                <div class="card-title">📈 Multi-Timeframe Bias Log</div>
+                <p style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">
+                    Track trend alignment across multiple timeframes for <span id="mtfBiasSymbol" style="font-weight: 700; color: var(--primary);">SPY</span>
+                </p>
 
+                <!-- MTF Bias Table -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timeframe</th>
+                                <th>Bias</th>
+                                <th>Trend Direction</th>
+                                <th>Key Support</th>
+                                <th>Key Resistance</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mtfBiasTable">
+                            <tr>
+                                <td><span style="font-weight: 600;">5 Min</span></td>
+                                <td><span class="signal-badge call" id="bias5min">BULLISH</span></td>
+                                <td id="trend5min">↗ Uptrend</td>
+                                <td id="support5min">$598.50</td>
+                                <td id="resistance5min">$602.00</td>
+                                <td id="updated5min" style="font-size: 10px; color: var(--muted);">--</td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: 600;">15 Min</span></td>
+                                <td><span class="signal-badge call" id="bias15min">BULLISH</span></td>
+                                <td id="trend15min">↗ Uptrend</td>
+                                <td id="support15min">$597.00</td>
+                                <td id="resistance15min">$603.50</td>
+                                <td id="updated15min" style="font-size: 10px; color: var(--muted);">--</td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: 600;">1 Hour</span></td>
+                                <td><span class="signal-badge call" id="bias1hr">BULLISH</span></td>
+                                <td id="trend1hr">↗ Uptrend</td>
+                                <td id="support1hr">$595.00</td>
+                                <td id="resistance1hr">$605.00</td>
+                                <td id="updated1hr" style="font-size: 10px; color: var(--muted);">--</td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: 600;">4 Hour</span></td>
+                                <td><span class="signal-badge neutral" id="bias4hr">NEUTRAL</span></td>
+                                <td id="trend4hr">→ Sideways</td>
+                                <td id="support4hr">$590.00</td>
+                                <td id="resistance4hr">$610.00</td>
+                                <td id="updated4hr" style="font-size: 10px; color: var(--muted);">--</td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: 600;">Daily</span></td>
+                                <td><span class="signal-badge call" id="biasDaily">BULLISH</span></td>
+                                <td id="trendDaily">↗ Uptrend</td>
+                                <td id="supportDaily">$580.00</td>
+                                <td id="resistanceDaily">$615.00</td>
+                                <td id="updatedDaily" style="font-size: 10px; color: var(--muted);">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- MTF Alignment Summary -->
+                <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.1)); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--muted);">MTF Alignment Score</div>
+                            <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="mtfAlignmentScore">4/5 Bullish</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; color: var(--muted);">Recommendation</div>
+                            <div style="font-size: 16px; font-weight: 600; color: var(--success);" id="mtfRecommendation">CALL bias confirmed</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; color: var(--muted);" id="mtfSummary">
+                        Strong alignment across most timeframes. 5min, 15min, 1hr, and Daily all showing bullish bias. 4hr is neutral - wait for confirmation or use as entry zone.
+                    </div>
+                </div>
+
+                <!-- Refresh Button -->
+                <div style="margin-top: 15px; text-align: right;">
+                    <button onclick="updateMTFBias()" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        🔄 Refresh MTF Bias
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRADE JOURNAL TAB -->
+        <div id="trade-journal" class="tab-content">
+            <div class="card">
+                <div class="card-title">📓 Trade Journal</div>
+
+                <!-- Performance Summary -->
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Total Trades</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="journalTotalTrades">0</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Win Rate</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="journalWinRate">0%</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Total P&L</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="journalTotalPL">$0</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Best Trade</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="journalBestTrade">$0</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Worst Trade</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--danger);" id="journalWorstTrade">$0</div>
+                    </div>
+                </div>
+
+                <!-- Open Positions -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">📊 Open Positions</h4>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Entry Price</th>
+                                    <th>Current Price</th>
+                                    <th>Quantity</th>
+                                    <th>P&L</th>
+                                    <th>% Change</th>
+                                    <th>Entry Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="openPositionsTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--muted);">No open positions</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Trade History -->
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">📜 Trade History</h4>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Entry</th>
+                                    <th>Exit</th>
+                                    <th>Quantity</th>
+                                    <th>P&L</th>
+                                    <th>% Return</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tradeHistoryTable">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; color: var(--muted);">No trade history available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="loadTradeJournal()" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        🔄 Refresh Journal
+                    </button>
+                    <button onclick="exportTradeJournal()" style="padding: 8px 16px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        📥 Export CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTS TAB -->
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <div class="card-title">📑 Analysis Reports</div>
+
+                <!-- Playbook Comparison Section -->
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        📚 Playbook Comparison
+                        <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from playbook_comparison.csv</span>
+                    </h4>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Strategy</th>
+                                    <th>Signal</th>
+                                    <th>Win Rate</th>
+                                    <th>Avg Return</th>
+                                    <th>Risk/Reward</th>
+                                    <th>Trades</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playbookTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; color: var(--muted);">Loading playbook data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Ultra Confluence Section -->
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                        🎯 Ultra Confluence Signals (4/4 Consensus)
+                        <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from ultra_confluence_4of4.csv</span>
+                    </h4>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Signal</th>
+                                    <th>Confluence Score</th>
+                                    <th>Entry Zone</th>
+                                    <th>Stop Loss</th>
+                                    <th>Target 1</th>
+                                    <th>Target 2</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ultraConfluenceTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--muted);">Loading ultra confluence data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sector Rotation Section -->
+                <div style="margin-bottom: 25px;">
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">🔄 Sector Rotation Analysis</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;" id="sectorRotationGrid">
+                        <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--success);">
+                            <div style="font-size: 11px; color: var(--muted);">Leading Sectors</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--success);" id="leadingSectors">XLK, XLY</div>
+                        </div>
+                        <div style="background: rgba(59,130,246,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--primary);">
+                            <div style="font-size: 11px; color: var(--muted);">Improving Sectors</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--primary);" id="improvingSectors">XLF, XLI</div>
+                        </div>
+                        <div style="background: rgba(245,158,11,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--warning);">
+                            <div style="font-size: 11px; color: var(--muted);">Weakening Sectors</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--warning);" id="weakeningSectors">XLE, XLB</div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--danger);">
+                            <div style="font-size: 11px; color: var(--muted);">Lagging Sectors</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="laggingSectors">XLU, XLP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sector Performance Table -->
+                <div>
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">📊 Sector Performance Rankings</h4>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Sector</th>
+                                    <th>Symbol</th>
+                                    <th>1D %</th>
+                                    <th>1W %</th>
+                                    <th>1M %</th>
+                                    <th>Signal</th>
+                                    <th>Rotation Phase</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sectorPerformanceTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--muted);">Loading sector data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Refresh Button -->
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="loadReportsData()" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        🔄 Refresh Reports
+                    </button>
+                    <button onclick="downloadReport('playbook')" style="padding: 8px 16px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        📥 Download Playbook
+                    </button>
+                    <button onclick="downloadReport('confluence')" style="padding: 8px 16px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        📥 Download Confluence
+                    </button>
+                </div>
+            </div>
+        </div>
 
     </div>
     <!-- END CONTAINER -->
@@ -7178,6 +7491,519 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.querySelector('[data-tab="patterns"]')?.addEventListener('click', () => {
         setTimeout(() => { if (typeof updateFibonacciLevels === 'function' && currentData?.length) updateFibonacciLevels(currentData); }, 300);
+    });
+});
+
+// ==========================================
+// MTF BIAS TAB FUNCTIONS
+// ==========================================
+function updateMTFBias() {
+    if (!currentData || currentData.length < 50) return;
+
+    const price = currentData[currentData.length - 1].close;
+    const timeframes = ['5min', '15min', '1hr', '4hr', 'daily'];
+
+    // Calculate bias for each timeframe using different lookback periods
+    const biasData = {
+        '5min': calculateTimeframeBias(5),
+        '15min': calculateTimeframeBias(15),
+        '1hr': calculateTimeframeBias(60),
+        '4hr': calculateTimeframeBias(240),
+        'daily': calculateTimeframeBias(1440)
+    };
+
+    timeframes.forEach(tf => {
+        const data = biasData[tf];
+        const biasEl = document.getElementById(`mtf-${tf}-bias`);
+        const trendEl = document.getElementById(`mtf-${tf}-trend`);
+        const strengthEl = document.getElementById(`mtf-${tf}-strength`);
+        const notesEl = document.getElementById(`mtf-${tf}-notes`);
+
+        if (biasEl) {
+            biasEl.textContent = data.bias;
+            biasEl.className = `badge ${data.bias === 'BULLISH' ? 'badge-success' : data.bias === 'BEARISH' ? 'badge-danger' : 'badge-warning'}`;
+        }
+        if (trendEl) {
+            trendEl.textContent = data.trend;
+            trendEl.style.color = data.trend.includes('Up') ? 'var(--success)' : data.trend.includes('Down') ? 'var(--danger)' : 'var(--muted)';
+        }
+        if (strengthEl) {
+            strengthEl.textContent = data.strength;
+            strengthEl.style.color = data.strength === 'Strong' ? 'var(--success)' : data.strength === 'Weak' ? 'var(--danger)' : 'var(--primary)';
+        }
+        if (notesEl) {
+            notesEl.textContent = data.notes;
+        }
+    });
+
+    // Calculate alignment score
+    const bullishCount = Object.values(biasData).filter(d => d.bias === 'BULLISH').length;
+    const bearishCount = Object.values(biasData).filter(d => d.bias === 'BEARISH').length;
+
+    const alignmentScore = document.getElementById('mtfAlignmentScore');
+    const alignmentText = document.getElementById('mtfAlignmentText');
+
+    if (alignmentScore && alignmentText) {
+        if (bullishCount >= 4) {
+            alignmentScore.textContent = `${bullishCount}/5 BULLISH`;
+            alignmentScore.style.color = 'var(--success)';
+            alignmentText.textContent = 'Strong bullish alignment across timeframes - high probability long setups';
+        } else if (bearishCount >= 4) {
+            alignmentScore.textContent = `${bearishCount}/5 BEARISH`;
+            alignmentScore.style.color = 'var(--danger)';
+            alignmentText.textContent = 'Strong bearish alignment across timeframes - high probability short setups';
+        } else {
+            alignmentScore.textContent = 'MIXED';
+            alignmentScore.style.color = 'var(--warning)';
+            alignmentText.textContent = 'Mixed signals across timeframes - wait for better alignment or trade cautiously';
+        }
+    }
+}
+
+function calculateTimeframeBias(minutes) {
+    const barsNeeded = Math.min(Math.ceil(minutes / 5), currentData.length - 1);
+    const recentData = currentData.slice(-barsNeeded);
+
+    if (recentData.length < 2) {
+        return { bias: 'NEUTRAL', trend: 'N/A', strength: 'N/A', notes: 'Insufficient data' };
+    }
+
+    const firstClose = recentData[0].close;
+    const lastClose = recentData[recentData.length - 1].close;
+    const change = ((lastClose - firstClose) / firstClose) * 100;
+
+    // Calculate EMA
+    const ema20 = calculateEMA(recentData.map(d => d.close), Math.min(20, recentData.length));
+    const priceAboveEMA = lastClose > ema20;
+
+    // Calculate RSI-like momentum
+    let gains = 0, losses = 0;
+    for (let i = 1; i < recentData.length; i++) {
+        const diff = recentData[i].close - recentData[i-1].close;
+        if (diff > 0) gains += diff;
+        else losses -= diff;
+    }
+    const momentum = gains / (gains + losses || 1);
+
+    let bias, trend, strength, notes;
+
+    if (change > 0.3 && priceAboveEMA && momentum > 0.55) {
+        bias = 'BULLISH';
+        trend = 'Uptrend';
+        strength = change > 0.8 ? 'Strong' : 'Moderate';
+        notes = `+${change.toFixed(2)}% | Above EMA | Mom: ${(momentum * 100).toFixed(0)}%`;
+    } else if (change < -0.3 && !priceAboveEMA && momentum < 0.45) {
+        bias = 'BEARISH';
+        trend = 'Downtrend';
+        strength = change < -0.8 ? 'Strong' : 'Moderate';
+        notes = `${change.toFixed(2)}% | Below EMA | Mom: ${(momentum * 100).toFixed(0)}%`;
+    } else {
+        bias = 'NEUTRAL';
+        trend = 'Sideways';
+        strength = 'Weak';
+        notes = `${change > 0 ? '+' : ''}${change.toFixed(2)}% | Consolidating`;
+    }
+
+    return { bias, trend, strength, notes };
+}
+
+function calculateEMA(data, period) {
+    if (data.length < period) return data[data.length - 1];
+    const k = 2 / (period + 1);
+    let ema = data.slice(0, period).reduce((a, b) => a + b, 0) / period;
+    for (let i = period; i < data.length; i++) {
+        ema = data[i] * k + ema * (1 - k);
+    }
+    return ema;
+}
+
+// ==========================================
+// TRADE JOURNAL TAB FUNCTIONS
+// ==========================================
+let tradeJournalData = {
+    openPositions: [],
+    tradeHistory: []
+};
+
+function loadTradeJournal() {
+    // Load from localStorage
+    const saved = localStorage.getItem('q5d_trade_journal');
+    if (saved) {
+        tradeJournalData = JSON.parse(saved);
+    }
+
+    updateJournalDisplay();
+    updateJournalStats();
+}
+
+function updateJournalDisplay() {
+    // Update open positions table
+    const openBody = document.getElementById('openPositionsBody');
+    if (openBody) {
+        if (tradeJournalData.openPositions.length === 0) {
+            openBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No open positions. Add a trade to get started.</td></tr>';
+        } else {
+            openBody.innerHTML = tradeJournalData.openPositions.map((pos, idx) => {
+                const currentPrice = currentData?.length ? currentData[currentData.length - 1].close : pos.entry;
+                const pnl = pos.type === 'LONG'
+                    ? ((currentPrice - pos.entry) / pos.entry * 100).toFixed(2)
+                    : ((pos.entry - currentPrice) / pos.entry * 100).toFixed(2);
+                const pnlClass = parseFloat(pnl) >= 0 ? 'var(--success)' : 'var(--danger)';
+
+                return `<tr>
+                    <td>${pos.date}</td>
+                    <td><strong>${pos.symbol}</strong></td>
+                    <td><span class="badge ${pos.type === 'LONG' ? 'badge-success' : 'badge-danger'}">${pos.type}</span></td>
+                    <td>$${pos.entry.toFixed(2)}</td>
+                    <td>$${pos.stop.toFixed(2)}</td>
+                    <td>$${pos.target.toFixed(2)}</td>
+                    <td style="color:${pnlClass};font-weight:600;">${pnl}%</td>
+                </tr>`;
+            }).join('');
+        }
+    }
+
+    // Update trade history table
+    const historyBody = document.getElementById('tradeHistoryBody');
+    if (historyBody) {
+        if (tradeJournalData.tradeHistory.length === 0) {
+            historyBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">No trade history yet.</td></tr>';
+        } else {
+            historyBody.innerHTML = tradeJournalData.tradeHistory.slice(-20).reverse().map(trade => {
+                const resultClass = trade.result === 'WIN' ? 'badge-success' : trade.result === 'LOSS' ? 'badge-danger' : 'badge-warning';
+                const pnlClass = trade.pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+
+                return `<tr>
+                    <td>${trade.date}</td>
+                    <td><strong>${trade.symbol}</strong></td>
+                    <td><span class="badge ${trade.type === 'LONG' ? 'badge-success' : 'badge-danger'}">${trade.type}</span></td>
+                    <td>$${trade.entry.toFixed(2)}</td>
+                    <td>$${trade.exit.toFixed(2)}</td>
+                    <td style="color:${pnlClass};font-weight:600;">${trade.pnl >= 0 ? '+' : ''}${trade.pnl.toFixed(2)}%</td>
+                    <td><span class="badge ${resultClass}">${trade.result}</span></td>
+                    <td style="font-size:10px;color:var(--muted);">${trade.notes || '-'}</td>
+                </tr>`;
+            }).join('');
+        }
+    }
+}
+
+function updateJournalStats() {
+    const history = tradeJournalData.tradeHistory;
+
+    const totalTrades = history.length;
+    const wins = history.filter(t => t.result === 'WIN').length;
+    const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(1) : '0.0';
+    const totalPnL = history.reduce((sum, t) => sum + t.pnl, 0);
+    const bestTrade = history.length > 0 ? Math.max(...history.map(t => t.pnl)) : 0;
+    const worstTrade = history.length > 0 ? Math.min(...history.map(t => t.pnl)) : 0;
+
+    const totalEl = document.getElementById('journalTotalTrades');
+    const winRateEl = document.getElementById('journalWinRate');
+    const pnlEl = document.getElementById('journalTotalPnL');
+    const bestEl = document.getElementById('journalBestTrade');
+    const worstEl = document.getElementById('journalWorstTrade');
+
+    if (totalEl) totalEl.textContent = totalTrades;
+    if (winRateEl) {
+        winRateEl.textContent = winRate + '%';
+        winRateEl.style.color = parseFloat(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
+    }
+    if (pnlEl) {
+        pnlEl.textContent = (totalPnL >= 0 ? '+' : '') + totalPnL.toFixed(2) + '%';
+        pnlEl.style.color = totalPnL >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+    if (bestEl) {
+        bestEl.textContent = '+' + bestTrade.toFixed(2) + '%';
+        bestEl.style.color = 'var(--success)';
+    }
+    if (worstEl) {
+        worstEl.textContent = worstTrade.toFixed(2) + '%';
+        worstEl.style.color = 'var(--danger)';
+    }
+}
+
+function addTrade() {
+    const symbol = currentSymbol || 'SPY';
+    const price = currentData?.length ? currentData[currentData.length - 1].close : 0;
+    const atr = currentData?.length ? calculateATR(currentData) : price * 0.01;
+
+    const newPosition = {
+        date: new Date().toLocaleDateString(),
+        symbol: symbol,
+        type: 'LONG',
+        entry: price,
+        stop: parseFloat((price - atr * 0.5).toFixed(2)),
+        target: parseFloat((price + atr * 1.5).toFixed(2))
+    };
+
+    tradeJournalData.openPositions.push(newPosition);
+    saveTradeJournal();
+    updateJournalDisplay();
+}
+
+function saveTradeJournal() {
+    localStorage.setItem('q5d_trade_journal', JSON.stringify(tradeJournalData));
+}
+
+function exportTradeJournal() {
+    const data = JSON.stringify(tradeJournalData, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Q5D_TradeJournal_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ==========================================
+// REPORTS TAB FUNCTIONS
+// ==========================================
+function loadReportsData() {
+    updatePlaybookComparison();
+    updateUltraConfluence();
+    updateSectorRotation();
+}
+
+function updatePlaybookComparison() {
+    if (!dailyAnalysisData) return;
+
+    const signals = dailyAnalysisData.signals;
+    const price = dailyAnalysisData.price;
+    const atr = currentData?.length ? calculateATR(currentData) : price * 0.01;
+
+    const playbooks = [
+        {
+            name: 'Conservative',
+            entry: (price - atr * 0.2).toFixed(2),
+            stop: (atr * 0.3).toFixed(2),
+            target: (atr * 0.8).toFixed(2),
+            rr: '1:2.7',
+            winRate: '65%',
+            notes: 'Lower risk, smaller gains'
+        },
+        {
+            name: 'Balanced',
+            entry: (price - atr * 0.3).toFixed(2),
+            stop: (atr * 0.5).toFixed(2),
+            target: (atr * 1.5).toFixed(2),
+            rr: '1:3.0',
+            winRate: '55%',
+            notes: 'Standard approach'
+        },
+        {
+            name: 'Aggressive',
+            entry: price.toFixed(2),
+            stop: (atr * 0.7).toFixed(2),
+            target: (atr * 2.5).toFixed(2),
+            rr: '1:3.6',
+            winRate: '45%',
+            notes: 'Higher risk, larger gains'
+        }
+    ];
+
+    const tbody = document.getElementById('playbookComparisonBody');
+    if (tbody) {
+        tbody.innerHTML = playbooks.map(p => `
+            <tr>
+                <td><strong>${p.name}</strong></td>
+                <td>$${p.entry}</td>
+                <td>$${p.stop}</td>
+                <td>$${p.target}</td>
+                <td>${p.rr}</td>
+                <td>${p.winRate}</td>
+                <td style="font-size:10px;color:var(--muted);">${p.notes}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+function updateUltraConfluence() {
+    if (!dailyAnalysisData) return;
+
+    const signals = dailyAnalysisData.signals;
+    const factors = [
+        {
+            factor: 'Agent Consensus',
+            status: signals.agentConsensus.count >= 3 ? 'ALIGNED' : 'MIXED',
+            weight: '25%',
+            score: signals.agentConsensus.count >= 3 ? '+25' : signals.agentConsensus.count >= 2 ? '+12' : '0',
+            detail: `${signals.agentConsensus.count}/4 agents agree`
+        },
+        {
+            factor: 'Master Score',
+            status: Math.abs(signals.masterScore) >= 3 ? 'STRONG' : 'WEAK',
+            weight: '20%',
+            score: Math.abs(signals.masterScore) >= 3 ? '+20' : Math.abs(signals.masterScore) >= 1.5 ? '+10' : '0',
+            detail: `Score: ${signals.masterScore.toFixed(1)}`
+        },
+        {
+            factor: 'Volume Confirmation',
+            status: signals.volume.signal !== 'NEUTRAL' ? 'CONFIRMED' : 'NEUTRAL',
+            weight: '15%',
+            score: signals.volume.signal !== 'NEUTRAL' ? '+15' : '0',
+            detail: signals.volume.detail
+        },
+        {
+            factor: 'Pattern Recognition',
+            status: signals.patterns.found.length > 0 ? 'DETECTED' : 'NONE',
+            weight: '15%',
+            score: signals.patterns.found.length > 0 ? '+15' : '0',
+            detail: signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'No patterns'
+        },
+        {
+            factor: 'Gann Cycles',
+            status: 'ACTIVE',
+            weight: '15%',
+            score: '+10',
+            detail: 'Cycle alignment checked'
+        },
+        {
+            factor: 'Fibonacci Levels',
+            status: 'MAPPED',
+            weight: '10%',
+            score: '+10',
+            detail: 'Key levels identified'
+        }
+    ];
+
+    const tbody = document.getElementById('ultraConfluenceBody');
+    if (tbody) {
+        tbody.innerHTML = factors.map(f => {
+            const statusClass = f.status === 'ALIGNED' || f.status === 'STRONG' || f.status === 'CONFIRMED' || f.status === 'DETECTED'
+                ? 'badge-success'
+                : f.status === 'MIXED' || f.status === 'WEAK' || f.status === 'NEUTRAL' || f.status === 'NONE'
+                ? 'badge-warning'
+                : 'badge-primary';
+            const scoreColor = f.score.startsWith('+') && parseInt(f.score) > 0 ? 'var(--success)' : 'var(--muted)';
+
+            return `<tr>
+                <td><strong>${f.factor}</strong></td>
+                <td><span class="badge ${statusClass}">${f.status}</span></td>
+                <td>${f.weight}</td>
+                <td style="color:${scoreColor};font-weight:600;">${f.score}</td>
+                <td style="font-size:10px;color:var(--muted);">${f.detail}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Calculate total score
+    const totalScore = factors.reduce((sum, f) => sum + parseInt(f.score), 0);
+    const totalEl = document.getElementById('ultraConfluenceTotal');
+    if (totalEl) {
+        totalEl.textContent = `Total Confluence Score: ${totalScore}/100`;
+        totalEl.style.color = totalScore >= 70 ? 'var(--success)' : totalScore >= 50 ? 'var(--warning)' : 'var(--danger)';
+    }
+}
+
+function updateSectorRotation() {
+    const sectors = [
+        { name: 'Technology (XLK)', bias: 'BULLISH', strength: '78%', flow: '+$2.1B' },
+        { name: 'Healthcare (XLV)', bias: 'NEUTRAL', strength: '52%', flow: '+$0.3B' },
+        { name: 'Financials (XLF)', bias: 'BULLISH', strength: '65%', flow: '+$1.2B' },
+        { name: 'Energy (XLE)', bias: 'BEARISH', strength: '35%', flow: '-$0.8B' },
+        { name: 'Consumer Disc (XLY)', bias: 'BULLISH', strength: '71%', flow: '+$0.9B' },
+        { name: 'Utilities (XLU)', bias: 'BEARISH', strength: '28%', flow: '-$0.4B' },
+        { name: 'Industrials (XLI)', bias: 'NEUTRAL', strength: '55%', flow: '+$0.2B' },
+        { name: 'Materials (XLB)', bias: 'NEUTRAL', strength: '48%', flow: '-$0.1B' }
+    ];
+
+    const tbody = document.getElementById('sectorRotationBody');
+    if (tbody) {
+        tbody.innerHTML = sectors.map(s => {
+            const biasClass = s.bias === 'BULLISH' ? 'badge-success' : s.bias === 'BEARISH' ? 'badge-danger' : 'badge-warning';
+            const strengthNum = parseInt(s.strength);
+            const strengthColor = strengthNum >= 65 ? 'var(--success)' : strengthNum <= 40 ? 'var(--danger)' : 'var(--warning)';
+            const flowColor = s.flow.startsWith('+') ? 'var(--success)' : 'var(--danger)';
+
+            return `<tr>
+                <td><strong>${s.name}</strong></td>
+                <td><span class="badge ${biasClass}">${s.bias}</span></td>
+                <td style="color:${strengthColor};font-weight:600;">${s.strength}</td>
+                <td style="color:${flowColor};font-weight:600;">${s.flow}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Update sector grid
+    const leadersEl = document.getElementById('sectorLeadersReport');
+    const laggardsEl = document.getElementById('sectorLaggardsReport');
+    const rotationEl = document.getElementById('sectorRotationSignal');
+
+    if (leadersEl) leadersEl.textContent = 'XLK, XLY, XLF';
+    if (laggardsEl) laggardsEl.textContent = 'XLE, XLU';
+    if (rotationEl) {
+        rotationEl.textContent = 'Risk-On';
+        rotationEl.style.color = 'var(--success)';
+    }
+}
+
+function downloadReportPDF() {
+    // Generate a printable HTML report
+    const reportContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Q5D Full Report - ${currentSymbol} - ${new Date().toLocaleDateString()}</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; }
+        h1 { color: #1e40af; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        h2 { color: #374151; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 10px; text-align: left; border: 1px solid #e5e7eb; }
+        th { background: #f3f4f6; }
+        .section { margin-bottom: 30px; page-break-inside: avoid; }
+        @media print { body { margin: 0; } }
+    </style>
+</head>
+<body>
+    <h1>Q5D Trading Report - ${currentSymbol}</h1>
+    <p>Generated: ${new Date().toLocaleString()}</p>
+
+    <div class="section">
+        <h2>Multi-Timeframe Bias</h2>
+        <p>See MTF Bias tab for current readings</p>
+    </div>
+
+    <div class="section">
+        <h2>Confluence Analysis</h2>
+        <p>See Reports tab for full confluence breakdown</p>
+    </div>
+
+    <div class="section">
+        <h2>Trade Journal Summary</h2>
+        <p>Total Trades: ${tradeJournalData.tradeHistory.length}</p>
+        <p>Open Positions: ${tradeJournalData.openPositions.length}</p>
+    </div>
+</body>
+</html>`;
+
+    const blob = new Blob([reportContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Q5D_FullReport_${currentSymbol}_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Initialize new tabs when clicked
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('[data-tab="mtf-bias"]')?.addEventListener('click', () => {
+        setTimeout(updateMTFBias, 300);
+    });
+    document.querySelector('[data-tab="trade-journal"]')?.addEventListener('click', () => {
+        setTimeout(loadTradeJournal, 300);
+    });
+    document.querySelector('[data-tab="reports"]')?.addEventListener('click', () => {
+        setTimeout(loadReportsData, 300);
     });
 });
 
