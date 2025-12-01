@@ -949,6 +949,87 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Historical Data Reference Section -->
+            <div class="card">
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📊 Historical Data Reference</span>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="historicalPeriod" onchange="updateHistoricalData()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; background: var(--bg);">
+                            <option value="7">7 Days</option>
+                            <option value="30" selected>30 Days</option>
+                            <option value="90">90 Days</option>
+                            <option value="365">1 Year</option>
+                        </select>
+                        <button onclick="updateHistoricalData()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+                <div id="historicalDataCount" style="font-size: 11px; color: var(--muted); margin-bottom: 10px;">Loading historical data...</div>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                    <table style="width: 100%;">
+                        <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 1;">
+                            <tr>
+                                <th>Date</th>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Close</th>
+                                <th>Volume</th>
+                                <th>Daily Change</th>
+                                <th>Change %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historicalDataBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--muted); padding: 20px;">Loading historical data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Analysis Section -->
+            <div class="card">
+                <div class="card-title">🤖 AI Data Analysis</div>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">Ask questions about the historical data above. The AI has access to all OHLCV data for analysis.</p>
+
+                <!-- Quick Analysis Buttons -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
+                    <button onclick="askAIAnalysis('Find patterns')" class="ai-quick-btn" style="padding: 8px 14px; background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid var(--primary); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                        🔍 Find Patterns
+                    </button>
+                    <button onclick="askAIAnalysis('Calculate averages')" class="ai-quick-btn" style="padding: 8px 14px; background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid var(--success); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                        📊 Calculate Averages
+                    </button>
+                    <button onclick="askAIAnalysis('Identify support and resistance levels')" class="ai-quick-btn" style="padding: 8px 14px; background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid var(--warning); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                        📈 Support/Resistance
+                    </button>
+                    <button onclick="askAIAnalysis('Show trend analysis')" class="ai-quick-btn" style="padding: 8px 14px; background: rgba(139,92,246,0.1); color: #8b5cf6; border: 1px solid #8b5cf6; border-radius: 6px; cursor: pointer; font-size: 11px;">
+                        📉 Trend Analysis
+                    </button>
+                </div>
+
+                <!-- Custom Question Input -->
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="aiQuestionInput" placeholder="Ask AI about this data... (e.g., 'What's the average daily range?')"
+                           style="flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; background: var(--bg);"
+                           onkeypress="if(event.key === 'Enter') askAIAnalysis()">
+                    <button onclick="askAIAnalysis()" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                        Ask AI
+                    </button>
+                </div>
+
+                <!-- AI Response Area -->
+                <div id="aiResponseArea" style="background: var(--bg); border-radius: 8px; padding: 15px; min-height: 100px; display: none;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">AI Analysis:</div>
+                    <div id="aiResponseContent" style="font-size: 12px; line-height: 1.6; white-space: pre-wrap;"></div>
+                </div>
+                <div id="aiLoadingIndicator" style="text-align: center; padding: 20px; display: none;">
+                    <div style="color: var(--primary);">🔄 Analyzing data...</div>
+                </div>
+            </div>
         </div>
 
         <!-- CHARTS TAB -->
@@ -8033,7 +8114,292 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('[data-tab="reports"]')?.addEventListener('click', () => {
         setTimeout(loadReportsData, 300);
     });
+    // Initialize historical data on Overview tab load
+    document.querySelector('[data-tab="overview"]')?.addEventListener('click', () => {
+        setTimeout(updateHistoricalData, 300);
+    });
 });
+
+// ==========================================
+// HISTORICAL DATA FUNCTIONS
+// ==========================================
+let historicalData = []; // Global variable for AI access
+
+function updateHistoricalData() {
+    const tbody = document.getElementById('historicalDataBody');
+    const countEl = document.getElementById('historicalDataCount');
+    const periodSelect = document.getElementById('historicalPeriod');
+
+    if (!tbody || !currentData || currentData.length === 0) {
+        if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">No data available. Select a symbol first.</td></tr>';
+        return;
+    }
+
+    const period = parseInt(periodSelect?.value || 30);
+
+    // Get the last N days of data
+    const dataToShow = currentData.slice(-period).reverse();
+    historicalData = dataToShow; // Store for AI access
+
+    if (countEl) {
+        countEl.textContent = `Showing ${dataToShow.length} days of ${currentSymbol} data`;
+    }
+
+    tbody.innerHTML = dataToShow.map(row => {
+        const date = row.date ? new Date(row.date).toLocaleDateString() : '-';
+        const open = parseFloat(row.open || 0);
+        const high = parseFloat(row.high || 0);
+        const low = parseFloat(row.low || 0);
+        const close = parseFloat(row.close || 0);
+        const volume = parseInt(row.volume || 0);
+        const dailyChange = close - open;
+        const dailyChangePct = open > 0 ? ((dailyChange / open) * 100) : 0;
+
+        const changeColor = dailyChange >= 0 ? 'var(--success)' : 'var(--danger)';
+        const changeSign = dailyChange >= 0 ? '+' : '';
+
+        return `<tr>
+            <td>${date}</td>
+            <td>$${open.toFixed(2)}</td>
+            <td style="color:var(--success);">$${high.toFixed(2)}</td>
+            <td style="color:var(--danger);">$${low.toFixed(2)}</td>
+            <td style="font-weight:600;">$${close.toFixed(2)}</td>
+            <td>${formatVolume(volume)}</td>
+            <td style="color:${changeColor};font-weight:600;">${changeSign}$${dailyChange.toFixed(2)}</td>
+            <td style="color:${changeColor};font-weight:600;">${changeSign}${dailyChangePct.toFixed(2)}%</td>
+        </tr>`;
+    }).join('');
+}
+
+function formatVolume(vol) {
+    if (vol >= 1000000000) return (vol / 1000000000).toFixed(2) + 'B';
+    if (vol >= 1000000) return (vol / 1000000).toFixed(2) + 'M';
+    if (vol >= 1000) return (vol / 1000).toFixed(1) + 'K';
+    return vol.toString();
+}
+
+// ==========================================
+// AI ANALYSIS FUNCTIONS
+// ==========================================
+function askAIAnalysis(predefinedQuestion) {
+    const inputEl = document.getElementById('aiQuestionInput');
+    const responseArea = document.getElementById('aiResponseArea');
+    const responseContent = document.getElementById('aiResponseContent');
+    const loadingIndicator = document.getElementById('aiLoadingIndicator');
+
+    const question = predefinedQuestion || inputEl?.value?.trim();
+
+    if (!question) {
+        alert('Please enter a question or click a quick analysis button.');
+        return;
+    }
+
+    if (!historicalData || historicalData.length === 0) {
+        alert('No historical data available. Please wait for data to load.');
+        return;
+    }
+
+    // Show loading
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    if (responseArea) responseArea.style.display = 'none';
+
+    // Perform local analysis (no external API needed)
+    setTimeout(() => {
+        const analysis = performLocalAnalysis(question, historicalData);
+
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        if (responseArea) responseArea.style.display = 'block';
+        if (responseContent) responseContent.textContent = analysis;
+
+        // Clear input if it was a custom question
+        if (!predefinedQuestion && inputEl) inputEl.value = '';
+    }, 500);
+}
+
+function performLocalAnalysis(question, data) {
+    const lowerQuestion = question.toLowerCase();
+
+    // Extract key metrics from data
+    const closes = data.map(d => parseFloat(d.close));
+    const opens = data.map(d => parseFloat(d.open));
+    const highs = data.map(d => parseFloat(d.high));
+    const lows = data.map(d => parseFloat(d.low));
+    const volumes = data.map(d => parseInt(d.volume || 0));
+
+    const avgClose = closes.reduce((a, b) => a + b, 0) / closes.length;
+    const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
+    const maxHigh = Math.max(...highs);
+    const minLow = Math.min(...lows);
+    const latestClose = closes[0];
+    const oldestClose = closes[closes.length - 1];
+    const periodReturn = ((latestClose - oldestClose) / oldestClose * 100);
+
+    // Calculate daily ranges
+    const dailyRanges = data.map(d => parseFloat(d.high) - parseFloat(d.low));
+    const avgRange = dailyRanges.reduce((a, b) => a + b, 0) / dailyRanges.length;
+
+    // Find patterns
+    if (lowerQuestion.includes('pattern')) {
+        let patterns = [];
+
+        // Check for uptrend/downtrend
+        const recentCloses = closes.slice(0, 5);
+        const trendUp = recentCloses.every((c, i) => i === 0 || c >= recentCloses[i - 1] * 0.99);
+        const trendDown = recentCloses.every((c, i) => i === 0 || c <= recentCloses[i - 1] * 1.01);
+
+        if (trendUp) patterns.push('📈 UPTREND detected in last 5 days');
+        if (trendDown) patterns.push('📉 DOWNTREND detected in last 5 days');
+
+        // Check for consolidation
+        const priceRange = (maxHigh - minLow) / avgClose * 100;
+        if (priceRange < 3) patterns.push('📊 CONSOLIDATION: Price range is tight (' + priceRange.toFixed(2) + '%)');
+
+        // Check for high volume days
+        const highVolDays = data.filter(d => parseInt(d.volume) > avgVolume * 1.5).length;
+        if (highVolDays > 0) patterns.push(`🔊 ${highVolDays} HIGH VOLUME days detected (>150% of average)`);
+
+        // Check for gaps
+        let gapUps = 0, gapDowns = 0;
+        for (let i = 0; i < data.length - 1; i++) {
+            if (parseFloat(data[i].low) > parseFloat(data[i + 1].high)) gapUps++;
+            if (parseFloat(data[i].high) < parseFloat(data[i + 1].low)) gapDowns++;
+        }
+        if (gapUps > 0) patterns.push(`⬆️ ${gapUps} GAP UP(s) detected`);
+        if (gapDowns > 0) patterns.push(`⬇️ ${gapDowns} GAP DOWN(s) detected`);
+
+        return `🔍 PATTERN ANALYSIS for ${currentSymbol} (${data.length} days)\n\n` +
+               (patterns.length > 0 ? patterns.join('\n') : 'No significant patterns detected') +
+               `\n\n📊 Summary:\n` +
+               `• Period Return: ${periodReturn >= 0 ? '+' : ''}${periodReturn.toFixed(2)}%\n` +
+               `• Price Range: $${minLow.toFixed(2)} - $${maxHigh.toFixed(2)}\n` +
+               `• Avg Daily Range: $${avgRange.toFixed(2)}`;
+    }
+
+    // Calculate averages
+    if (lowerQuestion.includes('average')) {
+        const avgOpen = opens.reduce((a, b) => a + b, 0) / opens.length;
+        const avgHigh = highs.reduce((a, b) => a + b, 0) / highs.length;
+        const avgLow = lows.reduce((a, b) => a + b, 0) / lows.length;
+
+        // Daily change averages
+        const dailyChanges = data.map(d => parseFloat(d.close) - parseFloat(d.open));
+        const avgDailyChange = dailyChanges.reduce((a, b) => a + b, 0) / dailyChanges.length;
+        const positiveDays = dailyChanges.filter(c => c > 0).length;
+        const negativeDays = dailyChanges.filter(c => c < 0).length;
+
+        return `📊 AVERAGE CALCULATIONS for ${currentSymbol} (${data.length} days)\n\n` +
+               `💰 Price Averages:\n` +
+               `• Average Open: $${avgOpen.toFixed(2)}\n` +
+               `• Average High: $${avgHigh.toFixed(2)}\n` +
+               `• Average Low: $${avgLow.toFixed(2)}\n` +
+               `• Average Close: $${avgClose.toFixed(2)}\n\n` +
+               `📈 Movement Averages:\n` +
+               `• Average Daily Range: $${avgRange.toFixed(2)}\n` +
+               `• Average Daily Change: ${avgDailyChange >= 0 ? '+' : ''}$${avgDailyChange.toFixed(2)}\n` +
+               `• Average Volume: ${formatVolume(avgVolume)}\n\n` +
+               `📅 Day Breakdown:\n` +
+               `• Positive Days: ${positiveDays} (${(positiveDays/data.length*100).toFixed(1)}%)\n` +
+               `• Negative Days: ${negativeDays} (${(negativeDays/data.length*100).toFixed(1)}%)`;
+    }
+
+    // Support and resistance
+    if (lowerQuestion.includes('support') || lowerQuestion.includes('resistance')) {
+        // Find pivot points
+        const pivotHigh = maxHigh;
+        const pivotLow = minLow;
+        const pivot = (maxHigh + minLow + latestClose) / 3;
+
+        const r1 = 2 * pivot - minLow;
+        const r2 = pivot + (maxHigh - minLow);
+        const s1 = 2 * pivot - maxHigh;
+        const s2 = pivot - (maxHigh - minLow);
+
+        // Find price clusters (simple approach)
+        const priceRounded = closes.map(c => Math.round(c));
+        const priceCounts = {};
+        priceRounded.forEach(p => priceCounts[p] = (priceCounts[p] || 0) + 1);
+        const sortedPrices = Object.entries(priceCounts).sort((a, b) => b[1] - a[1]);
+
+        return `📈 SUPPORT & RESISTANCE for ${currentSymbol}\n\n` +
+               `🔴 Resistance Levels:\n` +
+               `• R2 (Strong): $${r2.toFixed(2)}\n` +
+               `• R1 (Moderate): $${r1.toFixed(2)}\n` +
+               `• Period High: $${maxHigh.toFixed(2)}\n\n` +
+               `🟢 Support Levels:\n` +
+               `• Period Low: $${minLow.toFixed(2)}\n` +
+               `• S1 (Moderate): $${s1.toFixed(2)}\n` +
+               `• S2 (Strong): $${s2.toFixed(2)}\n\n` +
+               `⚖️ Pivot Point: $${pivot.toFixed(2)}\n` +
+               `📍 Current Price: $${latestClose.toFixed(2)} (${latestClose > pivot ? 'Above' : 'Below'} Pivot)`;
+    }
+
+    // Trend analysis
+    if (lowerQuestion.includes('trend')) {
+        // Calculate moving averages
+        const sma5 = closes.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+        const sma10 = closes.slice(0, 10).reduce((a, b) => a + b, 0) / Math.min(10, closes.length);
+        const sma20 = closes.slice(0, 20).reduce((a, b) => a + b, 0) / Math.min(20, closes.length);
+
+        // Determine trend
+        let trend = 'NEUTRAL';
+        let trendStrength = 'Moderate';
+
+        if (latestClose > sma5 && sma5 > sma10 && sma10 > sma20) {
+            trend = 'BULLISH';
+            trendStrength = 'Strong';
+        } else if (latestClose < sma5 && sma5 < sma10 && sma10 < sma20) {
+            trend = 'BEARISH';
+            trendStrength = 'Strong';
+        } else if (latestClose > sma10) {
+            trend = 'BULLISH';
+            trendStrength = 'Weak';
+        } else if (latestClose < sma10) {
+            trend = 'BEARISH';
+            trendStrength = 'Weak';
+        }
+
+        // Calculate momentum
+        const momentum5 = ((latestClose - closes[4]) / closes[4] * 100);
+        const momentum10 = closes.length >= 10 ? ((latestClose - closes[9]) / closes[9] * 100) : 0;
+
+        const trendEmoji = trend === 'BULLISH' ? '📈' : trend === 'BEARISH' ? '📉' : '➡️';
+
+        return `📉 TREND ANALYSIS for ${currentSymbol}\n\n` +
+               `${trendEmoji} Overall Trend: ${trend} (${trendStrength})\n\n` +
+               `📊 Moving Averages:\n` +
+               `• 5-Day SMA: $${sma5.toFixed(2)}\n` +
+               `• 10-Day SMA: $${sma10.toFixed(2)}\n` +
+               `• 20-Day SMA: $${sma20.toFixed(2)}\n\n` +
+               `🚀 Momentum:\n` +
+               `• 5-Day: ${momentum5 >= 0 ? '+' : ''}${momentum5.toFixed(2)}%\n` +
+               `• 10-Day: ${momentum10 >= 0 ? '+' : ''}${momentum10.toFixed(2)}%\n\n` +
+               `📅 Period Performance:\n` +
+               `• Total Return: ${periodReturn >= 0 ? '+' : ''}${periodReturn.toFixed(2)}%\n` +
+               `• Start: $${oldestClose.toFixed(2)} → End: $${latestClose.toFixed(2)}`;
+    }
+
+    // Default response for other questions
+    return `📊 DATA SUMMARY for ${currentSymbol} (${data.length} days)\n\n` +
+           `Current Price: $${latestClose.toFixed(2)}\n` +
+           `Period Range: $${minLow.toFixed(2)} - $${maxHigh.toFixed(2)}\n` +
+           `Average Close: $${avgClose.toFixed(2)}\n` +
+           `Average Volume: ${formatVolume(avgVolume)}\n` +
+           `Period Return: ${periodReturn >= 0 ? '+' : ''}${periodReturn.toFixed(2)}%\n\n` +
+           `💡 Try asking:\n` +
+           `• "Find patterns"\n` +
+           `• "Calculate averages"\n` +
+           `• "Identify support and resistance"\n` +
+           `• "Show trend analysis"`;
+}
+
+// Auto-update historical data when symbol changes
+const originalLoadSymbolData = typeof loadSymbolData === 'function' ? loadSymbolData : null;
+if (originalLoadSymbolData) {
+    loadSymbolData = function(symbol) {
+        originalLoadSymbolData(symbol);
+        setTimeout(updateHistoricalData, 1000);
+    };
+}
 
 </script>
 </body>
