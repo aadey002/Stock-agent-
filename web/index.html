@@ -838,16 +838,23 @@
                     <div class="symbol-select">
                         <select id="symbolSelect" onchange="changeSymbol()">
                             <optgroup label="Major ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
+                                <option value="SPY">SPY - S&P 500</option>
+                                <option value="QQQ">QQQ - Nasdaq 100</option>
+                                <option value="IWM">IWM - Russell 2000</option>
+                                <option value="DIA">DIA - Dow Jones</option>
                             </optgroup>
-                            <optgroup label="Sectors">
-                                <option value="XLK">XLK</option>
-                                <option value="XLF">XLF</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLE">XLE</option>
+                            <optgroup label="Sector ETFs">
+                                <option value="XLK">XLK - Technology</option>
+                                <option value="XLF">XLF - Financials</option>
+                                <option value="XLE">XLE - Energy</option>
+                                <option value="XLV">XLV - Healthcare</option>
+                                <option value="XLI">XLI - Industrials</option>
+                                <option value="XLP">XLP - Consumer Staples</option>
+                                <option value="XLU">XLU - Utilities</option>
+                                <option value="XLB">XLB - Materials</option>
+                                <option value="XLC">XLC - Communication</option>
+                                <option value="XLRE">XLRE - Real Estate</option>
+                                <option value="XLY">XLY - Consumer Disc</option>
                             </optgroup>
                         </select>
                     </div>
@@ -2732,10 +2739,12 @@ let allSymbolsData = {};
 let priceChart;
 let conversationHistory = [];
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLK', 'XLF', 'XLV', 'XLE'];
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
-    'XLK': 'Technology', 'XLF': 'Financials', 'XLV': 'Healthcare', 'XLE': 'Energy'
+    'XLK': 'Technology', 'XLF': 'Financials', 'XLE': 'Energy', 'XLV': 'Healthcare',
+    'XLI': 'Industrials', 'XLP': 'Consumer Staples', 'XLU': 'Utilities', 'XLB': 'Materials',
+    'XLC': 'Communication Services', 'XLRE': 'Real Estate', 'XLY': 'Consumer Discretionary'
 };
 
 const TRADING_PARAMS = {
@@ -2991,55 +3000,98 @@ function parseCSV(text) {
 async function loadAllData() {
     document.getElementById('loadingOverlay').classList.add('active');
     try {
-        // Try to fetch the selected symbol's data
-        let r = await fetch(`${currentSymbol}.csv?t=${Date.now()}`).catch(() => null);
+        // Try multiple paths for the CSV file
+        const csvPaths = [
+            `data/${currentSymbol}.csv?t=${Date.now()}`,
+            `${currentSymbol}.csv?t=${Date.now()}`,
+            `https://aadey002.github.io/Stock-agent-/data/${currentSymbol}.csv?t=${Date.now()}`
+        ];
+
+        let r = null;
         let loadedSymbol = currentSymbol;
-        
+
+        // Try each path until one works
+        for (const path of csvPaths) {
+            try {
+                const response = await fetch(path);
+                if (response.ok) {
+                    r = response;
+                    console.log(`✅ Found data at: ${path}`);
+                    break;
+                }
+            } catch (e) {
+                console.log(`❌ Failed to fetch from: ${path}`);
+            }
+        }
+
         // If the selected symbol's CSV doesn't exist, fall back to SPY
         if (!r?.ok) {
-            console.warn(`${currentSymbol}.csv not found, falling back to SPY`);
-            r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
+            console.warn(`${currentSymbol}.csv not found in any location, falling back to SPY`);
+
+            // Try SPY with same paths
+            for (const basePath of ['data/', '', 'https://aadey002.github.io/Stock-agent-/data/']) {
+                try {
+                    const response = await fetch(`${basePath}SPY.csv?t=${Date.now()}`);
+                    if (response.ok) {
+                        r = response;
+                        break;
+                    }
+                } catch (e) {}
+            }
+
             loadedSymbol = 'SPY';
-            
+
             // Update the symbol selector back to SPY if data not available
             const select = document.getElementById('symbolSelect');
             if (select) select.value = 'SPY';
             currentSymbol = 'SPY';
-            
+
             // Show notification
-            showDataNotification(`${currentSymbol} data not available, showing SPY`);
+            showDataNotification(`${loadedSymbol} data not available, showing SPY`);
         }
-        
+
         if (r?.ok) {
             currentData = parseCSV(await r.text());
             if (currentData.length) {
                 console.log(`✅ Loaded ${currentData.length} bars for ${currentSymbol}`);
-                
+
                 // Update ALL dashboard components
                 updateDashboard();
                 updateBarCountAnalysis();
                 updateReversalStats();
                 updatePriceChart();
-                
+
+                // Update Historical Data table
+                if (typeof updateHistoricalData === 'function') {
+                    updateHistoricalData();
+                }
+
                 // Update Daily Analysis if that tab is active
                 const analysisTab = document.getElementById('daily-analysis');
                 if (analysisTab && analysisTab.classList.contains('active')) {
                     await loadRealAgentSignals();
                     generateDailyReport();
                 }
-                
+
                 // Update Multi-Charts if that tab is active
                 const multiChartsTab = document.getElementById('multi-charts');
                 if (multiChartsTab && multiChartsTab.classList.contains('active')) {
                     updateAllMultiCharts();
                 }
-                
+
+                // Update MTF Bias if that tab is active
+                const mtfBiasTab = document.getElementById('mtf-bias');
+                if (mtfBiasTab && mtfBiasTab.classList.contains('active')) {
+                    if (typeof updateMTFBias === 'function') updateMTFBias();
+                }
+
                 // Update symbol displays
                 document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
                 document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
                 document.getElementById('tickerSymbol').textContent = currentSymbol;
                 document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
-                document.getElementById('confluenceSymbol').textContent = currentSymbol + ' Analysis';
+                const confluenceSymbolEl = document.getElementById('confluenceSymbol');
+                if (confluenceSymbolEl) confluenceSymbolEl.textContent = currentSymbol + ' Analysis';
             }
         }
     } catch (e) { console.error('Error:', e); }
