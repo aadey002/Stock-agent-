@@ -1675,124 +1675,69 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
                 <div class="trading-plan-body">
-                    <!-- Top Trade Recommendations -->
-                    <div class="plan-section">
-                        <div class="plan-section-title">🎯 Top Trade Recommendations</div>
-                        <div id="tradeRecommendations">
-                            <!-- Generated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Gann Analysis -->
-                    <div class="plan-section">
-                        <div class="plan-section-title">🔮 Gann Time Cycles & Square of 9</div>
-                        <div class="gann-analysis" id="gannAnalysis">
-                            <div class="grid grid-2" style="gap: 20px;">
-                                <div>
-                                    <h4 style="font-size: 12px; margin-bottom: 10px;">⏰ Time Cycles</h4>
-                                    <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="gannTimeCycles">
-                                        • 30-day cycle: Bottoming phase<br>
-                                        • 90-day cycle: Mid-cycle thrust<br>
-                                        • 180-day cycle: Bullish continuation<br>
-                                        • Annual cycle: Q4 strength expected
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 style="font-size: 12px; margin-bottom: 10px;">🔢 Square of 9 Levels</h4>
-                                    <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="squareOf9">
-                                        • Resistance 1: <span style="color:var(--danger);font-weight:600;">$685.00</span><br>
-                                        • Resistance 2: <span style="color:var(--danger);font-weight:600;">$692.50</span><br>
-                                        • Support 1: <span style="color:var(--success);font-weight:600;">$672.00</span><br>
-                                        • Support 2: <span style="color:var(--success);font-weight:600;">$665.00</span>
-                                    </div>
-                                </div>
+                    <!-- Intraday Section (default visible) -->
+                    <div id="intradaySection">
+                        <!-- Top Trade Recommendations - Intraday -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">🎯 Top Trade Recommendations (Intraday)</div>
+                            <div id="intradayTradeRecommendations">
+                                <!-- Generated dynamically -->
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Divine Proportions -->
-                    <div class="plan-section">
-                        <div class="plan-section-title">📐 Divine Proportions (Phi/Fibonacci)</div>
-                        <div class="phi-levels" id="phiLevels">
-                            <div class="phi-level">
-                                <div class="phi-level-name">23.6% Retrace</div>
-                                <div class="phi-level-value" id="phi236">$678.50</div>
-                            </div>
-                            <div class="phi-level">
-                                <div class="phi-level-name">38.2% Retrace</div>
-                                <div class="phi-level-value" id="phi382">$675.20</div>
-                            </div>
-                            <div class="phi-level">
-                                <div class="phi-level-name">50% Retrace</div>
-                                <div class="phi-level-value" id="phi50">$672.00</div>
-                            </div>
-                            <div class="phi-level">
-                                <div class="phi-level-name">61.8% (Golden)</div>
-                                <div class="phi-level-value" id="phi618">$668.80</div>
-                            </div>
-                            <div class="phi-level">
-                                <div class="phi-level-name">78.6% Retrace</div>
-                                <div class="phi-level-value" id="phi786">$664.50</div>
-                            </div>
-                            <div class="phi-level">
-                                <div class="phi-level-name">161.8% Ext</div>
-                                <div class="phi-level-value" id="phi1618">$695.00</div>
+                        <!-- AI Summary - Intraday -->
+                        <div class="plan-section" style="border-bottom: none;">
+                            <div class="plan-section-title">🧠 AI Trading Summary (Intraday)</div>
+                            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="intradayAISummary">
+                                <strong>Morning Analysis:</strong> Market conditions favor bullish positions today. SPY showing strong momentum with 4/4 agent consensus. Key levels to watch: Support at $672 (50% Fib), Resistance at $685 (Square of 9).
+                                <br><br>
+                                <strong>Recommended Entry Zone:</strong> Tight entry range using 0.3 ATR from current price for quick scalps.
+                                <br><br>
+                                <strong>Recommended Strategy:</strong> Focus on 0-1 DTE options for intraday momentum plays. Entry on pullbacks to support levels. Quick in-and-out with tight risk management.
+                                <br><br>
+                                <strong>Stop Loss Levels:</strong> Initial stop at 0.3 ATR. Maximum stop at 0.5 ATR. Cut losses quickly on intraday trades.
+                                <br><br>
+                                <strong>Profit Targets:</strong> Target 1: 0.8 ATR (scale out 50%). Target 2: 1.5 ATR (close remainder). Don't get greedy on intraday plays.
+                                <br><br>
+                                <strong>Key Terms Explained:</strong><br>
+                                • <em>0-1 DTE:</em> Options expiring same day or next day for maximum gamma exposure<br>
+                                • <em>ATR (Average True Range):</em> Measure of volatility used to set stops and targets<br>
+                                • <em>Tight Stops:</em> 0.3-0.5 ATR keeps risk minimal on quick trades<br>
+                                • <em>Quick Targets:</em> 0.8-1.5 ATR for realistic intraday profit goals
                             </div>
                         </div>
                     </div>
 
-                    <!-- High Consensus Trades -->
-                    <div class="plan-section">
-                        <div class="plan-section-title">🏆 High Consensus Trades (3/4 or 4/4)</div>
-                        <div class="table-wrap">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Symbol</th>
-                                        <th>Signal</th>
-                                        <th>Consensus</th>
-                                        <th>Confluence</th>
-                                        <th>Entry Zone</th>
-                                        <th>Stop</th>
-                                        <th>Target</th>
-                                        <th>Strike</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="highConsensusTable">
-                                    <!-- Generated dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Market Context -->
-                    <div class="plan-section">
-                        <div class="plan-section-title">📊 Market Context</div>
-                        <div class="grid grid-3" style="gap: 15px;" id="marketContext">
-                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Overall Bias</div>
-                                <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="overallBias">BULLISH</div>
-                            </div>
-                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Sector Leaders</div>
-                                <div style="font-size: 12px; font-weight: 600;" id="sectorLeaders">XLK, XLF</div>
-                            </div>
-                            <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Risk Level</div>
-                                <div style="font-size: 16px; font-weight: 700; color: var(--warning);" id="riskLevel">MODERATE</div>
+                    <!-- Swing Section (initially hidden) -->
+                    <div id="swingSection" style="display: none;">
+                        <!-- Top Trade Recommendations - Swing -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">🎯 Top Trade Recommendations (Swing)</div>
+                            <div id="swingTradeRecommendations">
+                                <!-- Generated dynamically -->
                             </div>
                         </div>
-                    </div>
 
-                    <!-- AI Summary -->
-                    <div class="plan-section" style="border-bottom: none;">
-                        <div class="plan-section-title">🧠 AI Trading Summary</div>
-                        <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="aiSummary">
-                            <strong>Morning Analysis:</strong> Market conditions favor bullish positions today. SPY showing strong momentum with 4/4 agent consensus. Key levels to watch: Support at $672 (50% Fib), Resistance at $685 (Square of 9). 
-                            <br><br>
-                            <strong>Recommended Strategy:</strong> Focus on CALL spreads on high-consensus ETFs (SPY, QQQ). Entry on pullbacks to Fibonacci support levels. Time stops align with Gann 30-day cycle completion around Dec 15.
-                            <br><br>
-                            <strong>Risk Management:</strong> Position size 1-2% per trade. Stop losses below 61.8% Fibonacci level. Take profits at 161.8% extension or when 3+ agents flip to HOLD.
+                        <!-- AI Summary - Swing -->
+                        <div class="plan-section" style="border-bottom: none;">
+                            <div class="plan-section-title">🧠 AI Trading Summary (Swing)</div>
+                            <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.1)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="swingAISummary">
+                                <strong>Morning Analysis:</strong> Market conditions favor bullish positions over the next few days. SPY showing strong momentum with 4/4 agent consensus. Multi-day trend setup identified.
+                                <br><br>
+                                <strong>Recommended Entry Zone:</strong> Wider entry range using 0.5 ATR from current price to allow for overnight gaps.
+                                <br><br>
+                                <strong>Recommended Strategy:</strong> Focus on 3-5 DTE options for swing trades. Allow positions to develop over multiple sessions. Patience is key for larger moves.
+                                <br><br>
+                                <strong>Stop Loss Levels:</strong> Initial stop at 0.7 ATR. Maximum stop at 1.2 ATR. Give trades room to breathe through normal volatility.
+                                <br><br>
+                                <strong>Profit Targets:</strong> Target 1: 2.0 ATR (scale out 50%). Target 2: 3.5 ATR (close remainder). Let winners run on swing trades.
+                                <br><br>
+                                <strong>Key Terms Explained:</strong><br>
+                                • <em>3-5 DTE:</em> Options expiring in 3-5 days for swing trade timeframe<br>
+                                • <em>ATR (Average True Range):</em> Measure of volatility used to set stops and targets<br>
+                                • <em>Wider Stops:</em> 0.7-1.2 ATR allows for overnight/multi-day volatility<br>
+                                • <em>Larger Targets:</em> 2.0-3.5 ATR captures multi-day trend moves
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1865,10 +1810,37 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         </div>
 
                         <!-- Next Day Trade Setups -->
-                        <div class="plan-section" style="border-bottom: none;">
+                        <div class="plan-section">
                             <div class="plan-section-title">📋 Next Day Trade Setups</div>
                             <div id="nextDaySetups">
                                 <!-- Generated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Top Trade Recommendations - Evening -->
+                        <div class="plan-section">
+                            <div class="plan-section-title">🎯 Top Trade Recommendations (Next Day)</div>
+                            <div id="eveningTradeRecommendations">
+                                <!-- Generated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- AI Summary - Evening -->
+                        <div class="plan-section" style="border-bottom: none;">
+                            <div class="plan-section-title">🧠 AI Trading Summary (Evening Review)</div>
+                            <div style="background: linear-gradient(135deg, rgba(30,58,95,0.2), rgba(45,27,78,0.2)); padding: 15px; border-radius: 8px; font-size: 12px; line-height: 1.8;" id="eveningAISummary">
+                                <strong>Evening Review / Day Summary:</strong> Today's session showed strong bullish momentum. SPY closed near highs with above-average volume confirming the trend. Agent consensus remained 4/4 bullish throughout the session.
+                                <br><br>
+                                <strong>Tomorrow's Trading Plan:</strong> Focus on continuation plays if overnight futures hold above today's close. Entry on any pullback to 0.5 ATR from current levels. Use 1-2 DTE options for next-day setups.
+                                <br><br>
+                                <strong>Gann Cycle Outlook:</strong> 30-day cycle remains supportive through Dec 15. 90-day cycle in mid-thrust phase favors long positions. Watch for potential reversal signals near major cycle dates.
+                                <br><br>
+                                <strong>Pre-Market Checklist:</strong><br>
+                                • Check overnight futures direction and volume<br>
+                                • Review any after-hours news or earnings<br>
+                                • Verify key support/resistance levels haven't changed<br>
+                                • Confirm agent consensus before market open<br>
+                                • Set alerts for entry zones identified above
                             </div>
                         </div>
                     </div>
@@ -6260,39 +6232,70 @@ function updateSignalItem(id, value, isBullish) {
 }
 
 function updateTradeRecommendations(signals) {
-    const container = document.getElementById('tradeRecommendations');
-    if (!container) return;
-    
     const lastBar = currentData[currentData.length - 1];
     const price = parseFloat(lastBar.Close);
     const atr = parseFloat(lastBar.ATR) || price * 0.015;
-    
+
     const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
-    
-    // Calculate all price levels - varies by mode
-    const isMorning = typeof currentAnalysisMode !== 'undefined' ? currentAnalysisMode === 'morning' : true;
-    const isIntraday = typeof currentTradeMode !== 'undefined' ? currentTradeMode === 'intraday' : true;
-    const mult = isMorning ? (isIntraday ? 0.3 : 0.5) : 0.6;
-    const entryLow = price - atr * mult;
-    const entryHigh = price + atr * (mult * 0.4);
+
+    // Calculate ATR multipliers based on mode combination
+    // Morning/Intraday: Entry 0.3, Stop 0.3/0.5, Target 0.8/1.5, DTE 0-1
+    // Morning/Swing: Entry 0.5, Stop 0.7/1.2, Target 2.0/3.5, DTE 3-5
+    // Evening: Entry 0.5, Stop 1.0/1.5, Target 2.5/4.0, DTE 1-2
+    let entryATR, stopATR1, stopATR2, target1ATR, target2ATR, dteValue, dteExplain;
+
+    if (currentAnalysisMode === 'evening') {
+        // Evening: Next-day setups with wider ranges
+        entryATR = 0.5;
+        stopATR1 = 1.0;
+        stopATR2 = 1.5;
+        target1ATR = 2.5;
+        target2ATR = 4.0;
+        dteValue = '1-2';
+        dteExplain = 'Next-day setup. Allows time for overnight gap and morning momentum.';
+    } else if (currentTradeMode === 'swing') {
+        // Swing: Wider stops, larger targets
+        entryATR = 0.5;
+        stopATR1 = 0.7;
+        stopATR2 = 1.2;
+        target1ATR = 2.0;
+        target2ATR = 3.5;
+        dteValue = '3-5';
+        dteExplain = 'Swing trade timeframe. Gives position time to develop over multiple sessions.';
+    } else {
+        // Intraday (default): Tight stops, quick targets
+        entryATR = 0.3;
+        stopATR1 = 0.3;
+        stopATR2 = 0.5;
+        target1ATR = 0.8;
+        target2ATR = 1.5;
+        dteValue = '0-1';
+        dteExplain = 'Same day/next day expiry. High gamma, quick profits, rapid time decay.';
+    }
+
+    const entryLow = price - atr * entryATR;
+    const entryHigh = price + atr * (entryATR * 0.4);
     const bestEntry = signal === 'CALL' ? entryLow : entryHigh;
-    const stopMult1 = isMorning ? (isIntraday ? 0.5 : 0.8) : 1.0;
-    const stopMult2 = isMorning ? (isIntraday ? 1.0 : 1.5) : 2.0;
-    const stop05 = signal === 'CALL' ? price - atr * stopMult1 : price + atr * stopMult1;
-    const stop10 = signal === 'CALL' ? price - atr * stopMult2 : price + atr * stopMult2;
-    const tgtMult1 = isMorning ? (isIntraday ? 1.0 : 2.0) : 2.5;
-    const tgtMult2 = isMorning ? (isIntraday ? 1.8 : 3.5) : 4.5;
-    const target1 = signal === 'CALL' ? price + atr * tgtMult1 : price - atr * tgtMult1;
-    const target2 = signal === 'CALL' ? price + atr * tgtMult2 : price - atr * tgtMult2;
-   
+    const stop05 = signal === 'CALL' ? price - atr * stopATR1 : price + atr * stopATR1;
+    const stop10 = signal === 'CALL' ? price - atr * stopATR2 : price + atr * stopATR2;
+    const target1 = signal === 'CALL' ? price + atr * target1ATR : price - atr * target1ATR;
+    const target2 = signal === 'CALL' ? price + atr * target2ATR : price - atr * target2ATR;
+
     // Calculate optimal strike
     const strike = Math.round(price / 5) * 5; // Round to nearest $5
-    
-    // DTE explanation based on mode
-    const dteValue = tradingMode === 'INTRADAY' ? '0-1' : '3-7';
-    const dteExplain = tradingMode === 'INTRADAY' ? 
-        'Expires today/tomorrow. High risk, high reward. Quick profits but rapid time decay.' : 
-        'Expires in 3-7 days. Gives trade time to develop. Less time decay pressure.';
+
+    // Determine which container to update based on mode
+    let containerId;
+    if (currentAnalysisMode === 'evening') {
+        containerId = 'eveningTradeRecommendations';
+    } else if (currentTradeMode === 'swing') {
+        containerId = 'swingTradeRecommendations';
+    } else {
+        containerId = 'intradayTradeRecommendations';
+    }
+
+    const container = document.getElementById(containerId);
+    if (!container) return;
     
     container.innerHTML = `
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
@@ -6314,10 +6317,10 @@ function updateTradeRecommendations(signals) {
                     <div style="margin-top: 6px;">
                         <strong>⚠️ Stop Loss Options:</strong><br>
                         <div style="padding-left: 10px; font-size: 11px;">
-                            • Tight (0.5 ATR): <span style="color: var(--danger);font-weight:600;">$${stop05.toFixed(2)}</span> 
-                            <span style="color:var(--muted);">(=$${(atr * 0.5).toFixed(2)} risk)</span><br>
-                            • Standard (1.0 ATR): <span style="color: var(--danger);font-weight:600;">$${stop10.toFixed(2)}</span>
-                            <span style="color:var(--muted);">(=$${atr.toFixed(2)} risk)</span>
+                            • Tight (${stopATR1} ATR): <span style="color: var(--danger);font-weight:600;">$${stop05.toFixed(2)}</span>
+                            <span style="color:var(--muted);">(=$${(atr * stopATR1).toFixed(2)} risk)</span><br>
+                            • Standard (${stopATR2} ATR): <span style="color: var(--danger);font-weight:600;">$${stop10.toFixed(2)}</span>
+                            <span style="color:var(--muted);">(=$${(atr * stopATR2).toFixed(2)} risk)</span>
                         </div>
                     </div>
                     
@@ -6611,99 +6614,160 @@ function updateMarketContext(signals) {
 }
 
 function updateAISummary(signals, price) {
-    const summaryEl = document.getElementById('aiSummary');
-    if (!summaryEl) return;
-    
     const lastBar = currentData[currentData.length - 1];
     const atr = parseFloat(lastBar.ATR) || price * 0.015;
     const sq9 = calculateSquareOf9(price);
-    
+
     const signalWord = signals.direction === 'BULLISH' ? 'bullish' : signals.direction === 'BEARISH' ? 'bearish' : 'neutral';
     const optionType = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'neutral';
-    
-    // Calculate actual price levels
-    const entryLow = (price - atr * 0.3).toFixed(2);
-    const entryHigh = (price + atr * 0.1).toFixed(2);
-    const bestEntry = signals.direction === 'BULLISH' ? entryLow : entryHigh;
-    const stopLoss05ATR = signals.direction === 'BULLISH' ? (price - atr * 0.5).toFixed(2) : (price + atr * 0.5).toFixed(2);
-    const stopLoss10ATR = signals.direction === 'BULLISH' ? (price - atr * 1.0).toFixed(2) : (price + atr * 1.0).toFixed(2);
-    const target1 = signals.direction === 'BULLISH' ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
-    const target2 = signals.direction === 'BULLISH' ? (price + atr * 2.5).toFixed(2) : (price - atr * 2.5).toFixed(2);
-    
+
     // Get Gann cycle explanations
     const gannExplanations = getGannCycleExplanations();
-    
+
     // Calculate optimal strike
     const optimalStrike = Math.round(price / 5) * 5;
-    
-    if (currentAnalysisMode === 'morning') {
+
+    // Mode-specific ATR multipliers and calculations
+    let entryATR, stopATR1, stopATR2, target1ATR, target2ATR, dteText, summaryElId;
+
+    if (currentAnalysisMode === 'evening') {
+        entryATR = 0.5; stopATR1 = 1.0; stopATR2 = 1.5; target1ATR = 2.5; target2ATR = 4.0;
+        dteText = '1-2 DTE';
+        summaryElId = 'eveningAISummary';
+    } else if (currentTradeMode === 'swing') {
+        entryATR = 0.5; stopATR1 = 0.7; stopATR2 = 1.2; target1ATR = 2.0; target2ATR = 3.5;
+        dteText = '3-5 DTE';
+        summaryElId = 'swingAISummary';
+    } else {
+        entryATR = 0.3; stopATR1 = 0.3; stopATR2 = 0.5; target1ATR = 0.8; target2ATR = 1.5;
+        dteText = '0-1 DTE';
+        summaryElId = 'intradayAISummary';
+    }
+
+    const summaryEl = document.getElementById(summaryElId);
+    if (!summaryEl) return;
+
+    const entryLow = (price - atr * entryATR).toFixed(2);
+    const entryHigh = (price + atr * (entryATR * 0.4)).toFixed(2);
+    const bestEntry = signals.direction === 'BULLISH' ? entryLow : entryHigh;
+    const stopLoss1 = signals.direction === 'BULLISH' ? (price - atr * stopATR1).toFixed(2) : (price + atr * stopATR1).toFixed(2);
+    const stopLoss2 = signals.direction === 'BULLISH' ? (price - atr * stopATR2).toFixed(2) : (price + atr * stopATR2).toFixed(2);
+    const target1 = signals.direction === 'BULLISH' ? (price + atr * target1ATR).toFixed(2) : (price - atr * target1ATR).toFixed(2);
+    const target2 = signals.direction === 'BULLISH' ? (price + atr * target2ATR).toFixed(2) : (price - atr * target2ATR).toFixed(2);
+
+    if (currentAnalysisMode === 'morning' && currentTradeMode === 'intraday') {
+        // INTRADAY MODE - Tight stops, quick targets, 0-1 DTE
         summaryEl.innerHTML = `
-            <strong>☀️ Morning Analysis (${new Date().toLocaleDateString()}):</strong> 
-            Market conditions favor ${signalWord} positions today. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}. 
+            <strong>☀️ Morning Analysis - Intraday (${new Date().toLocaleDateString()}):</strong>
+            Market conditions favor ${signalWord} positions today. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}.
             Master confluence score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} with ${signals.confidence.toFixed(0)}% confidence.
             <br><br>
-            
-            <strong>🎯 Recommended Entry Zone:</strong><br>
-            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+
+            <strong>🎯 Recommended Entry Zone (Tight - ${entryATR} ATR):</strong><br>
+            <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 • <strong>Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;">$${bestEntry}</span><br>
                 • <strong>Entry Range:</strong> $${entryLow} - $${entryHigh}<br>
-                • <strong>Why this range?</strong> Based on ATR (Average True Range = $${atr.toFixed(2)}), this zone offers optimal risk/reward
+                • <strong>Why tight range?</strong> Intraday trades need precise entries for optimal risk/reward on quick moves
             </div>
-            
-            <strong>📊 Recommended Strategy:</strong><br>
-            ${signals.confidence >= 70 ? `
+
+            <strong>📊 Recommended Strategy (0-1 DTE):</strong><br>
             <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                • <strong>Trade:</strong> ${optionType} spreads on ${currentSymbol}<br>
+                • <strong>Trade:</strong> ${optionType} on ${currentSymbol}<br>
                 • <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
-                • <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
+                • <strong>DTE:</strong> 0-1 DTE (same day or next day expiry)<br>
                 <div style="font-size:10px;color:var(--muted);margin-top:5px;">
-                    💡 <em>DTE = Days To Expiration. ${tradingMode === 'INTRADAY' ? 
-                        '0-1 DTE means options expiring today or tomorrow - high risk/reward for quick moves.' : 
-                        '3-7 DTE means 3-7 days until expiration - gives time for the move to develop with less theta decay.'}</em>
+                    💡 <em>0-1 DTE = High gamma exposure for quick profits. Rapid time decay requires fast execution.</em>
                 </div>
-            </div>` : `
-            <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                ⚠️ <strong>Wait for higher confidence setup.</strong> Current confluence is weak.<br>
-                Consider smaller position sizes or sitting out until signals align better.
-            </div>`}
-            
+            </div>
+
+            <strong>⚠️ Stop Loss Levels (Tight Stops):</strong><br>
+            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Tight Stop (${stopATR1} ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss1}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 ${stopATR1} × $${atr.toFixed(2)} = $${(atr * stopATR1).toFixed(2)} risk per share</span><br><br>
+                • <strong>Max Stop (${stopATR2} ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss2}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 Cut losses quickly on intraday trades - don't let losers run</span>
+            </div>
+
+            <strong>🎯 Profit Targets (Quick Targets):</strong><br>
+            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Target 1 (${target1ATR} ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
+                • <strong>Target 2 (${target2ATR} ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Close remainder<br>
+                <span style="font-size:10px;color:var(--muted);">💡 Don't get greedy on intraday - take profits quickly</span>
+            </div>
+
             <strong>🔮 Gann Cycle Analysis:</strong><br>
             <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${gannExplanations}
             </div>
-            
-            <strong>⚠️ Stop Loss Levels (with explanations):</strong><br>
-            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                • <strong>Tight Stop (0.5 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss05ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">💡 0.5 × $${atr.toFixed(2)} ATR = $${(atr * 0.5).toFixed(2)} from entry → Stop at $${stopLoss05ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">Use for: Day trades, high confidence setups, smaller position sizes</span><br><br>
-                • <strong>Standard Stop (1.0 ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss10ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">💡 1.0 × $${atr.toFixed(2)} ATR = $${atr.toFixed(2)} from entry → Stop at $${stopLoss10ATR}</span><br>
-                  <span style="font-size:10px;color:var(--muted);">Use for: Swing trades, giving room for normal volatility</span>
-            </div>
-            
-            <strong>🎯 Profit Targets:</strong><br>
-            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
-                • <strong>Target 1 (1.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
-                • <strong>Target 2 (2.5 ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Take remaining position<br>
-                • <strong>Resistance (Sq9):</strong> $${sq9.r1.toFixed(2)} - Major resistance from Square of 9
-            </div>
-            
+
             <strong>📖 Key Terms Explained:</strong><br>
             <div style="font-size:10px;color:var(--muted);line-height:1.6;margin-top:5px;">
-                • <strong>ATR (Average True Range):</strong> Measures volatility. Current ATR = $${atr.toFixed(2)} means ${currentSymbol} typically moves $${atr.toFixed(2)} per day.<br>
-                • <strong>DTE (Days To Expiration):</strong> How many days until your option expires. Lower DTE = higher risk but bigger potential gains.<br>
-                • <strong>Sq9 (Square of 9):</strong> Gann's calculator for finding natural support/resistance levels based on price geometry.<br>
-                • <strong>Confluence:</strong> Multiple signals agreeing on the same direction = higher probability trade.
+                • <strong>0-1 DTE:</strong> Options expiring same day or tomorrow - maximum gamma, fastest decay<br>
+                • <strong>ATR:</strong> Average True Range ($${atr.toFixed(2)}) - typical daily price movement<br>
+                • <strong>Tight Stops:</strong> ${stopATR1}-${stopATR2} ATR keeps risk minimal on quick trades
+            </div>
+        `;
+    } else if (currentAnalysisMode === 'morning' && currentTradeMode === 'swing') {
+        // SWING MODE - Wider stops, larger targets, 3-5 DTE
+        summaryEl.innerHTML = `
+            <strong>☀️ Morning Analysis - Swing (${new Date().toLocaleDateString()}):</strong>
+            Market conditions favor ${signalWord} positions over multiple days. ${currentSymbol} showing ${signals.agentConsensus.count}/4 agent consensus for ${signals.agentConsensus.signal}.
+            Master confluence score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} with ${signals.confidence.toFixed(0)}% confidence.
+            <br><br>
+
+            <strong>🎯 Recommended Entry Zone (Wider - ${entryATR} ATR):</strong><br>
+            <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Best Entry Price:</strong> <span style="color:var(--primary);font-weight:700;">$${bestEntry}</span><br>
+                • <strong>Entry Range:</strong> $${entryLow} - $${entryHigh}<br>
+                • <strong>Why wider range?</strong> Swing trades allow for overnight gaps and multi-day volatility
+            </div>
+
+            <strong>📊 Recommended Strategy (3-5 DTE):</strong><br>
+            <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Trade:</strong> ${optionType} spreads on ${currentSymbol}<br>
+                • <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
+                • <strong>DTE:</strong> 3-5 DTE (expires in 3-5 days)<br>
+                <div style="font-size:10px;color:var(--muted);margin-top:5px;">
+                    💡 <em>3-5 DTE = Time for the move to develop. Less theta decay pressure than 0-1 DTE.</em>
+                </div>
+            </div>
+
+            <strong>⚠️ Stop Loss Levels (Room to Breathe):</strong><br>
+            <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Initial Stop (${stopATR1} ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss1}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 ${stopATR1} × $${atr.toFixed(2)} = $${(atr * stopATR1).toFixed(2)} risk per share</span><br><br>
+                • <strong>Max Stop (${stopATR2} ATR):</strong> <span style="color:var(--danger);font-weight:600;">$${stopLoss2}</span><br>
+                  <span style="font-size:10px;color:var(--muted);">💡 Give swing trades room for normal multi-day volatility</span>
+            </div>
+
+            <strong>🎯 Profit Targets (Let Winners Run):</strong><br>
+            <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                • <strong>Target 1 (${target1ATR} ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target1}</span> - Take 50% profits<br>
+                • <strong>Target 2 (${target2ATR} ATR):</strong> <span style="color:var(--success);font-weight:600;">$${target2}</span> - Close remainder<br>
+                • <strong>Sq9 Resistance:</strong> $${sq9.r1.toFixed(2)} - Major level from Square of 9<br>
+                <span style="font-size:10px;color:var(--muted);">💡 Patience is key for swing trades - let winners develop</span>
+            </div>
+
+            <strong>🔮 Gann Cycle Analysis:</strong><br>
+            <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
+                ${gannExplanations}
+            </div>
+
+            <strong>📖 Key Terms Explained:</strong><br>
+            <div style="font-size:10px;color:var(--muted);line-height:1.6;margin-top:5px;">
+                • <strong>3-5 DTE:</strong> Options expiring in 3-5 days - balanced theta decay and time for move<br>
+                • <strong>ATR:</strong> Average True Range ($${atr.toFixed(2)}) - typical daily price movement<br>
+                • <strong>Wider Stops:</strong> ${stopATR1}-${stopATR2} ATR allows for overnight gaps
             </div>
         `;
     } else {
+        // EVENING MODE - Next-day setups, widest stops, largest targets, 1-2 DTE
         summaryEl.innerHTML = `
-            <strong>🌙 Evening Review (${new Date().toLocaleDateString()}):</strong> 
-            Today's session ended with ${currentSymbol} at $${price.toFixed(2)}. 
+            <strong>🌙 Evening Review (${new Date().toLocaleDateString()}):</strong>
+            Today's session ended with ${currentSymbol} at $${price.toFixed(2)}.
             ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
             <br><br>
-            
+
             <strong>📋 Day Summary:</strong><br>
             <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 • Master Score: ${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)} (${signals.direction})<br>
@@ -6711,28 +6775,28 @@ function updateAISummary(signals, price) {
                 • Bar Count: ${signals.barCount.count > 0 ? '+' : ''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
                 • Volume: ${signals.volume.detail}
             </div>
-            
-            <strong>📅 Tomorrow's Trading Plan:</strong><br>
+
+            <strong>📅 Tomorrow's Trading Plan (1-2 DTE):</strong><br>
             <div style="background: rgba(59,130,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${signals.confidence >= 65 ? `
                 <strong>Bias:</strong> Continue ${signalWord} outlook<br>
                 <strong>Watch for:</strong> Gap ${signals.direction === 'BULLISH' ? 'up' : 'down'} at open<br>
-                <strong>Entry Zone:</strong> $${entryLow} - $${entryHigh}<br>
-                <strong>Best Entry:</strong> $${bestEntry} (wait for pullback to this level)<br>
-                <strong>Stop Loss:</strong> $${stopLoss10ATR} (1 ATR = $${atr.toFixed(2)} below entry)<br>
-                <strong>Target:</strong> $${target1} (first target), $${sq9.r1.toFixed(2)} (Sq9 resistance)
+                <strong>Entry Zone (${entryATR} ATR):</strong> $${entryLow} - $${entryHigh}<br>
+                <strong>Best Entry:</strong> $${bestEntry} (wait for pullback)<br>
+                <strong>Stop Loss (${stopATR1}/${stopATR2} ATR):</strong> $${stopLoss1} / $${stopLoss2}<br>
+                <strong>Targets (${target1ATR}/${target2ATR} ATR):</strong> $${target1} / $${target2}
                 ` : `
                 ⚠️ <strong>Low confidence setup for tomorrow.</strong><br>
                 Wait for clearer signals before committing capital.<br>
-                Key levels to watch: Support $${sq9.s1.toFixed(2)} / Resistance $${sq9.r1.toFixed(2)}
+                Key levels: Support $${sq9.s1.toFixed(2)} / Resistance $${sq9.r1.toFixed(2)}
                 `}
             </div>
-            
+
             <strong>🔮 Gann Cycle Outlook:</strong><br>
             <div style="background: rgba(139,92,246,0.1); padding: 10px; border-radius: 6px; margin: 8px 0;">
                 ${gannExplanations}
             </div>
-            
+
             <strong>🎯 Pre-Market Checklist for Tomorrow:</strong><br>
             <div style="background: var(--bg); padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 11px;">
                 ☐ Check overnight futures direction (ES, NQ)<br>
@@ -6946,6 +7010,8 @@ function generateReportHTML() {
 
 // TRADE MODE SWITCHING
 function switchTradeMode(mode) {
+    currentTradeMode = mode;
+
     const intradayBtn = document.getElementById('intradayModeBtn');
     const swingBtn = document.getElementById('swingModeBtn');
     if (intradayBtn && swingBtn) {
@@ -6961,8 +7027,16 @@ function switchTradeMode(mode) {
             intradayBtn.style.color = 'var(--muted)';
         }
     }
-    document.querySelectorAll('#intradayTradeSection').forEach(el => el.style.display = mode === 'intraday' ? 'block' : 'none');
-    document.querySelectorAll('#swingTradeSection').forEach(el => el.style.display = mode === 'swing' ? 'block' : 'none');
+
+    // Show/hide intraday and swing sections
+    const intradaySection = document.getElementById('intradaySection');
+    const swingSection = document.getElementById('swingSection');
+
+    if (intradaySection) intradaySection.style.display = mode === 'intraday' ? 'block' : 'none';
+    if (swingSection) swingSection.style.display = mode === 'swing' ? 'block' : 'none';
+
+    // Regenerate trade recommendations for the active mode
+    generateDailyReport();
 }
 
 // Charts tab handler
