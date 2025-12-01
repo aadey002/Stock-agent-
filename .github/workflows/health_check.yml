@@ -20,11 +20,9 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install requests pandas numpy
+        pip install requests pandas numpy yfinance
     
     - name: Run health monitor
-      env:
-        TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
       run: |
         python monitoring/health_monitor.py
     
@@ -56,6 +54,7 @@ jobs:
     - name: Upload health report
       uses: actions/upload-artifact@v4
       if: always()
+      env:
       with:
         name: health-report-${{ github.run_number }}
         path: monitoring/
