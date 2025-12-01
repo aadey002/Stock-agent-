@@ -877,19 +877,15 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-tab="overview">📊 Overview</button>
-            <button class="tab-btn" data-tab="charts">📈 Charts</button>
             <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
-            <button class="tab-btn" data-tab="signals">🎯 Signals</button>
-            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
-            <button class="tab-btn" data-tab="patterns">📐 Patterns</button>
-            <button class="tab-btn" data-tab="trades">📝 Trades</button>
+            <button class="tab-btn" data-tab="signals-agents">🤖 Signals & Agents</button>
             <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
-            <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
-            <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="mtf-bias">📈 MTF Bias</button>
             <button class="tab-btn" data-tab="trade-journal">📓 Trade Journal</button>
+            <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn" data-tab="reports">📑 Reports</button>
+            <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -1039,29 +1035,7 @@
             </div>
         </div>
 
-        <!-- CHARTS TAB -->
-        <div id="charts" class="tab-content">
-            <div class="card">
-                <div class="card-title">📈 Price Chart with Fibonacci Levels</div>
-                <div class="chart-box"><canvas id="priceChart"></canvas></div>
-                <div class="grid grid-2" style="margin-top:12px;">
-                    <div style="background:rgba(239,68,68,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--danger);margin-bottom:8px;">Resistance</h4>
-                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="chartR3">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="chartR2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="chartR1">--</span></div>
-                    </div>
-                    <div style="background:rgba(16,185,129,0.05);border-radius:6px;padding:10px;">
-                        <h4 style="font-size:12px;color:var(--success);margin-bottom:8px;">Support</h4>
-                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="chartS1">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="chartS2">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="chartS3">--</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BAR COUNT TAB - FIXED -->
+        <!-- BAR COUNT TAB -->
         <div id="barcount" class="tab-content">
             <div class="card">
                 <div class="card-title">🔢 Bar Count Analysis</div>
@@ -1130,8 +1104,9 @@
             </div>
         </div>
 
-        <!-- SIGNALS TAB -->
-        <div id="signals" class="tab-content">
+        <!-- SIGNALS & AGENTS TAB (Combined) -->
+        <div id="signals-agents" class="tab-content">
+            <!-- Sub-section: Signal Parameters -->
             <div class="card">
                 <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
                 <div class="table-wrap">
@@ -1148,10 +1123,8 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- AGENTS TAB -->
-        <div id="agents" class="tab-content">
+            <!-- Sub-section: Agent Signals -->
             <div class="card">
                 <div class="card-title">🤖 Agent Signals</div>
                 <div class="table-wrap">
@@ -1167,10 +1140,8 @@
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- PATTERNS TAB -->
-        <div id="patterns" class="tab-content">
+            <!-- Sub-section: Fibonacci Levels -->
             <div class="card">
                 <div class="card-title">📐 Fibonacci Levels</div>
                 <div class="grid grid-2">
@@ -1178,9 +1149,11 @@
                     <div><div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div><div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div><div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div></div>
                 </div>
             </div>
+
+            <!-- Sub-section: Pattern Recognition -->
             <div class="grid grid-3">
-                <div class="card"><div class="card-title">📊 Technical</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
-                <div class="card"><div class="card-title">🕯️ Candlestick</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
+                <div class="card"><div class="card-title">📊 Technical Patterns</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
+                <div class="card"><div class="card-title">🕯️ Candlestick Patterns</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
                 <div class="card"><div class="card-title">⬛ Point & Figure</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div></div>
             </div>
         </div>
@@ -5066,7 +5039,7 @@ function checkDataFreshness() {
     let lastDate;
     if (lastBar.Date) {
         // Extract just the date part (YYYY-MM-DD) to avoid timezone issues
-        const dateStr = lastBar.Date.split('T')[0];
+        const dateStr = lastBar.Date.split('T')[0].split(' ')[0];
         const [year, month, day] = dateStr.split('-').map(Number);
         lastDate = new Date(year, month - 1, day); // month is 0-indexed
         console.log('📅 Parsed lastDate (no TZ):', lastDate);
