@@ -1653,6 +1653,133 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Understanding ATR Section -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📖 Understanding ATR (Average True Range)</div>
+                <div style="font-size: 12px; line-height: 1.8; color: var(--muted);" id="atrExplanation">
+                    <div style="background: rgba(59,130,246,0.1); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>What is ATR?</strong> ATR measures market volatility - how much a stock typically moves in a day.
+                        <br>Current ATR: <span style="color: var(--primary); font-weight: 700;" id="currentATR">$0.00</span>
+                        <span style="font-size: 10px;"> (This means the stock typically moves about this much per day)</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: var(--bg); padding: 10px; border-radius: 6px;">
+                            <strong>🎯 How We Use ATR:</strong><br>
+                            • Entry zones: 0.3-0.5 ATR from price<br>
+                            • Stop losses: 0.5-1.0 ATR away<br>
+                            • Profit targets: 1.5-2.5 ATR away
+                        </div>
+                        <div style="background: var(--bg); padding: 10px; border-radius: 6px;">
+                            <strong>💡 Why It Matters:</strong><br>
+                            • Higher ATR = more volatile<br>
+                            • Wider stops needed in volatile markets<br>
+                            • Adjust position size based on ATR
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gann Time Cycles & Square of 9 Section -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">🔮 Gann Time Cycles & Square of 9</div>
+                <div class="gann-analysis" id="gannAnalysis">
+                    <div class="grid grid-2" style="gap: 20px;">
+                        <div>
+                            <h4 style="font-size: 12px; margin-bottom: 10px;">⏰ Time Cycles</h4>
+                            <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="gannTimeCycles">
+                                • 30-day cycle: Bottoming phase<br>
+                                • 90-day cycle: Mid-cycle thrust<br>
+                                • 180-day cycle: Bullish continuation<br>
+                                • Annual cycle: Q4 strength expected
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 12px; margin-bottom: 10px;">🔢 Square of 9 Levels</h4>
+                            <div style="font-size: 11px; color: var(--muted); line-height: 1.8;" id="squareOf9">
+                                • Resistance 1: <span style="color:var(--danger);font-weight:600;">$685.00</span><br>
+                                • Resistance 2: <span style="color:var(--danger);font-weight:600;">$692.50</span><br>
+                                • Support 1: <span style="color:var(--success);font-weight:600;">$672.00</span><br>
+                                • Support 2: <span style="color:var(--success);font-weight:600;">$665.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divine Proportions (Phi/Fibonacci) Section -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📐 Divine Proportions (Phi/Fibonacci)</div>
+                <div class="phi-levels" id="phiLevels" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">23.6% Retrace</div>
+                        <div class="phi-level-value" id="phi236" style="font-weight: 600; color: var(--success);">$678.50</div>
+                    </div>
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">38.2% Retrace</div>
+                        <div class="phi-level-value" id="phi382" style="font-weight: 600; color: var(--success);">$675.20</div>
+                    </div>
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">50% Retrace</div>
+                        <div class="phi-level-value" id="phi50" style="font-weight: 600; color: var(--warning);">$672.00</div>
+                    </div>
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">61.8% (Golden)</div>
+                        <div class="phi-level-value" id="phi618" style="font-weight: 600; color: var(--danger);">$668.80</div>
+                    </div>
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">78.6% Retrace</div>
+                        <div class="phi-level-value" id="phi786" style="font-weight: 600; color: var(--danger);">$664.50</div>
+                    </div>
+                    <div class="phi-level" style="background: var(--bg); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div class="phi-level-name" style="font-size: 10px; color: var(--muted);">161.8% Ext</div>
+                        <div class="phi-level-value" id="phi1618" style="font-weight: 600; color: var(--primary);">$695.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High Consensus Trades Section -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">🏆 High Consensus Trades (3/4 or 4/4)</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Signal</th>
+                                <th>Consensus</th>
+                                <th>Confluence</th>
+                                <th>Entry Zone</th>
+                                <th>Stop</th>
+                                <th>Target</th>
+                                <th>Strike</th>
+                            </tr>
+                        </thead>
+                        <tbody id="highConsensusTable">
+                            <!-- Generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Market Context Section -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📊 Market Context</div>
+                <div class="grid grid-3" style="gap: 15px;" id="marketContext">
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 10px; color: var(--muted);">Overall Bias</div>
+                        <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="contextOverallBias">BULLISH</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 10px; color: var(--muted);">Sector Leaders</div>
+                        <div style="font-size: 12px; font-weight: 600;" id="sectorLeaders">XLK, XLF</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 10px; color: var(--muted);">Risk Level</div>
+                        <div style="font-size: 16px; font-weight: 700; color: var(--warning);" id="riskLevel">MODERATE</div>
+                    </div>
+                </div>
+            </div>
             </div>
 
             <!-- Trading Plan -->
@@ -5698,6 +5825,11 @@ function generateDailyReport() {
     updateMarketContext(signals);
     updateAISummary(signals, price);
     updatePlanDateTime();
+
+    // Update ATR display in dailyAnalysisMain
+    const atr = parseFloat(lastBar.ATR) || price * 0.015;
+    const atrEl = document.getElementById('currentATR');
+    if (atrEl) atrEl.textContent = '$' + atr.toFixed(2);
     
     // Store for download
     dailyAnalysisData = {
@@ -6591,7 +6723,7 @@ function updateHighConsensusTrades(signals) {
 }
 
 function updateMarketContext(signals) {
-    const biasEl = document.getElementById('overallBias');
+    const biasEl = document.getElementById('contextOverallBias');
     const leadersEl = document.getElementById('sectorLeaders');
     const riskEl = document.getElementById('riskLevel');
     
