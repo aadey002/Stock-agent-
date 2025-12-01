@@ -3,10 +3,11 @@ name: Confluence Agent
 on:
   workflow_dispatch:
   schedule:
-    # Market hours (EST): 9:30 AM - 4:00 PM = 14:30 - 21:00 UTC
+    # Market hours (EST): 9:30 AM - 4:30 PM = 14:30 - 21:30 UTC
+    # ETFs trade until 4:30 PM, final run at 4:45 PM EST (21:45 UTC)
     - cron: "30,45 14 * * 1-5"
     - cron: "0,15,30,45 15-20 * * 1-5"
-    - cron: "0 21 * * 1-5"
+    - cron: "0,15,30,45 21 * * 1-5"
 
 permissions:
   contents: write
