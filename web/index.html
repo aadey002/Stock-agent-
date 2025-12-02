@@ -3008,7 +3008,8 @@ async function loadAllData() {
 
         // If the selected symbol's CSV doesn't exist, fall back to SPY
         if (!r?.ok) {
-            console.warn(`${currentSymbol}.csv not found in any location, falling back to SPY`);
+            const failedSymbol = currentSymbol; // Save original symbol for error message
+            console.warn(`${failedSymbol}.csv not found in any location, falling back to SPY`);
 
             // Try SPY with same paths
             for (const basePath of ['data/', '', 'https://aadey002.github.io/Stock-agent-/data/']) {
@@ -3028,8 +3029,8 @@ async function loadAllData() {
             if (select) select.value = 'SPY';
             currentSymbol = 'SPY';
 
-            // Show notification
-            showDataNotification(`${loadedSymbol} data not available, showing SPY`);
+            // Show notification with original symbol name
+            showDataNotification(`${failedSymbol} data not available, showing SPY`);
         }
 
         if (r?.ok) {
@@ -3087,14 +3088,21 @@ function showDataNotification(message) {
 }
 
 async function loadAllSymbolsData() {
+    const csvPaths = ['data/', '', 'https://aadey002.github.io/Stock-agent-/data/'];
+
     for (const symbol of SYMBOLS) {
-        try {
-            const r = await fetch(`${symbol}.csv?t=${Date.now()}`).catch(() => null);
-            if (r?.ok) {
-                allSymbolsData[symbol] = parseCSV(await r.text());
-            }
-        } catch (e) { console.error(`Error loading ${symbol}:`, e); }
+        // Try multiple paths for each symbol
+        for (const basePath of csvPaths) {
+            try {
+                const r = await fetch(`${basePath}${symbol}.csv?t=${Date.now()}`).catch(() => null);
+                if (r?.ok) {
+                    allSymbolsData[symbol] = parseCSV(await r.text());
+                    break; // Found data, move to next symbol
+                }
+            } catch (e) {}
+        }
     }
+    console.log(`Loaded data for ${Object.keys(allSymbolsData).length} symbols`);
 }
 
 function updateDashboard() {
