@@ -8477,8 +8477,10 @@ async function updatePlaybookComparison() {
         }
 
         tbody.innerHTML = allSignals.map(row => {
-            // Parse CSV date format: "YYYY-MM-DD HH:MM:SS-TZ" - extract just the date part
-            const dateStr = row.Date ? row.Date.split(' ')[0] : '';
+            // Parse CSV date format: "2023-05-01T00:00:00.000Z" - ISO format
+            // Column name is lowercase 'date' not 'Date'
+            const rawDate = row.date || row.Date || '';
+            const dateStr = rawDate.split('T')[0]; // Split on T for ISO format
             const date = dateStr || 'N/A';
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
@@ -8526,8 +8528,10 @@ async function updateUltraConfluence() {
         const allSignals = data.reverse();
 
         tbody.innerHTML = allSignals.map(row => {
-            // Parse CSV date format: "YYYY-MM-DD HH:MM:SS-TZ" - extract just the date part
-            const dateStr = row.Date ? row.Date.split(' ')[0] : '';
+            // Parse CSV date format: "2023-05-01T00:00:00.000Z" - ISO format
+            // Column name is lowercase 'date' not 'Date'
+            const rawDate = row.date || row.Date || '';
+            const dateStr = rawDate.split('T')[0]; // Split on T for ISO format
             const date = dateStr || 'N/A';
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
