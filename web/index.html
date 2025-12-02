@@ -2858,8 +2858,40 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <!-- P&L Chart -->
             <div class="card" style="margin-top: 15px;">
                 <div class="card-title">📈 Profit/Loss at Expiration</div>
-                <div style="height: 300px;">
+                
+                <!-- Interactive Strike Slider -->
+                <div style="background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px;">📍 Drag Strike Price</label>
+                            <input type="range" id="strikeSlider" min="0" max="100" value="50" 
+                                   style="width: 100%; cursor: grab; accent-color: var(--warning);"
+                                   oninput="updateStrikeFromSlider(this.value)">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button onclick="adjustStrike(-5)" style="width: 32px; height: 32px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 14px;">-5</button>
+                            <button onclick="adjustStrike(-1)" style="width: 28px; height: 28px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">-1</button>
+                            <span id="strikeDisplay" style="font-size: 14px; font-weight: 600; color: var(--warning); min-width: 70px; text-align: center;">05</span>
+                            <button onclick="adjustStrike(1)" style="width: 28px; height: 28px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">+1</button>
+                            <button onclick="adjustStrike(5)" style="width: 32px; height: 32px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 14px;">+5</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--muted);">
+                        <span id="sliderMinLabel">20</span>
+                        <span>Current: <span id="currentPriceLabel" style="color: var(--primary);">00</span></span>
+                        <span id="sliderMaxLabel">80</span>
+                    </div>
+                </div>
+
+                <div style="height: 300px; position: relative;">
                     <canvas id="optionPnLChart"></canvas>
+                </div>
+                
+                <!-- Chart Legend -->
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; font-size: 10px;">
+                    <span><span style="display: inline-block; width: 12px; height: 3px; background: rgba(245, 158, 11, 0.9); margin-right: 4px;"></span>Strike</span>
+                    <span><span style="display: inline-block; width: 12px; height: 3px; background: rgba(59, 130, 246, 0.9); margin-right: 4px;"></span>Current Price</span>
+                    <span><span style="display: inline-block; width: 12px; height: 3px; background: rgba(16, 185, 129, 0.9); border-style: dashed; margin-right: 4px;"></span>Breakeven</span>
                 </div>
             </div>
 
@@ -9260,23 +9292,48 @@ function askAIAnalysis(predefinedQuestion) {
 function performLocalAnalysis(question, data) {
     const lowerQuestion = question.toLowerCase();
 
-    // Extract key metrics from data
-    const closes = data.map(d => parseFloat(d.close));
-    const opens = data.map(d => parseFloat(d.open));
-    const highs = data.map(d => parseFloat(d.high));
-    const lows = data.map(d => parseFloat(d.low));
-    const volumes = data.map(d => parseInt(d.volume || 0));
+    // Debug: Log data structure to help identify issues
+    console.log('AI Analysis - Data length:', data.length);
+    if (data.length > 0) {
+        console.log('AI Analysis - Sample row:', data[0]);
+        console.log('AI Analysis - Keys:', Object.keys(data[0]));
+    }
 
-    const avgClose = closes.reduce((a, b) => a + b, 0) / closes.length;
-    const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
-    const maxHigh = Math.max(...highs);
-    const minLow = Math.min(...lows);
-    const latestClose = closes[0];
-    const oldestClose = closes[closes.length - 1];
-    const periodReturn = ((latestClose - oldestClose) / oldestClose * 100);
+    // Helper function to safely parse numbers
+    const safeParseFloat = (val) => {
+        const num = parseFloat(val);
+        return isNaN(num) ? null : num;
+    };
+
+    // Extract key metrics from data - handle both lowercase and uppercase keys (CSV uses uppercase)
+    const closes = data.map(d => safeParseFloat(d.Close ?? d.close)).filter(v => v \!== null && v > 0);
+    const opens = data.map(d => safeParseFloat(d.Open ?? d.open)).filter(v => v \!== null && v > 0);
+    const highs = data.map(d => safeParseFloat(d.High ?? d.high)).filter(v => v \!== null && v > 0);
+    const lows = data.map(d => safeParseFloat(d.Low ?? d.low)).filter(v => v \!== null && v > 0);
+    const volumes = data.map(d => parseInt(d.Volume ?? d.volume ?? 0) || 0);
+
+    // Safety check: Ensure we have valid data
+    if (closes.length === 0) {
+        console.warn('AI Analysis - No valid close prices found');
+        return \;
+    }
+
+    console.log('AI Analysis - Parsed closes (first 5):', closes.slice(0, 5));
+
+    const avgClose = closes.length > 0 ? closes.reduce((a, b) => a + b, 0) / closes.length : 0;
+    const avgVolume = volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0;
+    const maxHigh = highs.length > 0 ? Math.max(...highs) : 0;
+    const minLow = lows.length > 0 ? Math.min(...lows) : 0;
+    const latestClose = closes.length > 0 ? closes[0] : 0;
+    const oldestClose = closes.length > 0 ? closes[closes.length - 1] : 0;
+    const periodReturn = oldestClose > 0 ? ((latestClose - oldestClose) / oldestClose * 100) : 0;
 
     // Calculate daily ranges
-    const dailyRanges = data.map(d => parseFloat(d.high) - parseFloat(d.low));
+    const dailyRanges = data.map(d => {
+        const high = parseFloat(d.High ?? d.high ?? 0);
+        const low = parseFloat(d.Low ?? d.low ?? 0);
+        return (isNaN(high) || isNaN(low)) ? 0 : high - low;
+    }).filter(v => v > 0);
     const avgRange = dailyRanges.reduce((a, b) => a + b, 0) / dailyRanges.length;
 
     // Find patterns
@@ -9296,14 +9353,18 @@ function performLocalAnalysis(question, data) {
         if (priceRange < 3) patterns.push('📊 CONSOLIDATION: Price range is tight (' + priceRange.toFixed(2) + '%)');
 
         // Check for high volume days
-        const highVolDays = data.filter(d => parseInt(d.volume) > avgVolume * 1.5).length;
+        const highVolDays = data.filter(d => parseInt(d.Volume ?? d.volume ?? 0) > avgVolume * 1.5).length;
         if (highVolDays > 0) patterns.push(`🔊 ${highVolDays} HIGH VOLUME days detected (>150% of average)`);
 
         // Check for gaps
         let gapUps = 0, gapDowns = 0;
         for (let i = 0; i < data.length - 1; i++) {
-            if (parseFloat(data[i].low) > parseFloat(data[i + 1].high)) gapUps++;
-            if (parseFloat(data[i].high) < parseFloat(data[i + 1].low)) gapDowns++;
+            const currLow = parseFloat(data[i].Low ?? data[i].low ?? 0);
+            const currHigh = parseFloat(data[i].High ?? data[i].high ?? 0);
+            const prevHigh = parseFloat(data[i + 1].High ?? data[i + 1].high ?? 0);
+            const prevLow = parseFloat(data[i + 1].Low ?? data[i + 1].low ?? 0);
+            if (currLow > prevHigh) gapUps++;
+            if (currHigh < prevLow) gapDowns++;
         }
         if (gapUps > 0) patterns.push(`⬆️ ${gapUps} GAP UP(s) detected`);
         if (gapDowns > 0) patterns.push(`⬇️ ${gapDowns} GAP DOWN(s) detected`);
@@ -9323,7 +9384,11 @@ function performLocalAnalysis(question, data) {
         const avgLow = lows.reduce((a, b) => a + b, 0) / lows.length;
 
         // Daily change averages
-        const dailyChanges = data.map(d => parseFloat(d.close) - parseFloat(d.open));
+        const dailyChanges = data.map(d => {
+            const close = parseFloat(d.Close ?? d.close ?? 0);
+            const open = parseFloat(d.Open ?? d.open ?? 0);
+            return (isNaN(close) || isNaN(open)) ? 0 : close - open;
+        });
         const avgDailyChange = dailyChanges.reduce((a, b) => a + b, 0) / dailyChanges.length;
         const positiveDays = dailyChanges.filter(c => c > 0).length;
         const negativeDays = dailyChanges.filter(c => c < 0).length;
@@ -10064,12 +10129,100 @@ function updateOptionsCalcPrice() {
 document.addEventListener('DOMContentLoaded', function() {
     // Run initial calculation with default values after a short delay
     setTimeout(calculateOptionPrice, 500);
-    
+
     // Update options calc price when Options Calc tab is clicked
     document.querySelector('[data-tab="options-calc"]')?.addEventListener('click', () => {
         setTimeout(updateOptionsCalcPrice, 100);
+        setTimeout(initializeStrikeSlider, 200);
     });
 });
+
+// ==========================================
+// INTERACTIVE STRIKE SLIDER FUNCTIONS
+// ==========================================
+
+// Store current slider range for calculations
+let sliderStrikeRange = { min: 0, max: 0, stockPrice: 0 };
+
+function initializeStrikeSlider() {
+    const stockPrice = parseFloat(document.getElementById('optStockPrice').value) || 600;
+    const strike = parseFloat(document.getElementById('optStrikePrice').value) || 605;
+
+    // Set slider range to +/- 30% of stock price
+    sliderStrikeRange.min = Math.floor(stockPrice * 0.7);
+    sliderStrikeRange.max = Math.ceil(stockPrice * 1.3);
+    sliderStrikeRange.stockPrice = stockPrice;
+
+    // Update labels
+    const minLabel = document.getElementById('sliderMinLabel');
+    const maxLabel = document.getElementById('sliderMaxLabel');
+    const currentLabel = document.getElementById('currentPriceLabel');
+    const strikeDisplay = document.getElementById('strikeDisplay');
+
+    if (minLabel) minLabel.textContent = '$' + sliderStrikeRange.min;
+    if (maxLabel) maxLabel.textContent = '$' + sliderStrikeRange.max;
+    if (currentLabel) currentLabel.textContent = '$' + stockPrice.toFixed(2);
+    if (strikeDisplay) strikeDisplay.textContent = '$' + strike.toFixed(0);
+
+    // Set slider position based on current strike
+    const slider = document.getElementById('strikeSlider');
+    if (slider) {
+        const range = sliderStrikeRange.max - sliderStrikeRange.min;
+        const position = ((strike - sliderStrikeRange.min) / range) * 100;
+        slider.value = Math.max(0, Math.min(100, position));
+    }
+}
+
+function updateStrikeFromSlider(sliderValue) {
+    const range = sliderStrikeRange.max - sliderStrikeRange.min;
+    const strike = sliderStrikeRange.min + (range * sliderValue / 100);
+
+    // Round to nearest dollar
+    const roundedStrike = Math.round(strike);
+
+    // Update input and display
+    document.getElementById('optStrikePrice').value = roundedStrike;
+    const strikeDisplay = document.getElementById('strikeDisplay');
+    if (strikeDisplay) strikeDisplay.textContent = '$' + roundedStrike;
+
+    // Recalculate options
+    calculateOptionPrice();
+}
+
+function adjustStrike(delta) {
+    const strikeInput = document.getElementById('optStrikePrice');
+    let currentStrike = parseFloat(strikeInput.value) || 600;
+    currentStrike += delta;
+
+    // Clamp to slider range
+    currentStrike = Math.max(sliderStrikeRange.min, Math.min(sliderStrikeRange.max, currentStrike));
+
+    strikeInput.value = currentStrike;
+
+    // Update slider position
+    const slider = document.getElementById('strikeSlider');
+    if (slider) {
+        const range = sliderStrikeRange.max - sliderStrikeRange.min;
+        const position = ((currentStrike - sliderStrikeRange.min) / range) * 100;
+        slider.value = Math.max(0, Math.min(100, position));
+    }
+
+    // Update display
+    const strikeDisplay = document.getElementById('strikeDisplay');
+    if (strikeDisplay) strikeDisplay.textContent = '$' + currentStrike.toFixed(0);
+
+    // Recalculate options
+    calculateOptionPrice();
+}
+
+// Also update slider when stock price input changes
+const optStockPriceInput = document.getElementById('optStockPrice');
+if (optStockPriceInput) {
+    optStockPriceInput.addEventListener('change', initializeStrikeSlider);
+}
+
+// Initialize slider shortly after page load
+setTimeout(initializeStrikeSlider, 1000);
 
 </script>
 </body>
