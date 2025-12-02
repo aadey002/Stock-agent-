@@ -9350,38 +9350,101 @@ function performLocalAnalysis(question, data) {
     }).filter(v => v > 0);
     const avgRange = dailyRanges.reduce((a, b) => a + b, 0) / dailyRanges.length;
 
+    // Helper function to format date as "Mon DD"
+    const formatDateShort = (dateStr) => {
+        if (!dateStr) return 'N/A';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const d = new Date(dateStr.split(' ')[0]);
+        if (isNaN(d.getTime())) return 'N/A';
+        return months[d.getMonth()] + ' ' + d.getDate();
+    };
+
     // Find patterns
     if (lowerQuestion.includes('pattern')) {
         let patterns = [];
 
-        // Check for uptrend/downtrend
-        const recentCloses = closes.slice(0, 5);
+        // Check for uptrend/downtrend with dates
+        const recentData = data.slice(0, 5);
+        const recentCloses = recentData.map(d => parseFloat(d.Close ?? d.close ?? 0));
         const trendUp = recentCloses.every((c, i) => i === 0 || c >= recentCloses[i - 1] * 0.99);
         const trendDown = recentCloses.every((c, i) => i === 0 || c <= recentCloses[i - 1] * 1.01);
 
-        if (trendUp) patterns.push('📈 UPTREND detected in last 5 days');
-        if (trendDown) patterns.push('📉 DOWNTREND detected in last 5 days');
+        if (trendUp && recentData.length >= 2) {
+            const startDate = formatDateShort(recentData[recentData.length - 1].Date ?? recentData[recentData.length - 1].date);
+            const endDate = formatDateShort(recentData[0].Date ?? recentData[0].date);
+            const trendPct = recentCloses[recentCloses.length - 1] > 0 ? 
+                ((recentCloses[0] - recentCloses[recentCloses.length - 1]) / recentCloses[recentCloses.length - 1] * 100).toFixed(1) : 0;
+            patterns.push(`📈 UPTREND detected: ${startDate} → ${endDate} (5 days, ${trendPct >= 0 ? '+' : ''}${trendPct}%)`);
+        }
+        if (trendDown && recentData.length >= 2) {
+            const startDate = formatDateShort(recentData[recentData.length - 1].Date ?? recentData[recentData.length - 1].date);
+            const endDate = formatDateShort(recentData[0].Date ?? recentData[0].date);
+            const trendPct = recentCloses[recentCloses.length - 1] > 0 ? 
+                ((recentCloses[0] - recentCloses[recentCloses.length - 1]) / recentCloses[recentCloses.length - 1] * 100).toFixed(1) : 0;
+            patterns.push(`📉 DOWNTREND detected: ${startDate} → ${endDate} (5 days, ${trendPct >= 0 ? '+' : ''}${trendPct}%)`);
+        }
 
         // Check for consolidation
         const priceRange = (maxHigh - minLow) / avgClose * 100;
         if (priceRange < 3) patterns.push('📊 CONSOLIDATION: Price range is tight (' + priceRange.toFixed(2) + '%)');
 
-        // Check for high volume days
-        const highVolDays = data.filter(d => parseInt(d.Volume ?? d.volume ?? 0) > avgVolume * 1.5).length;
-        if (highVolDays > 0) patterns.push(`🔊 ${highVolDays} HIGH VOLUME days detected (>150% of average)`);
+        // Check for high volume days with dates and percentages
+        const highVolDaysData = data.map((d, i) => {
+            const vol = parseInt(d.Volume ?? d.volume ?? 0);
+            const pct = avgVolume > 0 ? Math.round((vol / avgVolume) * 100) : 0;
+            return { date: d.Date ?? d.date, vol, pct, idx: i };
+        }).filter(d => d.pct > 150).sort((a, b) => b.pct - a.pct);
 
-        // Check for gaps
-        let gapUps = 0, gapDowns = 0;
+        if (highVolDaysData.length > 0) {
+            const maxShow = 5;
+            const shown = highVolDaysData.slice(0, maxShow);
+            const dateStrs = shown.map(d => `${formatDateShort(d.date)} (${d.pct}%)`).join(', ');
+            const moreCount = highVolDaysData.length - maxShow;
+            const moreStr = moreCount > 0 ? ` +${moreCount} more` : '';
+            patterns.push(`🔊 ${highVolDaysData.length} HIGH VOLUME days (>150% avg):
+   ${dateStrs}${moreStr}`);
+        }
+
+        // Check for gaps with dates and dollar amounts
+        let gapUpsData = [], gapDownsData = [];
         for (let i = 0; i < data.length - 1; i++) {
             const currLow = parseFloat(data[i].Low ?? data[i].low ?? 0);
             const currHigh = parseFloat(data[i].High ?? data[i].high ?? 0);
             const prevHigh = parseFloat(data[i + 1].High ?? data[i + 1].high ?? 0);
             const prevLow = parseFloat(data[i + 1].Low ?? data[i + 1].low ?? 0);
-            if (currLow > prevHigh) gapUps++;
-            if (currHigh < prevLow) gapDowns++;
+            const currDate = data[i].Date ?? data[i].date;
+            
+            if (currLow > prevHigh) {
+                const gapSize = currLow - prevHigh;
+                gapUpsData.push({ date: currDate, size: gapSize });
+            }
+            if (currHigh < prevLow) {
+                const gapSize = prevLow - currHigh;
+                gapDownsData.push({ date: currDate, size: gapSize });
+            }
         }
-        if (gapUps > 0) patterns.push(`⬆️ ${gapUps} GAP UP(s) detected`);
-        if (gapDowns > 0) patterns.push(`⬇️ ${gapDowns} GAP DOWN(s) detected`);
+
+        if (gapUpsData.length > 0) {
+            gapUpsData.sort((a, b) => b.size - a.size);
+            const maxShow = 3;
+            const shown = gapUpsData.slice(0, maxShow);
+            const dateStrs = shown.map(d => `${formatDateShort(d.date)}: +$${d.size.toFixed(2)}`).join(', ');
+            const moreCount = gapUpsData.length - maxShow;
+            const moreStr = moreCount > 0 ? ` +${moreCount} more` : '';
+            patterns.push(`⬆️ ${gapUpsData.length} GAP UPs detected:
+   ${dateStrs}${moreStr}`);
+        }
+
+        if (gapDownsData.length > 0) {
+            gapDownsData.sort((a, b) => b.size - a.size);
+            const maxShow = 3;
+            const shown = gapDownsData.slice(0, maxShow);
+            const dateStrs = shown.map(d => `${formatDateShort(d.date)}: -$${d.size.toFixed(2)}`).join(', ');
+            const moreCount = gapDownsData.length - maxShow;
+            const moreStr = moreCount > 0 ? ` +${moreCount} more` : '';
+            patterns.push(`⬇️ ${gapDownsData.length} GAP DOWNs detected:
+   ${dateStrs}${moreStr}`);
+        }
 
         return `🔍 PATTERN ANALYSIS for ${currentSymbol} (${data.length} days)\n\n` +
                (patterns.length > 0 ? patterns.join('\n') : 'No significant patterns detected') +
