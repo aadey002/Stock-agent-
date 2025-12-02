@@ -1127,6 +1127,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- AI Quick Analysis Card -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.2);">
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>🧠 AI Quick Analysis</span>
+                    <button onclick="refreshOverviewAI()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer;">🔄 Refresh</button>
+                </div>
+                <div id="overviewAiAnalysis" style="font-size:12px;line-height:1.8;color:var(--text);">
+                    <div style="text-align:center;padding:20px;color:var(--muted);">
+                        <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+                        Loading AI analysis...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- CHARTS TAB -->
@@ -2835,6 +2849,7 @@ async function loadAllData() {
                 updateBarCountAnalysis();
                 updateReversalStats();
                 updatePriceChart();
+                updateOverviewAiAnalysis();
                 
                 // Update Daily Analysis if that tab is active
                 const analysisTab = document.getElementById('daily-analysis');
@@ -5982,6 +5997,133 @@ function switchAnalysisMode(mode) {
 function refreshAnalysis() {
     generateDailyReport();
 }
+
+// AI Quick Analysis for Overview Tab
+function refreshOverviewAI() {
+    updateOverviewAiAnalysis();
+}
+
+function updateOverviewAiAnalysis() {
+    const analysisEl = document.getElementById('overviewAiAnalysis');
+    if (!analysisEl) return;
+
+    if (!currentData || currentData.length < 2) {
+        analysisEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);"><div style="font-size:24px;margin-bottom:8px;">&#9888;</div>Loading data...</div>';
+        return;
+    }
+
+    const lastBar = currentData[currentData.length - 1];
+    const prevBar = currentData[currentData.length - 2];
+    const price = parseFloat(lastBar.Close) || 0;
+    const prevClose = parseFloat(prevBar.Close) || price;
+    const change = price - prevClose;
+    const changePct = ((change / prevClose) * 100).toFixed(2);
+    const atr = parseFloat(lastBar.ATR) || price * 0.015;
+    const bias = lastBar.Bias || 'NEUTRAL';
+    const volume = parseInt(lastBar.Volume) || 0;
+
+    // Calculate 20-day average volume
+    const recentData = currentData.slice(-20);
+    const avgVol = recentData.reduce((sum, d) => sum + (parseInt(d.Volume) || 0), 0) / recentData.length;
+    const volRatio = avgVol > 0 ? (volume / avgVol * 100).toFixed(0) : 100;
+
+    // Determine signal strength
+    const fastSMA = parseFloat(lastBar.FastSMA) || price;
+    const slowSMA = parseFloat(lastBar.SlowSMA) || price;
+    const priceVsFast = price > fastSMA ? 'above' : 'below';
+    const fastVsSlow = fastSMA > slowSMA ? 'bullish' : 'bearish';
+
+    // Build AI analysis
+    const direction = bias === 'BULLISH' ? 'bullish' : bias === 'BEARISH' ? 'bearish' : 'neutral';
+    const optionType = bias === 'BULLISH' ? 'CALL' : bias === 'BEARISH' ? 'PUT' : 'neutral';
+    const momentum = change > 0 ? 'positive' : 'negative';
+
+    // Calculate key levels
+    const entryZoneLow = (price - atr * 0.3).toFixed(2);
+    const entryZoneHigh = bias === 'BULLISH' ? price.toFixed(2) : (price + atr * 0.3).toFixed(2);
+    const entryZone = bias === 'BULLISH' ?
+        '$' + entryZoneLow + ' - $' + price.toFixed(2) :
+        '$' + price.toFixed(2) + ' - $' + (price + atr * 0.3).toFixed(2);
+    const stopLoss = bias === 'BULLISH' ? (price - atr * 0.75).toFixed(2) : (price + atr * 0.75).toFixed(2);
+    const target1 = bias === 'BULLISH' ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
+    const target2 = bias === 'BULLISH' ? (price + atr * 2.5).toFixed(2) : (price - atr * 2.5).toFixed(2);
+
+    // Confidence score
+    let confidence = 50;
+    if (bias === 'BULLISH' && price > fastSMA) confidence += 15;
+    if (bias === 'BEARISH' && price < fastSMA) confidence += 15;
+    if (parseInt(volRatio) > 100) confidence += 10;
+    if (Math.abs(parseFloat(changePct)) > 0.5) confidence += 5;
+    confidence = Math.min(95, confidence);
+
+    const confColor = confidence >= 75 ? 'var(--success)' : confidence >= 60 ? 'var(--warning)' : 'var(--danger)';
+    const signalColor = bias === 'BULLISH' ? 'var(--success)' : bias === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
+    const volMsg = parseInt(volRatio) > 120 ? 'High volume confirms the move.' :
+                   parseInt(volRatio) < 80 ? 'Low volume - move may lack conviction.' :
+                   'Normal volume activity.';
+    const confMsg = confidence >= 75 ? 'High confidence - favorable setup' :
+                    confidence >= 60 ? 'Moderate confidence - smaller size' :
+                    'Low confidence - consider waiting';
+    const dteText = tradingMode === 'INTRADAY' ? '0-1 days' : '3-7 days';
+
+    analysisEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+            <div>
+                <div style="background:rgba(59,130,246,0.1);padding:12px;border-radius:8px;margin-bottom:10px;">
+                    <strong style="color:var(--primary);">Market Snapshot</strong><br>
+                    <span style="font-size:11px;">
+                        ${currentSymbol} is showing <strong style="color:${signalColor};">${direction}</strong> bias with
+                        <strong style="color:${momentum === 'positive' ? 'var(--success)' : 'var(--danger)'};">
+                            ${parseFloat(changePct) > 0 ? '+' : ''}${changePct}%
+                        </strong> move today.<br>
+                        Price is ${priceVsFast} the 9-SMA with ${fastVsSlow} SMA crossover.
+                    </span>
+                </div>
+
+                <div style="background:rgba(16,185,129,0.1);padding:12px;border-radius:8px;">
+                    <strong style="color:var(--success);">Trade Setup</strong><br>
+                    <span style="font-size:11px;">
+                        <strong>Signal:</strong> <span style="color:${signalColor};font-weight:700;">${optionType}</span><br>
+                        <strong>Entry Zone:</strong> ${entryZone}<br>
+                        <strong>Stop Loss:</strong> <span style="color:var(--danger);">$${stopLoss}</span><br>
+                        <strong>Target 1:</strong> <span style="color:var(--success);">$${target1}</span><br>
+                        <strong>Target 2:</strong> <span style="color:var(--success);">$${target2}</span>
+                    </span>
+                </div>
+            </div>
+
+            <div>
+                <div style="background:rgba(139,92,246,0.1);padding:12px;border-radius:8px;margin-bottom:10px;">
+                    <strong style="color:#8b5cf6;">Volume Analysis</strong><br>
+                    <span style="font-size:11px;">
+                        Today's volume is at <strong>${volRatio}%</strong> of 20-day average.<br>
+                        ${volMsg}
+                    </span>
+                </div>
+
+                <div style="background:rgba(245,158,11,0.1);padding:12px;border-radius:8px;">
+                    <strong style="color:var(--warning);">Confidence</strong><br>
+                    <span style="font-size:11px;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-top:5px;">
+                            <div style="flex:1;background:var(--border);border-radius:4px;height:8px;">
+                                <div style="width:${confidence}%;background:${confColor};height:100%;border-radius:4px;"></div>
+                            </div>
+                            <strong style="color:${confColor};">${confidence}%</strong>
+                        </div>
+                        <div style="margin-top:5px;">
+                            ${confMsg}
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:6px;font-size:11px;color:var(--muted);">
+            ATR: $${atr.toFixed(2)} | Risk/Reward: 1:2 minimum | DTE: ${dteText}
+        </div>
+    `;
+}
+
 
 function generateDailyReport() {
     console.log('Generating daily report...', currentAnalysisMode);
