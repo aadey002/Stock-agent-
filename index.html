@@ -2855,6 +2855,7 @@ async function loadAllData() {
                 document.getElementById('tickerSymbol').textContent = currentSymbol;
                 document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
                 document.getElementById('confluenceSymbol').textContent = currentSymbol + ' Analysis';
+// Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
             }
         }
     } catch (e) { console.error('Error:', e); }
@@ -3224,33 +3225,19 @@ function escapeHtml(text) {
 async function generateAiResponse(userMessage) {
     const lowerMsg = userMessage.toLowerCase();
     
-    // Build context
+    // Build context from dashboard data
     const dashboardContext = buildDashboardContext();
     
-    // Try Claude API first
+    // Use local AI responses (API not available in browser due to CORS)
     try {
-        const systemPrompt = buildSystemPrompt(dashboardContext);
-        
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1500,
-                messages: [...conversationHistory.slice(-10)]
-            })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            return data.content[0].text;
-        }
+        console.log("AI Query:", userMessage);
+        const response = generateLocalResponse(userMessage, dashboardContext);
+        console.log("AI Response generated successfully");
+        return response;
     } catch (e) {
-        console.log("API unavailable, using local");
+        console.error("AI Response error:", e);
+        return "I encountered an error processing your request. Please try again or check the console for details.";
     }
-    
-    // Enhanced local responses
-    return generateLocalResponse(userMessage, dashboardContext);
 }
 
 function buildSystemPrompt(context) {
