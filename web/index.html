@@ -233,6 +233,40 @@
         .ticker-change.positive { background: rgba(16,185,129,0.3); }
         .ticker-change.negative { background: rgba(239,68,68,0.3); }
         
+        /* Header Market Stats Row */
+        .header-market-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0,0,0,0.15);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+        }
+        .header-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .header-stat-label {
+            opacity: 0.7;
+            font-weight: 500;
+        }
+        .header-stat-value {
+            font-weight: 600;
+        }
+        .header-stat-value.near-high { color: #4ade80; }
+        .header-stat-value.near-low { color: #f87171; }
+        .header-stat-value.neutral { color: rgba(255,255,255,0.9); }
+        .header-stat-value.positive { color: #4ade80; }
+        .header-stat-value.negative { color: #f87171; }
+        .header-stat-divider {
+            width: 1px;
+            height: 16px;
+            background: rgba(255,255,255,0.2);
+        }
+        
         .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .status-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .status-badge:hover { transform: scale(1.05); }
@@ -830,6 +864,23 @@
                     <div>
                         <div class="ticker-change positive" id="tickerChange">+$6.29</div>
                         <div style="font-size:9px;margin-top:1px;" id="tickerPct">+0.94%</div>
+                    </div>
+                </div>
+                
+                <div class="header-market-stats">
+                    <div class="header-stat">
+                        <span class="header-stat-label">Today:</span>
+                        <span class="header-stat-value neutral" id="headerTodayRange">L: $-- | H: $--</span>
+                    </div>
+                    <div class="header-stat-divider"></div>
+                    <div class="header-stat">
+                        <span class="header-stat-label">52W:</span>
+                        <span class="header-stat-value" id="header52WRange">$-- - $--</span>
+                    </div>
+                    <div class="header-stat-divider"></div>
+                    <div class="header-stat">
+                        <span class="header-stat-label">Vol:</span>
+                        <span class="header-stat-value neutral" id="headerVolVsAvg">--% vs Avg</span>
                     </div>
                 </div>
                 
@@ -3371,18 +3422,69 @@ function updateReferenceData() {
     const highs = yearData.map(d => parseFloat(d.High) || 0);
     const lows = yearData.map(d => parseFloat(d.Low) || 0);
     
-    document.getElementById('week52High').textContent = '$' + Math.max(...highs).toFixed(2);
-    document.getElementById('week52Low').textContent = '$' + Math.min(...lows).toFixed(2);
-    document.getElementById('todayHigh').textContent = '$' + (parseFloat(lat.High) || 0).toFixed(2);
-    document.getElementById('todayLow').textContent = '$' + (parseFloat(lat.Low) || 0).toFixed(2);
+    const week52High = Math.max(...highs);
+    const week52Low = Math.min(...lows);
+    const todayHigh = parseFloat(lat.High) || 0;
+    const todayLow = parseFloat(lat.Low) || 0;
+    const price = parseFloat(lat.Close) || 0;
+    
+    document.getElementById('week52High').textContent = '$' + week52High.toFixed(2);
+    document.getElementById('week52Low').textContent = '$' + week52Low.toFixed(2);
+    document.getElementById('todayHigh').textContent = '$' + todayHigh.toFixed(2);
+    document.getElementById('todayLow').textContent = '$' + todayLow.toFixed(2);
     
     const todayVol = parseFloat(lat.Volume) || 0;
     const volumes20 = currentData.slice(-20).map(d => parseFloat(d.Volume) || 0);
     const avgVol = volumes20.reduce((a, b) => a + b, 0) / 20;
+    const volVsAvgPct = avgVol > 0 ? ((todayVol/avgVol - 1) * 100) : 0;
     
     document.getElementById('avgVolume20').textContent = (avgVol / 1e6).toFixed(1) + 'M';
-    document.getElementById('volumeVsAvg').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '%';
-    document.getElementById('volumeVsAvgSmall').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '% vs avg';
+    document.getElementById('volumeVsAvg').textContent = volVsAvgPct.toFixed(0) + '%';
+    document.getElementById('volumeVsAvgSmall').textContent = volVsAvgPct.toFixed(0) + '% vs avg';
+    
+    // Update header market stats
+    updateHeaderMarketStats(todayLow, todayHigh, week52Low, week52High, volVsAvgPct, price);
+}
+
+function updateHeaderMarketStats(todayLow, todayHigh, week52Low, week52High, volVsAvgPct, price) {
+    // Today's Range
+    const todayRangeEl = document.getElementById('headerTodayRange');
+    if (todayRangeEl) {
+        todayRangeEl.textContent = 'L: $' + todayLow.toFixed(2) + ' | H: $' + todayHigh.toFixed(2);
+    }
+    
+    // 52-Week Range with color coding
+    const range52WEl = document.getElementById('header52WRange');
+    if (range52WEl) {
+        range52WEl.textContent = '$' + week52Low.toFixed(2) + ' - $' + week52High.toFixed(2);
+        
+        // Color based on where price is in 52W range
+        const range52W = week52High - week52Low;
+        const pricePosition = range52W > 0 ? (price - week52Low) / range52W : 0.5;
+        
+        if (pricePosition >= 0.85) {
+            range52WEl.className = 'header-stat-value near-high';
+        } else if (pricePosition <= 0.15) {
+            range52WEl.className = 'header-stat-value near-low';
+        } else {
+            range52WEl.className = 'header-stat-value neutral';
+        }
+    }
+    
+    // Volume vs Average
+    const volEl = document.getElementById('headerVolVsAvg');
+    if (volEl) {
+        const sign = volVsAvgPct >= 0 ? '+' : '';
+        volEl.textContent = sign + volVsAvgPct.toFixed(0) + '% vs Avg';
+        
+        if (volVsAvgPct >= 20) {
+            volEl.className = 'header-stat-value positive';
+        } else if (volVsAvgPct <= -20) {
+            volEl.className = 'header-stat-value negative';
+        } else {
+            volEl.className = 'header-stat-value neutral';
+        }
+    }
 }
 
 function updateFibonacci() {
