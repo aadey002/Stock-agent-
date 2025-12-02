@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 SPY Data Fetcher using yfinance (FREE - no API key needed)
+With intraday support for live market data
 """
 
 import os
@@ -19,23 +20,56 @@ except ImportError:
 SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
 
 def fetch_symbol_data(symbol, days=1095):
-    """Fetch historical data using yfinance"""
+    """Fetch historical data using yfinance with intraday support"""
     print(f"Fetching {symbol} data...")
-    
+
     try:
+        import pandas as pd
         ticker = yf.Ticker(symbol)
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
-        
-        # Add 1 day to end_date because yfinance 'end' is exclusive
+
+        # Fetch daily historical data
         df = ticker.history(start=start_date.strftime('%Y-%m-%d'),
                            end=(end_date + timedelta(days=1)).strftime('%Y-%m-%d'))
-        
+
         if df.empty:
             print(f"   No data for {symbol}")
             return None
-        
-        print(f"   Got {len(df)} bars for {symbol}")
+
+        print(f"   Got {len(df)} daily bars for {symbol}")
+
+        # Fetch intraday data for today (during market hours)
+        try:
+            today_df = ticker.history(period='1d', interval='5m')
+            if not today_df.empty and len(today_df) > 0:
+                # Get OHLCV from intraday data
+                latest = today_df.iloc[-1]
+                today_open = today_df.iloc[0]['Open']
+                today_high = today_df['High'].max()
+                today_low = today_df['Low'].min()
+                today_close = latest['Close']
+                today_volume = int(today_df['Volume'].sum())
+
+                today_date = today_df.index[-1].date()
+                last_daily_date = df.index[-1].date()
+
+                # Add today's data if not already present
+                if last_daily_date < today_date:
+                    today_row = pd.DataFrame({
+                        'Open': [today_open],
+                        'High': [today_high],
+                        'Low': [today_low],
+                        'Close': [today_close],
+                        'Volume': [today_volume],
+                        'Dividends': [0.0],
+                        'Stock Splits': [0.0]
+                    }, index=[pd.Timestamp(today_date)])
+                    df = pd.concat([df, today_row])
+                    print(f"   Added today's live data: ${today_close:.2f} (as of {today_df.index[-1].strftime('%H:%M')})")
+        except Exception as e:
+            print(f"   Intraday fetch note: {e}")
+
         return df
     except Exception as e:
         print(f"   Error fetching {symbol}: {e}")
@@ -97,7 +131,7 @@ def save_to_csv(symbol, df, folder='data'):
 
 def main():
     print("=" * 50)
-    print("YFINANCE DATA FETCHER (FREE)")
+    print("YFINANCE DATA FETCHER (FREE) - WITH INTRADAY")
     print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 50)
     
