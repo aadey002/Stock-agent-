@@ -6212,6 +6212,7 @@ function generateDailyReport() {
     // Update the UI
     updateConfluenceScore(signals);
     updateTradeRecommendations(signals);
+    updateAgentSignalsTable(signals);
     updateGannAnalysis(price);
     updateFibonacciLevels(currentData);
     updateHighConsensusTrades(signals);
@@ -6754,6 +6755,72 @@ function updateSignalItem(id, value, isBullish) {
     } else {
         el.textContent = value;
     }
+}
+
+function updateAgentSignalsTable(signals) {
+    // Update Agent Signals table with calculated data from getAgentSignals()
+    if (!signals || !signals.agentConsensus || !signals.agentConsensus.agentDetails) return;
+
+    const agents = signals.agentConsensus.agentDetails;
+
+    // Helper to update an agent row
+    function updateAgent(prefix, data) {
+        const intradaySignalEl = document.getElementById(prefix + 'IntradaySignal');
+        const intradayConfEl = document.getElementById(prefix + 'IntradayConf');
+        const swingSignalEl = document.getElementById(prefix + 'SwingSignal');
+        const swingConfEl = document.getElementById(prefix + 'SwingConf');
+
+        const signal = data.signal || 'HOLD';
+        const conf = Math.min(99, Math.max(0, data.confidence || 50)).toFixed(0) + '%';
+        const badgeClass = 'badge ' + (signal === 'CALL' ? 'badge-success' :
+                                       signal === 'PUT' ? 'badge-danger' : 'badge-warning');
+
+        // Update both intraday and swing columns
+        if (intradaySignalEl) {
+            intradaySignalEl.textContent = signal;
+            intradaySignalEl.className = badgeClass;
+        }
+        if (intradayConfEl) intradayConfEl.textContent = conf;
+        if (swingSignalEl) {
+            swingSignalEl.textContent = signal;
+            swingSignalEl.className = badgeClass;
+        }
+        if (swingConfEl) swingConfEl.textContent = conf;
+    }
+
+    // Update each agent's signals
+    updateAgent('base', agents.base || { signal: 'HOLD', confidence: 50 });
+    updateAgent('gann', agents.gann || { signal: 'HOLD', confidence: 50 });
+    updateAgent('dqn', agents.dqn || { signal: 'HOLD', confidence: 50 });
+    updateAgent('wave', agents.wave || { signal: 'HOLD', confidence: 50 });
+
+    // Update consensus row
+    const allAgents = [agents.base, agents.gann, agents.dqn, agents.wave];
+    const callCount = allAgents.filter(a => a && a.signal === 'CALL').length;
+    const putCount = allAgents.filter(a => a && a.signal === 'PUT').length;
+
+    const intradayConsensusEl = document.getElementById('intradayConsensus');
+    const swingConsensusEl = document.getElementById('swingConsensus');
+    const intradayConsensusConfEl = document.getElementById('intradayConsensusConf');
+    const swingConsensusConfEl = document.getElementById('swingConsensusConf');
+
+    const agreeing = Math.max(callCount, putCount);
+    const consensusText = agreeing + '/4';
+    const consensusClass = 'badge ' + (agreeing >= 4 ? 'badge-ultra' : agreeing >= 3 ? 'badge-success' : 'badge-warning');
+
+    if (intradayConsensusEl) {
+        intradayConsensusEl.textContent = consensusText;
+        intradayConsensusEl.className = consensusClass;
+    }
+    if (swingConsensusEl) {
+        swingConsensusEl.textContent = consensusText;
+        swingConsensusEl.className = consensusClass;
+    }
+
+    const avgConf = allAgents.reduce((sum, a) => sum + (a?.confidence || 50), 0) / 4;
+    const avgConfText = avgConf.toFixed(0) + '%';
+    if (intradayConsensusConfEl) intradayConsensusConfEl.textContent = avgConfText;
+    if (swingConsensusConfEl) swingConsensusConfEl.textContent = avgConfText;
 }
 
 function updateTradeRecommendations(signals) {
@@ -7986,7 +8053,9 @@ async function updatePlaybookComparison() {
         }
 
         tbody.innerHTML = allSignals.map(row => {
-            const date = new Date(row.Date).toLocaleDateString();
+            // Parse CSV date format: "YYYY-MM-DD HH:MM:SS-TZ" - extract just the date part
+            const dateStr = row.Date ? row.Date.split(' ')[0] : '';
+            const date = dateStr || 'N/A';
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
             const confluence = row.confluence_level || 'NONE';
@@ -8033,7 +8102,9 @@ async function updateUltraConfluence() {
         const allSignals = data.reverse();
 
         tbody.innerHTML = allSignals.map(row => {
-            const date = new Date(row.Date).toLocaleDateString();
+            // Parse CSV date format: "YYYY-MM-DD HH:MM:SS-TZ" - extract just the date part
+            const dateStr = row.Date ? row.Date.split(' ')[0] : '';
+            const date = dateStr || 'N/A';
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
             const agents = `${row.call_votes || 0}C/${row.put_votes || 0}P/${row.hold_votes || 0}H`;
