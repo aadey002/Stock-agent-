@@ -644,6 +644,180 @@
         .status-badge-trade.closed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
         .status-badge-trade.stopped { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
         
+
+        /* Options Calculator Styles */
+        .options-calc-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .options-calc-container { grid-template-columns: 1fr; }
+        }
+        .calc-inputs {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .calc-inputs h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .calc-form-group {
+            margin-bottom: 15px;
+        }
+        .calc-form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .calc-form-group input,
+        .calc-form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .calc-form-group input:focus,
+        .calc-form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .calc-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .option-type-toggle {
+            display: flex;
+            gap: 8px;
+        }
+        .option-type-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-type-btn.call.active {
+            border-color: var(--success);
+            background: rgba(16,185,129,0.1);
+            color: var(--success);
+        }
+        .option-type-btn.put.active {
+            border-color: var(--danger);
+            background: rgba(239,68,68,0.1);
+            color: var(--danger);
+        }
+        .calc-results {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .calc-result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .calc-result-card h4 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .result-item {
+            background: var(--bg);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .result-item .label {
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .result-item .value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .result-item .value.positive { color: var(--success); }
+        .result-item .value.negative { color: var(--danger); }
+        .greeks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .greek-item {
+            background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(168,85,247,0.05));
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .greek-item .greek-name {
+            font-size: 10px;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .greek-item .greek-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .use-current-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .use-current-btn:hover {
+            opacity: 0.9;
+        }
+        .greeks-reference {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 11px;
+        }
+        .greeks-reference h5 {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        .greeks-reference table {
+            width: 100%;
+        }
+        .greeks-reference td {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
         /* Print Styles */
         @media print {
             .login-screen, .header, .tabs, .mode-toggle-container, .symbol-banner,
@@ -886,6 +1060,7 @@
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
+            <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -2092,6 +2267,143 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
 
 
+
+        <!-- OPTIONS CALCULATOR TAB -->
+        <div id="options-calc" class="tab-content">
+            <div class="options-calc-container">
+                <div class="calc-inputs">
+                    <h3>🧮 Options Profit Calculator</h3>
+                    <button class="use-current-btn" onclick="useCurrentSymbolPrice()">
+                        📈 Use Current Symbol Price
+                    </button>
+
+                    <div class="calc-form-group">
+                        <label>Selected Symbol</label>
+                        <input type="text" id="calcSymbol" value="SPY" readonly style="background: var(--bg); font-weight: 700;">
+                    </div>
+
+                    <div class="calc-row">
+                        <div class="calc-form-group">
+                            <label>Stock Price ($)</label>
+                            <input type="number" id="calcStockPrice" value="500" step="0.01" onchange="calculateOptions()">
+                        </div>
+                        <div class="calc-form-group">
+                            <label>Strike Price ($)</label>
+                            <input type="number" id="calcStrikePrice" value="500" step="1" onchange="calculateOptions()">
+                        </div>
+                    </div>
+
+                    <div class="calc-row">
+                        <div class="calc-form-group">
+                            <label>Days to Expiration</label>
+                            <input type="number" id="calcDTE" value="7" min="1" max="365" onchange="calculateOptions()">
+                        </div>
+                        <div class="calc-form-group">
+                            <label>Contracts</label>
+                            <input type="number" id="calcContracts" value="1" min="1" max="1000" onchange="calculateOptions()">
+                        </div>
+                    </div>
+
+                    <div class="calc-row">
+                        <div class="calc-form-group">
+                            <label>Implied Volatility (%)</label>
+                            <input type="number" id="calcIV" value="20" step="0.1" min="1" max="200" onchange="calculateOptions()">
+                        </div>
+                        <div class="calc-form-group">
+                            <label>Risk-Free Rate (%)</label>
+                            <input type="number" id="calcRiskFree" value="5.0" step="0.1" min="0" max="20" onchange="calculateOptions()">
+                        </div>
+                    </div>
+
+                    <div class="calc-form-group">
+                        <label>Option Type</label>
+                        <div class="option-type-toggle">
+                            <button class="option-type-btn call active" onclick="setOptionType('call')">📈 CALL</button>
+                            <button class="option-type-btn put" onclick="setOptionType('put')">📉 PUT</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-results">
+                    <div class="calc-result-card">
+                        <h4>💰 Option Valuation</h4>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="label">Option Price</div>
+                                <div class="value" id="calcOptionPrice">$0.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Total Cost</div>
+                                <div class="value" id="calcTotalCost">$0.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Intrinsic Value</div>
+                                <div class="value" id="calcIntrinsic">$0.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Extrinsic Value</div>
+                                <div class="value" id="calcExtrinsic">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-result-card">
+                        <h4>📊 Profit and Loss</h4>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="label">Breakeven</div>
+                                <div class="value" id="calcBreakeven">$0.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Max Loss</div>
+                                <div class="value negative" id="calcMaxLoss">$0.00</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Max Profit</div>
+                                <div class="value positive" id="calcMaxProfit">Unlimited</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Risk/Reward</div>
+                                <div class="value" id="calcRiskReward">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-result-card">
+                        <h4>🔮 The Greeks</h4>
+                        <div class="greeks-grid">
+                            <div class="greek-item">
+                                <div class="greek-name">Delta</div>
+                                <div class="greek-value" id="calcDelta">0.00</div>
+                            </div>
+                            <div class="greek-item">
+                                <div class="greek-name">Gamma</div>
+                                <div class="greek-value" id="calcGamma">0.00</div>
+                            </div>
+                            <div class="greek-item">
+                                <div class="greek-name">Theta</div>
+                                <div class="greek-value" id="calcTheta">0.00</div>
+                            </div>
+                            <div class="greek-item">
+                                <div class="greek-name">Vega</div>
+                                <div class="greek-value" id="calcVega">0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="greeks-reference">
+                            <h5>📚 Greeks Quick Reference</h5>
+                            <table>
+                                <tr><td><strong>Delta</strong></td><td>Price change per $1 move in stock</td></tr>
+                                <tr><td><strong>Gamma</strong></td><td>Rate of change in Delta per $1 move</td></tr>
+                                <tr><td><strong>Theta</strong></td><td>Daily time decay (premium lost per day)</td></tr>
+                                <tr><td><strong>Vega</strong></td><td>Price change per 1% change in IV</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <!-- END CONTAINER -->
     </div>
@@ -2471,6 +2783,9 @@ async function changeSymbol() {
     
     // Load the new symbol's data and update everything
     await loadAllData();
+    
+    // Update Options Calculator with new symbol
+    updateOptionsCalcForSymbol();
 }
 
 function parseCSV(text) {
@@ -4435,6 +4750,9 @@ Powered by Q5D Options Platform`);
 async function initializeApp() {
     initTabs();
     await loadAllData();  // Wait for data to load
+    
+    // Update Options Calculator with new symbol
+    updateOptionsCalcForSymbol();
     await loadAllSymbolsData();
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
@@ -6894,6 +7212,151 @@ function generateReportHTML() {
 </html>
     `;
 }
+
+// ========== OPTIONS CALCULATOR ==========
+
+// Default IV values for each ETF
+const ETF_DEFAULT_IV = {
+    SPY: 18, QQQ: 22, IWM: 25, DIA: 16,
+    XLK: 24, XLF: 20, XLV: 18, XLE: 30, XLI: 19
+};
+
+let currentOptionType = 'call';
+
+function setOptionType(type) {
+    currentOptionType = type;
+    document.querySelectorAll('.option-type-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.option-type-btn.' + type).classList.add('active');
+    calculateOptions();
+}
+
+function useCurrentSymbolPrice() {
+    const priceEl = document.getElementById('currentPrice');
+    const priceText = priceEl ? priceEl.textContent : '';
+    const price = parseFloat(priceText.replace(/[$,]/g, ''));
+    
+    if (price && price > 0) {
+        document.getElementById('calcStockPrice').value = price.toFixed(2);
+        document.getElementById('calcSymbol').value = currentSymbol;
+        
+        const strikeRound = price > 100 ? 5 : 1;
+        document.getElementById('calcStrikePrice').value = Math.round(price / strikeRound) * strikeRound;
+        
+        const iv = ETF_DEFAULT_IV[currentSymbol] || 20;
+        document.getElementById('calcIV').value = iv;
+        
+        calculateOptions();
+    } else {
+        alert('Price data not available yet. Please wait for data to load.');
+    }
+}
+
+function updateOptionsCalcForSymbol() {
+    document.getElementById('calcSymbol').value = currentSymbol;
+    
+    const priceEl = document.getElementById('currentPrice');
+    const priceText = priceEl ? priceEl.textContent : '';
+    const price = parseFloat(priceText.replace(/[$,]/g, ''));
+    
+    if (price && price > 0) {
+        document.getElementById('calcStockPrice').value = price.toFixed(2);
+        const strikeRound = price > 100 ? 5 : 1;
+        document.getElementById('calcStrikePrice').value = Math.round(price / strikeRound) * strikeRound;
+    }
+    
+    const iv = ETF_DEFAULT_IV[currentSymbol] || 20;
+    document.getElementById('calcIV').value = iv;
+    
+    calculateOptions();
+}
+
+function normalCDF(x) {
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+    const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x) / Math.sqrt(2);
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return 0.5 * (1.0 + sign * y);
+}
+
+function normalPDF(x) {
+    return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+}
+
+function calculateOptions() {
+    const S = parseFloat(document.getElementById('calcStockPrice').value) || 0;
+    const K = parseFloat(document.getElementById('calcStrikePrice').value) || 0;
+    const T = (parseFloat(document.getElementById('calcDTE').value) || 1) / 365;
+    const r = (parseFloat(document.getElementById('calcRiskFree').value) || 5) / 100;
+    const sigma = (parseFloat(document.getElementById('calcIV').value) || 20) / 100;
+    const contracts = parseInt(document.getElementById('calcContracts').value) || 1;
+    const isCall = currentOptionType === 'call';
+    
+    if (S <= 0 || K <= 0 || T <= 0 || sigma <= 0) {
+        return;
+    }
+    
+    const sqrtT = Math.sqrt(T);
+    const d1 = (Math.log(S / K) + (r + sigma * sigma / 2) * T) / (sigma * sqrtT);
+    const d2 = d1 - sigma * sqrtT;
+    
+    let price, delta;
+    if (isCall) {
+        price = S * normalCDF(d1) - K * Math.exp(-r * T) * normalCDF(d2);
+        delta = normalCDF(d1);
+    } else {
+        price = K * Math.exp(-r * T) * normalCDF(-d2) - S * normalCDF(-d1);
+        delta = normalCDF(d1) - 1;
+    }
+    
+    const gamma = normalPDF(d1) / (S * sigma * sqrtT);
+    const vega = S * sqrtT * normalPDF(d1) / 100;
+    
+    let theta;
+    if (isCall) {
+        theta = (-S * normalPDF(d1) * sigma / (2 * sqrtT) - r * K * Math.exp(-r * T) * normalCDF(d2)) / 365;
+    } else {
+        theta = (-S * normalPDF(d1) * sigma / (2 * sqrtT) + r * K * Math.exp(-r * T) * normalCDF(-d2)) / 365;
+    }
+    
+    const intrinsic = isCall ? Math.max(0, S - K) : Math.max(0, K - S);
+    const extrinsic = Math.max(0, price - intrinsic);
+    
+    const totalCost = price * contracts * 100;
+    const breakeven = isCall ? K + price : K - price;
+    const maxLoss = totalCost;
+    const maxProfit = isCall ? 'Unlimited' : ((K - price) * contracts * 100);
+    
+    document.getElementById('calcOptionPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('calcTotalCost').textContent = '$' + totalCost.toFixed(2);
+    document.getElementById('calcIntrinsic').textContent = '$' + intrinsic.toFixed(2);
+    document.getElementById('calcExtrinsic').textContent = '$' + extrinsic.toFixed(2);
+    
+    document.getElementById('calcBreakeven').textContent = '$' + breakeven.toFixed(2);
+    document.getElementById('calcMaxLoss').textContent = '-$' + maxLoss.toFixed(2);
+    document.getElementById('calcMaxProfit').textContent = typeof maxProfit === 'string' ? maxProfit : '$' + maxProfit.toFixed(2);
+    
+    if (!isCall && maxProfit > 0) {
+        const rr = (maxProfit / maxLoss).toFixed(2);
+        document.getElementById('calcRiskReward').textContent = '1:' + rr;
+    } else {
+        document.getElementById('calcRiskReward').textContent = isCall ? 'Unlimited' : '--';
+    }
+    
+    document.getElementById('calcDelta').textContent = delta.toFixed(4);
+    document.getElementById('calcGamma').textContent = gamma.toFixed(4);
+    document.getElementById('calcTheta').textContent = theta.toFixed(4);
+    document.getElementById('calcVega').textContent = vega.toFixed(4);
+    
+    document.getElementById('calcDelta').style.color = delta > 0 ? 'var(--success)' : 'var(--danger)';
+    document.getElementById('calcTheta').style.color = 'var(--danger)';
+}
+
+// Initialize calculator on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(calculateOptions, 1000);
+});
 </script>
 </body>
 </html>
