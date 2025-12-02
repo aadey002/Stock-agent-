@@ -267,6 +267,46 @@
             background: rgba(255,255,255,0.2);
         }
         
+        /* Timestamp Styles */
+        .header-timestamp {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            opacity: 0.85;
+            padding: 3px 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .header-timestamp .ts-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .section-timestamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg);
+            color: var(--muted);
+        }
+        .section-timestamp .ts-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+        .ts-fresh { background-color: #22c55e; }
+        .ts-recent { background-color: #eab308; }
+        .ts-stale { background-color: #f97316; }
+        .ts-old { background-color: #ef4444; }
+        .ts-text-fresh { color: #22c55e; }
+        .ts-text-recent { color: #eab308; }
+        .ts-text-stale { color: #f97316; }
+        .ts-text-old { color: #ef4444; }
+        
         .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .status-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .status-badge:hover { transform: scale(1.05); }
@@ -882,6 +922,11 @@
                         <span class="header-stat-label">Vol:</span>
                         <span class="header-stat-value neutral" id="headerVolVsAvg">--% vs Avg</span>
                     </div>
+                    <div class="header-stat-divider"></div>
+                    <div class="header-timestamp" title="Last data refresh time">
+                        <span class="ts-dot ts-fresh" id="headerTsDot"></span>
+                        <span id="headerTimestamp">Updated: --</span>
+                    </div>
                 </div>
                 
                 <div class="header-controls">
@@ -1474,6 +1519,7 @@
                     <div class="health-banner-title" id="healthBannerTitle">System Healthy</div>
                     <div class="health-banner-subtitle" id="healthBannerSubtitle">All systems operational</div>
                 </div>
+                <div class="section-timestamp" id="healthTimestamp" style="margin-right: 10px;"><span class="ts-dot ts-fresh" id="healthTsDot"></span><span id="healthTsText">⏱️ --:--</span></div>
                 <button class="refresh-health-btn" onclick="runHealthCheck()">🔄 Run Check</button>
             </div>
 
@@ -1733,6 +1779,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
                     <button class="report-btn success" onclick="downloadReport()">⬇️ Download PDF</button>
                     <button class="report-btn warning" onclick="refreshAnalysis()">🔄 Refresh</button>
+                </div>
+                <div class="section-timestamp" id="dailyAnalysisTimestamp" title="Last analysis update">
+                    <span class="ts-dot ts-fresh" id="dailyAnalysisTsDot"></span>
+                    <span id="dailyAnalysisTsText">⏱️ --:-- --</span>
                 </div>
             </div>
 
@@ -2177,6 +2227,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <option value="DIA">DIA</option>
                         </select>
                         <button onclick="refreshAllCharts()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
+                        <span class="section-timestamp" id="multiChartsTimestamp"><span class="ts-dot ts-fresh" id="multiChartsTsDot"></span><span id="multiChartsTsText">⏱️ --:--</span></span>
                     </div>
                 </div>
             </div>
@@ -2466,7 +2517,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         <!-- TRADE JOURNAL TAB -->
         <div id="trade-journal" class="tab-content">
             <div class="card">
-                <div class="card-title">📓 Trade Journal</div>
+                <div class="card-title" style="display: flex; align-items: center; gap: 10px;">📓 Trade Journal <span class="section-timestamp" id="journalTimestamp"><span class="ts-dot ts-fresh" id="journalTsDot"></span><span id="journalTsText">⏱️ --:--</span></span></div>
 
                 <!-- Performance Summary -->
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 20px;">
@@ -2568,6 +2619,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         📚 Playbook Comparison
                         <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from playbook_comparison.csv</span>
                         <span id="playbookCount" style="font-size: 10px; color: var(--primary); font-weight: normal;"></span>
+                        <span class="section-timestamp" id="playbookTimestamp"><span class="ts-dot ts-fresh" id="playbookTsDot"></span><span id="playbookTsText">⏱️ --:--</span></span>
                     </h4>
                     <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
                         <table style="width: 100%;">
@@ -2597,6 +2649,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         🎯 Ultra Confluence Signals (4/4 Consensus)
                         <span style="font-size: 10px; color: var(--muted); font-weight: normal;">from ultra_confluence_4of4.csv</span>
                         <span id="ultraConfluenceTotal" style="font-size: 10px; color: var(--primary); font-weight: normal;"></span>
+                        <span class="section-timestamp" id="ultraConfluenceTimestamp"><span class="ts-dot ts-fresh" id="ultraConfluenceTsDot"></span><span id="ultraConfluenceTsText">⏱️ --:--</span></span>
                     </h4>
                     <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
                         <table style="width: 100%;">
@@ -2620,7 +2673,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                 <!-- Sector Rotation Section -->
                 <div style="margin-bottom: 25px;">
-                    <h4 style="font-size: 14px; margin-bottom: 10px;">🔄 Sector Rotation Analysis</h4>
+                    <h4 style="font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">🔄 Sector Rotation Analysis <span class="section-timestamp" id="sectorRotationTimestamp"><span class="ts-dot ts-fresh" id="sectorRotationTsDot"></span><span id="sectorRotationTsText">⏱️ --:--</span></span></h4>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;" id="sectorRotationGrid">
                         <div style="background: rgba(16,185,129,0.1); padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--success);">
                             <div style="font-size: 11px; color: var(--muted);">Leading Sectors</div>
@@ -2955,6 +3008,8 @@ function showMainApp(username) {
 // Run auth check on page load
 document.addEventListener('DOMContentLoaded', () => {
     showMainApp("admin");
+    // Load saved timestamps from localStorage
+    setTimeout(loadSavedTimestamps, 500);
 });
 
 // ============================================
@@ -3227,6 +3282,171 @@ function parseCSV(text) {
     });
 }
 
+// ============================================
+// TIMESTAMP MANAGEMENT FUNCTIONS
+// ============================================
+
+const TIMESTAMP_STORAGE_KEY = 'stockAgentTimestamps';
+
+function formatLastUpdated(date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${month} ${day}, ${year} ${hours}:${minutes} ${ampm} ET`;
+}
+
+function formatShortTime(date) {
+    let hours = date.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes} ${ampm}`;
+}
+
+function getTimestampStaleness(lastUpdateTime) {
+    const now = new Date();
+    const diffMs = now - lastUpdateTime;
+    const diffMinutes = diffMs / (1000 * 60);
+    const diffHours = diffMinutes / 60;
+    
+    // Check if data is from previous day
+    const isYesterday = lastUpdateTime.toDateString() !== now.toDateString();
+    
+    if (isYesterday || diffHours > 4) {
+        return { class: 'ts-old', textClass: 'ts-text-old', label: 'stale' };
+    } else if (diffHours > 1) {
+        return { class: 'ts-stale', textClass: 'ts-text-stale', label: 'aging' };
+    } else if (diffMinutes > 30) {
+        return { class: 'ts-recent', textClass: 'ts-text-recent', label: 'recent' };
+    } else {
+        return { class: 'ts-fresh', textClass: 'ts-text-fresh', label: 'fresh' };
+    }
+}
+
+function updateTimestampElement(dotId, textId, timestamp) {
+    const dot = document.getElementById(dotId);
+    const text = document.getElementById(textId);
+    if (!dot || !text) return;
+    
+    const date = new Date(timestamp);
+    const staleness = getTimestampStaleness(date);
+    
+    // Update dot color
+    dot.className = 'ts-dot ' + staleness.class;
+    
+    // Update text - use short format for sections
+    if (textId === 'headerTimestamp') {
+        text.textContent = 'Updated: ' + formatShortTime(date) + ' ET';
+    } else {
+        text.textContent = '⏱️ ' + formatShortTime(date);
+    }
+    
+    // Add tooltip with full date
+    const container = dot.parentElement;
+    if (container) {
+        container.title = 'Last updated: ' + formatLastUpdated(date);
+    }
+}
+
+function updateAllTimestamps() {
+    const now = new Date().toISOString();
+    const timestamps = {
+        header: now,
+        dailyAnalysis: now,
+        playbook: now,
+        ultraConfluence: now,
+        sectorRotation: now,
+        health: now,
+        multiCharts: now,
+        journal: now
+    };
+    
+    // Save to localStorage
+    localStorage.setItem(TIMESTAMP_STORAGE_KEY, JSON.stringify(timestamps));
+    
+    // Update all timestamp displays
+    updateTimestampElement('headerTsDot', 'headerTimestamp', now);
+    updateTimestampElement('dailyAnalysisTsDot', 'dailyAnalysisTsText', now);
+    updateTimestampElement('playbookTsDot', 'playbookTsText', now);
+    updateTimestampElement('ultraConfluenceTsDot', 'ultraConfluenceTsText', now);
+    updateTimestampElement('sectorRotationTsDot', 'sectorRotationTsText', now);
+    updateTimestampElement('healthTsDot', 'healthTsText', now);
+    updateTimestampElement('multiChartsTsDot', 'multiChartsTsText', now);
+    updateTimestampElement('journalTsDot', 'journalTsText', now);
+}
+
+function updateSectionTimestamp(section) {
+    const now = new Date().toISOString();
+    const timestamps = JSON.parse(localStorage.getItem(TIMESTAMP_STORAGE_KEY) || '{}');
+    timestamps[section] = now;
+    localStorage.setItem(TIMESTAMP_STORAGE_KEY, JSON.stringify(timestamps));
+    
+    // Map section to element IDs
+    const sectionMap = {
+        header: ['headerTsDot', 'headerTimestamp'],
+        dailyAnalysis: ['dailyAnalysisTsDot', 'dailyAnalysisTsText'],
+        playbook: ['playbookTsDot', 'playbookTsText'],
+        ultraConfluence: ['ultraConfluenceTsDot', 'ultraConfluenceTsText'],
+        sectorRotation: ['sectorRotationTsDot', 'sectorRotationTsText'],
+        health: ['healthTsDot', 'healthTsText'],
+        multiCharts: ['multiChartsTsDot', 'multiChartsTsText'],
+        journal: ['journalTsDot', 'journalTsText']
+    };
+    
+    if (sectionMap[section]) {
+        updateTimestampElement(sectionMap[section][0], sectionMap[section][1], now);
+    }
+}
+
+function loadSavedTimestamps() {
+    const savedTimestamps = JSON.parse(localStorage.getItem(TIMESTAMP_STORAGE_KEY) || '{}');
+    
+    if (savedTimestamps.header) {
+        updateTimestampElement('headerTsDot', 'headerTimestamp', savedTimestamps.header);
+    }
+    if (savedTimestamps.dailyAnalysis) {
+        updateTimestampElement('dailyAnalysisTsDot', 'dailyAnalysisTsText', savedTimestamps.dailyAnalysis);
+    }
+    if (savedTimestamps.playbook) {
+        updateTimestampElement('playbookTsDot', 'playbookTsText', savedTimestamps.playbook);
+    }
+    if (savedTimestamps.ultraConfluence) {
+        updateTimestampElement('ultraConfluenceTsDot', 'ultraConfluenceTsText', savedTimestamps.ultraConfluence);
+    }
+    if (savedTimestamps.sectorRotation) {
+        updateTimestampElement('sectorRotationTsDot', 'sectorRotationTsText', savedTimestamps.sectorRotation);
+    }
+    if (savedTimestamps.health) {
+        updateTimestampElement('healthTsDot', 'healthTsText', savedTimestamps.health);
+    }
+    if (savedTimestamps.multiCharts) {
+        updateTimestampElement('multiChartsTsDot', 'multiChartsTsText', savedTimestamps.multiCharts);
+    }
+    if (savedTimestamps.journal) {
+        updateTimestampElement('journalTsDot', 'journalTsText', savedTimestamps.journal);
+    }
+}
+
+function refreshTimestampColors() {
+    // Re-check staleness and update colors for all timestamps
+    const savedTimestamps = JSON.parse(localStorage.getItem(TIMESTAMP_STORAGE_KEY) || '{}');
+    loadSavedTimestamps();
+}
+
+// Check staleness every minute
+setInterval(refreshTimestampColors, 60000);
+
+// ============================================
+// END TIMESTAMP FUNCTIONS
+// ============================================
+
 async function loadAllData() {
     document.getElementById('loadingOverlay').classList.add('active');
     try {
@@ -3324,6 +3544,9 @@ async function loadAllData() {
         }
     } catch (e) { console.error('Error:', e); }
     document.getElementById('loadingOverlay').classList.remove('active');
+    
+    // Update all timestamps after data refresh
+    updateAllTimestamps();
 }
 
 function showDataNotification(message) {
@@ -5453,6 +5676,9 @@ function runHealthCheck() {
     
     // Update last check time
     document.getElementById('lastHealthCheck').textContent = new Date().toLocaleString();
+    
+    // Update health section timestamp
+    updateSectionTimestamp('health');
 }
 
 function checkDataFreshness() {
@@ -5961,6 +6187,7 @@ async function updateAllMultiCharts() {
 
 function refreshAllCharts() {
     updateAllMultiCharts();
+    updateSectionTimestamp('multiCharts');
 }
 
 async function updateChart(panelType) {
@@ -6661,6 +6888,7 @@ function switchAnalysisMode(mode) {
 
 function refreshAnalysis() {
     generateDailyReport();
+    updateSectionTimestamp('dailyAnalysis');
 }
 
 function generateDailyReport() {
