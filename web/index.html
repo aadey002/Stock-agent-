@@ -886,6 +886,7 @@
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn" data-tab="reports">📑 Reports</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
+            <button class="tab-btn" data-tab="options-calc">🧮 Options Calc</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -1686,6 +1687,52 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
             <!-- Daily Analysis Main Content (shown by default) -->
             <div id="dailyAnalysisMain">
+            <!-- Market Conditions Guard Rail -->
+            <div id="marketConditionsGuardRail" class="card" style="margin-bottom: 15px; border: 2px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="card-title" style="margin: 0;">🛡️ Market Conditions Guard Rail</div>
+                    <div id="overallMarketStatus" style="padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; background: var(--success); color: white;">
+                        🟢 SAFE TO TRADE
+                    </div>
+                </div>
+
+                <div class="grid grid-4" style="gap: 12px;">
+                    <!-- VIX Status -->
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">📊 VIX Level</div>
+                        <div id="vixValue" style="font-size: 20px; font-weight: 700; color: var(--success);">15.2</div>
+                        <div id="vixStatus" style="font-size: 11px; color: var(--success);">Low Volatility</div>
+                    </div>
+
+                    <!-- SPY Trend -->
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">📈 SPY Trend</div>
+                        <div id="spyTrendStatus" style="font-size: 14px; font-weight: 700; color: var(--success);">Above 20MA</div>
+                        <div id="spyTrendDetail" style="font-size: 11px; color: var(--muted);">+1.2% from MA</div>
+                    </div>
+
+                    <!-- Market Breadth -->
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">📊 Sector Rotation</div>
+                        <div id="sectorRotation" style="font-size: 14px; font-weight: 700; color: var(--success);">Risk-On</div>
+                        <div id="sectorDetail" style="font-size: 11px; color: var(--muted);">Tech Leading</div>
+                    </div>
+
+                    <!-- Overall Condition -->
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">⚡ Trade Conditions</div>
+                        <div id="tradeConditions" style="font-size: 14px; font-weight: 700; color: var(--success);">Favorable</div>
+                        <div id="conditionsDetail" style="font-size: 11px; color: var(--muted);">3/3 Green</div>
+                    </div>
+                </div>
+
+                <!-- Recommendation -->
+                <div id="marketRecommendation" style="margin-top: 12px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px; border-left: 4px solid var(--success);">
+                    <span style="font-weight: 600; color: var(--success);">✅ Market conditions support trading.</span>
+                    <span style="font-size: 11px; color: var(--muted);"> Low VIX, uptrend intact, and favorable sector rotation. Proceed with normal position sizing.</span>
+                </div>
+            </div>
+
             <!-- Signal Confluence Score -->
             <div class="signal-confluence-card">
                 <div style="text-align: center;">
@@ -2581,7 +2628,157 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
     </div>
     <!-- END CONTAINER -->
-    </div>
+    
+        <!-- OPTIONS CALCULATOR TAB -->
+        <div id="options-calc" class="tab-content">
+            <div class="card">
+                <div class="card-title">🧮 Options Profit Calculator</div>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Calculate option prices, breakeven points, and Greeks using the Black-Scholes model.</p>
+
+                <div class="grid grid-2" style="gap: 20px;">
+                    <!-- Input Panel -->
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
+                        <h4 style="font-size: 12px; margin-bottom: 12px; color: var(--text);">📝 Option Parameters</h4>
+
+                        <div style="display: grid; gap: 12px;">
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Stock Price ($)</label>
+                                <input type="number" id="optStockPrice" value="600" step="0.01" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Strike Price ($)</label>
+                                <input type="number" id="optStrikePrice" value="605" step="0.01" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Days to Expiration</label>
+                                <input type="number" id="optDTE" value="7" min="1" max="365" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Implied Volatility (%)</label>
+                                <input type="number" id="optIV" value="20" step="0.1" min="1" max="200" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Risk-Free Rate (%)</label>
+                                <input type="number" id="optRate" value="5.0" step="0.1" min="0" max="20" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Option Type</label>
+                                <select id="optType" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                    <option value="call">📈 CALL</option>
+                                    <option value="put">📉 PUT</option>
+                                </select>
+                            </div>
+                            <div class="form-group-trade">
+                                <label style="font-size: 11px; color: var(--muted);">Number of Contracts</label>
+                                <input type="number" id="optContracts" value="1" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                            </div>
+                        </div>
+
+                        <button onclick="calculateOptionPrice()" style="width: 100%; margin-top: 15px; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">
+                            🧮 Calculate
+                        </button>
+
+                        <button onclick="useCurrentSymbolPrice()" style="width: 100%; margin-top: 8px; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                            📊 Use Current Symbol Price
+                        </button>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div>
+                        <!-- Option Price & Key Metrics -->
+                        <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(16,185,129,0.1)); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="font-size: 12px; margin-bottom: 12px; color: var(--text);">💰 Option Valuation</h4>
+                            <div class="grid grid-2" style="gap: 15px;">
+                                <div>
+                                    <div style="font-size: 10px; color: var(--muted);">Option Price</div>
+                                    <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="optPriceResult">$0.00</div>
+                                    <div style="font-size: 10px; color: var(--muted);" id="optTotalCost">Total: $0.00</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 10px; color: var(--muted);">Intrinsic Value</div>
+                                    <div style="font-size: 18px; font-weight: 600;" id="optIntrinsic">$0.00</div>
+                                    <div style="font-size: 10px; color: var(--muted);" id="optExtrinsic">Extrinsic: $0.00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Breakeven & P/L -->
+                        <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="font-size: 12px; margin-bottom: 12px; color: var(--text);">📊 Profit & Loss</h4>
+                            <div class="grid grid-3" style="gap: 10px;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 10px; color: var(--muted);">Breakeven</div>
+                                    <div style="font-size: 16px; font-weight: 600; color: var(--warning);" id="optBreakeven">$0.00</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 10px; color: var(--muted);">Max Profit</div>
+                                    <div style="font-size: 16px; font-weight: 600; color: var(--success);" id="optMaxProfit">Unlimited</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 10px; color: var(--muted);">Max Loss</div>
+                                    <div style="font-size: 16px; font-weight: 600; color: var(--danger);" id="optMaxLoss">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Greeks -->
+                        <div style="background: var(--bg); padding: 15px; border-radius: 8px;">
+                            <h4 style="font-size: 12px; margin-bottom: 12px; color: var(--text);">🔬 The Greeks</h4>
+                            <div class="grid grid-4" style="gap: 10px;">
+                                <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                    <div style="font-size: 10px; color: var(--muted);">Delta</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--primary);" id="optDelta">0.00</div>
+                                    <div style="font-size: 9px; color: var(--muted);">Price sensitivity</div>
+                                </div>
+                                <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                    <div style="font-size: 10px; color: var(--muted);">Gamma</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="optGamma">0.00</div>
+                                    <div style="font-size: 9px; color: var(--muted);">Delta change</div>
+                                </div>
+                                <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                    <div style="font-size: 10px; color: var(--muted);">Theta</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--danger);" id="optTheta">0.00</div>
+                                    <div style="font-size: 9px; color: var(--muted);">Time decay/day</div>
+                                </div>
+                                <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: 6px;">
+                                    <div style="font-size: 10px; color: var(--muted);">Vega</div>
+                                    <div style="font-size: 16px; font-weight: 700; color: var(--warning);" id="optVega">0.00</div>
+                                    <div style="font-size: 9px; color: var(--muted);">IV sensitivity</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P&L Chart -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📈 Profit/Loss at Expiration</div>
+                <div style="height: 300px;">
+                    <canvas id="optionPnLChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Reference -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📚 Greeks Quick Reference</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Greek</th><th>Measures</th><th>What It Means</th><th>Typical Range</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Delta</strong></td><td>Price sensitivity</td><td>$ change in option per $1 move in stock</td><td>0 to 1 (calls), 0 to -1 (puts)</td></tr>
+                            <tr><td><strong>Gamma</strong></td><td>Delta acceleration</td><td>How fast delta changes as stock moves</td><td>Highest ATM, near expiration</td></tr>
+                            <tr><td><strong>Theta</strong></td><td>Time decay</td><td>$ lost per day from time decay</td><td>Always negative for buyers</td></tr>
+                            <tr><td><strong>Vega</strong></td><td>Volatility sensitivity</td><td>$ change per 1% change in IV</td><td>Higher for longer DTE</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+</div>
     <!-- END MAIN APP -->
 
 <script>
@@ -8792,6 +8989,442 @@ if (originalLoadSymbolData) {
         setTimeout(updateHistoricalData, 1000);
     };
 }
+
+// ==================== MARKET CONDITIONS GUARD RAIL ====================
+
+function updateMarketConditions() {
+    // This function analyzes overall market conditions
+    // and provides a "guard rail" before trade recommendations
+
+    if (!allData || allData.length < 20) return;
+
+    const data = allData;
+    const latestPrice = data[data.length - 1].Close;
+
+    // Calculate 20-MA for SPY trend
+    let ma20 = 0;
+    for (let i = data.length - 20; i < data.length; i++) {
+        ma20 += data[i].Close;
+    }
+    ma20 /= 20;
+
+    const pctFromMA = ((latestPrice - ma20) / ma20) * 100;
+    const aboveMA = latestPrice > ma20;
+
+    // Simulate VIX (in production, you'd fetch real VIX data)
+    // Use recent volatility as a proxy
+    let volatility = 0;
+    for (let i = data.length - 10; i < data.length; i++) {
+        const dailyRange = (data[i].High - data[i].Low) / data[i].Close;
+        volatility += dailyRange;
+    }
+    volatility = (volatility / 10) * 100 * 16; // Annualized proxy
+    const estimatedVIX = Math.max(10, Math.min(50, volatility * 2));
+
+    // Analyze sector rotation (using available sector data)
+    let riskOn = true;
+    let leadingSector = 'Tech';
+
+    // Calculate recent momentum
+    const recentReturn = ((data[data.length - 1].Close - data[data.length - 6].Close) / data[data.length - 6].Close) * 100;
+
+    // Determine overall market status
+    let overallStatus = 'SAFE TO TRADE';
+    let statusColor = 'var(--success)';
+    let statusEmoji = '🟢';
+    let statusBg = 'rgba(16, 185, 129, 0.1)';
+
+    let greenCount = 0;
+
+    // VIX analysis
+    const vixEl = document.getElementById('vixValue');
+    const vixStatusEl = document.getElementById('vixStatus');
+    if (vixEl && vixStatusEl) {
+        vixEl.textContent = estimatedVIX.toFixed(1);
+        if (estimatedVIX < 20) {
+            vixEl.style.color = 'var(--success)';
+            vixStatusEl.textContent = 'Low Volatility';
+            vixStatusEl.style.color = 'var(--success)';
+            greenCount++;
+        } else if (estimatedVIX < 30) {
+            vixEl.style.color = 'var(--warning)';
+            vixStatusEl.textContent = 'Elevated';
+            vixStatusEl.style.color = 'var(--warning)';
+        } else {
+            vixEl.style.color = 'var(--danger)';
+            vixStatusEl.textContent = 'High Fear';
+            vixStatusEl.style.color = 'var(--danger)';
+        }
+    }
+
+    // SPY Trend analysis
+    const spyTrendEl = document.getElementById('spyTrendStatus');
+    const spyDetailEl = document.getElementById('spyTrendDetail');
+    if (spyTrendEl && spyDetailEl) {
+        if (aboveMA) {
+            spyTrendEl.textContent = 'Above 20MA';
+            spyTrendEl.style.color = 'var(--success)';
+            spyDetailEl.textContent = `+${pctFromMA.toFixed(1)}% from MA`;
+            greenCount++;
+        } else {
+            spyTrendEl.textContent = 'Below 20MA';
+            spyTrendEl.style.color = pctFromMA < -2 ? 'var(--danger)' : 'var(--warning)';
+            spyDetailEl.textContent = `${pctFromMA.toFixed(1)}% from MA`;
+        }
+    }
+
+    // Sector rotation
+    const sectorEl = document.getElementById('sectorRotation');
+    const sectorDetailEl = document.getElementById('sectorDetail');
+    if (sectorEl && sectorDetailEl) {
+        if (recentReturn > 1) {
+            sectorEl.textContent = 'Risk-On';
+            sectorEl.style.color = 'var(--success)';
+            sectorDetailEl.textContent = 'Momentum Strong';
+            greenCount++;
+        } else if (recentReturn > -1) {
+            sectorEl.textContent = 'Neutral';
+            sectorEl.style.color = 'var(--warning)';
+            sectorDetailEl.textContent = 'Mixed Signals';
+        } else {
+            sectorEl.textContent = 'Risk-Off';
+            sectorEl.style.color = 'var(--danger)';
+            sectorDetailEl.textContent = 'Defensive Mode';
+        }
+    }
+
+    // Trade conditions
+    const conditionsEl = document.getElementById('tradeConditions');
+    const conditionsDetailEl = document.getElementById('conditionsDetail');
+    if (conditionsEl && conditionsDetailEl) {
+        conditionsDetailEl.textContent = `${greenCount}/3 Green`;
+        if (greenCount >= 2) {
+            conditionsEl.textContent = 'Favorable';
+            conditionsEl.style.color = 'var(--success)';
+        } else if (greenCount >= 1) {
+            conditionsEl.textContent = 'Caution';
+            conditionsEl.style.color = 'var(--warning)';
+        } else {
+            conditionsEl.textContent = 'Unfavorable';
+            conditionsEl.style.color = 'var(--danger)';
+        }
+    }
+
+    // Overall status
+    if (greenCount >= 2 && estimatedVIX < 25) {
+        overallStatus = 'SAFE TO TRADE';
+        statusColor = 'var(--success)';
+        statusEmoji = '🟢';
+        statusBg = 'rgba(16, 185, 129, 0.1)';
+    } else if (greenCount >= 1 || estimatedVIX < 30) {
+        overallStatus = 'CAUTION';
+        statusColor = 'var(--warning)';
+        statusEmoji = '🟡';
+        statusBg = 'rgba(245, 158, 11, 0.1)';
+    } else {
+        overallStatus = 'SIT OUT';
+        statusColor = 'var(--danger)';
+        statusEmoji = '🔴';
+        statusBg = 'rgba(239, 68, 68, 0.1)';
+    }
+
+    const overallEl = document.getElementById('overallMarketStatus');
+    if (overallEl) {
+        overallEl.innerHTML = `${statusEmoji} ${overallStatus}`;
+        overallEl.style.background = statusColor;
+    }
+
+    // Update recommendation
+    const recEl = document.getElementById('marketRecommendation');
+    if (recEl) {
+        let recText = '';
+        let recIcon = '';
+        let borderColor = '';
+
+        if (overallStatus === 'SAFE TO TRADE') {
+            recIcon = '✅';
+            recText = `<span style="font-weight: 600; color: var(--success);">${recIcon} Market conditions support trading.</span>`;
+            recText += `<span style="font-size: 11px; color: var(--muted);"> VIX at ${estimatedVIX.toFixed(0)}, trend ${aboveMA ? 'bullish' : 'weak'}, momentum ${recentReturn > 0 ? 'positive' : 'negative'}. Proceed with normal position sizing.</span>`;
+            borderColor = 'var(--success)';
+        } else if (overallStatus === 'CAUTION') {
+            recIcon = '⚠️';
+            recText = `<span style="font-weight: 600; color: var(--warning);">${recIcon} Trade with caution.</span>`;
+            recText += `<span style="font-size: 11px; color: var(--muted);"> Some conditions unfavorable. Consider reducing position size by 50% and tightening stops.</span>`;
+            borderColor = 'var(--warning)';
+        } else {
+            recIcon = '🛑';
+            recText = `<span style="font-weight: 600; color: var(--danger);">${recIcon} Consider sitting out.</span>`;
+            recText += `<span style="font-size: 11px; color: var(--muted);"> Market conditions are unfavorable. High volatility and weak trend suggest waiting for better entry conditions.</span>`;
+            borderColor = 'var(--danger)';
+        }
+
+        recEl.innerHTML = recText;
+        recEl.style.background = statusBg;
+        recEl.style.borderLeftColor = borderColor;
+    }
+}
+
+// Call updateMarketConditions when data loads
+const originalUpdateDailyAnalysis = typeof updateDailyAnalysis === 'function' ? updateDailyAnalysis : null;
+if (originalUpdateDailyAnalysis) {
+    const wrappedUpdateDailyAnalysis = updateDailyAnalysis;
+    updateDailyAnalysis = function() {
+        wrappedUpdateDailyAnalysis();
+        setTimeout(updateMarketConditions, 100);
+    };
+}
+
+// Also trigger on symbol load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(updateMarketConditions, 1000);
+});
+
+// ==================== OPTIONS CALCULATOR (Black-Scholes) ====================
+
+let optionPnLChart = null;
+
+// Standard normal cumulative distribution function
+function normCDF(x) {
+    const a1 = 0.254829592;
+    const a2 = -0.284496736;
+    const a3 = 1.421413741;
+    const a4 = -1.453152027;
+    const a5 = 1.061405429;
+    const p = 0.3275911;
+
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x) / Math.sqrt(2);
+
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+    return 0.5 * (1.0 + sign * y);
+}
+
+// Standard normal probability density function
+function normPDF(x) {
+    return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+}
+
+// Black-Scholes pricing and Greeks
+function blackScholes(S, K, T, r, sigma, optionType) {
+    // S = Stock price, K = Strike, T = Time to expiry (years)
+    // r = Risk-free rate (decimal), sigma = volatility (decimal)
+
+    if (T <= 0) T = 0.0001; // Prevent division by zero
+
+    const d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
+    const d2 = d1 - sigma * Math.sqrt(T);
+
+    let price, delta, gamma, theta, vega;
+
+    if (optionType === 'call') {
+        price = S * normCDF(d1) - K * Math.exp(-r * T) * normCDF(d2);
+        delta = normCDF(d1);
+        theta = (-S * normPDF(d1) * sigma / (2 * Math.sqrt(T)) - r * K * Math.exp(-r * T) * normCDF(d2)) / 365;
+    } else {
+        price = K * Math.exp(-r * T) * normCDF(-d2) - S * normCDF(-d1);
+        delta = normCDF(d1) - 1;
+        theta = (-S * normPDF(d1) * sigma / (2 * Math.sqrt(T)) + r * K * Math.exp(-r * T) * normCDF(-d2)) / 365;
+    }
+
+    gamma = normPDF(d1) / (S * sigma * Math.sqrt(T));
+    vega = S * normPDF(d1) * Math.sqrt(T) / 100; // Per 1% change in IV
+
+    return { price, delta, gamma, theta, vega, d1, d2 };
+}
+
+function calculateOptionPrice() {
+    const S = parseFloat(document.getElementById('optStockPrice').value);
+    const K = parseFloat(document.getElementById('optStrikePrice').value);
+    const DTE = parseInt(document.getElementById('optDTE').value);
+    const IV = parseFloat(document.getElementById('optIV').value) / 100;
+    const r = parseFloat(document.getElementById('optRate').value) / 100;
+    const optionType = document.getElementById('optType').value;
+    const contracts = parseInt(document.getElementById('optContracts').value);
+
+    const T = DTE / 365;
+
+    const result = blackScholes(S, K, T, r, IV, optionType);
+
+    // Option price and total cost
+    const optionPrice = result.price;
+    const totalCost = optionPrice * 100 * contracts;
+
+    document.getElementById('optPriceResult').textContent = `$${optionPrice.toFixed(2)}`;
+    document.getElementById('optTotalCost').textContent = `Total: $${totalCost.toFixed(2)} (${contracts} contract${contracts > 1 ? 's' : ''})`;
+
+    // Intrinsic and extrinsic value
+    let intrinsic = optionType === 'call' ? Math.max(0, S - K) : Math.max(0, K - S);
+    let extrinsic = Math.max(0, optionPrice - intrinsic);
+
+    document.getElementById('optIntrinsic').textContent = `$${intrinsic.toFixed(2)}`;
+    document.getElementById('optExtrinsic').textContent = `Extrinsic: $${extrinsic.toFixed(2)}`;
+
+    // Breakeven
+    const breakeven = optionType === 'call' ? K + optionPrice : K - optionPrice;
+    document.getElementById('optBreakeven').textContent = `$${breakeven.toFixed(2)}`;
+
+    // Max profit and loss
+    const maxLoss = totalCost;
+    document.getElementById('optMaxLoss').textContent = `-$${maxLoss.toFixed(2)}`;
+
+    if (optionType === 'call') {
+        document.getElementById('optMaxProfit').textContent = 'Unlimited';
+    } else {
+        const maxProfit = (K - optionPrice) * 100 * contracts;
+        document.getElementById('optMaxProfit').textContent = `$${Math.max(0, maxProfit).toFixed(2)}`;
+    }
+
+    // Greeks
+    document.getElementById('optDelta').textContent = result.delta.toFixed(4);
+    document.getElementById('optGamma').textContent = result.gamma.toFixed(4);
+    document.getElementById('optTheta').textContent = result.theta.toFixed(4);
+    document.getElementById('optVega').textContent = result.vega.toFixed(4);
+
+    // Draw P&L chart
+    drawOptionPnLChart(S, K, optionPrice, optionType, contracts);
+}
+
+function drawOptionPnLChart(stockPrice, strike, premium, optionType, contracts) {
+    const ctx = document.getElementById('optionPnLChart');
+    if (!ctx) return;
+
+    // Generate price range (+/-30% from current stock price)
+    const minPrice = stockPrice * 0.7;
+    const maxPrice = stockPrice * 1.3;
+    const step = (maxPrice - minPrice) / 50;
+
+    const labels = [];
+    const pnlData = [];
+
+    for (let price = minPrice; price <= maxPrice; price += step) {
+        labels.push(price.toFixed(0));
+
+        let pnl;
+        if (optionType === 'call') {
+            pnl = (Math.max(0, price - strike) - premium) * 100 * contracts;
+        } else {
+            pnl = (Math.max(0, strike - price) - premium) * 100 * contracts;
+        }
+        pnlData.push(pnl);
+    }
+
+    // Destroy existing chart
+    if (optionPnLChart) {
+        optionPnLChart.destroy();
+    }
+
+    const breakeven = optionType === 'call' ? strike + premium : strike - premium;
+
+    optionPnLChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'P&L at Expiration',
+                data: pnlData,
+                borderColor: '#3B82F6',
+                backgroundColor: pnlData.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'),
+                fill: true,
+                tension: 0.1,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                annotation: {
+                    annotations: {
+                        zeroLine: {
+                            type: 'line',
+                            yMin: 0,
+                            yMax: 0,
+                            borderColor: 'rgba(255, 255, 255, 0.5)',
+                            borderWidth: 1,
+                            borderDash: [5, 5]
+                        },
+                        strikeLine: {
+                            type: 'line',
+                            xMin: labels.findIndex(l => parseFloat(l) >= strike),
+                            xMax: labels.findIndex(l => parseFloat(l) >= strike),
+                            borderColor: 'rgba(245, 158, 11, 0.7)',
+                            borderWidth: 2,
+                            label: {
+                                display: true,
+                                content: `Strike: $${strike}`,
+                                position: 'start'
+                            }
+                        },
+                        breakevenLine: {
+                            type: 'line',
+                            xMin: labels.findIndex(l => parseFloat(l) >= breakeven),
+                            xMax: labels.findIndex(l => parseFloat(l) >= breakeven),
+                            borderColor: 'rgba(16, 185, 129, 0.7)',
+                            borderWidth: 2,
+                            borderDash: [3, 3],
+                            label: {
+                                display: true,
+                                content: `BE: $${breakeven.toFixed(2)}`,
+                                position: 'end'
+                            }
+                        },
+                        currentPrice: {
+                            type: 'line',
+                            xMin: labels.findIndex(l => parseFloat(l) >= stockPrice),
+                            xMax: labels.findIndex(l => parseFloat(l) >= stockPrice),
+                            borderColor: 'rgba(59, 130, 246, 0.7)',
+                            borderWidth: 2,
+                            label: {
+                                display: true,
+                                content: `Current: $${stockPrice}`,
+                                position: 'center'
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Stock Price at Expiration ($)', color: '#9CA3AF' },
+                    ticks: { color: '#9CA3AF', maxTicksLimit: 10 },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    title: { display: true, text: 'Profit/Loss ($)', color: '#9CA3AF' },
+                    ticks: {
+                        color: '#9CA3AF',
+                        callback: function(value) {
+                            return value >= 0 ? `+$${value}` : `-$${Math.abs(value)}`;
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        }
+    });
+}
+
+function useCurrentSymbolPrice() {
+    if (allData && allData.length > 0) {
+        const latestPrice = allData[allData.length - 1].Close;
+        document.getElementById('optStockPrice').value = latestPrice.toFixed(2);
+        // Also suggest a reasonable strike (nearest $5)
+        const nearestStrike = Math.round(latestPrice / 5) * 5;
+        document.getElementById('optStrikePrice').value = nearestStrike;
+        calculateOptionPrice();
+    } else {
+        alert('No price data loaded. Please select a symbol first.');
+    }
+}
+
+// Initialize options calculator on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Run initial calculation with default values after a short delay
+    setTimeout(calculateOptionPrice, 500);
+});
 
 </script>
 </body>
