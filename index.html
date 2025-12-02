@@ -1159,10 +1159,13 @@
                     <div>
                         <label style="font-size:11px;color:var(--muted);">Bars to Analyze:</label>
                         <select id="barCountSelect" onchange="updateBarCountAnalysis()" style="padding:6px 10px;border:1px solid var(--border);border-radius:5px;margin-left:8px;">
-                            <option value="20">20 Bars</option>
+                            <option value="10">10 Bars</option>
+                            <option value="20" selected>20 Bars</option>
                             <option value="50">50 Bars</option>
                             <option value="100">100 Bars</option>
                             <option value="200">200 Bars</option>
+                            <option value="500">500 Bars</option>
+                            <option value="1000">1000 Bars</option>
                         </select>
                     </div>
                     <div style="background:var(--bg);padding:6px 12px;border-radius:5px;font-size:12px;">
@@ -3013,9 +3016,10 @@ function updateBarCountAnalysis() {
     
     // Use current symbol's data
     const symbolData = currentData;
-    if (!symbolData || symbolData.length < barCount) return;
+    if (!symbolData || symbolData.length < 1) return;
+    const actualBars = Math.min(barCount, symbolData.length);
     
-    const data = symbolData.slice(-barCount);
+    const data = symbolData.slice(-actualBars);
     const table = document.getElementById('barCountTable');
     if (!table) return;
     
@@ -3073,18 +3077,29 @@ function updateBarCountAnalysis() {
 function updateReversalStats() {
     const table = document.getElementById('reversalStatsTable');
     if (!table) return;
-    
+
     let html = '';
-    
+    let hasData = false;
+
+    // First, always show current symbol
+    const symbolsToShow = [currentSymbol];
+    // Add other symbols if data is available
     for (const symbol of SYMBOLS) {
+        if (symbol !== currentSymbol && allSymbolsData[symbol] && allSymbolsData[symbol].length >= 10) {
+            symbolsToShow.push(symbol);
+        }
+    }
+
+    for (const symbol of symbolsToShow) {
         const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
-        if (!data || data.length < 50) continue;
-        
+        if (!data || data.length < 10) continue;
+
+        hasData = true;
         let bullishRuns = [], bearishRuns = [], currentRun = 0, lastDir = null;
-        
+
         for (const d of data) {
             const isBullish = parseFloat(d.Close) >= parseFloat(d.Open);
-            
+
             if (lastDir === null) {
                 lastDir = isBullish;
                 currentRun = 1;
@@ -3097,20 +3112,20 @@ function updateReversalStats() {
                 currentRun = 1;
             }
         }
-        
+
         const avgBullish = bullishRuns.length ? (bullishRuns.reduce((a,b) => a+b, 0) / bullishRuns.length).toFixed(1) : 'N/A';
         const avgBearish = bearishRuns.length ? (bearishRuns.reduce((a,b) => a+b, 0) / bearishRuns.length).toFixed(1) : 'N/A';
         const currentDir = lastDir ? 'Bullish' : 'Bearish';
         const avgForDir = lastDir ? parseFloat(avgBullish) : parseFloat(avgBearish);
         const pctOfAvg = avgForDir ? ((currentRun / avgForDir) * 100).toFixed(0) : 'N/A';
-        
+
         let risk = 'LOW', riskClass = 'success';
         if (pctOfAvg !== 'N/A') {
             const pct = parseInt(pctOfAvg);
             if (pct > 150) { risk = 'HIGH'; riskClass = 'danger'; }
             else if (pct > 100) { risk = 'MEDIUM'; riskClass = 'warning'; }
         }
-        
+
         const isCurrentSymbol = symbol === currentSymbol;
         html += `<tr ${isCurrentSymbol ? 'style="background:rgba(59,130,246,0.1);font-weight:600;"' : ''}>
             <td>${isCurrentSymbol ? '➤ ' : ''}${symbol}</td>
@@ -3121,7 +3136,11 @@ function updateReversalStats() {
             <td><span class="badge badge-${riskClass}">${risk}</span></td>
         </tr>`;
     }
-    
+
+    if (!hasData) {
+        html = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Loading data... Select a symbol and wait for data to load.</td></tr>';
+    }
+
     table.innerHTML = html;
 }
 
