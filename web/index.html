@@ -7600,7 +7600,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateMTFBias() {
     if (!currentData || currentData.length < 50) return;
 
-    const price = currentData[currentData.length - 1].close;
+    const price = parseFloat(currentData[currentData.length - 1].Close) || 0;
     const timeframes = ['5min', '15min', '1hr', '4hr', 'daily'];
 
     // Calculate bias for each timeframe using different lookback periods
@@ -7668,18 +7668,18 @@ function calculateTimeframeBias(minutes) {
         return { bias: 'NEUTRAL', trend: 'N/A', strength: 'N/A', notes: 'Insufficient data' };
     }
 
-    const firstClose = recentData[0].close;
-    const lastClose = recentData[recentData.length - 1].close;
+    const firstClose = parseFloat(recentData[0].Close);
+    const lastClose = parseFloat(recentData[recentData.length - 1].Close);
     const change = ((lastClose - firstClose) / firstClose) * 100;
 
     // Calculate EMA
-    const ema20 = calculateEMA(recentData.map(d => d.close), Math.min(20, recentData.length));
+    const ema20 = calculateEMA(recentData.map(d => parseFloat(d.Close)), Math.min(20, recentData.length));
     const priceAboveEMA = lastClose > ema20;
 
     // Calculate RSI-like momentum
     let gains = 0, losses = 0;
     for (let i = 1; i < recentData.length; i++) {
-        const diff = recentData[i].close - recentData[i-1].close;
+        const diff = parseFloat(recentData[i].Close) - parseFloat(recentData[i-1].Close);
         if (diff > 0) gains += diff;
         else losses -= diff;
     }
