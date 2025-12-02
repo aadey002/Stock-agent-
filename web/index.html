@@ -2267,91 +2267,74 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         <!-- MTF BIAS TAB -->
         <div id="mtf-bias" class="tab-content">
             <div class="card">
-                <div class="card-title">📈 Multi-Timeframe Bias Log</div>
-                <p style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">
-                    Track trend alignment across multiple timeframes for <span id="mtfBiasSymbol" style="font-weight: 700; color: var(--primary);">SPY</span>
-                </p>
+                <div class="card-title">📈 Multi-Timeframe Bias Analysis - <span id="mtfBiasSymbol" style="color: var(--primary);">SPY</span></div>
 
-                <!-- MTF Bias Table -->
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Timeframe</th>
-                                <th>Bias</th>
-                                <th>Trend Direction</th>
-                                <th>Key Support</th>
-                                <th>Key Resistance</th>
-                                <th>Last Updated</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mtfBiasTable">
-                            <tr>
-                                <td><span style="font-weight: 600;">5 Min</span></td>
-                                <td><span class="signal-badge call" id="bias5min">BULLISH</span></td>
-                                <td id="trend5min">↗ Uptrend</td>
-                                <td id="support5min">$598.50</td>
-                                <td id="resistance5min">$602.00</td>
-                                <td id="updated5min" style="font-size: 10px; color: var(--muted);">--</td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-weight: 600;">15 Min</span></td>
-                                <td><span class="signal-badge call" id="bias15min">BULLISH</span></td>
-                                <td id="trend15min">↗ Uptrend</td>
-                                <td id="support15min">$597.00</td>
-                                <td id="resistance15min">$603.50</td>
-                                <td id="updated15min" style="font-size: 10px; color: var(--muted);">--</td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-weight: 600;">1 Hour</span></td>
-                                <td><span class="signal-badge call" id="bias1hr">BULLISH</span></td>
-                                <td id="trend1hr">↗ Uptrend</td>
-                                <td id="support1hr">$595.00</td>
-                                <td id="resistance1hr">$605.00</td>
-                                <td id="updated1hr" style="font-size: 10px; color: var(--muted);">--</td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-weight: 600;">4 Hour</span></td>
-                                <td><span class="signal-badge neutral" id="bias4hr">NEUTRAL</span></td>
-                                <td id="trend4hr">→ Sideways</td>
-                                <td id="support4hr">$590.00</td>
-                                <td id="resistance4hr">$610.00</td>
-                                <td id="updated4hr" style="font-size: 10px; color: var(--muted);">--</td>
-                            </tr>
-                            <tr>
-                                <td><span style="font-weight: 600;">Daily</span></td>
-                                <td><span class="signal-badge call" id="biasDaily">BULLISH</span></td>
-                                <td id="trendDaily">↗ Uptrend</td>
-                                <td id="supportDaily">$580.00</td>
-                                <td id="resistanceDaily">$615.00</td>
-                                <td id="updatedDaily" style="font-size: 10px; color: var(--muted);">--</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- MTF Alignment Summary -->
-                <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.1)); border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <!-- Current Real-Time MTF Summary -->
+                <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.1)); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
-                            <div style="font-size: 12px; color: var(--muted);">MTF Alignment Score</div>
-                            <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="mtfAlignmentScore">4/5 Bullish</div>
+                            <div style="font-size: 11px; color: var(--muted);">Current Price</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="mtfCurrentPrice">$0.00</div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 12px; color: var(--muted);">Recommendation</div>
-                            <div style="font-size: 16px; font-weight: 600; color: var(--success);" id="mtfRecommendation">CALL bias confirmed</div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--muted);">Today's Alignment</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="mtfAlignmentScore">--</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--muted);">Recommendation</div>
+                            <div style="font-size: 16px; font-weight: 600;" id="mtfRecommendation">--</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;" id="mtfQuickBias">
+                            <span class="signal-badge" id="mtfBias5m">5m: --</span>
+                            <span class="signal-badge" id="mtfBias15m">15m: --</span>
+                            <span class="signal-badge" id="mtfBias1h">1h: --</span>
+                            <span class="signal-badge" id="mtfBias4h">4h: --</span>
+                            <span class="signal-badge" id="mtfBiasD">D: --</span>
                         </div>
                     </div>
                     <div style="margin-top: 10px; font-size: 11px; color: var(--muted);" id="mtfSummary">
-                        Strong alignment across most timeframes. 5min, 15min, 1hr, and Daily all showing bullish bias. 4hr is neutral - wait for confirmation or use as entry zone.
+                        Loading bias data...
                     </div>
                 </div>
 
-                <!-- Refresh Button -->
-                <div style="margin-top: 15px; text-align: right;">
-                    <button onclick="updateMTFBias()" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                        🔄 Refresh MTF Bias
-                    </button>
+                <!-- Historical MTF Bias Log -->
+                <div style="margin-top: 10px;">
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">📊 Historical Bias Log (Last 30 Days)</div>
+                    <div class="table-wrap" style="max-height: 400px; overflow-y: auto;">
+                        <table>
+                            <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Close</th>
+                                    <th>5 Min</th>
+                                    <th>15 Min</th>
+                                    <th>1 Hour</th>
+                                    <th>4 Hour</th>
+                                    <th>Daily</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mtfHistoryTable">
+                                <tr><td colspan="8" style="text-align: center; color: var(--muted);">Loading historical data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bias Trend Summary -->
+                <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Bullish Days (30d)</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="mtfBullishDays">--</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Bearish Days (30d)</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--danger);" id="mtfBearishDays">--</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Neutral Days (30d)</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--warning);" id="mtfNeutralDays">--</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3052,11 +3035,8 @@ async function loadAllData() {
                     updateAllMultiCharts();
                 }
 
-                // Update MTF Bias if that tab is active
-                const mtfBiasTab = document.getElementById('mtf-bias');
-                if (mtfBiasTab && mtfBiasTab.classList.contains('active')) {
-                    if (typeof updateMTFBias === 'function') updateMTFBias();
-                }
+                // Update MTF Bias always (uses currentData which is already loaded for current symbol)
+                if (typeof updateMTFBias === 'function') updateMTFBias();
 
                 // Update symbol displays
                 document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
@@ -7598,95 +7578,70 @@ document.addEventListener('DOMContentLoaded', function() {
 // MTF BIAS TAB FUNCTIONS
 // ==========================================
 function updateMTFBias() {
-    if (!currentData || currentData.length < 50) return;
+    if (!currentData || currentData.length < 50) {
+        console.log('MTF Bias: Insufficient data');
+        return;
+    }
 
-    const price = parseFloat(currentData[currentData.length - 1].Close) || 0;
-    const timeframes = ['5min', '15min', '1hr', '4hr', 'daily'];
-
-    // Calculate bias for each timeframe using different lookback periods
-    const biasData = {
-        '5min': calculateTimeframeBias(5),
-        '15min': calculateTimeframeBias(15),
-        '1hr': calculateTimeframeBias(60),
-        '4hr': calculateTimeframeBias(240),
-        'daily': calculateTimeframeBias(1440)
-    };
-
-    // Map timeframe keys to HTML element suffixes (HTML uses bias5min, bias15min, bias1hr, bias4hr, biasDaily)
-    const suffixMap = { '5min': '5min', '15min': '15min', '1hr': '1hr', '4hr': '4hr', 'daily': 'Daily' };
     const lastBar = currentData[currentData.length - 1];
-    const lastDateStr = lastBar.Date ? lastBar.Date.split('T')[0].split(' ')[0] : '';
-    const updateTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const price = parseFloat(lastBar.Close) || 0;
 
-    timeframes.forEach(tf => {
-        const data = biasData[tf];
-        const suffix = suffixMap[tf];
-
-        // Update bias badge
-        const biasEl = document.getElementById(`bias${suffix}`);
-        if (biasEl) {
-            biasEl.textContent = data.bias;
-            biasEl.className = `signal-badge ${data.bias === 'BULLISH' ? 'call' : data.bias === 'BEARISH' ? 'put' : 'neutral'}`;
-        }
-
-        // Update trend direction
-        const trendEl = document.getElementById(`trend${suffix}`);
-        if (trendEl) {
-            const arrow = data.trend === 'Uptrend' ? '↗' : data.trend === 'Downtrend' ? '↘' : '→';
-            trendEl.textContent = `${arrow} ${data.trend}`;
-            trendEl.style.color = data.trend === 'Uptrend' ? 'var(--success)' : data.trend === 'Downtrend' ? 'var(--danger)' : 'var(--muted)';
-        }
-
-        // Update support level
-        const supportEl = document.getElementById(`support${suffix}`);
-        if (supportEl) {
-            supportEl.textContent = `$${data.support.toFixed(2)}`;
-        }
-
-        // Update resistance level
-        const resistanceEl = document.getElementById(`resistance${suffix}`);
-        if (resistanceEl) {
-            resistanceEl.textContent = `$${data.resistance.toFixed(2)}`;
-        }
-
-        // Update last updated timestamp
-        const updatedEl = document.getElementById(`updated${suffix}`);
-        if (updatedEl) {
-            updatedEl.textContent = `${lastDateStr} ${updateTime}`;
-        }
-    });
-
-    // Update MTF symbol display
+    // Update symbol display
     const mtfSymbolEl = document.getElementById('mtfBiasSymbol');
     if (mtfSymbolEl) mtfSymbolEl.textContent = currentSymbol;
 
-    // Calculate alignment score
-    const bullishCount = Object.values(biasData).filter(d => d.bias === 'BULLISH').length;
-    const bearishCount = Object.values(biasData).filter(d => d.bias === 'BEARISH').length;
+    // Update current price
+    const priceEl = document.getElementById('mtfCurrentPrice');
+    if (priceEl) priceEl.textContent = '$' + price.toFixed(2);
 
-    const alignmentScore = document.getElementById('mtfAlignmentScore');
+    // Calculate bias for each timeframe using TODAY's data
+    const biasResults = {
+        '5m': calculateDayBias(currentData, 1),   // Last 1 bar
+        '15m': calculateDayBias(currentData, 3),  // Last 3 bars
+        '1h': calculateDayBias(currentData, 12),  // Last 12 bars
+        '4h': calculateDayBias(currentData, 48),  // Last 48 bars
+        'D': calculateDayBias(currentData, 252)   // Last 252 bars (1 year for daily trend)
+    };
+
+    // Update quick bias badges
+    Object.entries(biasResults).forEach(([tf, result]) => {
+        const el = document.getElementById('mtfBias' + tf.replace('m', 'm').replace('h', 'h'));
+        if (el) {
+            el.textContent = tf + ': ' + result.bias.charAt(0);
+            el.className = 'signal-badge ' + (result.bias === 'BULLISH' ? 'call' : result.bias === 'BEARISH' ? 'put' : 'neutral');
+        }
+    });
+
+    // Calculate alignment score
+    let bullishCount = 0, bearishCount = 0;
+    Object.values(biasResults).forEach(r => {
+        if (r.bias === 'BULLISH') bullishCount++;
+        else if (r.bias === 'BEARISH') bearishCount++;
+    });
+
+    const alignmentEl = document.getElementById('mtfAlignmentScore');
     const recommendationEl = document.getElementById('mtfRecommendation');
     const summaryEl = document.getElementById('mtfSummary');
 
-    if (alignmentScore) {
+    if (alignmentEl) {
         if (bullishCount >= 4) {
-            alignmentScore.textContent = `${bullishCount}/5 Bullish`;
-            alignmentScore.style.color = 'var(--success)';
+            alignmentEl.textContent = bullishCount + '/5 Bullish';
+            alignmentEl.style.color = 'var(--success)';
         } else if (bearishCount >= 4) {
-            alignmentScore.textContent = `${bearishCount}/5 Bearish`;
-            alignmentScore.style.color = 'var(--danger)';
+            alignmentEl.textContent = bearishCount + '/5 Bearish';
+            alignmentEl.style.color = 'var(--danger)';
         } else {
-            alignmentScore.textContent = 'Mixed';
-            alignmentScore.style.color = 'var(--warning)';
+            alignmentEl.textContent = 'Mixed (' + bullishCount + 'B/' + bearishCount + 'B)';
+            alignmentEl.style.color = 'var(--warning)';
         }
     }
 
     if (recommendationEl) {
         if (bullishCount >= 4) {
-            recommendationEl.textContent = 'CALL bias confirmed';
+            recommendationEl.textContent = 'CALL bias';
             recommendationEl.style.color = 'var(--success)';
         } else if (bearishCount >= 4) {
-            recommendationEl.textContent = 'PUT bias confirmed';
+            recommendationEl.textContent = 'PUT bias';
             recommendationEl.style.color = 'var(--danger)';
         } else {
             recommendationEl.textContent = 'Wait for alignment';
@@ -7696,68 +7651,130 @@ function updateMTFBias() {
 
     if (summaryEl) {
         const neutralCount = 5 - bullishCount - bearishCount;
-        if (bullishCount >= 4) {
-            summaryEl.textContent = `Strong bullish alignment (${bullishCount}/5). High probability CALL setups. ${neutralCount > 0 ? 'Neutral zones can serve as entry points.' : ''}`;
-        } else if (bearishCount >= 4) {
-            summaryEl.textContent = `Strong bearish alignment (${bearishCount}/5). High probability PUT setups. ${neutralCount > 0 ? 'Neutral zones can serve as exit points.' : ''}`;
-        } else {
-            summaryEl.textContent = `Mixed signals: ${bullishCount} bullish, ${bearishCount} bearish, ${neutralCount} neutral. Wait for better alignment before trading.`;
+        summaryEl.textContent = currentSymbol + ' @ $' + price.toFixed(2) + ' | ' +
+            bullishCount + ' bullish, ' + bearishCount + ' bearish, ' + neutralCount + ' neutral timeframes';
+    }
+
+    // Generate historical bias log (last 30 days)
+    generateMTFHistoryLog();
+}
+
+function calculateDayBias(data, lookback) {
+    if (data.length < lookback + 1) lookback = Math.max(1, data.length - 1);
+
+    const recentData = data.slice(-lookback);
+    if (recentData.length < 2) return { bias: 'NEUTRAL', score: 0 };
+
+    const firstClose = parseFloat(recentData[0].Close) || 0;
+    const lastClose = parseFloat(recentData[recentData.length - 1].Close) || 0;
+    const change = firstClose > 0 ? ((lastClose - firstClose) / firstClose) * 100 : 0;
+
+    // Calculate simple momentum
+    let ups = 0, downs = 0;
+    for (let i = 1; i < recentData.length; i++) {
+        const curr = parseFloat(recentData[i].Close) || 0;
+        const prev = parseFloat(recentData[i-1].Close) || 0;
+        if (curr > prev) ups++;
+        else if (curr < prev) downs++;
+    }
+    const momentum = (ups - downs) / (recentData.length - 1);
+
+    let bias = 'NEUTRAL';
+    let score = 0;
+
+    if (change > 0.2 && momentum > 0.1) {
+        bias = 'BULLISH';
+        score = Math.min(2, change / 0.5 + momentum);
+    } else if (change < -0.2 && momentum < -0.1) {
+        bias = 'BEARISH';
+        score = Math.max(-2, change / 0.5 + momentum);
+    } else {
+        score = momentum;
+    }
+
+    return { bias, score, change };
+}
+
+function generateMTFHistoryLog() {
+    const tableBody = document.getElementById('mtfHistoryTable');
+    if (!tableBody || !currentData || currentData.length < 30) {
+        if (tableBody) tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);">Insufficient data for history</td></tr>';
+        return;
+    }
+
+    // Get last 30 unique dates
+    const dailyData = [];
+    const seenDates = new Set();
+
+    for (let i = currentData.length - 1; i >= 0 && dailyData.length < 30; i--) {
+        const bar = currentData[i];
+        const dateStr = (bar.Date || '').split('T')[0].split(' ')[0];
+        if (dateStr && !seenDates.has(dateStr)) {
+            seenDates.add(dateStr);
+            dailyData.push({
+                date: dateStr,
+                close: parseFloat(bar.Close) || 0,
+                index: i
+            });
         }
     }
+
+    // Calculate bias for each historical day
+    let bullishDays = 0, bearishDays = 0, neutralDays = 0;
+    let html = '';
+
+    dailyData.forEach(day => {
+        // Get data up to this day
+        const dataToDate = currentData.slice(0, day.index + 1);
+
+        // Calculate biases with different lookbacks
+        const bias5m = calculateDayBias(dataToDate, 1);
+        const bias15m = calculateDayBias(dataToDate, 3);
+        const bias1h = calculateDayBias(dataToDate, 12);
+        const bias4h = calculateDayBias(dataToDate, 48);
+        const biasD = calculateDayBias(dataToDate, 252);
+
+        // Count bullish/bearish
+        let dayBullish = 0, dayBearish = 0;
+        [bias5m, bias15m, bias1h, bias4h, biasD].forEach(b => {
+            if (b.bias === 'BULLISH') dayBullish++;
+            else if (b.bias === 'BEARISH') dayBearish++;
+        });
+
+        // Overall score
+        let overallBias = 'NEUTRAL';
+        let overallScore = dayBullish - dayBearish;
+        if (dayBullish >= 3) { overallBias = 'BULLISH'; bullishDays++; }
+        else if (dayBearish >= 3) { overallBias = 'BEARISH'; bearishDays++; }
+        else { neutralDays++; }
+
+        const biasClass = (b) => b.bias === 'BULLISH' ? 'call' : b.bias === 'BEARISH' ? 'put' : 'neutral';
+        const biasIcon = (b) => b.bias === 'BULLISH' ? '↑' : b.bias === 'BEARISH' ? '↓' : '→';
+
+        html += '<tr>' +
+            '<td style="font-size:11px;">' + day.date + '</td>' +
+            '<td style="font-weight:600;">$' + day.close.toFixed(2) + '</td>' +
+            '<td><span class="signal-badge ' + biasClass(bias5m) + '" style="font-size:10px;">' + biasIcon(bias5m) + '</span></td>' +
+            '<td><span class="signal-badge ' + biasClass(bias15m) + '" style="font-size:10px;">' + biasIcon(bias15m) + '</span></td>' +
+            '<td><span class="signal-badge ' + biasClass(bias1h) + '" style="font-size:10px;">' + biasIcon(bias1h) + '</span></td>' +
+            '<td><span class="signal-badge ' + biasClass(bias4h) + '" style="font-size:10px;">' + biasIcon(bias4h) + '</span></td>' +
+            '<td><span class="signal-badge ' + biasClass(biasD) + '" style="font-size:10px;">' + biasIcon(biasD) + '</span></td>' +
+            '<td><span class="signal-badge ' + biasClass({bias: overallBias}) + '" style="font-size:10px;">' + overallScore + '</span></td>' +
+            '</tr>';
+    });
+
+    tableBody.innerHTML = html;
+
+    // Update summary stats
+    const bullishEl = document.getElementById('mtfBullishDays');
+    const bearishEl = document.getElementById('mtfBearishDays');
+    const neutralEl = document.getElementById('mtfNeutralDays');
+
+    if (bullishEl) bullishEl.textContent = bullishDays;
+    if (bearishEl) bearishEl.textContent = bearishDays;
+    if (neutralEl) neutralEl.textContent = neutralDays;
 }
 
-function calculateTimeframeBias(minutes) {
-    const barsNeeded = Math.min(Math.ceil(minutes / 5), currentData.length - 1);
-    const recentData = currentData.slice(-barsNeeded);
-
-    if (recentData.length < 2) {
-        return { bias: 'NEUTRAL', trend: 'N/A', strength: 'N/A', notes: 'Insufficient data' };
-    }
-
-    const firstClose = parseFloat(recentData[0].Close);
-    const lastClose = parseFloat(recentData[recentData.length - 1].Close);
-    const change = ((lastClose - firstClose) / firstClose) * 100;
-
-    // Calculate EMA
-    const ema20 = calculateEMA(recentData.map(d => parseFloat(d.Close)), Math.min(20, recentData.length));
-    const priceAboveEMA = lastClose > ema20;
-
-    // Calculate RSI-like momentum
-    let gains = 0, losses = 0;
-    for (let i = 1; i < recentData.length; i++) {
-        const diff = parseFloat(recentData[i].Close) - parseFloat(recentData[i-1].Close);
-        if (diff > 0) gains += diff;
-        else losses -= diff;
-    }
-    const momentum = gains / (gains + losses || 1);
-
-    let bias, trend, strength, notes;
-
-    if (change > 0.3 && priceAboveEMA && momentum > 0.55) {
-        bias = 'BULLISH';
-        trend = 'Uptrend';
-        strength = change > 0.8 ? 'Strong' : 'Moderate';
-        notes = `+${change.toFixed(2)}% | Above EMA | Mom: ${(momentum * 100).toFixed(0)}%`;
-    } else if (change < -0.3 && !priceAboveEMA && momentum < 0.45) {
-        bias = 'BEARISH';
-        trend = 'Downtrend';
-        strength = change < -0.8 ? 'Strong' : 'Moderate';
-        notes = `${change.toFixed(2)}% | Below EMA | Mom: ${(momentum * 100).toFixed(0)}%`;
-    } else {
-        bias = 'NEUTRAL';
-        trend = 'Sideways';
-        strength = 'Weak';
-        notes = `${change > 0 ? '+' : ''}${change.toFixed(2)}% | Consolidating`;
-    }
-
-    // Calculate support and resistance from recent data
-    const recentHighs = recentData.map(d => parseFloat(d.High) || 0);
-    const recentLows = recentData.map(d => parseFloat(d.Low) || 0);
-    const support = Math.min(...recentLows.filter(x => x > 0));
-    const resistance = Math.max(...recentHighs.filter(x => x > 0));
-
-    return { bias, trend, strength, notes, support, resistance };
-}
 
 function calculateEMA(data, period) {
     if (data.length < period) return data[data.length - 1];
