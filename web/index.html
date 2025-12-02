@@ -9306,16 +9306,16 @@ function performLocalAnalysis(question, data) {
     };
 
     // Extract key metrics from data - handle both lowercase and uppercase keys (CSV uses uppercase)
-    const closes = data.map(d => safeParseFloat(d.Close ?? d.close)).filter(v => v \!== null && v > 0);
-    const opens = data.map(d => safeParseFloat(d.Open ?? d.open)).filter(v => v \!== null && v > 0);
-    const highs = data.map(d => safeParseFloat(d.High ?? d.high)).filter(v => v \!== null && v > 0);
-    const lows = data.map(d => safeParseFloat(d.Low ?? d.low)).filter(v => v \!== null && v > 0);
+    const closes = data.map(d => safeParseFloat(d.Close ?? d.close)).filter(v => v !== null && v > 0);
+    const opens = data.map(d => safeParseFloat(d.Open ?? d.open)).filter(v => v !== null && v > 0);
+    const highs = data.map(d => safeParseFloat(d.High ?? d.high)).filter(v => v !== null && v > 0);
+    const lows = data.map(d => safeParseFloat(d.Low ?? d.low)).filter(v => v !== null && v > 0);
     const volumes = data.map(d => parseInt(d.Volume ?? d.volume ?? 0) || 0);
 
     // Safety check: Ensure we have valid data
     if (closes.length === 0) {
         console.warn('AI Analysis - No valid close prices found');
-        return \;
+        return "No valid price data found. Please ensure data is loaded correctly.";
     }
 
     console.log('AI Analysis - Parsed closes (first 5):', closes.slice(0, 5));
