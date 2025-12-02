@@ -8,7 +8,11 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
+# Main ETFs + All Sector ETFs (must match web/index.html SYMBOLS array)
+SYMBOLS = [
+    'SPY', 'QQQ', 'IWM', 'DIA',  # Main ETFs
+    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY'  # Sector ETFs
+]
 DATA_DIR = 'data'
 LOOKBACK_DAYS = 1095  # 3 years
 
