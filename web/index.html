@@ -3770,27 +3770,42 @@ function updateFibonacci() {
 // FIXED: Bar Count now uses currentSymbol
 function updateBarCountAnalysis() {
     const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
+    console.log('📊 updateBarCountAnalysis called, requested bars:', barCount);
 
     // Use current symbol's data
     const symbolData = currentData;
-    if (!symbolData || symbolData.length < barCount + 20) return; // Need extra for MA calculation
+    if (!symbolData || symbolData.length < 10) {
+        console.warn('⚠️ Bar Count: Not enough data, have:', symbolData?.length || 0);
+        return;
+    }
 
-    const data = symbolData.slice(-barCount);
-    const fullData = symbolData.slice(-(barCount + 20)); // Extra data for 20-period MA
+    // Use available data, adjust bar count if needed
+    const availableBars = Math.min(barCount, symbolData.length - 20);
+    const actualBarCount = Math.max(availableBars, Math.min(10, symbolData.length));
+    console.log('📊 Bar Count: Using', actualBarCount, 'bars from', symbolData.length, 'total');
+
+    const data = symbolData.slice(-actualBarCount);
+    const extraForMA = Math.min(20, symbolData.length - actualBarCount);
+    const fullData = symbolData.slice(-(actualBarCount + extraForMA));
     const table = document.getElementById('barCountTable');
-    if (!table) return;
+    if (!table) {
+        console.warn('⚠️ Bar Count: Table element not found');
+        return;
+    }
 
     // Update the symbol display
     document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
 
     // Calculate 20-period MA for the analysis period
     function calculate20MA(dataSlice, endIndex) {
-        if (endIndex < 20) return null;
+        const period = Math.min(20, endIndex);
+        if (period < 5 || endIndex > dataSlice.length) return null;
         let sum = 0;
-        for (let i = endIndex - 20; i < endIndex; i++) {
-            sum += parseFloat(dataSlice[i].Close) || 0;
+        const startIdx = Math.max(0, endIndex - period);
+        for (let i = startIdx; i < endIndex; i++) {
+            sum += parseFloat(dataSlice[i]?.Close) || 0;
         }
-        return sum / 20;
+        return sum / period;
     }
 
     // Calculate RSI
