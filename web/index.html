@@ -3258,9 +3258,14 @@ async function changeSymbol() {
     const barCountSymbol = document.getElementById('barCountCurrentSymbol');
     if (barCountSymbol) barCountSymbol.textContent = currentSymbol;
     
-    // Update Multi-Charts symbol selector to match
+    // Update Multi-Charts symbol selector to match and sync all chart displays
     const multiChartSymbol = document.getElementById('multiChartSymbol');
     if (multiChartSymbol) multiChartSymbol.value = currentSymbol;
+    
+    // Sync all Multi-Charts displays with new symbol
+    if (typeof syncChartsWithSymbol === 'function') {
+        syncChartsWithSymbol();
+    }
     
     // Update Daily Analysis symbol display
     const confluenceSymbol = document.getElementById('confluenceSymbol');
@@ -3268,6 +3273,9 @@ async function changeSymbol() {
     
     // Load the new symbol's data and update everything
     await loadAllData();
+    
+    // Update Options Calculator with new symbol's price
+    updateOptionsCalcPrice();
 }
 
 function parseCSV(text) {
@@ -3547,6 +3555,9 @@ async function loadAllData() {
     
     // Update all timestamps after data refresh
     updateAllTimestamps();
+    
+    // Load market conditions from JSON
+    loadMarketConditions();
 }
 
 function showDataNotification(message) {
@@ -5816,11 +5827,8 @@ function checkDataFreshness() {
     console.log('✅ checkDataFreshness complete');
 }
 
-function checkMarketStatus() {
-    const marketEl = document.getElementById('healthMarket');
-    const valueEl = document.getElementById('marketStatusValue');
-    const statusEl = document.getElementById('marketStatusStatus');
-    
+// Get detailed market status based on Eastern Time
+function getMarketStatus() {
     const now = new Date();
     const etOffset = getETOffset();
     const etNow = new Date(now.getTime() + etOffset);
@@ -5832,35 +5840,99 @@ function checkMarketStatus() {
     
     // Weekend check
     if (day === 0 || day === 6) {
-        valueEl.textContent = 'Weekend';
-        statusEl.textContent = 'CLOSED';
-        statusEl.className = 'health-metric-status warn';
-        marketEl.className = 'health-metric warning';
-        healthStatus.marketStatus = 'closed';
-        return;
+        return {
+            status: 'Weekend - CLOSED',
+            code: 'weekend',
+            color: '#6b7280', // gray
+            className: 'warning',
+            trading: false
+        };
     }
     
-    // Market hours: 9:30 AM - 4:00 PM ET
+    // Pre-Market: 4:00 AM - 9:30 AM ET
+    if (timeNum >= 400 && timeNum < 930) {
+        return {
+            status: 'Pre-Market',
+            code: 'premarket',
+            color: '#eab308', // yellow
+            className: 'warning',
+            trading: false
+        };
+    }
+    
+    // Market Open: 9:30 AM - 4:00 PM ET
     if (timeNum >= 930 && timeNum < 1600) {
-        valueEl.textContent = 'Market Open';
-        statusEl.textContent = 'TRADING';
-        statusEl.className = 'health-metric-status ok';
-        marketEl.className = 'health-metric healthy';
-        healthStatus.marketStatus = 'open';
-    } else if (timeNum >= 400 && timeNum < 930) {
-        valueEl.textContent = 'Pre-Market';
-        statusEl.textContent = 'WAITING';
-        statusEl.className = 'health-metric-status warn';
-        marketEl.className = 'health-metric warning';
-        healthStatus.marketStatus = 'premarket';
-    } else {
-        valueEl.textContent = 'After Hours';
-        statusEl.textContent = 'CLOSED';
-        statusEl.className = 'health-metric-status warn';
-        marketEl.className = 'health-metric warning';
-        healthStatus.marketStatus = 'closed';
+        return {
+            status: 'Market Open',
+            code: 'open',
+            color: '#22c55e', // green
+            className: 'healthy',
+            trading: true
+        };
+    }
+    
+    // After Hours: 4:00 PM - 8:00 PM ET
+    if (timeNum >= 1600 && timeNum < 2000) {
+        return {
+            status: 'After Hours',
+            code: 'afterhours',
+            color: '#f97316', // orange
+            className: 'warning',
+            trading: false
+        };
+    }
+    
+    // Market Closed: 8:00 PM - 4:00 AM ET
+    return {
+        status: 'Market Closed',
+        code: 'closed',
+        color: '#6b7280', // gray
+        className: 'warning',
+        trading: false
+    };
+}
+
+function checkMarketStatus() {
+    const marketEl = document.getElementById('healthMarket');
+    const valueEl = document.getElementById('marketStatusValue');
+    const statusEl = document.getElementById('marketStatusStatus');
+    
+    const market = getMarketStatus();
+    
+    if (valueEl) {
+        valueEl.textContent = market.status;
+        valueEl.style.color = market.color;
+    }
+    
+    if (statusEl) {
+        statusEl.textContent = market.trading ? 'TRADING' : (market.code === 'premarket' ? 'WAITING' : 'CLOSED');
+        statusEl.className = 'health-metric-status ' + (market.trading ? 'ok' : 'warn');
+    }
+    
+    if (marketEl) {
+        marketEl.className = 'health-metric ' + market.className;
+    }
+    
+    healthStatus.marketStatus = market.code;
+    
+    // Also update header health badge if market status display exists there
+    updateHeaderMarketStatus(market);
+}
+
+function updateHeaderMarketStatus(market) {
+    // Update any header market status elements
+    const headerHealthText = document.getElementById('headerHealthText');
+    if (headerHealthText && market.trading) {
+        // Only show market status if system is healthy
+        const currentText = headerHealthText.textContent;
+        if (currentText === 'HEALTHY') {
+            headerHealthText.textContent = 'HEALTHY • TRADING';
+        }
     }
 }
+
+// Run market status check every 60 seconds
+setInterval(checkMarketStatus, 60000);
 
 function checkDataQuality() {
     const qualityEl = document.getElementById('healthDataQuality');
@@ -6174,12 +6246,43 @@ async function syncSymbolFromMultiCharts() {
     await changeSymbol();
 }
 
-async function updateAllMultiCharts() {
-    const symbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
+// Sync all Multi-Charts displays with the current symbol
+function syncChartsWithSymbol() {
+    const symbol = currentSymbol || document.getElementById('symbolSelect')?.value || 'SPY';
+    
+    // Update Multi-Charts dropdown
+    const multiChartSymbol = document.getElementById('multiChartSymbol');
+    if (multiChartSymbol) {
+        multiChartSymbol.value = symbol;
+    }
+    
+    // Update all chart panel symbol displays
     ['intraday', 'swing', 'position'].forEach(panel => {
         const symbolEl = document.getElementById(`${panel}Symbol`);
         if (symbolEl) symbolEl.textContent = symbol;
     });
+    
+    // Update chart titles if they exist
+    document.querySelectorAll('.chart-title .symbol, .chart-header .symbol').forEach(el => {
+        el.textContent = symbol;
+    });
+    
+    // Update MTF summary title to include symbol
+    const mtfTitle = document.querySelector('.mtf-summary-title');
+    if (mtfTitle) {
+        mtfTitle.textContent = `📈 ${symbol} Multi-Timeframe Bias Summary`;
+    }
+    
+    console.log(`📊 Charts synced with symbol: ${symbol}`);
+}
+
+async function updateAllMultiCharts() {
+    const symbol = currentSymbol || document.getElementById('multiChartSymbol')?.value || 'SPY';
+    
+    // Sync all symbol displays first
+    syncChartsWithSymbol();
+    
+    // Then update charts
     await updateChart('intraday');
     await updateChart('swing');
     await updateChart('position');
@@ -9326,6 +9429,149 @@ if (originalLoadSymbolData) {
 
 // ==================== MARKET CONDITIONS GUARD RAIL ====================
 
+// Load market conditions from JSON file
+async function loadMarketConditions() {
+    try {
+        const paths = [
+            'data/market_conditions.json',
+            'web/data/market_conditions.json',
+            'https://aadey002.github.io/Stock-agent-/data/market_conditions.json'
+        ];
+        
+        let data = null;
+        for (const path of paths) {
+            try {
+                const response = await fetch(path + '?t=' + Date.now());
+                if (response.ok) {
+                    data = await response.json();
+                    console.log('✅ Loaded market_conditions.json from:', path);
+                    break;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+        
+        if (!data) {
+            console.warn('⚠️ Could not load market_conditions.json, using calculated values');
+            updateMarketConditions();
+            return;
+        }
+        
+        // Update VIX
+        const vixEl = document.getElementById('vixValue');
+        const vixStatusEl = document.getElementById('vixStatus');
+        if (vixEl && data.vix_level !== undefined) {
+            vixEl.textContent = parseFloat(data.vix_level).toFixed(1);
+            const vix = parseFloat(data.vix_level);
+            if (vix < 20) {
+                vixEl.style.color = 'var(--success)';
+            } else if (vix < 30) {
+                vixEl.style.color = 'var(--warning)';
+            } else {
+                vixEl.style.color = 'var(--danger)';
+            }
+        }
+        if (vixStatusEl && data.vix_status) {
+            vixStatusEl.textContent = data.vix_status;
+            if (data.vix_status.toLowerCase().includes('low')) {
+                vixStatusEl.style.color = 'var(--success)';
+            } else if (data.vix_status.toLowerCase().includes('high')) {
+                vixStatusEl.style.color = 'var(--danger)';
+            } else {
+                vixStatusEl.style.color = 'var(--warning)';
+            }
+        }
+        
+        // Update SPY Trend
+        const spyTrendEl = document.getElementById('spyTrendStatus');
+        const spyDetailEl = document.getElementById('spyTrendDetail');
+        if (spyTrendEl && data.spy_trend) {
+            spyTrendEl.textContent = data.spy_trend;
+            if (data.spy_trend.toLowerCase().includes('above')) {
+                spyTrendEl.style.color = 'var(--success)';
+            } else {
+                spyTrendEl.style.color = 'var(--danger)';
+            }
+        }
+        if (spyDetailEl && data.spy_trend_pct !== undefined) {
+            const pct = parseFloat(data.spy_trend_pct);
+            spyDetailEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(1) + '% from MA';
+        }
+        
+        // Update Sector Rotation
+        const sectorEl = document.getElementById('sectorRotation');
+        const sectorDetailEl = document.getElementById('sectorDetail');
+        if (sectorEl && data.sector_rotation) {
+            sectorEl.textContent = data.sector_rotation;
+            if (data.sector_rotation.toLowerCase().includes('on')) {
+                sectorEl.style.color = 'var(--success)';
+            } else if (data.sector_rotation.toLowerCase().includes('off')) {
+                sectorEl.style.color = 'var(--danger)';
+            } else {
+                sectorEl.style.color = 'var(--warning)';
+            }
+        }
+        if (sectorDetailEl && data.sector_rotation_desc) {
+            sectorDetailEl.textContent = data.sector_rotation_desc;
+        }
+        
+        // Update Trade Conditions
+        const conditionsEl = document.getElementById('tradeConditions');
+        const conditionsDetailEl = document.getElementById('conditionsDetail');
+        if (conditionsEl && data.trade_conditions) {
+            conditionsEl.textContent = data.trade_conditions;
+            if (data.trade_conditions.toLowerCase().includes('favorable')) {
+                conditionsEl.style.color = 'var(--success)';
+            } else if (data.trade_conditions.toLowerCase().includes('unfavorable')) {
+                conditionsEl.style.color = 'var(--danger)';
+            } else {
+                conditionsEl.style.color = 'var(--warning)';
+            }
+        }
+        if (conditionsDetailEl && data.conditions_detail) {
+            conditionsDetailEl.textContent = data.conditions_detail;
+        }
+        
+        // Update Overall Status (Safe to Trade)
+        const overallEl = document.getElementById('overallMarketStatus');
+        const recommendationEl = document.getElementById('marketRecommendation');
+        if (overallEl) {
+            if (data.safe_to_trade === true) {
+                overallEl.textContent = '🟢 SAFE TO TRADE';
+                overallEl.style.background = 'var(--success)';
+                overallEl.style.color = 'white';
+            } else if (data.safe_to_trade === false) {
+                overallEl.textContent = '🔴 CAUTION';
+                overallEl.style.background = 'var(--danger)';
+                overallEl.style.color = 'white';
+            } else {
+                overallEl.textContent = '🟡 MIXED';
+                overallEl.style.background = 'var(--warning)';
+                overallEl.style.color = 'white';
+            }
+        }
+        
+        if (recommendationEl && data.recommendation) {
+            const isSafe = data.safe_to_trade === true;
+            const borderColor = isSafe ? 'var(--success)' : 'var(--danger)';
+            const bgColor = isSafe ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+            recommendationEl.style.borderLeft = '4px solid ' + borderColor;
+            recommendationEl.style.background = bgColor;
+            recommendationEl.innerHTML = '<span style="font-weight: 600; color: ' + borderColor + ';">' + 
+                (isSafe ? '✅ ' : '⚠️ ') + '</span>' +
+                '<span style="font-size: 11px; color: var(--muted);">' + data.recommendation + '</span>';
+        }
+        
+        console.log('✅ Market conditions updated from JSON');
+        
+    } catch (error) {
+        console.error('Error loading market conditions:', error);
+        // Fall back to calculated values
+        updateMarketConditions();
+    }
+}
+
 function updateMarketConditions() {
     // This function analyzes overall market conditions
     // and provides a "guard rail" before trade recommendations
@@ -9742,11 +9988,23 @@ function drawOptionPnLChart(stockPrice, strike, premium, optionType, contracts) 
 }
 
 function useCurrentSymbolPrice() {
-    if (allData && allData.length > 0) {
-        const latestPrice = allData[allData.length - 1].Close;
-        document.getElementById('optStockPrice').value = latestPrice.toFixed(2);
+    // Try currentData first, then tickerPrice display
+    let price = null;
+    
+    if (currentData && currentData.length > 0) {
+        price = parseFloat(currentData[currentData.length - 1].Close);
+    } else {
+        // Fallback to header ticker price
+        const tickerPrice = document.getElementById('tickerPrice');
+        if (tickerPrice) {
+            price = parseFloat(tickerPrice.textContent.replace('$', ''));
+        }
+    }
+    
+    if (price && !isNaN(price)) {
+        document.getElementById('optStockPrice').value = price.toFixed(2);
         // Also suggest a reasonable strike (nearest $5)
-        const nearestStrike = Math.round(latestPrice / 5) * 5;
+        const nearestStrike = Math.round(price / 5) * 5;
         document.getElementById('optStrikePrice').value = nearestStrike;
         calculateOptionPrice();
     } else {
@@ -9754,10 +10012,48 @@ function useCurrentSymbolPrice() {
     }
 }
 
+// Auto-update Options Calculator price when symbol changes
+function updateOptionsCalcPrice() {
+    let price = null;
+    
+    // Try currentData first
+    if (currentData && currentData.length > 0) {
+        price = parseFloat(currentData[currentData.length - 1].Close);
+    } else {
+        // Fallback to header ticker price
+        const tickerPrice = document.getElementById('tickerPrice');
+        if (tickerPrice) {
+            price = parseFloat(tickerPrice.textContent.replace('$', ''));
+        }
+    }
+    
+    if (price && !isNaN(price)) {
+        const stockPriceInput = document.getElementById('optStockPrice');
+        if (stockPriceInput) {
+            stockPriceInput.value = price.toFixed(2);
+            // Update strike to nearest $5
+            const strikeInput = document.getElementById('optStrikePrice');
+            if (strikeInput) {
+                strikeInput.value = Math.round(price / 5) * 5;
+            }
+            // Recalculate if the options calc tab is active
+            const optionsTab = document.getElementById('options-calc');
+            if (optionsTab && optionsTab.classList.contains('active')) {
+                calculateOptionPrice();
+            }
+        }
+    }
+}
+
 // Initialize options calculator on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Run initial calculation with default values after a short delay
     setTimeout(calculateOptionPrice, 500);
+    
+    // Update options calc price when Options Calc tab is clicked
+    document.querySelector('[data-tab="options-calc"]')?.addEventListener('click', () => {
+        setTimeout(updateOptionsCalcPrice, 100);
+    });
 });
 
 </script>

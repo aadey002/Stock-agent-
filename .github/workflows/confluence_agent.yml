@@ -1,13 +1,15 @@
-name: Confluence Agent
+name: Q5D Daily Analysis
 
 on:
   workflow_dispatch:
   schedule:
-    # Market hours (EST): 9:30 AM - 4:30 PM = 14:30 - 21:30 UTC
-    # ETFs trade until 4:30 PM, final run at 4:45 PM EST (21:45 UTC)
-    - cron: "30,45 14 * * 1-5"
-    - cron: "0,15,30,45 15-20 * * 1-5"
-    - cron: "0,15,30,45 21 * * 1-5"
+    # 9:00 AM ET weekdays (14:00 UTC)
+    - cron: "0 14 * * 1-5"
+    # Every 30 minutes 9:30 AM - 4:00 PM ET (14:30 - 21:00 UTC)
+    - cron: "30 14 * * 1-5"
+    - cron: "0,30 15-20 * * 1-5"
+    # 4:30 PM ET weekdays (21:30 UTC)
+    - cron: "30 21 * * 1-5"
 
 permissions:
   contents: write
@@ -24,7 +26,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -37,12 +39,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy yfinance matplotlib python-dateutil
+          pip install pandas numpy yfinance matplotlib python-dateutil requests
 
-      - name: Run agent
+      - name: Create directories
+        run: |
+          mkdir -p data reports logs web/data
+
+      - name: Run unified agent
         run: |
           echo "========================================"
-          echo "🚀 Running Unified Agent with yfinance"
+          echo "🚀 Running Q5D Unified Agent"
           echo "========================================"
           python unified_agent.py
           echo ""
@@ -52,29 +58,45 @@ jobs:
           echo "📁 Files created in reports/:"
           ls -la reports/ || echo "No reports folder"
 
-      - name: Copy CSVs to web root for dashboard
+      - name: Copy files to web/data
         run: |
           echo "========================================"
-          echo "📋 Copying CSVs to web/ root"
+          echo "📋 Copying files to web/data/"
           echo "========================================"
-          
-          # Copy data CSVs to web root (where dashboard expects them)
-          cp -f data/*.csv web/ 2>/dev/null && echo "✅ Copied data/*.csv to web/" || echo "⚠️ No data/*.csv files"
-          
-          # Copy report CSVs to web root
-          cp -f reports/*.csv web/ 2>/dev/null && echo "✅ Copied reports/*.csv to web/" || echo "⚠️ No reports/*.csv files"
-          
-          # Also copy to web/data/ as backup location
-          mkdir -p web/data
-          cp -f data/*.csv web/data/ 2>/dev/null || true
-          cp -f reports/*.csv web/data/ 2>/dev/null || true
-          
+
+          # Copy data CSVs to web/data/
+          cp -f data/*.csv web/data/ 2>/dev/null && echo "✅ Copied data/*.csv to web/data/" || echo "⚠️ No data/*.csv files"
+
+          # Copy report CSVs to web/data/
+          cp -f reports/*.csv web/data/ 2>/dev/null && echo "✅ Copied reports/*.csv to web/data/" || echo "⚠️ No reports/*.csv files"
+
+          # Copy report JSONs to web/data/
+          cp -f reports/*.json web/data/ 2>/dev/null && echo "✅ Copied reports/*.json to web/data/" || echo "⚠️ No reports/*.json files"
+
           echo ""
-          echo "📁 Final web/ folder contents:"
-          ls -la web/
+          echo "📁 Final web/data/ contents:"
+          ls -la web/data/
+
+      - name: Verify CSV files
+        run: |
+          echo "========================================"
+          echo "📊 Verifying key CSV files (last 3 lines)"
+          echo "========================================"
+
+          echo "--- SPY.csv ---"
+          tail -3 web/data/SPY.csv 2>/dev/null || echo "SPY.csv not found"
           echo ""
-          echo "📁 web/data/ contents:"
-          ls -la web/data/ || echo "Empty"
+
+          echo "--- QQQ.csv ---"
+          tail -3 web/data/QQQ.csv 2>/dev/null || echo "QQQ.csv not found"
+          echo ""
+
+          echo "--- IWM.csv ---"
+          tail -3 web/data/IWM.csv 2>/dev/null || echo "IWM.csv not found"
+          echo ""
+
+          echo "--- DIA.csv ---"
+          tail -3 web/data/DIA.csv 2>/dev/null || echo "DIA.csv not found"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -87,12 +109,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        
+
       - name: Deployment summary
         run: |
           echo "========================================"
           echo "✅ DEPLOYMENT COMPLETE"
           echo "========================================"
           echo "🌐 Dashboard: https://aadey002.github.io/Stock-agent-/"
-          echo "📊 Data files deployed to root of site"
+          echo "📊 Data files deployed to web/data/"
           echo "========================================"
