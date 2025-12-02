@@ -7917,7 +7917,7 @@ async function updatePlaybookComparison() {
         }
 
         tbody.innerHTML = allSignals.map(row => {
-            const date = new Date(row.date).toLocaleDateString();
+            const date = new Date(row.Date).toLocaleDateString();
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
             const confluence = row.confluence_level || 'NONE';
@@ -7964,7 +7964,7 @@ async function updateUltraConfluence() {
         const allSignals = data.reverse();
 
         tbody.innerHTML = allSignals.map(row => {
-            const date = new Date(row.date).toLocaleDateString();
+            const date = new Date(row.Date).toLocaleDateString();
             const signal = row.majority || 'NEUTRAL';
             const signalClass = signal === 'CALL' ? 'badge-success' : signal === 'PUT' ? 'badge-danger' : 'badge-warning';
             const agents = `${row.call_votes || 0}C/${row.put_votes || 0}P/${row.hold_votes || 0}H`;
@@ -8171,12 +8171,12 @@ function updateHistoricalData() {
     }
 
     tbody.innerHTML = dataToShow.map(row => {
-        const date = row.date ? new Date(row.date).toLocaleDateString() : '-';
-        const open = parseFloat(row.open || 0);
-        const high = parseFloat(row.high || 0);
-        const low = parseFloat(row.low || 0);
-        const close = parseFloat(row.close || 0);
-        const volume = parseInt(row.volume || 0);
+        const date = row.Date ? new Date(row.Date.split(' ')[0]).toLocaleDateString() : '-';
+        const open = parseFloat(row.Open || 0);
+        const high = parseFloat(row.High || 0);
+        const low = parseFloat(row.Low || 0);
+        const close = parseFloat(row.Close || 0);
+        const volume = parseInt(row.Volume || 0);
         const dailyChange = close - open;
         const dailyChangePct = open > 0 ? ((dailyChange / open) * 100) : 0;
 
