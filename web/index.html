@@ -7612,50 +7612,96 @@ function updateMTFBias() {
         'daily': calculateTimeframeBias(1440)
     };
 
+    // Map timeframe keys to HTML element suffixes (HTML uses bias5min, bias15min, bias1hr, bias4hr, biasDaily)
+    const suffixMap = { '5min': '5min', '15min': '15min', '1hr': '1hr', '4hr': '4hr', 'daily': 'Daily' };
+    const lastBar = currentData[currentData.length - 1];
+    const lastDateStr = lastBar.Date ? lastBar.Date.split('T')[0].split(' ')[0] : '';
+    const updateTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
     timeframes.forEach(tf => {
         const data = biasData[tf];
-        const biasEl = document.getElementById(`mtf-${tf}-bias`);
-        const trendEl = document.getElementById(`mtf-${tf}-trend`);
-        const strengthEl = document.getElementById(`mtf-${tf}-strength`);
-        const notesEl = document.getElementById(`mtf-${tf}-notes`);
+        const suffix = suffixMap[tf];
 
+        // Update bias badge
+        const biasEl = document.getElementById(`bias${suffix}`);
         if (biasEl) {
             biasEl.textContent = data.bias;
-            biasEl.className = `badge ${data.bias === 'BULLISH' ? 'badge-success' : data.bias === 'BEARISH' ? 'badge-danger' : 'badge-warning'}`;
+            biasEl.className = `signal-badge ${data.bias === 'BULLISH' ? 'call' : data.bias === 'BEARISH' ? 'put' : 'neutral'}`;
         }
+
+        // Update trend direction
+        const trendEl = document.getElementById(`trend${suffix}`);
         if (trendEl) {
-            trendEl.textContent = data.trend;
-            trendEl.style.color = data.trend.includes('Up') ? 'var(--success)' : data.trend.includes('Down') ? 'var(--danger)' : 'var(--muted)';
+            const arrow = data.trend === 'Uptrend' ? '↗' : data.trend === 'Downtrend' ? '↘' : '→';
+            trendEl.textContent = `${arrow} ${data.trend}`;
+            trendEl.style.color = data.trend === 'Uptrend' ? 'var(--success)' : data.trend === 'Downtrend' ? 'var(--danger)' : 'var(--muted)';
         }
-        if (strengthEl) {
-            strengthEl.textContent = data.strength;
-            strengthEl.style.color = data.strength === 'Strong' ? 'var(--success)' : data.strength === 'Weak' ? 'var(--danger)' : 'var(--primary)';
+
+        // Update support level
+        const supportEl = document.getElementById(`support${suffix}`);
+        if (supportEl) {
+            supportEl.textContent = `$${data.support.toFixed(2)}`;
         }
-        if (notesEl) {
-            notesEl.textContent = data.notes;
+
+        // Update resistance level
+        const resistanceEl = document.getElementById(`resistance${suffix}`);
+        if (resistanceEl) {
+            resistanceEl.textContent = `$${data.resistance.toFixed(2)}`;
+        }
+
+        // Update last updated timestamp
+        const updatedEl = document.getElementById(`updated${suffix}`);
+        if (updatedEl) {
+            updatedEl.textContent = `${lastDateStr} ${updateTime}`;
         }
     });
+
+    // Update MTF symbol display
+    const mtfSymbolEl = document.getElementById('mtfBiasSymbol');
+    if (mtfSymbolEl) mtfSymbolEl.textContent = currentSymbol;
 
     // Calculate alignment score
     const bullishCount = Object.values(biasData).filter(d => d.bias === 'BULLISH').length;
     const bearishCount = Object.values(biasData).filter(d => d.bias === 'BEARISH').length;
 
     const alignmentScore = document.getElementById('mtfAlignmentScore');
-    const alignmentText = document.getElementById('mtfAlignmentText');
+    const recommendationEl = document.getElementById('mtfRecommendation');
+    const summaryEl = document.getElementById('mtfSummary');
 
-    if (alignmentScore && alignmentText) {
+    if (alignmentScore) {
         if (bullishCount >= 4) {
-            alignmentScore.textContent = `${bullishCount}/5 BULLISH`;
+            alignmentScore.textContent = `${bullishCount}/5 Bullish`;
             alignmentScore.style.color = 'var(--success)';
-            alignmentText.textContent = 'Strong bullish alignment across timeframes - high probability long setups';
         } else if (bearishCount >= 4) {
-            alignmentScore.textContent = `${bearishCount}/5 BEARISH`;
+            alignmentScore.textContent = `${bearishCount}/5 Bearish`;
             alignmentScore.style.color = 'var(--danger)';
-            alignmentText.textContent = 'Strong bearish alignment across timeframes - high probability short setups';
         } else {
-            alignmentScore.textContent = 'MIXED';
+            alignmentScore.textContent = 'Mixed';
             alignmentScore.style.color = 'var(--warning)';
-            alignmentText.textContent = 'Mixed signals across timeframes - wait for better alignment or trade cautiously';
+        }
+    }
+
+    if (recommendationEl) {
+        if (bullishCount >= 4) {
+            recommendationEl.textContent = 'CALL bias confirmed';
+            recommendationEl.style.color = 'var(--success)';
+        } else if (bearishCount >= 4) {
+            recommendationEl.textContent = 'PUT bias confirmed';
+            recommendationEl.style.color = 'var(--danger)';
+        } else {
+            recommendationEl.textContent = 'Wait for alignment';
+            recommendationEl.style.color = 'var(--warning)';
+        }
+    }
+
+    if (summaryEl) {
+        const neutralCount = 5 - bullishCount - bearishCount;
+        if (bullishCount >= 4) {
+            summaryEl.textContent = `Strong bullish alignment (${bullishCount}/5). High probability CALL setups. ${neutralCount > 0 ? 'Neutral zones can serve as entry points.' : ''}`;
+        } else if (bearishCount >= 4) {
+            summaryEl.textContent = `Strong bearish alignment (${bearishCount}/5). High probability PUT setups. ${neutralCount > 0 ? 'Neutral zones can serve as exit points.' : ''}`;
+        } else {
+            summaryEl.textContent = `Mixed signals: ${bullishCount} bullish, ${bearishCount} bearish, ${neutralCount} neutral. Wait for better alignment before trading.`;
         }
     }
 }
@@ -7704,7 +7750,13 @@ function calculateTimeframeBias(minutes) {
         notes = `${change > 0 ? '+' : ''}${change.toFixed(2)}% | Consolidating`;
     }
 
-    return { bias, trend, strength, notes };
+    // Calculate support and resistance from recent data
+    const recentHighs = recentData.map(d => parseFloat(d.High) || 0);
+    const recentLows = recentData.map(d => parseFloat(d.Low) || 0);
+    const support = Math.min(...recentLows.filter(x => x > 0));
+    const resistance = Math.max(...recentHighs.filter(x => x > 0));
+
+    return { bias, trend, strength, notes, support, resistance };
 }
 
 function calculateEMA(data, period) {
