@@ -3256,7 +3256,7 @@ function updateBarCountAnalysis() {
         }
         
         const avg = (baseCount + gannCount + dqnCount + waveCount) / 4;
-        const date = (d.Date || '').split('T')[0].slice(5);
+        const date = (d.Date || '').split('T')[0].split(' ')[0].slice(5);
         
         html += `<tr>
             <td>${data.length - i}</td>
@@ -3351,7 +3351,7 @@ function updatePriceChart() {
     priceChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: data.map(d => (d.Date || '').split('T')[0].slice(5)),
+            labels: data.map(d => (d.Date || '').split('T')[0].split(' ')[0].slice(5)),
             datasets: [{ label: 'Price', data: data.map(d => parseFloat(d.Close) || 0), backgroundColor: colors, borderColor: colors }]
         },
         options: {
@@ -5091,7 +5091,7 @@ function checkDataFreshness() {
     // First date for range
     const firstBar = currentData[0];
     if (firstBar && firstBar.Date && dateRangeEl) {
-        const firstDateStr = firstBar.Date.split('T')[0];
+        const firstDateStr = firstBar.Date.split('T')[0].split(' ')[0];
         const [fy, fm, fd] = firstDateStr.split('-').map(Number);
         const firstDate = new Date(fy, fm - 1, fd);
         dateRangeEl.textContent = firstDate.toLocaleDateString() + ' - ' + lastDate.toLocaleDateString();
@@ -6080,7 +6080,7 @@ function renderMultiCandlestickChart(panelType, data, chartType, canvas) {
     
     const labels = data.map((bar, i) => {
         if (bar.time) return bar.time;
-        const dateStr = bar.date?.split('T')[0] || '';
+        const dateStr = (bar.date || bar.Date || '').split('T')[0].split(' ')[0];
         return dateStr.slice(5);
     });
     
