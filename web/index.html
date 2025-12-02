@@ -1140,10 +1140,10 @@
                     <div>
                         <label style="font-size:11px;color:var(--muted);">Bars to Analyze:</label>
                         <select id="barCountSelect" onchange="updateBarCountAnalysis()" style="padding:6px 10px;border:1px solid var(--border);border-radius:5px;margin-left:8px;">
+                            <option value="5">5 Bars</option>
+                            <option value="10" selected>10 Bars</option>
+                            <option value="15">15 Bars</option>
                             <option value="20">20 Bars</option>
-                            <option value="50">50 Bars</option>
-                            <option value="100">100 Bars</option>
-                            <option value="200">200 Bars</option>
                         </select>
                     </div>
                     <div style="background:var(--bg);padding:6px 12px;border-radius:5px;font-size:12px;">
@@ -3801,7 +3801,7 @@ function updateFibonacci() {
 
 // FIXED: Bar Count now uses currentSymbol
 function updateBarCountAnalysis() {
-    const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
+    const barCount = parseInt(document.getElementById('barCountSelect')?.value || 10);
     console.log('📊 updateBarCountAnalysis called, requested bars:', barCount);
 
     // Use current symbol's data
@@ -4018,11 +4018,21 @@ function updateReversalStats() {
     const table = document.getElementById('reversalStatsTable');
     if (!table) return;
     
+    console.log('📊 updateReversalStats called');
+    console.log('📊 currentSymbol:', currentSymbol, 'currentData length:', currentData?.length);
+    console.log('📊 allSymbolsData keys:', Object.keys(allSymbolsData));
+    
     let html = '';
+    let symbolsProcessed = 0;
     
     for (const symbol of SYMBOLS) {
         const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
-        if (!data || data.length < 50) continue;
+        // Reduced minimum from 50 to 20 bars
+        if (!data || data.length < 20) {
+            console.log('📊 Skipping', symbol, '- data length:', data?.length || 0);
+            continue;
+        }
+        symbolsProcessed++;
         
         let bullishRuns = [], bearishRuns = [], currentRun = 0, lastDir = null;
         
@@ -4066,6 +4076,10 @@ function updateReversalStats() {
         </tr>`;
     }
     
+    if (html === '') {
+        html = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Loading reversal statistics... (need at least 20 bars per symbol)</td></tr>';
+    }
+    console.log('📊 Reversal stats: processed', symbolsProcessed, 'symbols');
     table.innerHTML = html;
 }
 
