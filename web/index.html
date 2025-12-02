@@ -1055,27 +1055,53 @@
                     </div>
                 </div>
                 
+                <!-- Agent Consensus Summary -->
+                <div style="background:var(--bg);border-radius:8px;padding:12px 15px;margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                    <div>
+                        <span style="font-size:12px;color:var(--muted);">Agent Consensus:</span>
+                        <span id="barCountConsensus" style="font-size:16px;font-weight:700;margin-left:8px;color:var(--success);">4/4 BULLISH</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--muted);" id="barCountConsensusDetail">All agents agree on bullish direction</div>
+                </div>
+
                 <div class="bar-count-display">
                     <div class="bar-count-item">
                         <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📊 Base Confluence</div>
                         <div class="bar-count-value" id="baseBarCount">+5</div>
-                        <div class="bar-count-label">Consecutive Bars</div>
+                        <div class="bar-count-label">Candle Color</div>
+                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="baseBarExplain">Bullish candles (Close>=Open)</div>
                     </div>
                     <div class="bar-count-item">
                         <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🔮 Gann-Elliott</div>
                         <div class="bar-count-value" id="gannBarCount">+7</div>
-                        <div class="bar-count-label">Wave Progress</div>
+                        <div class="bar-count-label">vs 20-MA</div>
+                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="gannBarExplain">Bars above 20-period MA</div>
                     </div>
                     <div class="bar-count-item">
                         <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🧠 DQN/RL</div>
                         <div class="bar-count-value" id="dqnBarCount">+2</div>
-                        <div class="bar-count-label">Momentum</div>
+                        <div class="bar-count-label">RSI Momentum</div>
+                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="dqnBarExplain">RSI above 50 (bullish zone)</div>
                     </div>
                     <div class="bar-count-item">
                         <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🌊 3-Wave</div>
                         <div class="bar-count-value" id="waveBarCount">+4</div>
-                        <div class="bar-count-label">Impulse</div>
+                        <div class="bar-count-label">Higher Closes</div>
+                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="waveBarExplain">Close > Previous Close</div>
                     </div>
+                </div>
+
+                <!-- Agent Details Table -->
+                <div style="margin-top:15px;">
+                    <table style="width:100%;font-size:11px;">
+                        <thead><tr style="background:var(--bg);"><th style="padding:8px;text-align:left;">Agent</th><th>Method</th><th>Current Value</th><th>Signal</th></tr></thead>
+                        <tbody>
+                            <tr><td style="padding:6px;">📊 Base</td><td>Candle Color (C>=O)</td><td id="baseMethodValue">--</td><td id="baseMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
+                            <tr><td style="padding:6px;">🔮 Gann</td><td>Price vs 20-MA</td><td id="gannMethodValue">--</td><td id="gannMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
+                            <tr><td style="padding:6px;">🧠 DQN</td><td>RSI Position</td><td id="dqnMethodValue">--</td><td id="dqnMethodSignal"><span class="badge badge-warning">NEUTRAL</span></td></tr>
+                            <tr><td style="padding:6px;">🌊 Wave</td><td>Close vs Prev</td><td id="waveMethodValue">--</td><td id="waveMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -3203,46 +3229,108 @@ function updateFibonacci() {
 // FIXED: Bar Count now uses currentSymbol
 function updateBarCountAnalysis() {
     const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
-    
+
     // Use current symbol's data
     const symbolData = currentData;
-    if (!symbolData || symbolData.length < barCount) return;
-    
+    if (!symbolData || symbolData.length < barCount + 20) return; // Need extra for MA calculation
+
     const data = symbolData.slice(-barCount);
+    const fullData = symbolData.slice(-(barCount + 20)); // Extra data for 20-period MA
     const table = document.getElementById('barCountTable');
     if (!table) return;
-    
+
     // Update the symbol display
     document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
-    
+
+    // Calculate 20-period MA for the analysis period
+    function calculate20MA(dataSlice, endIndex) {
+        if (endIndex < 20) return null;
+        let sum = 0;
+        for (let i = endIndex - 20; i < endIndex; i++) {
+            sum += parseFloat(dataSlice[i].Close) || 0;
+        }
+        return sum / 20;
+    }
+
+    // Calculate RSI
+    function calculateRSI(dataSlice, period = 14) {
+        if (dataSlice.length < period + 1) return 50;
+        const changes = [];
+        for (let i = 1; i < dataSlice.length; i++) {
+            changes.push(parseFloat(dataSlice[i].Close) - parseFloat(dataSlice[i-1].Close));
+        }
+        const recentChanges = changes.slice(-period);
+        const gains = recentChanges.filter(c => c > 0);
+        const losses = recentChanges.filter(c => c < 0).map(c => Math.abs(c));
+        const avgGain = gains.length ? gains.reduce((a,b) => a+b, 0) / period : 0;
+        const avgLoss = losses.length ? losses.reduce((a,b) => a+b, 0) / period : 0;
+        if (avgLoss === 0) return 100;
+        const rs = avgGain / avgLoss;
+        return 100 - (100 / (1 + rs));
+    }
+
     let html = '';
     let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
-    
+    let baseBullish = 0, gannBullish = 0, dqnBullish = 0, waveBullish = 0;
+
+    // Current values for display
+    const currentClose = parseFloat(data[data.length - 1].Close) || 0;
+    const current20MA = calculate20MA(fullData, fullData.length);
+    const currentRSI = calculateRSI(fullData);
+
     data.forEach((d, i) => {
+        const dataIndex = 20 + i; // Offset for MA calculation
         const o = parseFloat(d.Open) || 0;
         const c = parseFloat(d.Close) || 0;
-        const isBullish = c >= o;
-        
-        if (isBullish) {
+        const prevClose = i > 0 ? parseFloat(data[i-1].Close) || c : c;
+        const ma20 = calculate20MA(fullData, dataIndex + 1);
+        const rsiSlice = fullData.slice(0, dataIndex + 1);
+        const rsi = calculateRSI(rsiSlice);
+
+        // BASE: Candle color (Close >= Open = bullish)
+        const isBaseBullish = c >= o;
+        if (isBaseBullish) {
             baseCount = baseCount >= 0 ? baseCount + 1 : 1;
-            gannCount = gannCount >= 0 ? gannCount + 1 : 1;
-            dqnCount = dqnCount >= 0 ? dqnCount + 1 : 1;
-            waveCount = waveCount >= 0 ? waveCount + 1 : 1;
+            baseBullish++;
         } else {
             baseCount = baseCount <= 0 ? baseCount - 1 : -1;
+        }
+
+        // GANN: Price vs 20-MA
+        const isGannBullish = ma20 ? c > ma20 : c >= o;
+        if (isGannBullish) {
+            gannCount = gannCount >= 0 ? gannCount + 1 : 1;
+            gannBullish++;
+        } else {
             gannCount = gannCount <= 0 ? gannCount - 1 : -1;
+        }
+
+        // DQN: RSI > 50 = bullish momentum
+        const isDqnBullish = rsi > 50;
+        if (isDqnBullish) {
+            dqnCount = dqnCount >= 0 ? dqnCount + 1 : 1;
+            dqnBullish++;
+        } else {
             dqnCount = dqnCount <= 0 ? dqnCount - 1 : -1;
+        }
+
+        // WAVE: Close > Previous Close = higher close
+        const isWaveBullish = c > prevClose;
+        if (isWaveBullish) {
+            waveCount = waveCount >= 0 ? waveCount + 1 : 1;
+            waveBullish++;
+        } else {
             waveCount = waveCount <= 0 ? waveCount - 1 : -1;
         }
-        
+
         const avg = (baseCount + gannCount + dqnCount + waveCount) / 4;
         const date = (d.Date || '').split('T')[0].split(' ')[0].slice(5);
-        
+
         html += `<tr>
             <td>${data.length - i}</td>
             <td>${date}</td>
             <td style="font-size:10px;">${o.toFixed(0)}/${(parseFloat(d.High)||0).toFixed(0)}/${(parseFloat(d.Low)||0).toFixed(0)}/${c.toFixed(0)}</td>
-            <td>${isBullish ? '📈' : '📉'}</td>
+            <td>${isBaseBullish ? '\U0001F4C8' : '\U0001F4C9'}</td>
             <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
             <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
             <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
@@ -3250,9 +3338,10 @@ function updateBarCountAnalysis() {
             <td><span class="badge badge-${avg > 2 ? 'success' : (avg < -2 ? 'danger' : 'warning')}">${avg.toFixed(1)}</span></td>
         </tr>`;
     });
-    
+
     table.innerHTML = html;
-    
+
+    // Update main display values
     document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
     document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
     document.getElementById('gannBarCount').textContent = (gannCount > 0 ? '+' : '') + gannCount;
@@ -3261,6 +3350,80 @@ function updateBarCountAnalysis() {
     document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
     document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
     document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
+
+    // Update explanations
+    const baseExplain = document.getElementById('baseBarExplain');
+    const gannExplain = document.getElementById('gannBarExplain');
+    const dqnExplain = document.getElementById('dqnBarExplain');
+    const waveExplain = document.getElementById('waveBarExplain');
+
+    if (baseExplain) baseExplain.textContent = `${baseBullish}/${barCount} bullish candles`;
+    if (gannExplain) gannExplain.textContent = current20MA ? `Price $${currentClose.toFixed(0)} vs MA $${current20MA.toFixed(0)}` : 'Calculating MA...';
+    if (dqnExplain) dqnExplain.textContent = `RSI: ${currentRSI.toFixed(0)} (${currentRSI > 50 ? 'Bullish' : 'Bearish'} zone)`;
+    if (waveExplain) waveExplain.textContent = `${waveBullish}/${barCount} higher closes`;
+
+    // Update method details table
+    const baseMethodValue = document.getElementById('baseMethodValue');
+    const gannMethodValue = document.getElementById('gannMethodValue');
+    const dqnMethodValue = document.getElementById('dqnMethodValue');
+    const waveMethodValue = document.getElementById('waveMethodValue');
+
+    if (baseMethodValue) baseMethodValue.textContent = `${baseBullish}/${barCount} bullish`;
+    if (gannMethodValue) gannMethodValue.textContent = current20MA ? `$${currentClose.toFixed(2)} vs $${current20MA.toFixed(2)}` : '--';
+    if (dqnMethodValue) dqnMethodValue.textContent = `RSI ${currentRSI.toFixed(1)}`;
+    if (waveMethodValue) waveMethodValue.textContent = `${waveBullish}/${barCount} up`;
+
+    // Update signal badges
+    function updateSignalBadge(id, isBullish) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = isBullish ?
+            '<span class="badge badge-success">BULLISH</span>' :
+            '<span class="badge badge-danger">BEARISH</span>';
+    }
+
+    updateSignalBadge('baseMethodSignal', baseCount > 0);
+    updateSignalBadge('gannMethodSignal', gannCount > 0);
+    updateSignalBadge('dqnMethodSignal', dqnCount > 0);
+    updateSignalBadge('waveMethodSignal', waveCount > 0);
+
+    // Update consensus
+    const bullishAgents = [baseCount > 0, gannCount > 0, dqnCount > 0, waveCount > 0].filter(b => b).length;
+    const bearishAgents = 4 - bullishAgents;
+    const consensusEl = document.getElementById('barCountConsensus');
+    const consensusDetailEl = document.getElementById('barCountConsensusDetail');
+
+    if (consensusEl) {
+        if (bullishAgents >= 3) {
+            consensusEl.textContent = `${bullishAgents}/4 BULLISH`;
+            consensusEl.style.color = 'var(--success)';
+        } else if (bearishAgents >= 3) {
+            consensusEl.textContent = `${bearishAgents}/4 BEARISH`;
+            consensusEl.style.color = 'var(--danger)';
+        } else {
+            consensusEl.textContent = `${bullishAgents}/4 vs ${bearishAgents}/4 MIXED`;
+            consensusEl.style.color = 'var(--warning)';
+        }
+    }
+
+    if (consensusDetailEl) {
+        const agentNames = [];
+        if (baseCount > 0) agentNames.push('Base');
+        if (gannCount > 0) agentNames.push('Gann');
+        if (dqnCount > 0) agentNames.push('DQN');
+        if (waveCount > 0) agentNames.push('Wave');
+
+        if (bullishAgents === 4) {
+            consensusDetailEl.textContent = 'All agents agree on bullish direction';
+        } else if (bearishAgents === 4) {
+            consensusDetailEl.textContent = 'All agents agree on bearish direction';
+        } else if (bullishAgents > bearishAgents) {
+            consensusDetailEl.textContent = `Bullish: ${agentNames.join(', ')}`;
+        } else {
+            const bearishNames = ['Base', 'Gann', 'DQN', 'Wave'].filter(n => !agentNames.includes(n));
+            consensusDetailEl.textContent = `Bearish: ${bearishNames.join(', ')}`;
+        }
+    }
 }
 
 function updateReversalStats() {
@@ -6482,30 +6645,86 @@ function calculateMomentum(data) {
 }
 
 function calculateBarCountSignal(data) {
-    if (data.length < 2) return { count: 0, direction: 'neutral' };
-    
-    let count = 0;
-    let direction = 'neutral';
-    
-    // Count consecutive bars in same direction
-    for (let i = data.length - 1; i > 0; i--) {
-        const curr = parseFloat(data[i].Close);
-        const prev = parseFloat(data[i-1].Close);
-        
-        if (curr > prev) {
-            if (direction === 'neutral' || direction === 'bullish') {
-                direction = 'bullish';
-                count++;
-            } else break;
-        } else if (curr < prev) {
-            if (direction === 'neutral' || direction === 'bearish') {
-                direction = 'bearish';
-                count--;
-            } else break;
-        } else break;
+    if (data.length < 20) return { count: 0, direction: 'neutral' };
+
+    const recentBars = 10; // Analyze last 10 bars
+    const recent = data.slice(-recentBars);
+
+    // Calculate 20-period MA
+    function calc20MA() {
+        if (data.length < 20) return null;
+        let sum = 0;
+        for (let i = data.length - 20; i < data.length; i++) {
+            sum += parseFloat(data[i].Close) || 0;
+        }
+        return sum / 20;
     }
-    
-    return { count, direction };
+
+    // Calculate RSI
+    function calcRSI() {
+        if (data.length < 15) return 50;
+        const changes = [];
+        for (let i = data.length - 14; i < data.length; i++) {
+            changes.push(parseFloat(data[i].Close) - parseFloat(data[i-1].Close));
+        }
+        const gains = changes.filter(c => c > 0);
+        const losses = changes.filter(c => c < 0).map(c => Math.abs(c));
+        const avgGain = gains.length ? gains.reduce((a,b) => a+b, 0) / 14 : 0;
+        const avgLoss = losses.length ? losses.reduce((a,b) => a+b, 0) / 14 : 0;
+        if (avgLoss === 0) return 100;
+        return 100 - (100 / (1 + avgGain / avgLoss));
+    }
+
+    const ma20 = calc20MA();
+    const rsi = calcRSI();
+
+    // BASE: Count bullish candles (Close >= Open)
+    let baseScore = 0;
+    recent.forEach(d => {
+        if (parseFloat(d.Close) >= parseFloat(d.Open)) baseScore++;
+        else baseScore--;
+    });
+
+    // GANN: Count bars above 20-MA
+    let gannScore = 0;
+    if (ma20) {
+        recent.forEach(d => {
+            if (parseFloat(d.Close) > ma20) gannScore++;
+            else gannScore--;
+        });
+    } else {
+        gannScore = baseScore; // Fallback
+    }
+
+    // DQN: RSI-based momentum score
+    let dqnScore = 0;
+    if (rsi > 70) dqnScore = recentBars;
+    else if (rsi > 50) dqnScore = Math.round((rsi - 50) / 5);
+    else if (rsi < 30) dqnScore = -recentBars;
+    else dqnScore = Math.round((rsi - 50) / 5);
+
+    // WAVE: Count higher closes
+    let waveScore = 0;
+    for (let i = 1; i < recent.length; i++) {
+        if (parseFloat(recent[i].Close) > parseFloat(recent[i-1].Close)) waveScore++;
+        else waveScore--;
+    }
+
+    // Weighted combination (25% each)
+    const weightedScore = (baseScore * 0.25) + (gannScore * 0.25) + (dqnScore * 0.25) + (waveScore * 0.25);
+
+    // Normalize to reasonable count
+    const normalizedCount = Math.round(weightedScore);
+
+    let direction = 'neutral';
+    if (normalizedCount > 2) direction = 'bullish';
+    else if (normalizedCount < -2) direction = 'bearish';
+
+    return {
+        count: normalizedCount,
+        direction,
+        details: { baseScore, gannScore, dqnScore, waveScore, weightedScore }
+    };
 }
 
 function detectAllPatterns(data) {
