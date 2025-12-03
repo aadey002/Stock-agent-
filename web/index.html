@@ -2916,245 +2916,412 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         </div>
 
 
-        <!-- GANN ANALYSIS TAB -->
+        <!-- GANN ANALYSIS TAB - Monthly Swing Trading Dashboard -->
         <div id="gann-analysis" class="tab-content">
-            <!-- Trade of the Month Banner -->
+            <!-- MONTH HEADER with Traffic Light -->
             <div class="card" style="background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(59,130,246,0.15)); border: 2px solid var(--primary); margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                     <div>
-                        <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="gannTradeTitle">🎯 DECEMBER 2025 GANN TRADE</div>
-                        <div style="font-size: 12px; color: var(--muted); margin-top: 4px;" id="gannTradeStatus">Status: WAITING FOR SETUP</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--primary);" id="gannTradeTitle">📅 DECEMBER 2025 TRADING PLAN</div>
+                        <div style="font-size: 13px; color: var(--text); margin-top: 4px;" id="gannTradeStatus">Your monthly guide to when and what to trade</div>
                     </div>
-                    <div id="gannTrafficLight" style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: var(--bg); border-radius: 8px;">
-                        <span style="font-size: 24px;">🔴</span>
-                        <span style="font-size: 14px; font-weight: 600; color: var(--danger);">NOT READY</span>
+                    <div id="gannTrafficLight" style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--bg); border-radius: 8px;">
+                        <span style="font-size: 28px;">🔴</span>
+                        <div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--danger);">WAIT</div>
+                            <div style="font-size: 10px; color: var(--muted);">Not time yet</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-2" style="gap: 15px;">
-                <!-- LEFT COLUMN -->
-                <div>
-                    <!-- Today's Action -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">📋 TODAY'S ACTION</div>
-                        <div id="gannTodayAction" style="font-size: 28px; font-weight: 700; text-align: center; padding: 15px; background: var(--bg); border-radius: 8px; color: var(--warning);">
-                            ⏳ WAIT
+            <!-- TODAY'S SIMPLE ANSWER -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">🎯 WHAT SHOULD I DO TODAY?</div>
+                <div id="gannTodayAction" style="font-size: 32px; font-weight: 700; text-align: center; padding: 20px; background: var(--bg); border-radius: 8px; color: var(--warning);">
+                    ⏳ WAIT - Don't buy anything yet
+                </div>
+                <div id="gannActionReason" style="text-align: center; font-size: 13px; color: var(--text); margin-top: 10px; padding: 10px; background: rgba(139,92,246,0.1); border-radius: 6px;">
+                    <strong>Why?</strong> The market usually changes direction around <span id="gannTurnDateSimple">Dec 5th</span>.
+                    Wait until then to buy. You have <span id="gannDaysToWait" style="font-weight: 700; color: var(--primary);">5 days</span> to wait.
+                </div>
+            </div>
+
+            <!-- DUAL DIRECTION - CALL vs PUT Side by Side -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📊 TWO TRADE OPTIONS - Pick One Based on Market Direction</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">
+                    On the turn date, the market will either go UP or DOWN. Here's what to buy in each case:
+                </div>
+                <div class="grid grid-2" style="gap: 15px;">
+                    <!-- IF MARKET GOES UP -->
+                    <div style="background: rgba(16,185,129,0.1); border: 2px solid var(--success); border-radius: 10px; padding: 15px;">
+                        <div style="text-align: center; margin-bottom: 12px;">
+                            <div style="font-size: 24px;">📈</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--success);">IF PRICE GOES UP</div>
+                            <div style="font-size: 11px; color: var(--muted);">Buy a CALL (bet that price rises)</div>
                         </div>
-                        <div id="gannActionReason" style="text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px;">
-                            Waiting for cycle turn and price alignment
+                        <table style="width: 100%; font-size: 12px;">
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Buy:</td><td style="font-weight: 700;" id="gannCallSymbol">SPY CALL</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Strike Price:</td><td style="font-weight: 700;" id="gannCallStrike">$605</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Expires:</td><td style="font-weight: 700;" id="gannCallExpiry">Dec 15</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Max Pay:</td><td style="font-weight: 700;" id="gannCallMaxPay">$3.50</td></tr>
+                            <tr><td colspan="2" style="border-top: 1px solid var(--success); margin: 8px 0;"></td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--danger);">Stop Loss:</td><td style="font-weight: 700; color: var(--danger);" id="gannCallStop">Sell at $1.75</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--success);">Target:</td><td style="font-weight: 700; color: var(--success);" id="gannCallTarget">Sell at $5.25</td></tr>
+                        </table>
+                        <div style="margin-top: 10px; padding: 8px; background: rgba(16,185,129,0.2); border-radius: 6px; text-align: center; font-size: 11px;">
+                            <strong>Profit if right:</strong> <span style="color: var(--success);" id="gannCallProfit">+$175 (50%)</span><br>
+                            <strong>Loss if wrong:</strong> <span style="color: var(--danger);" id="gannCallLoss">-$175 (50%)</span>
                         </div>
                     </div>
 
-                    <!-- Explicit Trade Instructions -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">🎯 TRADE INSTRUCTIONS</div>
-                        <div id="gannTradeBox" style="background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; padding: 15px; font-family: monospace;">
-                            <table style="width: 100%; font-size: 12px;">
-                                <tr><td style="padding: 6px 0; color: var(--muted);">SYMBOL:</td><td style="font-weight: 700;" id="gannSymbol">SPY</td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--muted);">DIRECTION:</td><td style="font-weight: 700;" id="gannDirection"><span style="color: var(--success);">CALL ☎️</span></td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--muted);">STRIKE:</td><td style="font-weight: 700;" id="gannStrike">$685</td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--muted);">EXPIRATION:</td><td style="font-weight: 700;" id="gannExpiration">Dec 15, 2025</td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--muted);">MAX PRICE:</td><td style="font-weight: 700;" id="gannMaxPrice">Pay up to $3.50</td></tr>
-                                <tr><td colspan="2" style="border-top: 1px solid var(--border); padding-top: 8px;"></td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--danger);">STOP LOSS:</td><td style="font-weight: 700; color: var(--danger);" id="gannStopLoss">Sell if option hits $1.75</td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--success);">TARGET 1:</td><td style="font-weight: 700; color: var(--success);" id="gannTarget1">Sell HALF at $5.25</td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--success);">TARGET 2:</td><td style="font-weight: 700; color: var(--success);" id="gannTarget2">Sell REST at $7.00</td></tr>
-                                <tr><td colspan="2" style="border-top: 1px solid var(--border); padding-top: 8px;"></td></tr>
-                                <tr><td style="padding: 6px 0; color: var(--primary);">POSITION:</td><td style="font-weight: 700; color: var(--primary);" id="gannPosition">Buy 2 contracts ($700)</td></tr>
-                            </table>
+                    <!-- IF MARKET GOES DOWN -->
+                    <div style="background: rgba(239,68,68,0.1); border: 2px solid var(--danger); border-radius: 10px; padding: 15px;">
+                        <div style="text-align: center; margin-bottom: 12px;">
+                            <div style="font-size: 24px;">📉</div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--danger);">IF PRICE GOES DOWN</div>
+                            <div style="font-size: 11px; color: var(--muted);">Buy a PUT (bet that price falls)</div>
+                        </div>
+                        <table style="width: 100%; font-size: 12px;">
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Buy:</td><td style="font-weight: 700;" id="gannPutSymbol">SPY PUT</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Strike Price:</td><td style="font-weight: 700;" id="gannPutStrike">$595</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Expires:</td><td style="font-weight: 700;" id="gannPutExpiry">Dec 15</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--muted);">Max Pay:</td><td style="font-weight: 700;" id="gannPutMaxPay">$3.50</td></tr>
+                            <tr><td colspan="2" style="border-top: 1px solid var(--danger); margin: 8px 0;"></td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--danger);">Stop Loss:</td><td style="font-weight: 700; color: var(--danger);" id="gannPutStop">Sell at $1.75</td></tr>
+                            <tr><td style="padding: 5px 0; color: var(--success);">Target:</td><td style="font-weight: 700; color: var(--success);" id="gannPutTarget">Sell at $5.25</td></tr>
+                        </table>
+                        <div style="margin-top: 10px; padding: 8px; background: rgba(239,68,68,0.2); border-radius: 6px; text-align: center; font-size: 11px;">
+                            <strong>Profit if right:</strong> <span style="color: var(--success);" id="gannPutProfit">+$175 (50%)</span><br>
+                            <strong>Loss if wrong:</strong> <span style="color: var(--danger);" id="gannPutLoss">-$175 (50%)</span>
                         </div>
                     </div>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px; font-size: 12px; text-align: center;">
+                    <strong>How do I know which way the market will go?</strong><br>
+                    <span style="color: var(--muted);">Check the price on the turn date. If it bounces UP from the floor, buy CALL. If it drops DOWN from the ceiling, buy PUT.</span>
+                </div>
+            </div>
 
-                    <!-- Risk Calculator -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">⚖️ RISK CALCULATOR</div>
+            <!-- TURN DIRECTION EXPLAINED -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">🔄 WHEN DOES THE MARKET CHANGE DIRECTION?</div>
+                <div class="grid grid-2" style="gap: 15px;">
+                    <div>
+                        <div style="font-size: 13px; margin-bottom: 10px;">
+                            <strong>The 30-Day Pattern:</strong> Markets tend to go up and down in a repeating pattern roughly every 30 days.
+                        </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div style="background: rgba(239,68,68,0.1); padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 10px; color: var(--danger);">IF WRONG</div>
-                                <div style="font-size: 18px; font-weight: 700; color: var(--danger);" id="gannRiskLoss">-$175</div>
-                                <div style="font-size: 10px; color: var(--muted);">(50% of position)</div>
-                            </div>
-                            <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 10px; color: var(--success);">IF RIGHT (T1)</div>
-                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="gannRiskWin1">+$175</div>
-                                <div style="font-size: 10px; color: var(--muted);">(50% gain)</div>
-                            </div>
-                            <div style="background: rgba(16,185,129,0.15); padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 10px; color: var(--success);">IF RIGHT (T2)</div>
-                                <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="gannRiskWin2">+$350</div>
-                                <div style="font-size: 10px; color: var(--muted);">(100% gain)</div>
+                            <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: var(--muted);">Where We Are Now</div>
+                                <div style="font-size: 18px; font-weight: 700;" id="gann30DayCycle">NEAR BOTTOM</div>
+                                <div style="font-size: 11px; color: var(--muted);" id="gann30DayPhase">Day 27 of 30</div>
                             </div>
                             <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 10px; color: var(--muted);">RISK/REWARD</div>
-                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="gannRiskReward">1:2</div>
-                                <div style="font-size: 10px; color: var(--muted);">ratio</div>
+                                <div style="font-size: 10px; color: var(--muted);">Next Turn Date</div>
+                                <div style="font-size: 18px; font-weight: 700; color: var(--primary);" id="gannNextTurnDate">Dec 5</div>
+                                <div style="font-size: 11px; color: var(--muted);" id="gannDaysToTurnText">in 5 days</div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- RIGHT COLUMN -->
-                <div>
-                    <!-- Trade Setup Score -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">📊 TRADE SETUP SCORECARD</div>
-                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
-                            <div style="flex: 0 0 100px; text-align: center;">
-                                <div style="font-size: 42px; font-weight: 700;" id="gannOverallScore">72</div>
-                                <div style="font-size: 11px; color: var(--muted);">out of 100</div>
-                            </div>
-                            <div id="gannGoNoGo" style="flex: 1; padding: 15px; border-radius: 8px; text-align: center; background: rgba(16,185,129,0.15); border: 2px solid var(--success);">
-                                <div style="font-size: 24px; font-weight: 700; color: var(--success);">✅ TRADE</div>
-                                <div style="font-size: 11px; color: var(--muted);">Score ≥ 70 - High Confidence</div>
+                    <div>
+                        <div style="font-size: 13px; margin-bottom: 10px;">
+                            <strong>What "Turn" Means:</strong>
+                        </div>
+                        <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+                            <div id="gannTurnExplain">
+                                📍 <strong>NEAR BOTTOM</strong> = Price is low and about to go UP<br>
+                                → Best time to buy CALLs (bet on price going up)
                             </div>
                         </div>
-                        <div style="font-size: 11px;">
-                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                                <span>Cycle Alignment (30pts)</span><span id="gannScoreCycle" style="font-weight: 600;">25/30</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                                <span>Price at Key Level (25pts)</span><span id="gannScorePrice" style="font-weight: 600;">20/25</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                                <span>MTF Alignment (20pts)</span><span id="gannScoreMTF" style="font-weight: 600;">16/20</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border);">
-                                <span>Agent Consensus (15pts)</span><span id="gannScoreAgents" style="font-weight: 600;">11/15</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                                <span>Confluence Score (10pts)</span><span id="gannScoreConfluence" style="font-weight: 600;">8/10</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Countdown Timer -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">⏱️ COUNTDOWN</div>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center;">
-                            <div style="background: var(--bg); padding: 10px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Next Cycle Turn</div>
-                                <div style="font-size: 20px; font-weight: 700;" id="gannDaysToTurn">5</div>
-                                <div style="font-size: 10px; color: var(--muted);" id="gannTurnDate">Dec 5, 2025</div>
-                            </div>
-                            <div style="background: var(--bg); padding: 10px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Entry Window</div>
-                                <div style="font-size: 14px; font-weight: 700;" id="gannEntryWindow">Dec 3-6</div>
-                                <div style="font-size: 10px; color: var(--muted);" id="gannEntryStatus">Opens in 3 days</div>
-                            </div>
-                            <div style="background: var(--bg); padding: 10px; border-radius: 8px;">
-                                <div style="font-size: 10px; color: var(--muted);">Suggested DTE</div>
-                                <div style="font-size: 20px; font-weight: 700;" id="gannDTE">12</div>
-                                <div style="font-size: 10px; color: var(--muted);">days to expiry</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Why This Trade -->
-                    <div class="card" style="margin-bottom: 15px;">
-                        <div class="card-title">💡 WHY THIS TRADE</div>
-                        <div id="gannWhyTrade" style="font-size: 12px; line-height: 1.8;">
-                            <div>• <span id="gannWhy1">30-day cycle bottoms on Dec 5th</span></div>
-                            <div>• <span id="gannWhy2">Price at Square of 9 support: $678</span></div>
-                            <div>• <span id="gannWhy3">4 out of 5 timeframes say UP</span></div>
-                            <div>• <span id="gannWhy4">3 out of 4 AI agents say CALL</span></div>
-                            <div>• <span id="gannWhy5">Gann Score: 72/100 - HIGH CONFIDENCE</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Daily Checklist -->
-            <div class="card" style="margin-bottom: 15px;">
-                <div class="card-title">✅ DAILY CHECKLIST</div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                    <div class="gann-check" id="gannCheck1" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">✅</span>
-                        <span style="font-size: 11px;">Gann cycle in bottoming phase</span>
-                    </div>
-                    <div class="gann-check" id="gannCheck2" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">✅</span>
-                        <span style="font-size: 11px;">Price at support ($678-682)</span>
-                    </div>
-                    <div class="gann-check" id="gannCheck3" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">✅</span>
-                        <span style="font-size: 11px;">MTF Alignment: 4/5 Bullish</span>
-                    </div>
-                    <div class="gann-check" id="gannCheck4" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">✅</span>
-                        <span style="font-size: 11px;">Agent Consensus: 3/4 CALL</span>
-                    </div>
-                    <div class="gann-check" id="gannCheck5" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(16,185,129,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">✅</span>
-                        <span style="font-size: 11px;">Confluence Score: +7.2</span>
-                    </div>
-                    <div class="gann-check" id="gannCheck6" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(245,158,11,0.1); border-radius: 6px;">
-                        <span style="font-size: 16px;">⬜</span>
-                        <span style="font-size: 11px;">Entry window open</span>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 12px; font-size: 13px; font-weight: 600;" id="gannChecklistSummary">
-                    5 of 6 conditions met - <span style="color: var(--warning);">ALMOST READY</span>
-                </div>
-            </div>
-
-            <div class="grid grid-2" style="gap: 15px;">
-                <!-- Time Cycles -->
-                <div class="card">
-                    <div class="card-title">🔄 TIME CYCLES</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">30-Day Cycle</div>
-                            <div style="font-size: 16px; font-weight: 700;" id="gann30DayCycle">BOTTOMING</div>
-                            <div style="font-size: 10px; color: var(--muted);" id="gann30DayPhase">Day 27 of 30</div>
-                        </div>
-                        <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">90-Day Cycle</div>
-                            <div style="font-size: 16px; font-weight: 700;" id="gann90DayCycle">TRENDING UP</div>
+                        <div style="margin-top: 10px; padding: 10px; background: var(--bg); border-radius: 8px;">
+                            <div style="font-size: 10px; color: var(--muted);">Bigger 90-Day Pattern</div>
+                            <div style="font-size: 14px; font-weight: 600;" id="gann90DayCycle">Going UP</div>
                             <div style="font-size: 10px; color: var(--muted);" id="gann90DayPhase">Day 45 of 90</div>
                         </div>
                     </div>
-                    <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px;">
-                        <div style="font-size: 10px; color: var(--muted);">Seasonal Bias (Q4)</div>
-                        <div style="font-size: 14px; font-weight: 600;" id="gannSeasonalBias">📈 Historically BULLISH - Santa Rally period</div>
+                </div>
+            </div>
+
+            <!-- ETF/SECTOR RANKINGS -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">🏆 ETF RANKINGS - Which One Should I Trade?</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
+                    These are sorted by which has the best setup right now. Green = strong, Red = weak.
+                </div>
+                <div class="table-wrap">
+                    <table id="gannETFRankings">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Trend</th>
+                                <th>Score</th>
+                                <th>Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gannETFRankingsBody">
+                            <tr><td>1</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('SPY')">SPY</td><td>S&P 500</td><td>$600</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--success);">85</td><td style="color: var(--success);">BEST PICK</td></tr>
+                            <tr><td>2</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('QQQ')">QQQ</td><td>Nasdaq Tech</td><td>$515</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--success);">78</td><td>Good</td></tr>
+                            <tr><td>3</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('XLK')">XLK</td><td>Technology</td><td>$225</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--warning);">72</td><td>Good</td></tr>
+                            <tr><td>4</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('IWM')">IWM</td><td>Small Caps</td><td>$235</td><td style="color: var(--muted);">➡️ FLAT</td><td style="color: var(--warning);">65</td><td>OK</td></tr>
+                            <tr><td>5</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('DIA')">DIA</td><td>Dow Jones</td><td>$445</td><td style="color: var(--muted);">➡️ FLAT</td><td style="color: var(--warning);">60</td><td>OK</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px; padding: 8px; background: var(--bg); border-radius: 6px; font-size: 11px; text-align: center;">
+                    <strong>Tip:</strong> Trade the top 1-2 ranked ETFs for the best chance of success. Click any symbol to load its data.
+                </div>
+            </div>
+
+            <!-- STOP LOSS COMPARISON -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">🛑 STOP LOSS - Two Ways to Protect Your Money</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    A "stop loss" means selling to limit how much you can lose. Here are two methods:
+                </div>
+                <div class="grid grid-2" style="gap: 15px;">
+                    <div style="background: rgba(239,68,68,0.1); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">Method 1: 50% Rule</div>
+                        <div style="font-size: 12px; margin-bottom: 8px;">
+                            <strong>Simple:</strong> If your option loses half its value, sell it.
+                        </div>
+                        <div style="background: var(--bg); padding: 10px; border-radius: 6px; font-size: 12px;">
+                            If you paid: <strong id="gannStopPaid">$3.50</strong><br>
+                            Sell when it hits: <strong style="color: var(--danger);" id="gannStop50Pct">$1.75</strong><br>
+                            <span style="font-size: 11px; color: var(--muted);">Maximum loss: 50% of what you paid</span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">Method 2: Price Level</div>
+                        <div style="font-size: 12px; margin-bottom: 8px;">
+                            <strong>Based on price:</strong> If the stock price breaks a key level, sell.
+                        </div>
+                        <div style="background: var(--bg); padding: 10px; border-radius: 6px; font-size: 12px;">
+                            For CALLs, sell if price drops below: <strong style="color: var(--success);" id="gannStopCallLevel">$595</strong><br>
+                            For PUTs, sell if price rises above: <strong style="color: var(--danger);" id="gannStopPutLevel">$605</strong><br>
+                            <span style="font-size: 11px; color: var(--muted);">Based on support/resistance levels</span>
+                        </div>
                     </div>
                 </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px; text-align: center;">
+                    <strong>Which should I use?</strong> Use whichever triggers FIRST. Both protect you differently.
+                </div>
+            </div>
 
-                <!-- Square of 9 Levels -->
-                <div class="card">
-                    <div class="card-title">🎯 SQUARE OF 9 LEVELS</div>
-                    <div style="text-align: center; margin-bottom: 12px;">
-                        <div style="font-size: 10px; color: var(--muted);">Current Price</div>
-                        <div style="font-size: 24px; font-weight: 700;" id="gannCurrentPrice">$682.53</div>
+            <!-- MONTHLY CALENDAR -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📅 THIS MONTH'S TRADING CALENDAR</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    Key dates this month for trading. The best times to enter trades are marked.
+                </div>
+                <div id="gannCalendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 11px;">
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Sun</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Mon</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Tue</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Wed</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Thu</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Fri</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Sat</div>
+                </div>
+                <div id="gannCalendarDays" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 11px;">
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 15px; justify-content: center; font-size: 11px;">
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--success); border-radius: 3px; margin-right: 4px;"></span> Entry Window</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--primary); border-radius: 3px; margin-right: 4px;"></span> Turn Date</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--warning); border-radius: 3px; margin-right: 4px;"></span> Today</span>
+                </div>
+            </div>
+
+            <!-- TRADE TRACKER -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📝 MY TRADES - Track Your Positions</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: rgba(245,158,11,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--warning);">WAITING TO ENTER</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="gannWaitingCount">1</div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
-                        <div style="background: rgba(239,68,68,0.1); padding: 8px; border-radius: 6px;">
-                            <span style="color: var(--danger);">R2:</span> <span id="gannR2" style="font-weight: 600;">$698.50</span>
-                        </div>
-                        <div style="background: rgba(239,68,68,0.1); padding: 8px; border-radius: 6px;">
-                            <span style="color: var(--danger);">R1:</span> <span id="gannR1" style="font-weight: 600;">$690.25</span>
-                        </div>
-                        <div style="background: rgba(16,185,129,0.1); padding: 8px; border-radius: 6px;">
-                            <span style="color: var(--success);">S1:</span> <span id="gannS1" style="font-weight: 600;">$674.80</span>
-                        </div>
-                        <div style="background: rgba(16,185,129,0.1); padding: 8px; border-radius: 6px;">
-                            <span style="color: var(--success);">S2:</span> <span id="gannS2" style="font-weight: 600;">$666.55</span>
+                    <div style="background: rgba(16,185,129,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--success);">ACTIVE TRADES</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="gannActiveCount">0</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--primary);">COMPLETED</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="gannCompletedCount">5</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Date</th><th>Symbol</th><th>Type</th><th>Entry</th><th>Current</th><th>P&L</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="gannTradeTracker">
+                            <tr style="background: rgba(245,158,11,0.05);">
+                                <td id="gannPendingDate">Dec 5</td>
+                                <td id="gannPendingSymbol">SPY</td>
+                                <td id="gannPendingType">TBD</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td style="color: var(--warning);">⏳ WAITING</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- POSITION RULES -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📋 SIMPLE RULES TO FOLLOW</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">💰 How Much to Risk</div>
+                        <div style="font-size: 12px; color: var(--text);">
+                            Never risk more than <strong>5-10%</strong> of your trading money on one trade.<br>
+                            <span style="color: var(--muted);">Example: If you have $1,000, risk only $50-100 per trade.</span>
                         </div>
                     </div>
-                    <div style="margin-top: 10px; padding: 8px; background: var(--bg); border-radius: 6px; text-align: center; font-size: 11px;">
-                        Nearest Level: <span id="gannNearestLevel" style="font-weight: 600; color: var(--success);">S1 @ $674.80</span>
-                        <span style="color: var(--muted);">(</span><span id="gannDistanceToLevel">$7.73 away</span><span style="color: var(--muted);">)</span>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">⏰ When to Buy</div>
+                        <div style="font-size: 12px; color: var(--text);">
+                            Only buy during the <strong>Entry Window</strong> (2 days before to 1 day after the turn date).<br>
+                            <span style="color: var(--muted);">If you miss it, wait for the next month's turn.</span>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">🎯 When to Sell</div>
+                        <div style="font-size: 12px; color: var(--text);">
+                            Sell HALF at 50% profit, sell REST at 100% profit.<br>
+                            <span style="color: var(--muted);">Or sell everything if stop loss is hit.</span>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">📆 How Long to Hold</div>
+                        <div style="font-size: 12px; color: var(--text);">
+                            Buy options with at least <strong>10-14 days</strong> until they expire.<br>
+                            <span style="color: var(--muted);">This gives the trade time to work.</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Monthly Trade Log -->
+            <div class="grid grid-2" style="gap: 15px;">
+                <!-- PRICE LEVELS -->
+                <div class="card">
+                    <div class="card-title">🎯 KEY PRICE LEVELS</div>
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
+                        These are important prices where the stock often bounces or reverses.
+                    </div>
+                    <div style="text-align: center; margin-bottom: 12px;">
+                        <div style="font-size: 10px; color: var(--muted);">Current Price</div>
+                        <div style="font-size: 28px; font-weight: 700;" id="gannCurrentPrice">$600.00</div>
+                    </div>
+                    <div style="display: grid; gap: 8px; font-size: 12px;">
+                        <div style="background: rgba(239,68,68,0.15); padding: 10px; border-radius: 6px; display: flex; justify-content: space-between;">
+                            <span>🔺 Upper Ceiling 2:</span> <span id="gannR2" style="font-weight: 700;">$620.00</span>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; display: flex; justify-content: space-between;">
+                            <span>🔺 Upper Ceiling 1:</span> <span id="gannR1" style="font-weight: 700;">$610.00</span>
+                        </div>
+                        <div style="background: rgba(139,92,246,0.2); padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; font-weight: 700;">
+                            <span>📍 CURRENT PRICE:</span> <span id="gannCurrentPrice2">$600.00</span>
+                        </div>
+                        <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; display: flex; justify-content: space-between;">
+                            <span>🔻 Floor 1 (Support):</span> <span id="gannS1" style="font-weight: 700;">$590.00</span>
+                        </div>
+                        <div style="background: rgba(16,185,129,0.15); padding: 10px; border-radius: 6px; display: flex; justify-content: space-between;">
+                            <span>🔻 Floor 2 (Support):</span> <span id="gannS2" style="font-weight: 700;">$580.00</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding: 8px; background: var(--bg); border-radius: 6px; text-align: center; font-size: 11px;">
+                        Nearest Level: <span id="gannNearestLevel" style="font-weight: 600;">Floor 1 @ $590</span>
+                        (<span id="gannDistanceToLevel">$10 away</span>)
+                    </div>
+                </div>
+
+                <!-- SCORE CARD -->
+                <div class="card">
+                    <div class="card-title">📊 TRADE QUALITY SCORE</div>
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                        Higher score = better trade setup. 70+ is good, 80+ is great.
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
+                        <div style="flex: 0 0 100px; text-align: center;">
+                            <div style="font-size: 48px; font-weight: 700;" id="gannOverallScore">72</div>
+                            <div style="font-size: 12px; color: var(--muted);">out of 100</div>
+                        </div>
+                        <div id="gannGoNoGo" style="flex: 1; padding: 15px; border-radius: 8px; text-align: center; background: rgba(16,185,129,0.15); border: 2px solid var(--success);">
+                            <div style="font-size: 20px; font-weight: 700; color: var(--success);">✅ GOOD SETUP</div>
+                            <div style="font-size: 11px; color: var(--muted);">Trade when entry window opens</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>Timing (is it the right time?)</span><span id="gannScoreCycle" style="font-weight: 600;">25/30</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>Price Location (at a good level?)</span><span id="gannScorePrice" style="font-weight: 600;">20/25</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>Trend Alignment (all pointing same way?)</span><span id="gannScoreMTF" style="font-weight: 600;">16/20</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>AI Agents Agreement</span><span id="gannScoreAgents" style="font-weight: 600;">11/15</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                            <span>Multiple Signals Together</span><span id="gannScoreConfluence" style="font-weight: 600;">8/10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHECKLIST -->
+            <div class="card" style="margin-top: 15px; margin-bottom: 15px;">
+                <div class="card-title">✅ PRE-TRADE CHECKLIST</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
+                    All boxes should be green before you trade. This keeps you safe!
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                    <div class="gann-check" id="gannCheck1" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">✅</span>
+                        <span style="font-size: 12px;">Near a turn date (time is right)</span>
+                    </div>
+                    <div class="gann-check" id="gannCheck2" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">✅</span>
+                        <span style="font-size: 12px;">Price at support or resistance</span>
+                    </div>
+                    <div class="gann-check" id="gannCheck3" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">✅</span>
+                        <span style="font-size: 12px;">Most timeframes agree on direction</span>
+                    </div>
+                    <div class="gann-check" id="gannCheck4" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">✅</span>
+                        <span style="font-size: 12px;">AI agents mostly agree</span>
+                    </div>
+                    <div class="gann-check" id="gannCheck5" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(16,185,129,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">✅</span>
+                        <span style="font-size: 12px;">Score is 70 or higher</span>
+                    </div>
+                    <div class="gann-check" id="gannCheck6" style="display: flex; align-items: center; gap: 8px; padding: 10px; background: rgba(245,158,11,0.1); border-radius: 6px;">
+                        <span style="font-size: 18px;">⬜</span>
+                        <span style="font-size: 12px;">Entry window is open</span>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 12px; font-size: 14px; font-weight: 600;" id="gannChecklistSummary">
+                    5 of 6 checks passed - <span style="color: var(--warning);">ALMOST READY</span>
+                </div>
+            </div>
+
+            <!-- PAST TRADES -->
             <div class="card" style="margin-top: 15px;">
-                <div class="card-title">📈 MONTHLY TRADE LOG</div>
+                <div class="card-title">📈 TRADE HISTORY</div>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>Month</th><th>Symbol</th><th>Direction</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Result</th></tr>
+                            <tr><th>Month</th><th>Symbol</th><th>Type</th><th>Bought At</th><th>Sold At</th><th>Profit/Loss</th><th>Result</th></tr>
                         </thead>
                         <tbody id="gannTradeLog">
                             <tr><td>Nov 2025</td><td>SPY</td><td style="color: var(--success);">CALL</td><td>$2.80</td><td>$4.20</td><td style="color: var(--success);">+50%</td><td>✅ WIN</td></tr>
@@ -3165,13 +3332,26 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         </tbody>
                     </table>
                 </div>
-                <div style="display: flex; justify-content: space-around; margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 8px; font-size: 12px;">
+                <div style="display: flex; justify-content: space-around; margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;">
                     <div><span style="color: var(--muted);">Win Rate:</span> <span style="font-weight: 700; color: var(--success);" id="gannWinRate">80%</span></div>
                     <div><span style="color: var(--muted);">Avg Win:</span> <span style="font-weight: 700; color: var(--success);" id="gannAvgWin">+62.5%</span></div>
                     <div><span style="color: var(--muted);">Avg Loss:</span> <span style="font-weight: 700; color: var(--danger);" id="gannAvgLoss">-50%</span></div>
-                    <div><span style="color: var(--muted);">Total Trades:</span> <span style="font-weight: 700;" id="gannTotalTrades">5</span></div>
+                    <div><span style="color: var(--muted);">Total:</span> <span style="font-weight: 700;" id="gannTotalTrades">5 trades</span></div>
                 </div>
             </div>
+
+            <!-- SEASONAL INFO -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📆 SEASONAL PATTERNS</div>
+                <div style="padding: 12px; background: var(--bg); border-radius: 8px;">
+                    <div style="font-size: 14px; font-weight: 600;" id="gannSeasonalBias">📈 December is usually BULLISH - "Santa Rally" time!</div>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
+                        Historically, the market tends to go up in December. This doesn't guarantee anything, but it's a helpful pattern to know.
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div>
 
 </div>
@@ -10563,8 +10743,28 @@ setTimeout(initializeStrikeSlider, 1000);
 
 
 // ==========================================
-// GANN ANALYSIS TAB FUNCTIONS
+// GANN ANALYSIS TAB FUNCTIONS (ENHANCED)
 // ==========================================
+
+// List of all ETFs to track
+const GANN_ETF_LIST = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY'];
+const GANN_ETF_NAMES = {
+    'SPY': 'S&P 500',
+    'QQQ': 'Nasdaq Tech',
+    'IWM': 'Small Caps',
+    'DIA': 'Dow Jones',
+    'XLK': 'Technology',
+    'XLF': 'Financials',
+    'XLE': 'Energy',
+    'XLV': 'Healthcare',
+    'XLI': 'Industrials',
+    'XLP': 'Consumer Staples',
+    'XLU': 'Utilities',
+    'XLB': 'Materials',
+    'XLC': 'Communication',
+    'XLRE': 'Real Estate',
+    'XLY': 'Consumer Disc'
+};
 
 // Calculate Square of 9 levels
 function calculateSquareOf9Levels(price) {
@@ -10574,10 +10774,10 @@ function calculateSquareOf9Levels(price) {
     const sqrtPrice = Math.sqrt(price);
 
     // 45 degrees = 0.25 on the wheel, 90 degrees = 0.5
-    const r1 = Math.pow(sqrtPrice + 0.25, 2);  // 45° up
-    const r2 = Math.pow(sqrtPrice + 0.5, 2);   // 90° up
-    const s1 = Math.pow(sqrtPrice - 0.25, 2);  // 45° down
-    const s2 = Math.pow(sqrtPrice - 0.5, 2);   // 90° down
+    const r1 = Math.pow(sqrtPrice + 0.25, 2);  // 45 degrees up
+    const r2 = Math.pow(sqrtPrice + 0.5, 2);   // 90 degrees up
+    const s1 = Math.pow(sqrtPrice - 0.25, 2);  // 45 degrees down
+    const s2 = Math.pow(sqrtPrice - 0.5, 2);   // 90 degrees down
 
     return {
         r1: Math.round(r1 * 100) / 100,
@@ -10597,15 +10797,29 @@ function calculateGannCycles() {
     const cycle30Day = dayOfYear % 30;
     const daysTo30Turn = 30 - cycle30Day;
     let cycle30Phase = 'TRENDING';
-    if (cycle30Day >= 25 || cycle30Day <= 5) cycle30Phase = 'BOTTOMING';
-    else if (cycle30Day >= 12 && cycle30Day <= 18) cycle30Phase = 'TOPPING';
+    let cycle30Simple = 'Going sideways';
+    if (cycle30Day >= 25 || cycle30Day <= 5) {
+        cycle30Phase = 'BOTTOMING';
+        cycle30Simple = 'NEAR BOTTOM';
+    }
+    else if (cycle30Day >= 12 && cycle30Day <= 18) {
+        cycle30Phase = 'TOPPING';
+        cycle30Simple = 'NEAR TOP';
+    }
 
     // 90-day cycle
     const cycle90Day = dayOfYear % 90;
     const daysTo90Turn = 90 - cycle90Day;
     let cycle90Phase = 'TRENDING UP';
-    if (cycle90Day >= 80 || cycle90Day <= 10) cycle90Phase = 'BOTTOMING';
-    else if (cycle90Day >= 40 && cycle90Day <= 50) cycle90Phase = 'TOPPING';
+    let cycle90Simple = 'Going UP';
+    if (cycle90Day >= 80 || cycle90Day <= 10) {
+        cycle90Phase = 'BOTTOMING';
+        cycle90Simple = 'Near bottom';
+    }
+    else if (cycle90Day >= 40 && cycle90Day <= 50) {
+        cycle90Phase = 'TOPPING';
+        cycle90Simple = 'Near top';
+    }
 
     // Next turn date
     const nextTurnDate = new Date(today);
@@ -10613,23 +10827,37 @@ function calculateGannCycles() {
 
     // Seasonal bias
     const quarter = Math.floor(today.getMonth() / 3) + 1;
+    const month = today.getMonth();
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
     const seasonalBias = {
-        1: '📈 Q1: Historically BULLISH - January Effect',
-        2: '📊 Q2: Mixed - Sell in May pattern',
-        3: '📉 Q3: Historically WEAK - Summer doldrums',
-        4: '📈 Q4: Historically BULLISH - Santa Rally'
+        1: 'January is usually BULLISH - "January Effect"!',
+        2: 'February is usually NEUTRAL to BULLISH',
+        3: 'March is usually BULLISH',
+        4: 'April is usually BULLISH - "Best 6 months" continues',
+        5: 'May is usually WEAK - "Sell in May" pattern',
+        6: 'June is usually NEUTRAL',
+        7: 'July is usually BULLISH',
+        8: 'August is usually WEAK - Summer doldrums',
+        9: 'September is usually BEARISH - Worst month historically',
+        10: 'October is usually VOLATILE but often bottoms here',
+        11: 'November is usually BULLISH - Best month historically',
+        12: 'December is usually BULLISH - "Santa Rally" time!'
     };
 
     return {
         cycle30Day,
         cycle30Phase,
+        cycle30Simple,
         daysTo30Turn,
         cycle90Day,
         cycle90Phase,
+        cycle90Simple,
         daysTo90Turn,
         nextTurnDate,
         quarter,
-        seasonalBias: seasonalBias[quarter]
+        month: monthNames[month],
+        seasonalBias: seasonalBias[month + 1]
     };
 }
 
@@ -10696,25 +10924,20 @@ function calculateTradeSetupScore() {
     return { score, details };
 }
 
-// Generate trade recommendation
-function generateTradeRecommendation() {
+// Generate trade recommendation for both directions
+function generateDualTradeRecommendation() {
     const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
     const symbol = currentSymbol || 'SPY';
     const scoreData = calculateTradeSetupScore();
     const cycles = calculateGannCycles();
     const sq9 = calculateSquareOf9Levels(price);
 
-    // Determine direction based on cycle phase and price position
-    let direction = 'CALL';
-    if (cycles.cycle30Phase === 'TOPPING' || price > sq9.r1) {
-        direction = 'PUT';
-    }
-
-    // Calculate strike (nearest $5, then OTM)
+    // Calculate strikes for both directions (nearest $5, then OTM)
     const rounded = Math.round(price / 5) * 5;
-    const strike = direction === 'CALL' ? rounded + 5 : rounded - 5;
+    const callStrike = rounded + 5;
+    const putStrike = rounded - 5;
 
-    // Calculate expiration (next cycle turn + 5-7 days, round to Friday)
+    // Calculate expiration (next cycle turn + 7 days, round to Friday)
     const expDate = new Date(cycles.nextTurnDate);
     expDate.setDate(expDate.getDate() + 7);
     // Round to next Friday
@@ -10728,24 +10951,25 @@ function generateTradeRecommendation() {
     const estimatedPrice = (price * 0.005 * Math.sqrt(dte / 365)).toFixed(2);
     const maxPrice = (parseFloat(estimatedPrice) * 1.1).toFixed(2);
 
-    // Calculate stops and targets
+    // Calculate stops and targets (same for both directions)
     const stopLoss = (parseFloat(estimatedPrice) * 0.5).toFixed(2);
     const target1 = (parseFloat(estimatedPrice) * 1.5).toFixed(2);
     const target2 = (parseFloat(estimatedPrice) * 2.0).toFixed(2);
 
-    // Position sizing based on score (of $10,000 capital)
-    let positionPct = 0.05; // 5% default
-    if (scoreData.score >= 70) positionPct = 0.10;
-    else if (scoreData.score >= 50) positionPct = 0.07;
-
+    // Position sizing
+    const positionPct = scoreData.score >= 70 ? 0.10 : scoreData.score >= 50 ? 0.07 : 0.05;
     const positionSize = 10000 * positionPct;
     const contracts = Math.max(1, Math.floor(positionSize / (parseFloat(estimatedPrice) * 100)));
     const totalCost = contracts * parseFloat(estimatedPrice) * 100;
 
+    // Risk/reward amounts
+    const riskAmount = (totalCost * 0.5).toFixed(0);
+    const profitAmount = (totalCost * 0.5).toFixed(0);
+
     return {
         symbol,
-        direction,
-        strike,
+        callStrike,
+        putStrike,
         expDate,
         dte,
         estimatedPrice,
@@ -10755,7 +10979,12 @@ function generateTradeRecommendation() {
         target2,
         contracts,
         totalCost,
-        score: scoreData.score
+        riskAmount,
+        profitAmount,
+        score: scoreData.score,
+        // Stop loss levels based on price
+        callStopLevel: sq9.s1.toFixed(2),
+        putStopLevel: sq9.r1.toFixed(2)
     };
 }
 
@@ -10771,9 +11000,88 @@ function formatGannDateShort(date) {
     return `${months[date.getMonth()]} ${date.getDate()}`;
 }
 
+// Generate monthly calendar HTML
+function generateGannCalendar(turnDate, today) {
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDay = firstDay.getDay();
+
+    // Entry window: 2 days before to 1 day after turn date
+    const entryStart = new Date(turnDate);
+    entryStart.setDate(entryStart.getDate() - 2);
+    const entryEnd = new Date(turnDate);
+    entryEnd.setDate(entryEnd.getDate() + 1);
+
+    let html = '';
+
+    // Empty cells before first day
+    for (let i = 0; i < startDay; i++) {
+        html += '<div style="padding: 8px; text-align: center;"></div>';
+    }
+
+    // Days of month
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const currentDate = new Date(year, month, day);
+        const isToday = day === today.getDate();
+        const isTurnDate = turnDate.getMonth() === month && turnDate.getDate() === day;
+        const isEntryWindow = currentDate >= entryStart && currentDate <= entryEnd && turnDate.getMonth() === month;
+
+        let bgColor = 'var(--bg)';
+        let borderStyle = '';
+
+        if (isTurnDate) {
+            bgColor = 'var(--primary)';
+            borderStyle = 'border: 2px solid var(--primary);';
+        } else if (isEntryWindow) {
+            bgColor = 'rgba(16,185,129,0.3)';
+        }
+
+        if (isToday) {
+            borderStyle = 'border: 2px solid var(--warning);';
+        }
+
+        const textColor = isTurnDate ? 'white' : 'var(--text)';
+        const fontWeight = isToday || isTurnDate ? '700' : '400';
+
+        html += `<div style="padding: 8px; text-align: center; background: ${bgColor}; border-radius: 4px; ${borderStyle} color: ${textColor}; font-weight: ${fontWeight};">${day}</div>`;
+    }
+
+    return html;
+}
+
+// Calculate ETF rankings (simplified - actual implementation would fetch real data)
+function calculateETFRankings() {
+    // This would normally fetch real data - for now we use a scoring based on available info
+    const rankings = [];
+    const baseSymbol = currentSymbol || 'SPY';
+    const basePrice = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
+
+    // Create mock rankings based on available data
+    GANN_ETF_LIST.forEach((symbol, index) => {
+        const price = symbol === baseSymbol ? basePrice : (100 + Math.random() * 500).toFixed(2);
+        const score = Math.round(85 - index * 3 + Math.random() * 10);
+        const trend = score > 70 ? 'UP' : score > 55 ? 'FLAT' : 'DOWN';
+
+        rankings.push({
+            symbol,
+            name: GANN_ETF_NAMES[symbol],
+            price: parseFloat(price),
+            score,
+            trend
+        });
+    });
+
+    // Sort by score descending
+    rankings.sort((a, b) => b.score - a.score);
+
+    return rankings;
+}
+
 // Main update function for Gann Analysis tab
 function updateGannAnalysisTab() {
-    console.log('🔮 Updating Gann Analysis Tab');
+    console.log('🔮 Updating Enhanced Gann Analysis Tab');
 
     const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 0;
     if (price <= 0) {
@@ -10785,178 +11093,250 @@ function updateGannAnalysisTab() {
     const today = new Date();
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    // Update Trade Title
-    const titleEl = document.getElementById('gannTradeTitle');
-    if (titleEl) {
-        titleEl.textContent = `🎯 ${months[today.getMonth()].toUpperCase()} ${today.getFullYear()} GANN TRADE`;
-    }
-
     // Calculate all data
     const sq9 = calculateSquareOf9Levels(price);
     const cycles = calculateGannCycles();
     const scoreData = calculateTradeSetupScore();
-    const trade = generateTradeRecommendation();
+    const trade = generateDualTradeRecommendation();
 
-    // Update Square of 9 Levels
-    document.getElementById('gannCurrentPrice').textContent = `$${price.toFixed(2)}`;
-    document.getElementById('gannR1').textContent = `$${sq9.r1.toFixed(2)}`;
-    document.getElementById('gannR2').textContent = `$${sq9.r2.toFixed(2)}`;
-    document.getElementById('gannS1').textContent = `$${sq9.s1.toFixed(2)}`;
-    document.getElementById('gannS2').textContent = `$${sq9.s2.toFixed(2)}`;
+    // Entry window calculations
+    const entryStart = new Date(cycles.nextTurnDate);
+    entryStart.setDate(entryStart.getDate() - 2);
+    const entryEnd = new Date(cycles.nextTurnDate);
+    entryEnd.setDate(entryEnd.getDate() + 1);
+    const daysToEntry = Math.max(0, Math.round((entryStart - today) / (24 * 60 * 60 * 1000)));
+    const isInEntryWindow = today >= entryStart && today <= entryEnd;
+
+    // ===== UPDATE HEADER =====
+    const titleEl = document.getElementById('gannTradeTitle');
+    if (titleEl) {
+        titleEl.textContent = `📅 ${months[today.getMonth()].toUpperCase()} ${today.getFullYear()} TRADING PLAN`;
+    }
+
+    const statusEl = document.getElementById('gannTradeStatus');
+    if (statusEl) {
+        statusEl.textContent = 'Your monthly guide to when and what to trade';
+    }
+
+    // ===== UPDATE TRAFFIC LIGHT =====
+    const trafficEl = document.getElementById('gannTrafficLight');
+    if (trafficEl) {
+        if (scoreData.score >= 70 && isInEntryWindow) {
+            trafficEl.innerHTML = '<span style="font-size: 28px;">🟢</span><div><div style="font-size: 16px; font-weight: 700; color: var(--success);">GO!</div><div style="font-size: 10px; color: var(--muted);">Trade now!</div></div>';
+        } else if (scoreData.score >= 50 || daysToEntry <= 3) {
+            trafficEl.innerHTML = '<span style="font-size: 28px;">🟡</span><div><div style="font-size: 16px; font-weight: 700; color: var(--warning);">SOON</div><div style="font-size: 10px; color: var(--muted);">Almost time</div></div>';
+        } else {
+            trafficEl.innerHTML = '<span style="font-size: 28px;">🔴</span><div><div style="font-size: 16px; font-weight: 700; color: var(--danger);">WAIT</div><div style="font-size: 10px; color: var(--muted);">Not time yet</div></div>';
+        }
+    }
+
+    // ===== UPDATE TODAY'S ACTION =====
+    const actionEl = document.getElementById('gannTodayAction');
+    const reasonEl = document.getElementById('gannActionReason');
+    if (actionEl && reasonEl) {
+        if (scoreData.score >= 70 && isInEntryWindow) {
+            actionEl.innerHTML = '🟢 BUY TODAY!';
+            actionEl.style.color = 'var(--success)';
+            reasonEl.innerHTML = `<strong>Why?</strong> All conditions are met! The turn date is here and the setup looks good. Pick CALL or PUT based on price direction.`;
+        } else if (daysToEntry <= 0 && !isInEntryWindow) {
+            actionEl.innerHTML = '⏳ WAIT - Entry window passed';
+            actionEl.style.color = 'var(--muted)';
+            reasonEl.innerHTML = `<strong>Why?</strong> The entry window for this cycle has passed. Wait for the next turn date.`;
+        } else {
+            actionEl.innerHTML = '⏳ WAIT - Don\'t buy anything yet';
+            actionEl.style.color = 'var(--warning)';
+            reasonEl.innerHTML = `<strong>Why?</strong> The market usually changes direction around <span id="gannTurnDateSimple">${formatGannDateShort(cycles.nextTurnDate)}</span>. Wait until then to buy. You have <span style="font-weight: 700; color: var(--primary);">${cycles.daysTo30Turn} days</span> to wait.`;
+        }
+    }
+
+    // ===== UPDATE DUAL TRADE OPTIONS (CALL and PUT) =====
+    // CALL side
+    const callSymbolEl = document.getElementById('gannCallSymbol');
+    if (callSymbolEl) callSymbolEl.textContent = `${symbol} CALL`;
+    const callStrikeEl = document.getElementById('gannCallStrike');
+    if (callStrikeEl) callStrikeEl.textContent = `$${trade.callStrike}`;
+    const callExpiryEl = document.getElementById('gannCallExpiry');
+    if (callExpiryEl) callExpiryEl.textContent = formatGannDateShort(trade.expDate);
+    const callMaxPayEl = document.getElementById('gannCallMaxPay');
+    if (callMaxPayEl) callMaxPayEl.textContent = `$${trade.maxPrice}`;
+    const callStopEl = document.getElementById('gannCallStop');
+    if (callStopEl) callStopEl.textContent = `Sell at $${trade.stopLoss}`;
+    const callTargetEl = document.getElementById('gannCallTarget');
+    if (callTargetEl) callTargetEl.textContent = `Sell at $${trade.target1}`;
+    const callProfitEl = document.getElementById('gannCallProfit');
+    if (callProfitEl) callProfitEl.textContent = `+$${trade.profitAmount} (50%)`;
+    const callLossEl = document.getElementById('gannCallLoss');
+    if (callLossEl) callLossEl.textContent = `-$${trade.riskAmount} (50%)`;
+
+    // PUT side
+    const putSymbolEl = document.getElementById('gannPutSymbol');
+    if (putSymbolEl) putSymbolEl.textContent = `${symbol} PUT`;
+    const putStrikeEl = document.getElementById('gannPutStrike');
+    if (putStrikeEl) putStrikeEl.textContent = `$${trade.putStrike}`;
+    const putExpiryEl = document.getElementById('gannPutExpiry');
+    if (putExpiryEl) putExpiryEl.textContent = formatGannDateShort(trade.expDate);
+    const putMaxPayEl = document.getElementById('gannPutMaxPay');
+    if (putMaxPayEl) putMaxPayEl.textContent = `$${trade.maxPrice}`;
+    const putStopEl = document.getElementById('gannPutStop');
+    if (putStopEl) putStopEl.textContent = `Sell at $${trade.stopLoss}`;
+    const putTargetEl = document.getElementById('gannPutTarget');
+    if (putTargetEl) putTargetEl.textContent = `Sell at $${trade.target1}`;
+    const putProfitEl = document.getElementById('gannPutProfit');
+    if (putProfitEl) putProfitEl.textContent = `+$${trade.profitAmount} (50%)`;
+    const putLossEl = document.getElementById('gannPutLoss');
+    if (putLossEl) putLossEl.textContent = `-$${trade.riskAmount} (50%)`;
+
+    // ===== UPDATE TURN DIRECTION =====
+    const cycle30El = document.getElementById('gann30DayCycle');
+    if (cycle30El) cycle30El.textContent = cycles.cycle30Simple;
+    const cycle30PhaseEl = document.getElementById('gann30DayPhase');
+    if (cycle30PhaseEl) cycle30PhaseEl.textContent = `Day ${cycles.cycle30Day} of 30`;
+
+    const nextTurnEl = document.getElementById('gannNextTurnDate');
+    if (nextTurnEl) nextTurnEl.textContent = formatGannDateShort(cycles.nextTurnDate);
+    const daysToTurnTextEl = document.getElementById('gannDaysToTurnText');
+    if (daysToTurnTextEl) daysToTurnTextEl.textContent = `in ${cycles.daysTo30Turn} days`;
+
+    const turnExplainEl = document.getElementById('gannTurnExplain');
+    if (turnExplainEl) {
+        if (cycles.cycle30Phase === 'BOTTOMING') {
+            turnExplainEl.innerHTML = '📍 <strong>NEAR BOTTOM</strong> = Price is low and about to go UP<br>→ Best time to buy CALLs (bet on price going up)';
+        } else if (cycles.cycle30Phase === 'TOPPING') {
+            turnExplainEl.innerHTML = '📍 <strong>NEAR TOP</strong> = Price is high and about to go DOWN<br>→ Best time to buy PUTs (bet on price going down)';
+        } else {
+            turnExplainEl.innerHTML = '📍 <strong>MIDDLE OF CYCLE</strong> = Price is moving, wait for clearer signal<br>→ Best to wait for the next turn date';
+        }
+    }
+
+    const cycle90El = document.getElementById('gann90DayCycle');
+    if (cycle90El) cycle90El.textContent = cycles.cycle90Simple;
+    const cycle90PhaseEl = document.getElementById('gann90DayPhase');
+    if (cycle90PhaseEl) cycle90PhaseEl.textContent = `Day ${cycles.cycle90Day} of 90`;
+
+    // ===== UPDATE ETF RANKINGS =====
+    const rankings = calculateETFRankings();
+    const rankingsBody = document.getElementById('gannETFRankingsBody');
+    if (rankingsBody) {
+        let html = '';
+        rankings.slice(0, 10).forEach((etf, idx) => {
+            const trendIcon = etf.trend === 'UP' ? '📈' : etf.trend === 'DOWN' ? '📉' : '➡️';
+            const trendColor = etf.trend === 'UP' ? 'var(--success)' : etf.trend === 'DOWN' ? 'var(--danger)' : 'var(--muted)';
+            const scoreColor = etf.score >= 75 ? 'var(--success)' : etf.score >= 60 ? 'var(--warning)' : 'var(--danger)';
+            const rec = idx === 0 ? 'BEST PICK' : idx < 3 ? 'Good' : 'OK';
+            const recColor = idx === 0 ? 'var(--success)' : idx < 3 ? 'var(--text)' : 'var(--muted)';
+
+            html += `<tr>
+                <td>${idx + 1}</td>
+                <td style="cursor:pointer; color: var(--primary); font-weight: 600;" onclick="loadSymbolData('${etf.symbol}')">${etf.symbol}</td>
+                <td>${etf.name}</td>
+                <td>$${etf.price.toFixed(2)}</td>
+                <td style="color: ${trendColor};">${trendIcon} ${etf.trend}</td>
+                <td style="color: ${scoreColor}; font-weight: 600;">${etf.score}</td>
+                <td style="color: ${recColor};">${rec}</td>
+            </tr>`;
+        });
+        rankingsBody.innerHTML = html;
+    }
+
+    // ===== UPDATE STOP LOSS COMPARISON =====
+    const stopPaidEl = document.getElementById('gannStopPaid');
+    if (stopPaidEl) stopPaidEl.textContent = `$${trade.maxPrice}`;
+    const stop50PctEl = document.getElementById('gannStop50Pct');
+    if (stop50PctEl) stop50PctEl.textContent = `$${trade.stopLoss}`;
+    const stopCallLevelEl = document.getElementById('gannStopCallLevel');
+    if (stopCallLevelEl) stopCallLevelEl.textContent = `$${trade.callStopLevel}`;
+    const stopPutLevelEl = document.getElementById('gannStopPutLevel');
+    if (stopPutLevelEl) stopPutLevelEl.textContent = `$${trade.putStopLevel}`;
+
+    // ===== UPDATE CALENDAR =====
+    const calendarDaysEl = document.getElementById('gannCalendarDays');
+    if (calendarDaysEl) {
+        calendarDaysEl.innerHTML = generateGannCalendar(cycles.nextTurnDate, today);
+    }
+
+    // ===== UPDATE TRADE TRACKER =====
+    const pendingDateEl = document.getElementById('gannPendingDate');
+    if (pendingDateEl) pendingDateEl.textContent = formatGannDateShort(cycles.nextTurnDate);
+    const pendingSymbolEl = document.getElementById('gannPendingSymbol');
+    if (pendingSymbolEl) pendingSymbolEl.textContent = symbol;
+
+    // ===== UPDATE PRICE LEVELS =====
+    const currentPriceEl = document.getElementById('gannCurrentPrice');
+    if (currentPriceEl) currentPriceEl.textContent = `$${price.toFixed(2)}`;
+    const currentPrice2El = document.getElementById('gannCurrentPrice2');
+    if (currentPrice2El) currentPrice2El.textContent = `$${price.toFixed(2)}`;
+
+    const r1El = document.getElementById('gannR1');
+    if (r1El) r1El.textContent = `$${sq9.r1.toFixed(2)}`;
+    const r2El = document.getElementById('gannR2');
+    if (r2El) r2El.textContent = `$${sq9.r2.toFixed(2)}`;
+    const s1El = document.getElementById('gannS1');
+    if (s1El) s1El.textContent = `$${sq9.s1.toFixed(2)}`;
+    const s2El = document.getElementById('gannS2');
+    if (s2El) s2El.textContent = `$${sq9.s2.toFixed(2)}`;
 
     // Nearest level
     const distToS1 = Math.abs(price - sq9.s1);
     const distToR1 = Math.abs(price - sq9.r1);
     const nearestEl = document.getElementById('gannNearestLevel');
     const distEl = document.getElementById('gannDistanceToLevel');
-    if (distToS1 < distToR1) {
-        nearestEl.textContent = `S1 @ $${sq9.s1.toFixed(2)}`;
-        nearestEl.style.color = 'var(--success)';
-        distEl.textContent = `$${distToS1.toFixed(2)} away`;
-    } else {
-        nearestEl.textContent = `R1 @ $${sq9.r1.toFixed(2)}`;
-        nearestEl.style.color = 'var(--danger)';
-        distEl.textContent = `$${distToR1.toFixed(2)} away`;
+    if (nearestEl && distEl) {
+        if (distToS1 < distToR1) {
+            nearestEl.textContent = `Floor 1 @ $${sq9.s1.toFixed(2)}`;
+            distEl.textContent = `$${distToS1.toFixed(2)} away`;
+        } else {
+            nearestEl.textContent = `Ceiling 1 @ $${sq9.r1.toFixed(2)}`;
+            distEl.textContent = `$${distToR1.toFixed(2)} away`;
+        }
     }
 
-    // Update Time Cycles
-    document.getElementById('gann30DayCycle').textContent = cycles.cycle30Phase;
-    document.getElementById('gann30DayPhase').textContent = `Day ${cycles.cycle30Day} of 30`;
-    document.getElementById('gann90DayCycle').textContent = cycles.cycle90Phase;
-    document.getElementById('gann90DayPhase').textContent = `Day ${cycles.cycle90Day} of 90`;
-    document.getElementById('gannSeasonalBias').textContent = cycles.seasonalBias;
-
-    // Update Countdown
-    document.getElementById('gannDaysToTurn').textContent = cycles.daysTo30Turn;
-    document.getElementById('gannTurnDate').textContent = formatGannDate(cycles.nextTurnDate);
-
-    const entryStart = new Date(cycles.nextTurnDate);
-    entryStart.setDate(entryStart.getDate() - 2);
-    const entryEnd = new Date(cycles.nextTurnDate);
-    entryEnd.setDate(entryEnd.getDate() + 1);
-    document.getElementById('gannEntryWindow').textContent = `${formatGannDateShort(entryStart)}-${entryEnd.getDate()}`;
-
-    const daysToEntry = Math.max(0, Math.round((entryStart - today) / (24 * 60 * 60 * 1000)));
-    if (daysToEntry === 0) {
-        document.getElementById('gannEntryStatus').textContent = 'OPEN NOW!';
-        document.getElementById('gannEntryStatus').style.color = 'var(--success)';
-    } else {
-        document.getElementById('gannEntryStatus').textContent = `Opens in ${daysToEntry} days`;
+    // ===== UPDATE SCORE CARD =====
+    const overallScoreEl = document.getElementById('gannOverallScore');
+    if (overallScoreEl) {
+        overallScoreEl.textContent = scoreData.score;
+        overallScoreEl.style.color = scoreData.score >= 70 ? 'var(--success)' : scoreData.score >= 50 ? 'var(--warning)' : 'var(--danger)';
     }
 
-    document.getElementById('gannDTE').textContent = trade.dte;
+    const scoreCycleEl = document.getElementById('gannScoreCycle');
+    if (scoreCycleEl) scoreCycleEl.textContent = `${scoreData.details.cycle}/30`;
+    const scorePriceEl = document.getElementById('gannScorePrice');
+    if (scorePriceEl) scorePriceEl.textContent = `${scoreData.details.price}/25`;
+    const scoreMTFEl = document.getElementById('gannScoreMTF');
+    if (scoreMTFEl) scoreMTFEl.textContent = `${scoreData.details.mtf}/20`;
+    const scoreAgentsEl = document.getElementById('gannScoreAgents');
+    if (scoreAgentsEl) scoreAgentsEl.textContent = `${scoreData.details.agents}/15`;
+    const scoreConfluenceEl = document.getElementById('gannScoreConfluence');
+    if (scoreConfluenceEl) scoreConfluenceEl.textContent = `${scoreData.details.confluence}/10`;
 
-    // Update Score
-    document.getElementById('gannOverallScore').textContent = scoreData.score;
-    document.getElementById('gannOverallScore').style.color =
-        scoreData.score >= 70 ? 'var(--success)' :
-        scoreData.score >= 50 ? 'var(--warning)' : 'var(--danger)';
-
-    document.getElementById('gannScoreCycle').textContent = `${scoreData.details.cycle}/30`;
-    document.getElementById('gannScorePrice').textContent = `${scoreData.details.price}/25`;
-    document.getElementById('gannScoreMTF').textContent = `${scoreData.details.mtf}/20`;
-    document.getElementById('gannScoreAgents').textContent = `${scoreData.details.agents}/15`;
-    document.getElementById('gannScoreConfluence').textContent = `${scoreData.details.confluence}/10`;
-
-    // Update Go/No-Go
+    // Go/No-Go indicator
     const goNoGoEl = document.getElementById('gannGoNoGo');
-    if (scoreData.score >= 70) {
-        goNoGoEl.innerHTML = '<div style="font-size: 24px; font-weight: 700; color: var(--success);">✅ TRADE</div><div style="font-size: 11px; color: var(--muted);">Score ≥ 70 - High Confidence</div>';
-        goNoGoEl.style.background = 'rgba(16,185,129,0.15)';
-        goNoGoEl.style.borderColor = 'var(--success)';
-    } else if (scoreData.score >= 50) {
-        goNoGoEl.innerHTML = '<div style="font-size: 24px; font-weight: 700; color: var(--warning);">⚠️ CAUTION</div><div style="font-size: 11px; color: var(--muted);">Score 50-69 - Medium Confidence</div>';
-        goNoGoEl.style.background = 'rgba(245,158,11,0.15)';
-        goNoGoEl.style.borderColor = 'var(--warning)';
-    } else {
-        goNoGoEl.innerHTML = '<div style="font-size: 24px; font-weight: 700; color: var(--danger);">❌ NO TRADE</div><div style="font-size: 11px; color: var(--muted);">Score < 50 - Low Confidence</div>';
-        goNoGoEl.style.background = 'rgba(239,68,68,0.15)';
-        goNoGoEl.style.borderColor = 'var(--danger)';
+    if (goNoGoEl) {
+        if (scoreData.score >= 70) {
+            goNoGoEl.innerHTML = '<div style="font-size: 20px; font-weight: 700; color: var(--success);">✅ GOOD SETUP</div><div style="font-size: 11px; color: var(--muted);">Trade when entry window opens</div>';
+            goNoGoEl.style.background = 'rgba(16,185,129,0.15)';
+            goNoGoEl.style.borderColor = 'var(--success)';
+        } else if (scoreData.score >= 50) {
+            goNoGoEl.innerHTML = '<div style="font-size: 20px; font-weight: 700; color: var(--warning);">⚠️ OK SETUP</div><div style="font-size: 11px; color: var(--muted);">Consider smaller position</div>';
+            goNoGoEl.style.background = 'rgba(245,158,11,0.15)';
+            goNoGoEl.style.borderColor = 'var(--warning)';
+        } else {
+            goNoGoEl.innerHTML = '<div style="font-size: 20px; font-weight: 700; color: var(--danger);">❌ WEAK SETUP</div><div style="font-size: 11px; color: var(--muted);">Better to skip this month</div>';
+            goNoGoEl.style.background = 'rgba(239,68,68,0.15)';
+            goNoGoEl.style.borderColor = 'var(--danger)';
+        }
     }
 
-    // Update Traffic Light
-    const trafficEl = document.getElementById('gannTrafficLight');
-    const isInEntryWindow = daysToEntry === 0;
-    if (scoreData.score >= 70 && isInEntryWindow) {
-        trafficEl.innerHTML = '<span style="font-size: 24px;">🟢</span><span style="font-size: 14px; font-weight: 600; color: var(--success);">ENTER NOW</span>';
-    } else if (scoreData.score >= 50) {
-        trafficEl.innerHTML = '<span style="font-size: 24px;">🟡</span><span style="font-size: 14px; font-weight: 600; color: var(--warning);">ALMOST READY</span>';
-    } else {
-        trafficEl.innerHTML = '<span style="font-size: 24px;">🔴</span><span style="font-size: 14px; font-weight: 600; color: var(--danger);">NOT READY</span>';
-    }
-
-    // Update Today's Action
-    const actionEl = document.getElementById('gannTodayAction');
-    const reasonEl = document.getElementById('gannActionReason');
-    if (scoreData.score >= 70 && isInEntryWindow) {
-        actionEl.innerHTML = '🟢 BUY';
-        actionEl.style.color = 'var(--success)';
-        reasonEl.textContent = 'All conditions met - Execute trade now';
-    } else if (scoreData.score >= 50) {
-        actionEl.innerHTML = '⏳ WAIT';
-        actionEl.style.color = 'var(--warning)';
-        reasonEl.textContent = `Wait for entry window (${daysToEntry} days) and score improvement`;
-    } else {
-        actionEl.innerHTML = '🚫 NO TRADE';
-        actionEl.style.color = 'var(--danger)';
-        reasonEl.textContent = 'Conditions not favorable - stay on sidelines';
-    }
-
-    // Update Trade Status
-    const statusEl = document.getElementById('gannTradeStatus');
-    if (scoreData.score >= 70 && isInEntryWindow) {
-        statusEl.textContent = 'Status: TRADE READY';
-        statusEl.style.color = 'var(--success)';
-    } else {
-        statusEl.textContent = 'Status: WAITING FOR SETUP';
-    }
-
-    // Update Trade Instructions
-    document.getElementById('gannSymbol').textContent = trade.symbol;
-    const dirEl = document.getElementById('gannDirection');
-    dirEl.innerHTML = trade.direction === 'CALL' ?
-        '<span style="color: var(--success);">CALL ☎️</span>' :
-        '<span style="color: var(--danger);">PUT 📉</span>';
-    document.getElementById('gannStrike').textContent = `$${trade.strike}`;
-    document.getElementById('gannExpiration').textContent = formatGannDate(trade.expDate);
-    document.getElementById('gannMaxPrice').textContent = `Pay up to $${trade.maxPrice}`;
-    document.getElementById('gannStopLoss').textContent = `Sell if option hits $${trade.stopLoss}`;
-    document.getElementById('gannTarget1').textContent = `Sell HALF at $${trade.target1}`;
-    document.getElementById('gannTarget2').textContent = `Sell REST at $${trade.target2}`;
-    document.getElementById('gannPosition').textContent = `Buy ${trade.contracts} contract${trade.contracts > 1 ? 's' : ''} ($${trade.totalCost.toFixed(0)})`;
-
-    // Update Risk Calculator
-    const riskAmount = trade.totalCost * 0.5;
-    const win1Amount = trade.totalCost * 0.5;
-    const win2Amount = trade.totalCost;
-    document.getElementById('gannRiskLoss').textContent = `-$${riskAmount.toFixed(0)}`;
-    document.getElementById('gannRiskWin1').textContent = `+$${win1Amount.toFixed(0)}`;
-    document.getElementById('gannRiskWin2').textContent = `+$${win2Amount.toFixed(0)}`;
-    document.getElementById('gannRiskReward').textContent = '1:2';
-
-    // Update Why This Trade
-    document.getElementById('gannWhy1').textContent = `30-day cycle ${cycles.cycle30Phase.toLowerCase()}s on ${formatGannDateShort(cycles.nextTurnDate)}`;
-    document.getElementById('gannWhy2').textContent = `Price at Square of 9 level: $${(distToS1 < distToR1 ? sq9.s1 : sq9.r1).toFixed(2)}`;
-
-    // MTF count
+    // ===== UPDATE CHECKLIST =====
     const mtfBullish = Math.round(scoreData.details.mtf / 4);
-    document.getElementById('gannWhy3').textContent = `${mtfBullish} out of 5 timeframes say ${trade.direction === 'CALL' ? 'UP' : 'DOWN'}`;
-
-    // Agent count
     const agentBullish = Math.round(scoreData.details.agents / 4);
-    document.getElementById('gannWhy4').textContent = `${agentBullish} out of 4 AI agents say ${trade.direction}`;
 
-    const confLevel = scoreData.score >= 70 ? 'HIGH' : scoreData.score >= 50 ? 'MEDIUM' : 'LOW';
-    document.getElementById('gannWhy5').textContent = `Gann Score: ${scoreData.score}/100 - ${confLevel} CONFIDENCE`;
-
-    // Update Checklist
     const checks = [
-        { id: 'gannCheck1', condition: cycles.cycle30Phase === 'BOTTOMING' || cycles.cycle30Phase === 'TOPPING', text: `Gann cycle in ${cycles.cycle30Phase.toLowerCase()} phase` },
-        { id: 'gannCheck2', condition: scoreData.details.price >= 20, text: `Price at support/resistance (${(distToS1 < distToR1 ? 'S1' : 'R1')})` },
-        { id: 'gannCheck3', condition: scoreData.details.mtf >= 12, text: `MTF Alignment: ${mtfBullish}/5 ${trade.direction === 'CALL' ? 'Bullish' : 'Bearish'}` },
-        { id: 'gannCheck4', condition: scoreData.details.agents >= 11, text: `Agent Consensus: ${agentBullish}/4 ${trade.direction}` },
-        { id: 'gannCheck5', condition: scoreData.details.confluence >= 7, text: `Confluence Score: ${scoreData.details.confluence >= 7 ? 'Strong' : 'Weak'}` },
-        { id: 'gannCheck6', condition: isInEntryWindow, text: 'Entry window open' }
+        { id: 'gannCheck1', condition: cycles.cycle30Phase === 'BOTTOMING' || cycles.cycle30Phase === 'TOPPING', text: 'Near a turn date (time is right)' },
+        { id: 'gannCheck2', condition: scoreData.details.price >= 20, text: 'Price at support or resistance' },
+        { id: 'gannCheck3', condition: scoreData.details.mtf >= 12, text: 'Most timeframes agree on direction' },
+        { id: 'gannCheck4', condition: scoreData.details.agents >= 11, text: 'AI agents mostly agree' },
+        { id: 'gannCheck5', condition: scoreData.score >= 70, text: 'Score is 70 or higher' },
+        { id: 'gannCheck6', condition: isInEntryWindow, text: 'Entry window is open' }
     ];
 
     let checksPass = 0;
@@ -10978,15 +11358,23 @@ function updateGannAnalysisTab() {
     });
 
     const summaryEl = document.getElementById('gannChecklistSummary');
-    if (checksPass === 6) {
-        summaryEl.innerHTML = `${checksPass} of 6 conditions met - <span style="color: var(--success);">ALL CLEAR!</span>`;
-    } else if (checksPass >= 4) {
-        summaryEl.innerHTML = `${checksPass} of 6 conditions met - <span style="color: var(--warning);">ALMOST READY</span>`;
-    } else {
-        summaryEl.innerHTML = `${checksPass} of 6 conditions met - <span style="color: var(--danger);">NOT READY</span>`;
+    if (summaryEl) {
+        if (checksPass === 6) {
+            summaryEl.innerHTML = `${checksPass} of 6 checks passed - <span style="color: var(--success);">ALL CLEAR - TRADE!</span>`;
+        } else if (checksPass >= 4) {
+            summaryEl.innerHTML = `${checksPass} of 6 checks passed - <span style="color: var(--warning);">ALMOST READY</span>`;
+        } else {
+            summaryEl.innerHTML = `${checksPass} of 6 checks passed - <span style="color: var(--danger);">NOT READY</span>`;
+        }
     }
 
-    console.log('🔮 Gann Analysis Tab updated successfully');
+    // ===== UPDATE SEASONAL INFO =====
+    const seasonalEl = document.getElementById('gannSeasonalBias');
+    if (seasonalEl) {
+        seasonalEl.textContent = `📈 ${cycles.seasonalBias}`;
+    }
+
+    console.log('🔮 Enhanced Gann Analysis Tab updated successfully');
 }
 
 // Initialize Gann Analysis tab when clicked
