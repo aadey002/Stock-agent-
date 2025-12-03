@@ -6739,6 +6739,12 @@ async function initializeApp() {
     await loadAllSymbolsData();
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
+
+    // Refresh Gann Analysis tab if active (now that all data is loaded)
+    if (document.getElementById('gann-analysis')?.classList.contains('active')) {
+        initMonthlyTradingDashboard();
+    }
+
     setInterval(loadAllData, 60000);
     setInterval(runHealthCheck, 300000); // Health check every 5 minutes
 }
@@ -13337,12 +13343,26 @@ function populateOpportunitiesTable() {
             actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 10px; cursor: pointer;">VIEW</button>`;
         }
 
-        // Get current price for this ETF
+        // Get current price for this ETF from multiple sources
         let currentPrice = 0;
+
+        // Source 1: allSymbolsData (loaded from CSV files)
         if (typeof allSymbolsData !== 'undefined' && allSymbolsData[etf.symbol] && allSymbolsData[etf.symbol].length > 0) {
             const latestBar = allSymbolsData[etf.symbol][allSymbolsData[etf.symbol].length - 1];
             currentPrice = parseFloat(latestBar.Close) || parseFloat(latestBar.close) || 0;
         }
+
+        // Source 2: currentData (if this is the currently selected symbol)
+        if (currentPrice === 0 && etf.symbol === currentSymbol && typeof currentData !== 'undefined' && currentData.length > 0) {
+            const latestBar = currentData[currentData.length - 1];
+            currentPrice = parseFloat(latestBar.Close) || parseFloat(latestBar.close) || 0;
+        }
+
+        // Source 3: window.symbolData (populated by various functions)
+        if (currentPrice === 0 && typeof window.symbolData !== 'undefined' && window.symbolData[etf.symbol]) {
+            currentPrice = window.symbolData[etf.symbol].price || 0;
+        }
+
         const priceDisplay = currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : '--';
 
         html += `
