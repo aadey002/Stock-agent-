@@ -3197,10 +3197,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <table id="mtOpportunitiesTable" style="font-size: 11px;">
                         <thead>
                             <tr>
-                                <th style="width: 50px;">Status</th>
+                                <th style="width: 70px;">Status</th>
                                 <th style="width: 60px;">Symbol</th>
                                 <th>Sector</th>
-                                <th style="width: 80px;">Entry Window</th>
+                                <th style="width: 70px;">Window</th>
+                                <th style="width: 60px;">Setup</th>
                                 <th style="width: 50px;">Score</th>
                                 <th style="width: 60px;">Direction</th>
                                 <th style="width: 70px;">Action</th>
@@ -13226,6 +13227,7 @@ function getSectorRotationPhase() {
 }
 
 // Populate the trading opportunities table
+// STATUS and COLORS are based on SCORE, not just entry window timing
 function populateOpportunitiesTable() {
     const tbody = document.getElementById('mtOpportunitiesBody');
     if (!tbody) return;
@@ -13235,48 +13237,115 @@ function populateOpportunitiesTable() {
 
     let html = '';
     windows.forEach(etf => {
-        const statusColors = {
-            'READY': 'var(--success)',
-            'ACTIVE': 'var(--danger)',
-            'SOON': 'var(--warning)',
-            'UPCOMING': 'var(--primary)',
-            'WAITING': 'var(--muted)'
-        };
+        // Determine status based on SCORE (not just entry window)
+        // If entry window is open (etf.status was 'READY'), use score to determine actual status
+        let displayStatus = etf.status;
+        let statusIcon = '';
+        let statusColor = '';
+        let rowBg = '';
 
-        const statusIcons = {
-            'READY': '🟢',
-            'ACTIVE': '🔴',
-            'SOON': '🟡',
-            'UPCOMING': '🔵',
-            'WAITING': '⚪'
-        };
+        // Check if this is an active position
+        const isActive = openPositions.some(p => p.symbol === etf.symbol && p.status === 'active');
 
-        const rowBg = etf.status === 'READY' ? 'rgba(16,185,129,0.1)' :
-                      etf.status === 'ACTIVE' ? 'rgba(239,68,68,0.1)' :
-                      etf.status === 'SOON' ? 'rgba(245,158,11,0.05)' : '';
+        if (isActive) {
+            // Active position - always show ACTIVE
+            displayStatus = 'ACTIVE';
+            statusIcon = '🔴';
+            statusColor = 'var(--danger)';
+            rowBg = 'rgba(239,68,68,0.1)';
+        } else if (etf.status === 'READY') {
+            // Entry window is open - status depends on SCORE
+            if (etf.score >= 70) {
+                displayStatus = 'READY';
+                statusIcon = '🟢';
+                statusColor = 'var(--success)';
+                rowBg = 'rgba(16,185,129,0.1)';
+            } else if (etf.score >= 50) {
+                displayStatus = 'WAIT';
+                statusIcon = '🟡';
+                statusColor = 'var(--warning)';
+                rowBg = 'rgba(245,158,11,0.05)';
+            } else {
+                displayStatus = 'SKIP';
+                statusIcon = '🔴';
+                statusColor = 'var(--danger)';
+                rowBg = 'rgba(239,68,68,0.05)';
+            }
+        } else if (etf.status === 'SOON') {
+            displayStatus = 'SOON';
+            statusIcon = '🟡';
+            statusColor = 'var(--warning)';
+            rowBg = 'rgba(245,158,11,0.03)';
+        } else if (etf.status === 'UPCOMING') {
+            displayStatus = 'UPCOMING';
+            statusIcon = '🔵';
+            statusColor = 'var(--primary)';
+            rowBg = '';
+        } else {
+            displayStatus = 'WAITING';
+            statusIcon = '⚪';
+            statusColor = 'var(--muted)';
+            rowBg = '';
+        }
 
+        // Entry window text
         const windowText = etf.status === 'READY' ? 'NOW!' :
-                          etf.status === 'ACTIVE' ? 'OPEN' :
+                          isActive ? 'OPEN' :
                           `${etf.daysUntilWindow || 0}d`;
 
+        // Setup Score column (WEAK/OK/GOOD/GREAT)
+        let setupText = '';
+        let setupColor = '';
+        if (etf.score >= 80) {
+            setupText = 'GREAT';
+            setupColor = 'var(--success)';
+        } else if (etf.score >= 70) {
+            setupText = 'GOOD';
+            setupColor = 'var(--success)';
+        } else if (etf.score >= 50) {
+            setupText = 'OK';
+            setupColor = 'var(--warning)';
+        } else {
+            setupText = 'WEAK';
+            setupColor = 'var(--danger)';
+        }
+
+        // Score color
+        const scoreColor = etf.score >= 70 ? 'var(--success)' :
+                          etf.score >= 50 ? 'var(--warning)' : 'var(--danger)';
+
+        // Direction
         const directionIcon = etf.direction === 'CALL' ? '📈' : '📉';
         const directionColor = etf.direction === 'CALL' ? 'var(--success)' : 'var(--danger)';
 
-        const actionBtn = etf.status === 'READY' ?
-            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">TRADE</button>` :
-            etf.status === 'ACTIVE' ?
-            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--danger); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">MANAGE</button>` :
-            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 10px; cursor: pointer;">VIEW</button>`;
+        // Action button based on SCORE
+        let actionBtn = '';
+        if (isActive) {
+            actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--danger); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">MANAGE</button>`;
+        } else if (etf.status === 'READY' && etf.score >= 70) {
+            // Good score + entry window open = TRADE
+            actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">TRADE</button>`;
+        } else if (etf.status === 'READY' && etf.score >= 50) {
+            // OK score + entry window open = VIEW (yellow)
+            actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--warning); border: none; border-radius: 4px; color: black; font-size: 10px; cursor: pointer;">VIEW</button>`;
+        } else if (etf.status === 'READY' && etf.score < 50) {
+            // Weak score + entry window open = SKIP (red/disabled)
+            actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--danger); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer; opacity: 0.7;">SKIP</button>`;
+        } else {
+            // Entry window not open = VIEW (gray)
+            actionBtn = `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 10px; cursor: pointer;">VIEW</button>`;
+        }
 
         html += `
             <tr style="background: ${rowBg}; cursor: pointer;" onclick="openTradeDetail('${etf.symbol}')">
-                <td style="color: ${statusColors[etf.status]};">${statusIcons[etf.status]} ${etf.status}</td>
+                <td style="color: ${statusColor}; font-weight: 600;">${statusIcon} ${displayStatus}</td>
                 <td style="font-weight: 700; color: var(--primary);">${etf.symbol}</td>
-                <td>${etf.sector}</td>
+                <td style="font-size: 10px;">${etf.sector}</td>
                 <td style="font-weight: 600;">${windowText}</td>
-                <td style="color: ${etf.score >= 70 ? 'var(--success)' : etf.score >= 50 ? 'var(--warning)' : 'var(--muted)'}; font-weight: 600;">${etf.score}</td>
+                <td style="color: ${setupColor}; font-weight: 700;">${setupText}</td>
+                <td style="color: ${scoreColor}; font-weight: 600;">${etf.score}</td>
                 <td style="color: ${directionColor};">${directionIcon} ${etf.direction}</td>
-                <td>${actionBtn}</td>
+                <td onclick="event.stopPropagation();">${actionBtn}</td>
             </tr>
         `;
     });
