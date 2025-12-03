@@ -2935,6 +2935,82 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- EXIT ALERT BANNER - Shows when action needed -->
+            <div id="exitAlertBanner" class="card" style="display: none; background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(245,158,11,0.2)); border: 2px solid var(--danger); margin-bottom: 15px; animation: pulse 2s infinite;">
+                <div class="card-title" style="color: var(--danger);">🚨 EXIT ALERT - ACTION REQUIRED 🚨</div>
+                <div class="table-wrap">
+                    <table id="exitAlertTable">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Alert Type</th>
+                                <th>Reason</th>
+                                <th>Urgency</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exitAlertBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DAILY POSITION REVIEW - Shows each morning -->
+            <div id="dailyPositionReview" class="card" style="display: none; background: rgba(245,158,11,0.1); border: 2px solid var(--warning); margin-bottom: 15px;">
+                <div class="card-title">☀️ MORNING POSITION REVIEW - <span id="reviewDate">Dec 3, 2025</span></div>
+                <div style="font-size: 12px; margin-bottom: 12px;">
+                    You have <span id="openPositionCount" style="font-weight: 700;">0</span> open positions. Here's today's status:
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Position</th><th>Overnight Change</th><th>Today's Outlook</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="dailyReviewBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 6px;">📍 TODAY'S KEY LEVELS TO WATCH:</div>
+                    <div id="dailyKeyLevels" style="font-size: 11px; color: var(--text);"></div>
+                </div>
+            </div>
+
+            <!-- OPEN POSITIONS STATUS DASHBOARD -->
+            <div id="positionsDashboard" class="card" style="display: none; margin-bottom: 15px;">
+                <div class="card-title">📈 OPEN POSITIONS - Health Check</div>
+                <div id="positionsContainer">
+                    <!-- Position cards populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- EXIT CONFIRMATION MODAL -->
+            <div id="exitConfirmModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+                <div style="background: var(--card); border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                    <div style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--danger);">⚠️ CONFIRM EXIT</div>
+                    <div id="exitConfirmContent">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                    <div style="margin-top: 16px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="closeExitModal()" style="padding: 10px 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">Cancel</button>
+                        <button onclick="confirmExit()" style="padding: 10px 20px; background: var(--danger); border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: 600;">CONFIRM CLOSE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALERT MESSAGE MODAL -->
+            <div id="alertMessageModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9998; justify-content: center; align-items: center;">
+                <div style="background: var(--card); border-radius: 12px; padding: 24px; max-width: 550px; width: 90%; max-height: 90vh; overflow-y: auto;">
+                    <div id="alertMessageHeader" style="font-size: 16px; font-weight: 700; margin-bottom: 12px;"></div>
+                    <div id="alertMessageContent" style="font-size: 13px; line-height: 1.6;"></div>
+                    <div id="alertMessageActions" style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        <!-- Action buttons populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
             <!-- TODAY'S SIMPLE ANSWER -->
             <div class="card" style="margin-bottom: 15px;">
                 <div class="card-title">🎯 WHAT SHOULD I DO TODAY?</div>
@@ -3348,6 +3424,59 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">
                         Historically, the market tends to go up in December. This doesn't guarantee anything, but it's a helpful pattern to know.
                     </div>
+                </div>
+            </div>
+
+            <!-- EXIT PERFORMANCE ANALYSIS -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">📊 EXIT SIGNAL PERFORMANCE</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    Track which exit signals work best for your trading style.
+                </div>
+                <div class="table-wrap">
+                    <table id="exitPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th>Exit Trigger</th>
+                                <th>Times Used</th>
+                                <th>Avg P&L</th>
+                                <th>Win Rate</th>
+                                <th>Assessment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exitPerformanceBody">
+                            <tr><td>🎯 Target Hit</td><td>0</td><td>-</td><td>-</td><td style="color: var(--muted);">No data yet</td></tr>
+                            <tr><td>🛑 Stop Loss</td><td>0</td><td>-</td><td>-</td><td style="color: var(--muted);">No data yet</td></tr>
+                            <tr><td>🔄 Trend Reversed</td><td>0</td><td>-</td><td>-</td><td style="color: var(--muted);">No data yet</td></tr>
+                            <tr><td>⏰ Time Exit</td><td>0</td><td>-</td><td>-</td><td style="color: var(--muted);">No data yet</td></tr>
+                            <tr><td>👤 Manual</td><td>0</td><td>-</td><td>-</td><td style="color: var(--muted);">No data yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px; font-size: 11px;">
+                    <strong>💡 Insight:</strong> <span id="exitInsight">Complete more trades to see which exit signals work best for you.</span>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title">⚡ QUICK ACTIONS</div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="addDemoPosition()" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        ➕ Add Test Position
+                    </button>
+                    <button onclick="openPositions = []; saveOpenPositions(); updateExitAlertSystem(); alert('All positions cleared!');" style="padding: 10px 20px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        🗑️ Clear All Positions
+                    </button>
+                    <button onclick="updateExitAlertSystem()" style="padding: 10px 20px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        🔄 Refresh Alerts
+                    </button>
+                    <button onclick="updateExitPerformanceDisplay()" style="padding: 10px 20px; background: var(--warning); color: black; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                        📊 Update Stats
+                    </button>
+                </div>
+                <div style="margin-top: 12px; font-size: 11px; color: var(--muted);">
+                    Use "Add Test Position" to simulate a trade and test the exit alert system.
                 </div>
             </div>
         </div>
@@ -11393,6 +11522,945 @@ if (originalLoadSymbol) {
                 updateGannAnalysisTab();
             }
         }, 1000);
+    };
+}
+
+
+// ==========================================
+// EXIT ALERT SYSTEM
+// ==========================================
+
+// Store for open positions (persisted to localStorage)
+let openPositions = [];
+let exitPerformanceLog = [];
+let pendingExitPosition = null;
+
+// Load positions from localStorage
+function loadOpenPositions() {
+    try {
+        const saved = localStorage.getItem('gann_open_positions');
+        if (saved) {
+            openPositions = JSON.parse(saved);
+        }
+        const perfLog = localStorage.getItem('gann_exit_performance');
+        if (perfLog) {
+            exitPerformanceLog = JSON.parse(perfLog);
+        }
+    } catch (e) {
+        console.warn('Could not load positions:', e);
+        openPositions = [];
+    }
+}
+
+// Save positions to localStorage
+function saveOpenPositions() {
+    try {
+        localStorage.setItem('gann_open_positions', JSON.stringify(openPositions));
+        localStorage.setItem('gann_exit_performance', JSON.stringify(exitPerformanceLog));
+    } catch (e) {
+        console.warn('Could not save positions:', e);
+    }
+}
+
+// Add a new position
+function addOpenPosition(position) {
+    const newPos = {
+        id: Date.now(),
+        symbol: position.symbol || currentSymbol || 'SPY',
+        type: position.type || 'CALL',
+        strike: position.strike || 600,
+        expiry: position.expiry || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        entryDate: position.entryDate || new Date().toISOString(),
+        entryPrice: position.entryPrice || 3.50,
+        currentPrice: position.currentPrice || position.entryPrice || 3.50,
+        contracts: position.contracts || 1,
+        stopLoss: position.stopLoss || (position.entryPrice || 3.50) * 0.5,
+        target1: position.target1 || (position.entryPrice || 3.50) * 1.5,
+        target2: position.target2 || (position.entryPrice || 3.50) * 2.0,
+        stopPriceLevel: position.stopPriceLevel || 590,
+        status: 'open',
+        alerts: [],
+        halfSold: false
+    };
+    openPositions.push(newPos);
+    saveOpenPositions();
+    updateExitAlertSystem();
+    return newPos;
+}
+
+// Update position current price (would normally come from market data)
+function updatePositionPrice(positionId, newPrice) {
+    const pos = openPositions.find(p => p.id === positionId);
+    if (pos) {
+        pos.currentPrice = newPrice;
+        saveOpenPositions();
+        checkExitConditions(pos);
+    }
+}
+
+// Calculate days until expiration
+function getDaysToExpiry(expiryDate) {
+    const expiry = new Date(expiryDate);
+    const today = new Date();
+    return Math.ceil((expiry - today) / (24 * 60 * 60 * 1000));
+}
+
+// Calculate P&L
+function calculatePnL(position) {
+    const pnlPercent = ((position.currentPrice - position.entryPrice) / position.entryPrice) * 100;
+    const pnlDollar = (position.currentPrice - position.entryPrice) * position.contracts * 100;
+    return { percent: pnlPercent, dollar: pnlDollar };
+}
+
+// Check all exit conditions for a position
+function checkExitConditions(position) {
+    const alerts = [];
+    const daysToExpiry = getDaysToExpiry(position.expiry);
+    const pnl = calculatePnL(position);
+    const cycles = calculateGannCycles();
+    const scoreData = calculateTradeSetupScore();
+    const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
+    const sq9 = calculateSquareOf9Levels(price);
+
+    // ===== TIME-BASED EXITS =====
+    if (daysToExpiry <= 1) {
+        alerts.push({
+            type: 'TIME_EXIT',
+            icon: '⏰',
+            reason: '1 day until expiration - Close immediately!',
+            urgency: 'CRITICAL',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE NOW'
+        });
+    } else if (daysToExpiry <= 2) {
+        alerts.push({
+            type: 'TIME_EXIT',
+            icon: '⏰',
+            reason: `${daysToExpiry} days until expiration`,
+            urgency: 'URGENT',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE NOW'
+        });
+    } else if (daysToExpiry <= 3) {
+        alerts.push({
+            type: 'TIME_WARNING',
+            icon: '⏰',
+            reason: `${daysToExpiry} days until expiration`,
+            urgency: 'WARNING',
+            urgencyColor: 'var(--warning)',
+            action: 'CONSIDER CLOSING'
+        });
+    }
+
+    // Check if cycle turn + 5 days passed
+    const daysSinceTurn = 30 - cycles.daysTo30Turn;
+    if (daysSinceTurn >= 5 && daysSinceTurn <= 10) {
+        alerts.push({
+            type: 'CYCLE_COMPLETE',
+            icon: '🔄',
+            reason: 'Expected move may be complete (5+ days since turn)',
+            urgency: 'INFO',
+            urgencyColor: 'var(--primary)',
+            action: 'TAKE PROFITS'
+        });
+    }
+
+    // ===== PROFIT TARGET EXITS =====
+    if (pnl.percent >= 100 && !position.halfSold) {
+        alerts.push({
+            type: 'TARGET_HIT',
+            icon: '🎯',
+            reason: `Reached Target 2 (${pnl.percent.toFixed(0)}% profit!)`,
+            urgency: 'TAKE PROFIT',
+            urgencyColor: 'var(--success)',
+            action: 'SELL ALL'
+        });
+    } else if (pnl.percent >= 50 && !position.halfSold) {
+        alerts.push({
+            type: 'TARGET_HIT',
+            icon: '🎯',
+            reason: `Reached Target 1 (${pnl.percent.toFixed(0)}% profit)`,
+            urgency: 'TAKE PROFIT',
+            urgencyColor: 'var(--success)',
+            action: 'SELL HALF'
+        });
+    } else if (pnl.percent >= 30 && daysToExpiry <= 5) {
+        alerts.push({
+            type: 'EARLY_PROFIT',
+            icon: '💰',
+            reason: `Up ${pnl.percent.toFixed(0)}% with only ${daysToExpiry} days left`,
+            urgency: 'CONSIDER',
+            urgencyColor: 'var(--success)',
+            action: 'TAKE EARLY PROFITS'
+        });
+    }
+
+    // ===== STOP LOSS EXITS =====
+    if (position.currentPrice <= position.stopLoss) {
+        alerts.push({
+            type: 'STOP_LOSS',
+            icon: '🛑',
+            reason: `Stop loss hit ($${position.stopLoss.toFixed(2)})`,
+            urgency: 'URGENT',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE NOW'
+        });
+    } else if (pnl.percent <= -40) {
+        alerts.push({
+            type: 'STOP_WARNING',
+            icon: '⚠️',
+            reason: `Down ${Math.abs(pnl.percent).toFixed(0)}% - approaching stop`,
+            urgency: 'WARNING',
+            urgencyColor: 'var(--warning)',
+            action: 'WATCH CLOSELY'
+        });
+    }
+
+    // Check price level stops
+    if (position.type === 'CALL' && price <= sq9.s2) {
+        alerts.push({
+            type: 'LEVEL_BROKEN',
+            icon: '📉',
+            reason: `Support level S2 ($${sq9.s2.toFixed(2)}) broken`,
+            urgency: 'URGENT',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE NOW'
+        });
+    } else if (position.type === 'PUT' && price >= sq9.r2) {
+        alerts.push({
+            type: 'LEVEL_BROKEN',
+            icon: '📈',
+            reason: `Resistance level R2 ($${sq9.r2.toFixed(2)}) broken`,
+            urgency: 'URGENT',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE NOW'
+        });
+    }
+
+    // ===== TREND CHANGE EXITS =====
+    const mtfScore = scoreData.details.mtf;
+    const agentScore = scoreData.details.agents;
+    const confluenceScore = scoreData.details.confluence;
+
+    if (mtfScore <= 4) { // 1/5 or less bullish
+        alerts.push({
+            type: 'TREND_REVERSED',
+            icon: '🔄',
+            reason: 'Trend fully reversed - MTF now bearish',
+            urgency: 'URGENT',
+            urgencyColor: 'var(--danger)',
+            action: 'CLOSE POSITION'
+        });
+    } else if (mtfScore <= 8) { // 2/5 bullish
+        alerts.push({
+            type: 'TREND_WEAKENING',
+            icon: '⚠️',
+            reason: 'Trend weakening - only 2/5 timeframes bullish',
+            urgency: 'CAUTION',
+            urgencyColor: 'var(--warning)',
+            action: 'TIGHTEN STOP'
+        });
+    }
+
+    if (agentScore <= 4) {
+        alerts.push({
+            type: 'AGENTS_FLIPPED',
+            icon: '🤖',
+            reason: 'AI agents changed opinion (now bearish)',
+            urgency: 'CAUTION',
+            urgencyColor: 'var(--warning)',
+            action: 'REVIEW'
+        });
+    }
+
+    if (confluenceScore <= 3) {
+        alerts.push({
+            type: 'CONFLUENCE_DROP',
+            icon: '📊',
+            reason: 'Conviction dropped - signals weakening',
+            urgency: 'INFO',
+            urgencyColor: 'var(--warning)',
+            action: 'WATCH'
+        });
+    }
+
+    position.alerts = alerts;
+    return alerts;
+}
+
+// Generate position health check data
+function updatePositionHealth(position) {
+    const daysToExpiry = getDaysToExpiry(position.expiry);
+    const pnl = calculatePnL(position);
+    const cycles = calculateGannCycles();
+    const scoreData = calculateTradeSetupScore();
+    const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
+
+    const health = {
+        daysRemaining: {
+            value: daysToExpiry,
+            status: daysToExpiry > 7 ? 'good' : daysToExpiry > 3 ? 'warning' : 'danger',
+            text: daysToExpiry > 7 ? 'Plenty of time' : daysToExpiry > 3 ? 'Getting short' : 'Very little time!'
+        },
+        stopLoss: {
+            value: position.currentPrice > position.stopLoss,
+            distance: ((position.currentPrice - position.stopLoss) / position.stopLoss * 100).toFixed(0),
+            status: position.currentPrice > position.stopLoss * 1.2 ? 'good' : position.currentPrice > position.stopLoss ? 'warning' : 'danger',
+            text: position.currentPrice <= position.stopLoss ? 'STOP HIT!' : `${((position.currentPrice - position.stopLoss) / position.stopLoss * 100).toFixed(0)}% above stop`
+        },
+        target1: {
+            hit: position.currentPrice >= position.target1,
+            distance: ((position.target1 - position.currentPrice) / position.currentPrice * 100).toFixed(0),
+            status: position.currentPrice >= position.target1 ? 'good' : 'pending',
+            text: position.currentPrice >= position.target1 ? 'TARGET HIT!' : `${((position.target1 - position.currentPrice) / position.currentPrice * 100).toFixed(0)}% away`
+        },
+        target2: {
+            hit: position.currentPrice >= position.target2,
+            distance: ((position.target2 - position.currentPrice) / position.currentPrice * 100).toFixed(0),
+            status: position.currentPrice >= position.target2 ? 'good' : 'pending',
+            text: position.currentPrice >= position.target2 ? 'TARGET HIT!' : `${((position.target2 - position.currentPrice) / position.currentPrice * 100).toFixed(0)}% away`
+        },
+        mtfAlignment: {
+            value: Math.round(scoreData.details.mtf / 4),
+            status: scoreData.details.mtf >= 12 ? 'good' : scoreData.details.mtf >= 8 ? 'warning' : 'danger',
+            text: scoreData.details.mtf >= 12 ? 'Trend intact' : scoreData.details.mtf >= 8 ? 'Trend weakening' : 'TREND REVERSED'
+        },
+        agentConsensus: {
+            value: Math.round(scoreData.details.agents / 4),
+            status: scoreData.details.agents >= 11 ? 'good' : scoreData.details.agents >= 8 ? 'warning' : 'danger',
+            text: scoreData.details.agents >= 11 ? 'Agents agree' : scoreData.details.agents >= 8 ? 'Agents split' : 'Agents bearish'
+        },
+        gannCycle: {
+            phase: cycles.cycle30Phase,
+            day: cycles.cycle30Day,
+            status: cycles.daysTo30Turn > 20 ? 'good' : cycles.daysTo30Turn > 10 ? 'warning' : 'info',
+            text: cycles.daysTo30Turn > 20 ? 'Move in progress' : `Day ${cycles.cycle30Day} of cycle`
+        },
+        confluenceScore: {
+            value: scoreData.details.confluence,
+            status: scoreData.details.confluence >= 7 ? 'good' : scoreData.details.confluence >= 5 ? 'warning' : 'danger',
+            text: scoreData.details.confluence >= 7 ? 'Strong conviction' : scoreData.details.confluence >= 5 ? 'Moderate' : 'Weak conviction'
+        },
+        pnl: pnl,
+        overallStatus: 'HOLD'
+    };
+
+    // Determine overall status
+    const dangerCount = Object.values(health).filter(h => h.status === 'danger').length;
+    const warningCount = Object.values(health).filter(h => h.status === 'warning').length;
+
+    if (dangerCount >= 2 || health.stopLoss.status === 'danger') {
+        health.overallStatus = 'CLOSE';
+        health.overallColor = 'var(--danger)';
+        health.overallIcon = '🔴';
+        health.nextAction = 'Close position to limit losses';
+    } else if (health.target1.hit || health.target2.hit) {
+        health.overallStatus = 'TAKE PROFIT';
+        health.overallColor = 'var(--success)';
+        health.overallIcon = '🟢';
+        health.nextAction = health.target2.hit ? 'Sell all - Target 2 reached!' : 'Sell half - Target 1 reached';
+    } else if (warningCount >= 3 || dangerCount >= 1) {
+        health.overallStatus = 'CAUTION';
+        health.overallColor = 'var(--warning)';
+        health.overallIcon = '🟡';
+        health.nextAction = 'Tighten stop loss and watch closely';
+    } else {
+        health.overallStatus = 'HOLD';
+        health.overallColor = 'var(--success)';
+        health.overallIcon = '🟢';
+        health.nextAction = 'Continue holding, no action needed';
+    }
+
+    return health;
+}
+
+// Generate exit alert HTML for a position
+function generateExitAlertRow(position, alert) {
+    const pnl = calculatePnL(position);
+    const pnlColor = pnl.percent >= 0 ? 'var(--success)' : 'var(--danger)';
+
+    return `
+        <tr>
+            <td style="font-weight: 600;">${position.symbol} ${position.type} $${position.strike}</td>
+            <td>${alert.icon} ${alert.type.replace(/_/g, ' ')}</td>
+            <td style="font-size: 11px;">${alert.reason}</td>
+            <td style="color: ${alert.urgencyColor}; font-weight: 600;">${alert.urgency}</td>
+            <td>
+                <button onclick="handleExitAction('${position.id}', '${alert.action}')"
+                    style="padding: 6px 12px; background: ${alert.urgencyColor}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">
+                    ${alert.action}
+                </button>
+            </td>
+        </tr>
+    `;
+}
+
+// Generate position card HTML
+function generatePositionCard(position) {
+    const health = updatePositionHealth(position);
+    const pnl = health.pnl;
+    const pnlColor = pnl.percent >= 0 ? 'var(--success)' : 'var(--danger)';
+    const pnlSign = pnl.percent >= 0 ? '+' : '';
+    const expiryDate = new Date(position.expiry);
+    const entryDate = new Date(position.entryDate);
+
+    const statusIcon = (status) => {
+        if (status === 'good') return '✅';
+        if (status === 'warning') return '⚠️';
+        if (status === 'danger') return '❌';
+        return '⏳';
+    };
+
+    return `
+        <div style="background: var(--bg); border: 2px solid ${health.overallColor}; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+                <div>
+                    <div style="font-size: 16px; font-weight: 700;">${position.symbol} ${position.type} $${position.strike}</div>
+                    <div style="font-size: 11px; color: var(--muted);">Expires: ${formatGannDate(expiryDate)}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 14px; color: ${pnlColor}; font-weight: 700;">${pnlSign}$${pnl.dollar.toFixed(0)} (${pnlSign}${pnl.percent.toFixed(0)}%)</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: 11px;">
+                <div><span style="color: var(--muted);">Entry:</span> ${formatGannDateShort(entryDate)} @ $${position.entryPrice.toFixed(2)}</div>
+                <div><span style="color: var(--muted);">Current:</span> $${position.currentPrice.toFixed(2)}</div>
+                <div><span style="color: var(--muted);">Contracts:</span> ${position.contracts}</div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">📊 HEALTH CHECK:</div>
+            <div style="display: grid; gap: 4px; font-size: 11px;">
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Days Remaining:</span>
+                    <span>${statusIcon(health.daysRemaining.status)} ${health.daysRemaining.value} days - ${health.daysRemaining.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Stop Loss ($${position.stopLoss.toFixed(2)}):</span>
+                    <span>${statusIcon(health.stopLoss.status)} ${health.stopLoss.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Target 1 ($${position.target1.toFixed(2)}):</span>
+                    <span>${statusIcon(health.target1.status)} ${health.target1.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Target 2 ($${position.target2.toFixed(2)}):</span>
+                    <span>${statusIcon(health.target2.status)} ${health.target2.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>MTF Alignment:</span>
+                    <span>${statusIcon(health.mtfAlignment.status)} ${health.mtfAlignment.value}/5 - ${health.mtfAlignment.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Agent Consensus:</span>
+                    <span>${statusIcon(health.agentConsensus.status)} ${health.agentConsensus.value}/4 - ${health.agentConsensus.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Gann Cycle:</span>
+                    <span>${statusIcon(health.gannCycle.status)} ${health.gannCycle.text}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: var(--card); border-radius: 4px;">
+                    <span>Confluence Score:</span>
+                    <span>${statusIcon(health.confluenceScore.status)} ${health.confluenceScore.value}/10 - ${health.confluenceScore.text}</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; padding: 12px; background: ${health.overallColor}20; border: 1px solid ${health.overallColor}; border-radius: 8px;">
+                <div style="font-size: 14px; font-weight: 700; color: ${health.overallColor};">
+                    ${health.overallIcon} OVERALL STATUS: ${health.overallStatus}
+                </div>
+                <div style="font-size: 12px; color: var(--text); margin-top: 4px;">
+                    <strong>Next Action:</strong> ${health.nextAction}
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="showPositionAlert(${position.id})" style="padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">📋 Details</button>
+                <button onclick="openExitModal(${position.id}, 'manual')" style="padding: 8px 16px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🚪 Close Position</button>
+                ${health.target1.hit && !position.halfSold ? `<button onclick="sellHalf(${position.id})" style="padding: 8px 16px; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">💰 Sell Half</button>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Show detailed alert message
+function showPositionAlert(positionId) {
+    const position = openPositions.find(p => p.id === positionId);
+    if (!position) return;
+
+    const health = updatePositionHealth(position);
+    const pnl = health.pnl;
+    const alerts = position.alerts || [];
+
+    const modal = document.getElementById('alertMessageModal');
+    const header = document.getElementById('alertMessageHeader');
+    const content = document.getElementById('alertMessageContent');
+    const actions = document.getElementById('alertMessageActions');
+
+    const pnlColor = pnl.percent >= 0 ? 'var(--success)' : 'var(--danger)';
+    const pnlSign = pnl.percent >= 0 ? '+' : '';
+
+    header.innerHTML = `${health.overallIcon} ${position.symbol} ${position.type} $${position.strike} - ${health.overallStatus}`;
+    header.style.color = health.overallColor;
+
+    let alertsHtml = '';
+    if (alerts.length > 0) {
+        alertsHtml = `
+            <div style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px;">
+                <div style="font-weight: 700; margin-bottom: 8px;">⚠️ ACTIVE ALERTS:</div>
+                ${alerts.map(a => `<div style="padding: 6px 0; border-bottom: 1px solid var(--border);">${a.icon} <strong>${a.urgency}:</strong> ${a.reason}</div>`).join('')}
+            </div>
+        `;
+    }
+
+    content.innerHTML = `
+        <div style="margin-bottom: 16px;">
+            <strong>Current P&L:</strong> <span style="color: ${pnlColor}; font-weight: 700;">${pnlSign}$${pnl.dollar.toFixed(0)} (${pnlSign}${pnl.percent.toFixed(0)}%)</span>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <strong>Position Details:</strong>
+            <ul style="margin: 8px 0; padding-left: 20px;">
+                <li>Entry: $${position.entryPrice.toFixed(2)} on ${formatGannDateShort(new Date(position.entryDate))}</li>
+                <li>Current: $${position.currentPrice.toFixed(2)}</li>
+                <li>Stop Loss: $${position.stopLoss.toFixed(2)}</li>
+                <li>Target 1: $${position.target1.toFixed(2)} (${position.halfSold ? 'SOLD' : 'pending'})</li>
+                <li>Target 2: $${position.target2.toFixed(2)}</li>
+                <li>Days to Expiry: ${getDaysToExpiry(position.expiry)}</li>
+            </ul>
+        </div>
+
+        ${alertsHtml}
+
+        <div style="margin-top: 16px; padding: 12px; background: ${health.overallColor}20; border-radius: 8px;">
+            <strong>Recommended Action:</strong> ${health.nextAction}
+        </div>
+    `;
+
+    actions.innerHTML = `
+        <button onclick="closeAlertModal()" style="padding: 10px 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">Close</button>
+        <button onclick="closeAlertModal(); openExitModal(${position.id}, 'manual')" style="padding: 10px 20px; background: var(--danger); border: none; border-radius: 6px; cursor: pointer; color: white;">Exit Position</button>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+// Close alert modal
+function closeAlertModal() {
+    document.getElementById('alertMessageModal').style.display = 'none';
+}
+
+// Handle exit action from alert banner
+function handleExitAction(positionId, action) {
+    const position = openPositions.find(p => p.id === parseInt(positionId));
+    if (!position) return;
+
+    if (action === 'CLOSE NOW' || action === 'CLOSE POSITION') {
+        openExitModal(position.id, 'stop_loss');
+    } else if (action === 'SELL HALF') {
+        sellHalf(position.id);
+    } else if (action === 'SELL ALL') {
+        openExitModal(position.id, 'target_hit');
+    } else if (action === 'TIGHTEN STOP') {
+        // Tighten stop to 25% loss instead of 50%
+        position.stopLoss = position.entryPrice * 0.75;
+        saveOpenPositions();
+        updateExitAlertSystem();
+        alert(`Stop loss tightened to $${position.stopLoss.toFixed(2)}`);
+    } else {
+        showPositionAlert(position.id);
+    }
+}
+
+// Sell half of position
+function sellHalf(positionId) {
+    const position = openPositions.find(p => p.id === positionId);
+    if (!position || position.halfSold) return;
+
+    position.halfSold = true;
+    position.contracts = Math.ceil(position.contracts / 2);
+
+    // Log the partial exit
+    const pnl = calculatePnL(position);
+    exitPerformanceLog.push({
+        date: new Date().toISOString(),
+        symbol: position.symbol,
+        type: position.type,
+        exitTrigger: 'TARGET_HIT',
+        pnlPercent: pnl.percent,
+        action: 'SELL_HALF'
+    });
+
+    saveOpenPositions();
+    updateExitAlertSystem();
+    alert(`Sold half of ${position.symbol} ${position.type} at $${position.currentPrice.toFixed(2)} for ${pnl.percent.toFixed(0)}% profit!`);
+}
+
+// Open exit confirmation modal
+function openExitModal(positionId, reason) {
+    const position = openPositions.find(p => p.id === positionId);
+    if (!position) return;
+
+    pendingExitPosition = { position, reason };
+    const pnl = calculatePnL(position);
+    const pnlColor = pnl.percent >= 0 ? 'var(--success)' : 'var(--danger)';
+    const pnlSign = pnl.percent >= 0 ? '+' : '';
+
+    const content = document.getElementById('exitConfirmContent');
+    content.innerHTML = `
+        <div style="margin-bottom: 16px;">
+            <strong>${position.symbol} ${position.type} $${position.strike}</strong>
+        </div>
+
+        <div style="background: var(--bg); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+            <div style="display: grid; gap: 8px; font-size: 13px;">
+                <div>Entry: $${position.entryPrice.toFixed(2)} on ${formatGannDateShort(new Date(position.entryDate))}</div>
+                <div>Exit: $${position.currentPrice.toFixed(2)} on ${formatGannDateShort(new Date())}</div>
+                <div style="color: ${pnlColor}; font-weight: 700;">P&L: ${pnlSign}$${pnl.dollar.toFixed(0)} (${pnlSign}${pnl.percent.toFixed(0)}%)</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <strong>Reason for Exit:</strong>
+            <div style="margin-top: 8px;">
+                <label style="display: block; padding: 8px; background: var(--bg); border-radius: 4px; margin-bottom: 4px; cursor: pointer;">
+                    <input type="radio" name="exitReason" value="stop_loss" ${reason === 'stop_loss' ? 'checked' : ''}> 🛑 Stop loss hit
+                </label>
+                <label style="display: block; padding: 8px; background: var(--bg); border-radius: 4px; margin-bottom: 4px; cursor: pointer;">
+                    <input type="radio" name="exitReason" value="target_hit" ${reason === 'target_hit' ? 'checked' : ''}> 🎯 Target reached
+                </label>
+                <label style="display: block; padding: 8px; background: var(--bg); border-radius: 4px; margin-bottom: 4px; cursor: pointer;">
+                    <input type="radio" name="exitReason" value="trend_reversed" ${reason === 'trend_reversed' ? 'checked' : ''}> 🔄 Trend reversed
+                </label>
+                <label style="display: block; padding: 8px; background: var(--bg); border-radius: 4px; margin-bottom: 4px; cursor: pointer;">
+                    <input type="radio" name="exitReason" value="time_exit" ${reason === 'time_exit' ? 'checked' : ''}> ⏰ Time exit (expiration)
+                </label>
+                <label style="display: block; padding: 8px; background: var(--bg); border-radius: 4px; cursor: pointer;">
+                    <input type="radio" name="exitReason" value="manual" ${reason === 'manual' ? 'checked' : ''}> 👤 Manual decision
+                </label>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('exitConfirmModal').style.display = 'flex';
+}
+
+// Close exit modal
+function closeExitModal() {
+    document.getElementById('exitConfirmModal').style.display = 'none';
+    pendingExitPosition = null;
+}
+
+// Confirm and execute exit
+function confirmExit() {
+    if (!pendingExitPosition) return;
+
+    const { position } = pendingExitPosition;
+    const selectedReason = document.querySelector('input[name="exitReason"]:checked')?.value || 'manual';
+    const pnl = calculatePnL(position);
+
+    // Log the exit
+    logTradeExit(position, selectedReason, position.currentPrice);
+
+    // Remove from open positions
+    openPositions = openPositions.filter(p => p.id !== position.id);
+    saveOpenPositions();
+
+    closeExitModal();
+    updateExitAlertSystem();
+
+    // Update trade tracker counts
+    const completedCount = document.getElementById('gannCompletedCount');
+    if (completedCount) {
+        completedCount.textContent = parseInt(completedCount.textContent) + 1;
+    }
+
+    alert(`Position closed: ${position.symbol} ${position.type} at $${position.currentPrice.toFixed(2)} (${pnl.percent >= 0 ? '+' : ''}${pnl.percent.toFixed(0)}%)`);
+}
+
+// Log trade exit for performance tracking
+function logTradeExit(position, exitReason, exitPrice) {
+    const pnl = calculatePnL(position);
+
+    exitPerformanceLog.push({
+        date: new Date().toISOString(),
+        symbol: position.symbol,
+        type: position.type,
+        strike: position.strike,
+        entryPrice: position.entryPrice,
+        exitPrice: exitPrice,
+        entryDate: position.entryDate,
+        exitTrigger: exitReason,
+        pnlPercent: pnl.percent,
+        pnlDollar: pnl.dollar,
+        result: pnl.percent >= 0 ? 'WIN' : 'LOSS'
+    });
+
+    saveOpenPositions();
+}
+
+// Calculate exit performance statistics
+function calculateExitPerformance() {
+    const performance = {
+        TARGET_HIT: { count: 0, totalPnl: 0, wins: 0 },
+        STOP_LOSS: { count: 0, totalPnl: 0, wins: 0 },
+        TREND_REVERSED: { count: 0, totalPnl: 0, wins: 0 },
+        TIME_EXIT: { count: 0, totalPnl: 0, wins: 0 },
+        MANUAL: { count: 0, totalPnl: 0, wins: 0 }
+    };
+
+    exitPerformanceLog.forEach(exit => {
+        const key = exit.exitTrigger?.toUpperCase() || 'MANUAL';
+        if (performance[key]) {
+            performance[key].count++;
+            performance[key].totalPnl += exit.pnlPercent;
+            if (exit.pnlPercent >= 0) performance[key].wins++;
+        }
+    });
+
+    // Calculate averages and win rates
+    Object.keys(performance).forEach(key => {
+        const p = performance[key];
+        p.avgPnl = p.count > 0 ? (p.totalPnl / p.count).toFixed(1) : 0;
+        p.winRate = p.count > 0 ? ((p.wins / p.count) * 100).toFixed(0) : 0;
+    });
+
+    return performance;
+}
+
+// Update the entire exit alert system
+function updateExitAlertSystem() {
+    loadOpenPositions();
+
+    // Check all positions for alerts
+    const allAlerts = [];
+    openPositions.forEach(pos => {
+        const alerts = checkExitConditions(pos);
+        alerts.forEach(alert => {
+            allAlerts.push({ position: pos, alert });
+        });
+    });
+
+    // Sort alerts by urgency
+    const urgencyOrder = { 'CRITICAL': 0, 'URGENT': 1, 'WARNING': 2, 'CAUTION': 3, 'TAKE PROFIT': 4, 'CONSIDER': 5, 'INFO': 6 };
+    allAlerts.sort((a, b) => (urgencyOrder[a.alert.urgency] || 99) - (urgencyOrder[b.alert.urgency] || 99));
+
+    // Update alert banner
+    const banner = document.getElementById('exitAlertBanner');
+    const alertBody = document.getElementById('exitAlertBody');
+
+    if (banner && alertBody) {
+        const urgentAlerts = allAlerts.filter(a => ['CRITICAL', 'URGENT', 'TAKE PROFIT'].includes(a.alert.urgency));
+
+        if (urgentAlerts.length > 0) {
+            banner.style.display = 'block';
+            alertBody.innerHTML = urgentAlerts.map(a => generateExitAlertRow(a.position, a.alert)).join('');
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+
+    // Update positions dashboard
+    const dashboard = document.getElementById('positionsDashboard');
+    const container = document.getElementById('positionsContainer');
+
+    if (dashboard && container) {
+        if (openPositions.length > 0) {
+            dashboard.style.display = 'block';
+            container.innerHTML = openPositions.map(pos => generatePositionCard(pos)).join('');
+        } else {
+            dashboard.style.display = 'none';
+        }
+    }
+
+    // Update daily review (show in morning hours)
+    const hour = new Date().getHours();
+    const dailyReview = document.getElementById('dailyPositionReview');
+    if (dailyReview && openPositions.length > 0 && hour >= 6 && hour <= 10) {
+        dailyReview.style.display = 'block';
+        updateDailyReview();
+    } else if (dailyReview) {
+        dailyReview.style.display = 'none';
+    }
+
+    // Update trade tracker counts
+    const waitingCount = document.getElementById('gannWaitingCount');
+    const activeCount = document.getElementById('gannActiveCount');
+
+    if (waitingCount) waitingCount.textContent = openPositions.length > 0 ? '0' : '1';
+    if (activeCount) activeCount.textContent = openPositions.length.toString();
+
+    console.log('🚨 Exit Alert System updated:', openPositions.length, 'positions,', allAlerts.length, 'alerts');
+}
+
+// Update daily position review
+function updateDailyReview() {
+    const reviewDate = document.getElementById('reviewDate');
+    const posCount = document.getElementById('openPositionCount');
+    const reviewBody = document.getElementById('dailyReviewBody');
+    const keyLevels = document.getElementById('dailyKeyLevels');
+
+    if (reviewDate) {
+        reviewDate.textContent = formatGannDate(new Date());
+    }
+    if (posCount) {
+        posCount.textContent = openPositions.length.toString();
+    }
+
+    if (reviewBody) {
+        let html = '';
+        openPositions.forEach(pos => {
+            const pnl = calculatePnL(pos);
+            const pnlColor = pnl.percent >= 0 ? 'var(--success)' : 'var(--danger)';
+            const outlook = pnl.percent >= 0 ? '📈 Bullish' : pnl.percent >= -10 ? '➡️ Flat' : '📉 Bearish';
+            const action = pnl.percent >= 0 ? '✅ HOLD' : pnl.percent >= -30 ? '✅ HOLD' : '⚠️ WATCH';
+
+            html += `
+                <tr>
+                    <td style="font-weight: 600;">${pos.symbol} ${pos.type}</td>
+                    <td style="color: ${pnlColor};">${pnl.percent >= 0 ? '+' : ''}${pnl.percent.toFixed(0)}%</td>
+                    <td>${outlook}</td>
+                    <td>${action}</td>
+                </tr>
+            `;
+        });
+        reviewBody.innerHTML = html;
+    }
+
+    if (keyLevels) {
+        const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
+        const sq9 = calculateSquareOf9Levels(price);
+        const symbol = currentSymbol || 'SPY';
+
+        keyLevels.innerHTML = `
+            <div>• ${symbol}: Support at $${sq9.s1.toFixed(2)}, Resistance at $${sq9.r1.toFixed(2)}</div>
+        `;
+    }
+}
+
+// Add a demo position for testing (can be removed in production)
+function addDemoPosition() {
+    const price = parseFloat(document.getElementById('tickerPrice')?.textContent?.replace('$', '')) || 600;
+    const symbol = currentSymbol || 'SPY';
+
+    addOpenPosition({
+        symbol: symbol,
+        type: 'CALL',
+        strike: Math.round(price / 5) * 5 + 5,
+        expiry: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(),
+        entryPrice: 4.20,
+        currentPrice: 4.50,
+        contracts: 2,
+        stopLoss: 2.10,
+        target1: 6.30,
+        target2: 8.40
+    });
+}
+
+// Update exit performance display
+function updateExitPerformanceDisplay() {
+    const perf = calculateExitPerformance();
+    const tbody = document.getElementById('exitPerformanceBody');
+    const insight = document.getElementById('exitInsight');
+
+    if (\!tbody) return;
+
+    const triggers = [
+        { key: 'TARGET_HIT', icon: '🎯', name: 'Target Hit' },
+        { key: 'STOP_LOSS', icon: '🛑', name: 'Stop Loss' },
+        { key: 'TREND_REVERSED', icon: '🔄', name: 'Trend Reversed' },
+        { key: 'TIME_EXIT', icon: '⏰', name: 'Time Exit' },
+        { key: 'MANUAL', icon: '👤', name: 'Manual' }
+    ];
+
+    let html = '';
+    let bestTrigger = null;
+    let bestWinRate = 0;
+
+    triggers.forEach(t => {
+        const p = perf[t.key] || { count: 0, avgPnl: 0, winRate: 0 };
+        const assessment = p.count === 0 ? 'No data yet' :
+            p.winRate >= 80 ? '✅ Excellent' :
+            p.winRate >= 60 ? '👍 Good' :
+            p.winRate >= 40 ? '🟡 Mixed' : '⚠️ Review needed';
+
+        const assessmentColor = p.count === 0 ? 'var(--muted)' :
+            p.winRate >= 80 ? 'var(--success)' :
+            p.winRate >= 60 ? 'var(--success)' :
+            p.winRate >= 40 ? 'var(--warning)' : 'var(--danger)';
+
+        if (p.count > 0 && p.winRate > bestWinRate) {
+            bestWinRate = p.winRate;
+            bestTrigger = t.name;
+        }
+
+        html += '<tr>';
+        html += '<td>' + t.icon + ' ' + t.name + '</td>';
+        html += '<td>' + p.count + '</td>';
+        html += '<td style="color: ' + (parseFloat(p.avgPnl) >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + (p.count > 0 ? (parseFloat(p.avgPnl) >= 0 ? '+' : '') + p.avgPnl + '%' : '-') + '</td>';
+        html += '<td>' + (p.count > 0 ? p.winRate + '%' : '-') + '</td>';
+        html += '<td style="color: ' + assessmentColor + ';">' + assessment + '</td>';
+        html += '</tr>';
+    });
+
+    tbody.innerHTML = html;
+
+    // Update insight
+    if (insight) {
+        const totalTrades = Object.values(perf).reduce((sum, p) => sum + p.count, 0);
+        if (totalTrades === 0) {
+            insight.textContent = 'Complete more trades to see which exit signals work best for you.';
+        } else if (bestTrigger) {
+            insight.textContent = '"' + bestTrigger + '" exits have the best win rate at ' + bestWinRate + '%. Consider prioritizing these signals.';
+        } else {
+            insight.textContent = 'You have ' + totalTrades + ' completed trades. Keep tracking to identify patterns.';
+        }
+    }
+}
+
+// Initialize exit alert system
+function initExitAlertSystem() {
+    loadOpenPositions();
+    updateExitAlertSystem();
+    updateExitPerformanceDisplay();
+
+    // Add CSS for pulse animation
+    if (!document.getElementById('exitAlertStyles')) {
+        const style = document.createElement('style');
+        style.id = 'exitAlertStyles';
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Hook into Gann tab activation
+const origGannTabHandler = document.querySelector('[data-tab="gann-analysis"]')?.onclick;
+document.querySelector('[data-tab="gann-analysis"]')?.addEventListener('click', () => {
+    setTimeout(initExitAlertSystem, 300);
+});
+
+// Also check on page load if tab is active
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (document.getElementById('gann-analysis')?.classList.contains('active')) {
+            initExitAlertSystem();
+        }
+    }, 1000);
+});
+
+// Check alerts when data refreshes
+if (typeof originalRefreshData === 'undefined') {
+    var originalRefreshData = window.refreshData;
+}
+if (originalRefreshData) {
+    window.refreshData = function() {
+        originalRefreshData.apply(this, arguments);
+        setTimeout(updateExitAlertSystem, 500);
     };
 }
 
