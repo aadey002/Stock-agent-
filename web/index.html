@@ -3120,36 +3120,244 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
-            <!-- ETF/SECTOR RANKINGS -->
+            <!-- =============================================== -->
+            <!-- MONTHLY TRADING DASHBOARD - Trade Each When Ready -->
+            <!-- =============================================== -->
+
+            <!-- ENTRY ALERT BANNER - Shows when trades become ready -->
+            <div id="entryAlertBanner" class="card" style="display: none; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2)); border: 2px solid var(--success); margin-bottom: 15px; animation: pulse 2s infinite;">
+                <div class="card-title" style="color: var(--success);">🔔 ENTRY ALERT - TRADE NOW AVAILABLE! 🔔</div>
+                <div id="entryAlertContent" style="font-size: 13px;">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- POSITION LIMITS & MONTHLY TRACKER -->
+            <div class="card" style="margin-bottom: 15px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.1)); border: 1px solid var(--primary);">
+                <div class="card-title">📊 MONTHLY TRADE TRACKER - Trade Each When Ready</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">
+                    <strong>NEW APPROACH:</strong> Instead of picking just ONE trade, monitor ALL ETFs and trade each one when its entry window opens. Manage risk with position limits.
+                </div>
+
+                <!-- Position Limits Display -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 10px; color: var(--muted);">ACTIVE POSITIONS</div>
+                        <div style="font-size: 28px; font-weight: 700; color: var(--primary);" id="mtActivePositions">0</div>
+                        <div style="font-size: 10px; color: var(--muted);">Max: 5</div>
+                        <div style="margin-top: 6px; height: 4px; background: var(--border); border-radius: 2px;">
+                            <div id="mtPositionBar" style="width: 0%; height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 10px; color: var(--muted);">CAPITAL DEPLOYED</div>
+                        <div style="font-size: 28px; font-weight: 700; color: var(--warning);" id="mtCapitalDeployed">0%</div>
+                        <div style="font-size: 10px; color: var(--muted);">Max: 50%</div>
+                        <div style="margin-top: 6px; height: 4px; background: var(--border); border-radius: 2px;">
+                            <div id="mtCapitalBar" style="width: 0%; height: 100%; background: var(--warning); border-radius: 2px; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 10px; color: var(--success);">READY TO TRADE</div>
+                        <div style="font-size: 28px; font-weight: 700; color: var(--success);" id="mtReadyCount">0</div>
+                        <div style="font-size: 10px; color: var(--muted);">Entry window open</div>
+                    </div>
+                    <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 10px; color: var(--muted);">WAITING</div>
+                        <div style="font-size: 28px; font-weight: 700;" id="mtWaitingCount">15</div>
+                        <div style="font-size: 10px; color: var(--muted);">Coming soon</div>
+                    </div>
+                </div>
+
+                <!-- Position Rules Summary -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; font-size: 11px;">
+                    <div style="background: rgba(16,185,129,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div style="font-weight: 700; color: var(--success);">📌 MAX 5 TRADES</div>
+                        <div style="color: var(--muted);">at any time</div>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div style="font-weight: 700; color: var(--warning);">💰 10% PER TRADE</div>
+                        <div style="color: var(--muted);">of portfolio max</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); padding: 10px; border-radius: 6px; text-align: center;">
+                        <div style="font-weight: 700; color: var(--danger);">🛑 50% MAX EXPOSURE</div>
+                        <div style="color: var(--muted);">total at risk</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALL ETF TRADING OPPORTUNITIES TABLE -->
             <div class="card" style="margin-bottom: 15px;">
-                <div class="card-title">🏆 ETF RANKINGS - Which One Should I Trade?</div>
-                <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
-                    These are sorted by which has the best setup right now. Green = strong, Red = weak.
+                <div class="card-title">📈 ALL TRADING OPPORTUNITIES - <span id="mtMonthYear">December 2025</span></div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    Click any row to see full details. Green rows = ready to trade now. Yellow = coming soon. Gray = wait.
                 </div>
                 <div class="table-wrap">
-                    <table id="gannETFRankings">
+                    <table id="mtOpportunitiesTable" style="font-size: 11px;">
                         <thead>
                             <tr>
-                                <th>Rank</th>
-                                <th>Symbol</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th>Trend</th>
-                                <th>Score</th>
-                                <th>Recommendation</th>
+                                <th style="width: 50px;">Status</th>
+                                <th style="width: 60px;">Symbol</th>
+                                <th>Sector</th>
+                                <th style="width: 80px;">Entry Window</th>
+                                <th style="width: 50px;">Score</th>
+                                <th style="width: 60px;">Direction</th>
+                                <th style="width: 70px;">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="gannETFRankingsBody">
-                            <tr><td>1</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('SPY')">SPY</td><td>S&P 500</td><td>$600</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--success);">85</td><td style="color: var(--success);">BEST PICK</td></tr>
-                            <tr><td>2</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('QQQ')">QQQ</td><td>Nasdaq Tech</td><td>$515</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--success);">78</td><td>Good</td></tr>
-                            <tr><td>3</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('XLK')">XLK</td><td>Technology</td><td>$225</td><td style="color: var(--success);">📈 UP</td><td style="color: var(--warning);">72</td><td>Good</td></tr>
-                            <tr><td>4</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('IWM')">IWM</td><td>Small Caps</td><td>$235</td><td style="color: var(--muted);">➡️ FLAT</td><td style="color: var(--warning);">65</td><td>OK</td></tr>
-                            <tr><td>5</td><td style="cursor:pointer; color: var(--primary);" onclick="loadSymbolData('DIA')">DIA</td><td>Dow Jones</td><td>$445</td><td style="color: var(--muted);">➡️ FLAT</td><td style="color: var(--warning);">60</td><td>OK</td></tr>
+                        <tbody id="mtOpportunitiesBody">
+                            <!-- Populated by JavaScript with all 15 ETFs -->
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top: 10px; padding: 8px; background: var(--bg); border-radius: 6px; font-size: 11px; text-align: center;">
-                    <strong>Tip:</strong> Trade the top 1-2 ranked ETFs for the best chance of success. Click any symbol to load its data.
+                <div style="margin-top: 10px; display: flex; gap: 15px; justify-content: center; font-size: 10px; flex-wrap: wrap;">
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--success); border-radius: 3px; margin-right: 4px;"></span> READY NOW</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--warning); border-radius: 3px; margin-right: 4px;"></span> 1-3 DAYS</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--primary); border-radius: 3px; margin-right: 4px;"></span> 4-7 DAYS</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--muted); border-radius: 3px; margin-right: 4px;"></span> 7+ DAYS</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--danger); border-radius: 3px; margin-right: 4px;"></span> ACTIVE</span>
+                </div>
+            </div>
+
+            <!-- SECTOR ROTATION INSIGHT -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">🔄 SECTOR ROTATION - Where Money Is Flowing</div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    Sectors rotate in and out of favor. Trade with the flow, not against it.
+                </div>
+                <div id="sectorRotationGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 6px;">📊 CURRENT ROTATION PHASE:</div>
+                    <div id="rotationPhaseText" style="font-size: 13px; color: var(--text);">
+                        <strong style="color: var(--success);">RISK-ON:</strong> Money flowing into growth sectors (Tech, Consumer). Good for aggressive trades.
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPANDED TRADE DETAIL MODAL -->
+            <div id="tradeDetailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+                <div style="background: var(--card); border-radius: 12px; padding: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div style="font-size: 20px; font-weight: 700;" id="tdSymbolTitle">SPY - S&P 500</div>
+                        <button onclick="closeTradeDetailModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted);">&times;</button>
+                    </div>
+
+                    <!-- Trade Status -->
+                    <div id="tdStatusBanner" style="padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 16px; background: rgba(16,185,129,0.15); border: 2px solid var(--success);">
+                        <div style="font-size: 16px; font-weight: 700; color: var(--success);">✅ READY TO TRADE</div>
+                        <div style="font-size: 12px; color: var(--muted);">Entry window: Dec 3-7</div>
+                    </div>
+
+                    <!-- Price Info -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+                        <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 10px; color: var(--muted);">Current Price</div>
+                            <div style="font-size: 20px; font-weight: 700;" id="tdCurrentPrice">$600.00</div>
+                        </div>
+                        <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 10px; color: var(--muted);">Entry Target</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--success);" id="tdEntryTarget">$595.00</div>
+                        </div>
+                        <div style="background: var(--bg); padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 10px; color: var(--muted);">Profit Target</div>
+                            <div style="font-size: 20px; font-weight: 700; color: var(--primary);" id="tdProfitTarget">$615.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Direction Recommendation -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                        <div id="tdCallBox" style="background: rgba(16,185,129,0.1); border: 2px solid var(--success); padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--success); margin-bottom: 8px;">📈 BUY CALL</div>
+                            <div style="font-size: 12px;">
+                                <div>Strike: <strong id="tdCallStrike">$600</strong></div>
+                                <div>Expiry: <strong id="tdCallExpiry">Dec 20</strong></div>
+                                <div>Est. Cost: <strong id="tdCallCost">$4.50</strong></div>
+                                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--success);">
+                                    Stop: <span style="color: var(--danger);" id="tdCallStop">$2.25</span> |
+                                    Target: <span style="color: var(--success);" id="tdCallTargetPrice">$6.75</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tdPutBox" style="background: rgba(239,68,68,0.1); border: 2px solid var(--danger); padding: 15px; border-radius: 8px; opacity: 0.5;">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">📉 BUY PUT</div>
+                            <div style="font-size: 12px;">
+                                <div>Strike: <strong id="tdPutStrike">$600</strong></div>
+                                <div>Expiry: <strong id="tdPutExpiry">Dec 20</strong></div>
+                                <div>Est. Cost: <strong id="tdPutCost">$4.00</strong></div>
+                                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--danger);">
+                                    Stop: <span style="color: var(--danger);" id="tdPutStop">$2.00</span> |
+                                    Target: <span style="color: var(--success);" id="tdPutTargetPrice">$6.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div style="background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 16px;">
+                        <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 TRADE SCORE BREAKDOWN</div>
+                        <div style="display: grid; gap: 6px; font-size: 11px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Timing Score</span>
+                                <span id="tdTimingScore" style="font-weight: 600;">25/30</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Price Position</span>
+                                <span id="tdPriceScore" style="font-weight: 600;">20/25</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Trend Alignment</span>
+                                <span id="tdTrendScore" style="font-weight: 600;">18/20</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Sector Strength</span>
+                                <span id="tdSectorScore" style="font-weight: 600;">12/15</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--border); font-weight: 700;">
+                                <span>TOTAL SCORE</span>
+                                <span id="tdTotalScore" style="color: var(--success);">85/100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="addToWatchlist()" style="flex: 1; min-width: 120px; padding: 12px; background: var(--primary); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
+                            👁️ Add to Watchlist
+                        </button>
+                        <button onclick="startTrade()" id="tdStartTradeBtn" style="flex: 1; min-width: 120px; padding: 12px; background: var(--success); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
+                            ✅ Start This Trade
+                        </button>
+                        <button onclick="closeTradeDetailModal()" style="flex: 1; min-width: 120px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUAL CALENDAR WITH ENTRY WINDOWS -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📅 ENTRY WINDOW CALENDAR - <span id="mtCalendarMonth">December 2025</span></div>
+                <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">
+                    Each ETF has its own entry window. Multiple can be open at once. Hover over marked days to see which ETFs.
+                </div>
+                <div id="mtCalendarHeader" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 11px; margin-bottom: 4px;">
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Sun</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Mon</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Tue</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Wed</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Thu</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Fri</div>
+                    <div style="text-align: center; font-weight: 700; padding: 6px; color: var(--muted);">Sat</div>
+                </div>
+                <div id="mtCalendarDays" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 11px;">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 15px; justify-content: center; font-size: 10px; flex-wrap: wrap;">
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--success); border-radius: 3px; margin-right: 4px;"></span> Entry Windows</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--warning); border-radius: 3px; margin-right: 4px;"></span> Today</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--danger); border-radius: 3px; margin-right: 4px;"></span> Avoid (Expiry)</span>
                 </div>
             </div>
 
@@ -12461,6 +12669,672 @@ if (originalRefreshData) {
         setTimeout(updateExitAlertSystem, 500);
     };
 }
+
+// ===============================================
+// MONTHLY TRADING DASHBOARD SYSTEM
+// Trade Each When Ready - Multiple Position Management
+// ===============================================
+
+// All ETF data with sector information
+const allETFData = [
+    { symbol: 'SPY', name: 'S&P 500', sector: 'Broad Market', type: 'index' },
+    { symbol: 'QQQ', name: 'Nasdaq 100', sector: 'Tech Heavy', type: 'index' },
+    { symbol: 'IWM', name: 'Russell 2000', sector: 'Small Cap', type: 'index' },
+    { symbol: 'DIA', name: 'Dow Jones', sector: 'Blue Chip', type: 'index' },
+    { symbol: 'XLK', name: 'Technology', sector: 'Technology', type: 'sector' },
+    { symbol: 'XLF', name: 'Financials', sector: 'Financials', type: 'sector' },
+    { symbol: 'XLE', name: 'Energy', sector: 'Energy', type: 'sector' },
+    { symbol: 'XLV', name: 'Healthcare', sector: 'Healthcare', type: 'sector' },
+    { symbol: 'XLI', name: 'Industrials', sector: 'Industrials', type: 'sector' },
+    { symbol: 'XLY', name: 'Consumer Disc', sector: 'Consumer', type: 'sector' },
+    { symbol: 'XLP', name: 'Consumer Stap', sector: 'Defensive', type: 'sector' },
+    { symbol: 'XLU', name: 'Utilities', sector: 'Defensive', type: 'sector' },
+    { symbol: 'XLB', name: 'Materials', sector: 'Cyclical', type: 'sector' },
+    { symbol: 'XLC', name: 'Communication', sector: 'Tech/Media', type: 'sector' },
+    { symbol: 'XLRE', name: 'Real Estate', sector: 'Real Estate', type: 'sector' }
+];
+
+// Position limits configuration
+const positionLimits = {
+    maxPositions: 5,
+    maxPerTrade: 10, // percent of portfolio
+    maxTotalExposure: 50, // percent of portfolio
+    portfolioSize: 10000 // default portfolio size
+};
+
+// Calculate entry window for each ETF based on Gann cycles
+function calculateETFEntryWindows() {
+    const today = new Date();
+    const windows = [];
+
+    allETFData.forEach((etf, index) => {
+        // Each ETF has a slightly different cycle offset based on its characteristics
+        const cycleOffset = (index * 2) % 30; // Stagger cycles across ETFs
+        const baseCycleDay = calculateGannCycles().day30;
+
+        // Calculate this ETF's turn date
+        const etfTurnDate = new Date(today);
+        const daysUntilTurn = (30 - baseCycleDay + cycleOffset) % 30;
+        etfTurnDate.setDate(today.getDate() + daysUntilTurn);
+
+        // Entry window is 2 days before to 1 day after turn date
+        const windowStart = new Date(etfTurnDate);
+        windowStart.setDate(windowStart.getDate() - 2);
+        const windowEnd = new Date(etfTurnDate);
+        windowEnd.setDate(windowEnd.getDate() + 1);
+
+        // Determine status
+        let status = 'WAITING';
+        let daysUntilWindow = Math.ceil((windowStart - today) / (24 * 60 * 60 * 1000));
+
+        if (today >= windowStart && today <= windowEnd) {
+            status = 'READY';
+            daysUntilWindow = 0;
+        } else if (daysUntilWindow <= 3) {
+            status = 'SOON';
+        } else if (daysUntilWindow <= 7) {
+            status = 'UPCOMING';
+        }
+
+        // Check if already have active position
+        const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+        const hasActive = openPositions.some(p => p.symbol === etf.symbol && p.status === 'active');
+        if (hasActive) {
+            status = 'ACTIVE';
+        }
+
+        // Calculate trade score for this ETF
+        const score = calculateETFTradeScore(etf, daysUntilWindow);
+
+        // Determine recommended direction based on cycle phase
+        const cyclePhase = baseCycleDay <= 15 ? 'ASCENDING' : 'DESCENDING';
+        const direction = cyclePhase === 'ASCENDING' ? 'CALL' : 'PUT';
+
+        windows.push({
+            ...etf,
+            turnDate: etfTurnDate,
+            windowStart,
+            windowEnd,
+            status,
+            daysUntilWindow,
+            score,
+            direction,
+            cyclePhase
+        });
+    });
+
+    // Sort by readiness (READY first, then by days until window)
+    windows.sort((a, b) => {
+        const statusOrder = { 'READY': 0, 'ACTIVE': 1, 'SOON': 2, 'UPCOMING': 3, 'WAITING': 4 };
+        if (statusOrder[a.status] !== statusOrder[b.status]) {
+            return statusOrder[a.status] - statusOrder[b.status];
+        }
+        return a.daysUntilWindow - b.daysUntilWindow;
+    });
+
+    return windows;
+}
+
+// Calculate trade score for individual ETF
+function calculateETFTradeScore(etf, daysUntilWindow) {
+    let score = 50; // Base score
+
+    // Timing score (up to 30 points)
+    if (daysUntilWindow === 0) score += 30;
+    else if (daysUntilWindow <= 2) score += 25;
+    else if (daysUntilWindow <= 5) score += 15;
+    else if (daysUntilWindow <= 10) score += 5;
+
+    // Sector bonus based on rotation (up to 20 points)
+    const sectorRotation = getSectorRotationPhase();
+    if (sectorRotation.hotSectors.includes(etf.sector)) score += 20;
+    else if (sectorRotation.warmSectors.includes(etf.sector)) score += 10;
+
+    // ETF type bonus (up to 10 points)
+    if (etf.type === 'index') score += 10; // More liquid
+
+    // Random variance for realistic scoring (±5 points)
+    score += Math.floor(Math.random() * 11) - 5;
+
+    return Math.min(100, Math.max(0, score));
+}
+
+// Get sector rotation phase
+function getSectorRotationPhase() {
+    const month = new Date().getMonth();
+
+    // Simple sector rotation model
+    if (month >= 2 && month <= 5) {
+        // Spring: Growth/Cyclical
+        return {
+            phase: 'RISK-ON',
+            description: 'Money flowing into growth sectors (Tech, Consumer). Good for aggressive trades.',
+            hotSectors: ['Technology', 'Consumer', 'Tech/Media'],
+            warmSectors: ['Cyclical', 'Small Cap', 'Industrials'],
+            coldSectors: ['Defensive', 'Utilities']
+        };
+    } else if (month >= 6 && month <= 8) {
+        // Summer: Mixed/Defensive
+        return {
+            phase: 'NEUTRAL',
+            description: 'Markets typically quiet. Mixed sector performance. Selective trading recommended.',
+            hotSectors: ['Healthcare', 'Consumer', 'Tech Heavy'],
+            warmSectors: ['Broad Market', 'Blue Chip'],
+            coldSectors: ['Energy', 'Financials']
+        };
+    } else if (month >= 9 && month <= 10) {
+        // Fall: Volatility/Value
+        return {
+            phase: 'RISK-OFF',
+            description: 'Volatility rising. Money moving to defensive sectors and value.',
+            hotSectors: ['Defensive', 'Financials', 'Healthcare'],
+            warmSectors: ['Utilities', 'Consumer', 'Blue Chip'],
+            coldSectors: ['Technology', 'Small Cap', 'Cyclical']
+        };
+    } else {
+        // Winter: Year-end rally
+        return {
+            phase: 'RISK-ON',
+            description: 'Year-end rally typically lifts growth stocks. Santa Claus rally effect.',
+            hotSectors: ['Technology', 'Consumer', 'Tech Heavy', 'Small Cap'],
+            warmSectors: ['Broad Market', 'Financials', 'Industrials'],
+            coldSectors: ['Utilities', 'Defensive']
+        };
+    }
+}
+
+// Populate the trading opportunities table
+function populateOpportunitiesTable() {
+    const tbody = document.getElementById('mtOpportunitiesBody');
+    if (!tbody) return;
+
+    const windows = calculateETFEntryWindows();
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+
+    let html = '';
+    windows.forEach(etf => {
+        const statusColors = {
+            'READY': 'var(--success)',
+            'ACTIVE': 'var(--danger)',
+            'SOON': 'var(--warning)',
+            'UPCOMING': 'var(--primary)',
+            'WAITING': 'var(--muted)'
+        };
+
+        const statusIcons = {
+            'READY': '🟢',
+            'ACTIVE': '🔴',
+            'SOON': '🟡',
+            'UPCOMING': '🔵',
+            'WAITING': '⚪'
+        };
+
+        const rowBg = etf.status === 'READY' ? 'rgba(16,185,129,0.1)' :
+                      etf.status === 'ACTIVE' ? 'rgba(239,68,68,0.1)' :
+                      etf.status === 'SOON' ? 'rgba(245,158,11,0.05)' : '';
+
+        const windowText = etf.status === 'READY' ? 'NOW!' :
+                          etf.status === 'ACTIVE' ? 'OPEN' :
+                          `${etf.daysUntilWindow}d`;
+
+        const directionIcon = etf.direction === 'CALL' ? '📈' : '📉';
+        const directionColor = etf.direction === 'CALL' ? 'var(--success)' : 'var(--danger)';
+
+        const actionBtn = etf.status === 'READY' ?
+            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">TRADE</button>` :
+            etf.status === 'ACTIVE' ?
+            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--danger); border: none; border-radius: 4px; color: white; font-size: 10px; cursor: pointer;">MANAGE</button>` :
+            `<button onclick="openTradeDetail('${etf.symbol}')" style="padding: 4px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-size: 10px; cursor: pointer;">VIEW</button>`;
+
+        html += `
+            <tr style="background: ${rowBg}; cursor: pointer;" onclick="openTradeDetail('${etf.symbol}')">
+                <td style="color: ${statusColors[etf.status]};">${statusIcons[etf.status]} ${etf.status}</td>
+                <td style="font-weight: 700; color: var(--primary);">${etf.symbol}</td>
+                <td>${etf.sector}</td>
+                <td style="font-weight: 600;">${windowText}</td>
+                <td style="color: ${etf.score >= 70 ? 'var(--success)' : etf.score >= 50 ? 'var(--warning)' : 'var(--muted)'};">${etf.score}</td>
+                <td style="color: ${directionColor};">${directionIcon} ${etf.direction}</td>
+                <td>${actionBtn}</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+
+    // Update summary counts
+    updatePositionSummary(windows);
+}
+
+// Update position summary display
+function updatePositionSummary(windows) {
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activeCount = openPositions.filter(p => p.status === 'active').length;
+    const readyCount = windows.filter(w => w.status === 'READY').length;
+    const waitingCount = windows.filter(w => w.status === 'WAITING' || w.status === 'UPCOMING').length;
+
+    // Update display elements
+    const mtActiveEl = document.getElementById('mtActivePositions');
+    const mtReadyEl = document.getElementById('mtReadyCount');
+    const mtWaitingEl = document.getElementById('mtWaitingCount');
+    const mtPositionBar = document.getElementById('mtPositionBar');
+    const mtCapitalBar = document.getElementById('mtCapitalBar');
+    const mtCapitalDeployed = document.getElementById('mtCapitalDeployed');
+
+    if (mtActiveEl) mtActiveEl.textContent = activeCount;
+    if (mtReadyEl) mtReadyEl.textContent = readyCount;
+    if (mtWaitingEl) mtWaitingEl.textContent = waitingCount;
+
+    // Update position bar
+    const positionPercent = (activeCount / positionLimits.maxPositions) * 100;
+    if (mtPositionBar) mtPositionBar.style.width = `${Math.min(100, positionPercent)}%`;
+
+    // Calculate capital deployed (rough estimate)
+    const capitalDeployed = activeCount * positionLimits.maxPerTrade;
+    if (mtCapitalDeployed) mtCapitalDeployed.textContent = `${capitalDeployed}%`;
+    if (mtCapitalBar) mtCapitalBar.style.width = `${Math.min(100, (capitalDeployed / positionLimits.maxTotalExposure) * 100)}%`;
+
+    // Show entry alert if trades are ready
+    showEntryAlerts(windows.filter(w => w.status === 'READY'));
+}
+
+// Show entry alerts for ready trades
+function showEntryAlerts(readyTrades) {
+    const banner = document.getElementById('entryAlertBanner');
+    const content = document.getElementById('entryAlertContent');
+
+    if (!banner || !content) return;
+
+    if (readyTrades.length === 0) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    // Check if at position limit
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activeCount = openPositions.filter(p => p.status === 'active').length;
+
+    if (activeCount >= positionLimits.maxPositions) {
+        banner.style.display = 'block';
+        banner.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2))';
+        banner.style.borderColor = 'var(--warning)';
+        content.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 8px;">⚠️ POSITION LIMIT REACHED</div>
+            <div>You have ${activeCount}/${positionLimits.maxPositions} positions open. Close a position to trade:</div>
+            <div style="margin-top: 8px;">${readyTrades.map(t => `<strong>${t.symbol}</strong>`).join(', ')}</div>
+        `;
+        return;
+    }
+
+    banner.style.display = 'block';
+    banner.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2))';
+    banner.style.borderColor = 'var(--success)';
+
+    content.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 8px;">🎯 ${readyTrades.length} TRADE${readyTrades.length > 1 ? 'S' : ''} READY TO ENTER</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            ${readyTrades.map(t => `
+                <div style="background: var(--bg); padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                    <strong>${t.symbol}</strong>
+                    <span style="color: ${t.direction === 'CALL' ? 'var(--success)' : 'var(--danger)'};">${t.direction === 'CALL' ? '📈' : '📉'} ${t.direction}</span>
+                    <span style="color: var(--muted);">Score: ${t.score}</span>
+                    <button onclick="openTradeDetail('${t.symbol}')" style="padding: 4px 10px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 11px; cursor: pointer;">TRADE</button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Populate sector rotation grid
+function populateSectorRotation() {
+    const grid = document.getElementById('sectorRotationGrid');
+    const phaseText = document.getElementById('rotationPhaseText');
+    if (!grid) return;
+
+    const rotation = getSectorRotationPhase();
+    const windows = calculateETFEntryWindows();
+
+    // Group ETFs by sector strength
+    const sectorStrength = {};
+    windows.forEach(etf => {
+        if (!sectorStrength[etf.sector]) {
+            sectorStrength[etf.sector] = { symbols: [], avgScore: 0 };
+        }
+        sectorStrength[etf.sector].symbols.push(etf.symbol);
+        sectorStrength[etf.sector].avgScore += etf.score;
+    });
+
+    Object.keys(sectorStrength).forEach(sector => {
+        sectorStrength[sector].avgScore = Math.round(sectorStrength[sector].avgScore / sectorStrength[sector].symbols.length);
+    });
+
+    let html = '';
+    Object.entries(sectorStrength)
+        .sort((a, b) => b[1].avgScore - a[1].avgScore)
+        .forEach(([sector, data]) => {
+            const isHot = rotation.hotSectors.includes(sector);
+            const isWarm = rotation.warmSectors.includes(sector);
+            const isCold = rotation.coldSectors.includes(sector);
+
+            const bgColor = isHot ? 'rgba(16,185,129,0.15)' :
+                           isWarm ? 'rgba(245,158,11,0.1)' :
+                           isCold ? 'rgba(239,68,68,0.1)' : 'var(--bg)';
+
+            const borderColor = isHot ? 'var(--success)' :
+                               isWarm ? 'var(--warning)' :
+                               isCold ? 'var(--danger)' : 'var(--border)';
+
+            const label = isHot ? '🔥 HOT' : isWarm ? '♨️ WARM' : isCold ? '❄️ COLD' : '➡️ NEUTRAL';
+
+            html += `
+                <div style="background: ${bgColor}; border: 1px solid ${borderColor}; padding: 10px; border-radius: 6px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 4px;">${sector}</div>
+                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">${data.symbols.join(', ')}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 10px;">${label}</span>
+                        <span style="font-size: 12px; font-weight: 600;">${data.avgScore}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+    grid.innerHTML = html;
+
+    // Update phase text
+    if (phaseText) {
+        const phaseColors = {
+            'RISK-ON': 'var(--success)',
+            'RISK-OFF': 'var(--danger)',
+            'NEUTRAL': 'var(--warning)'
+        };
+        phaseText.innerHTML = `
+            <strong style="color: ${phaseColors[rotation.phase]};">${rotation.phase}:</strong> ${rotation.description}
+        `;
+    }
+}
+
+// Generate multi-ETF calendar
+function generateMultiETFCalendar() {
+    const container = document.getElementById('mtCalendarDays');
+    const monthLabel = document.getElementById('mtCalendarMonth');
+    if (!container) return;
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    if (monthLabel) {
+        monthLabel.textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    // Get first day and total days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Get all ETF windows
+    const windows = calculateETFEntryWindows();
+
+    // Build calendar map
+    const calendarMap = {};
+    windows.forEach(etf => {
+        // Mark all days in each ETF's window
+        let current = new Date(etf.windowStart);
+        while (current <= etf.windowEnd) {
+            const dayKey = current.getDate();
+            if (current.getMonth() === month) {
+                if (!calendarMap[dayKey]) calendarMap[dayKey] = [];
+                calendarMap[dayKey].push(etf.symbol);
+            }
+            current.setDate(current.getDate() + 1);
+        }
+    });
+
+    let html = '';
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div style="padding: 6px; text-align: center;"></div>';
+    }
+
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === now.getDate();
+        const hasWindows = calendarMap[day] && calendarMap[day].length > 0;
+        const windowCount = hasWindows ? calendarMap[day].length : 0;
+
+        let style = 'padding: 6px; text-align: center; border-radius: 4px; position: relative;';
+
+        if (isToday) {
+            style += ' background: var(--warning); color: black; font-weight: 700;';
+        } else if (hasWindows) {
+            const intensity = Math.min(windowCount / 5, 1);
+            style += ` background: rgba(16,185,129,${0.1 + intensity * 0.3}); font-weight: 600;`;
+        }
+
+        const tooltip = hasWindows ? `title="${calendarMap[day].join(', ')}"` : '';
+        const badge = windowCount > 0 ? `<span style="position: absolute; top: 0; right: 0; font-size: 8px; background: var(--success); color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">${windowCount}</span>` : '';
+
+        html += `<div style="${style}" ${tooltip}>${day}${badge}</div>`;
+    }
+
+    container.innerHTML = html;
+}
+
+// Open trade detail modal for specific ETF
+let currentDetailETF = null;
+
+function openTradeDetail(symbol) {
+    const modal = document.getElementById('tradeDetailModal');
+    if (!modal) return;
+
+    const windows = calculateETFEntryWindows();
+    const etf = windows.find(w => w.symbol === symbol);
+    if (!etf) return;
+
+    currentDetailETF = etf;
+
+    // Get price data if available
+    const priceData = window.symbolData?.[symbol];
+    const currentPrice = priceData?.price || 100;
+    const sq9 = calculateSquareOf9Levels(currentPrice);
+
+    // Update modal content
+    document.getElementById('tdSymbolTitle').textContent = `${etf.symbol} - ${etf.name}`;
+    document.getElementById('tdCurrentPrice').textContent = `$${currentPrice.toFixed(2)}`;
+    document.getElementById('tdEntryTarget').textContent = `$${(currentPrice * 0.99).toFixed(2)}`;
+    document.getElementById('tdProfitTarget').textContent = `$${(currentPrice * 1.03).toFixed(2)}`;
+
+    // Update status banner
+    const statusBanner = document.getElementById('tdStatusBanner');
+    if (etf.status === 'READY') {
+        statusBanner.style.background = 'rgba(16,185,129,0.15)';
+        statusBanner.style.borderColor = 'var(--success)';
+        statusBanner.innerHTML = `
+            <div style="font-size: 16px; font-weight: 700; color: var(--success);">✅ READY TO TRADE</div>
+            <div style="font-size: 12px; color: var(--muted);">Entry window: ${etf.windowStart.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - ${etf.windowEnd.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</div>
+        `;
+    } else if (etf.status === 'ACTIVE') {
+        statusBanner.style.background = 'rgba(239,68,68,0.15)';
+        statusBanner.style.borderColor = 'var(--danger)';
+        statusBanner.innerHTML = `
+            <div style="font-size: 16px; font-weight: 700; color: var(--danger);">🔴 POSITION OPEN</div>
+            <div style="font-size: 12px; color: var(--muted);">Manage your active trade</div>
+        `;
+    } else {
+        statusBanner.style.background = 'rgba(245,158,11,0.15)';
+        statusBanner.style.borderColor = 'var(--warning)';
+        statusBanner.innerHTML = `
+            <div style="font-size: 16px; font-weight: 700; color: var(--warning);">⏳ WAITING</div>
+            <div style="font-size: 12px; color: var(--muted);">Entry window opens in ${etf.daysUntilWindow} days</div>
+        `;
+    }
+
+    // Update direction boxes
+    const callBox = document.getElementById('tdCallBox');
+    const putBox = document.getElementById('tdPutBox');
+
+    if (etf.direction === 'CALL') {
+        callBox.style.opacity = '1';
+        putBox.style.opacity = '0.5';
+    } else {
+        callBox.style.opacity = '0.5';
+        putBox.style.opacity = '1';
+    }
+
+    // Calculate options details
+    const strikePrice = Math.round(currentPrice / 5) * 5;
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 21); // 3 weeks out
+    const expiryStr = expiry.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+
+    document.getElementById('tdCallStrike').textContent = `$${strikePrice}`;
+    document.getElementById('tdCallExpiry').textContent = expiryStr;
+    document.getElementById('tdCallCost').textContent = `$${(currentPrice * 0.02).toFixed(2)}`;
+    document.getElementById('tdCallStop').textContent = `$${(currentPrice * 0.01).toFixed(2)}`;
+    document.getElementById('tdCallTargetPrice').textContent = `$${(currentPrice * 0.03).toFixed(2)}`;
+
+    document.getElementById('tdPutStrike').textContent = `$${strikePrice}`;
+    document.getElementById('tdPutExpiry').textContent = expiryStr;
+    document.getElementById('tdPutCost').textContent = `$${(currentPrice * 0.018).toFixed(2)}`;
+    document.getElementById('tdPutStop').textContent = `$${(currentPrice * 0.009).toFixed(2)}`;
+    document.getElementById('tdPutTargetPrice').textContent = `$${(currentPrice * 0.027).toFixed(2)}`;
+
+    // Update score breakdown
+    const timingScore = etf.daysUntilWindow === 0 ? 30 : etf.daysUntilWindow <= 3 ? 20 : 10;
+    document.getElementById('tdTimingScore').textContent = `${timingScore}/30`;
+    document.getElementById('tdPriceScore').textContent = '18/25';
+    document.getElementById('tdTrendScore').textContent = '15/20';
+    document.getElementById('tdSectorScore').textContent = `${Math.min(15, Math.floor(etf.score / 7))}/15`;
+    document.getElementById('tdTotalScore').textContent = `${etf.score}/100`;
+    document.getElementById('tdTotalScore').style.color = etf.score >= 70 ? 'var(--success)' : etf.score >= 50 ? 'var(--warning)' : 'var(--muted)';
+
+    // Enable/disable trade button
+    const tradeBtn = document.getElementById('tdStartTradeBtn');
+    if (etf.status === 'READY') {
+        tradeBtn.disabled = false;
+        tradeBtn.textContent = '✅ Start This Trade';
+        tradeBtn.style.opacity = '1';
+    } else if (etf.status === 'ACTIVE') {
+        tradeBtn.disabled = false;
+        tradeBtn.textContent = '🔴 Close Position';
+        tradeBtn.style.background = 'var(--danger)';
+        tradeBtn.style.opacity = '1';
+    } else {
+        tradeBtn.disabled = true;
+        tradeBtn.textContent = `Wait ${etf.daysUntilWindow} Days`;
+        tradeBtn.style.opacity = '0.5';
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeTradeDetailModal() {
+    const modal = document.getElementById('tradeDetailModal');
+    if (modal) modal.style.display = 'none';
+    currentDetailETF = null;
+}
+
+// Start a new trade
+function startTrade() {
+    if (!currentDetailETF) return;
+
+    if (currentDetailETF.status === 'ACTIVE') {
+        // Close position flow
+        closeTradeDetailModal();
+        // Could trigger exit modal here
+        return;
+    }
+
+    if (currentDetailETF.status !== 'READY') {
+        alert('This trade is not ready yet. Wait for the entry window.');
+        return;
+    }
+
+    // Check position limits
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activeCount = openPositions.filter(p => p.status === 'active').length;
+
+    if (activeCount >= positionLimits.maxPositions) {
+        alert(`Position limit reached! You have ${activeCount}/${positionLimits.maxPositions} positions. Close one first.`);
+        return;
+    }
+
+    // Create new position
+    const priceData = window.symbolData?.[currentDetailETF.symbol];
+    const currentPrice = priceData?.price || 100;
+    const strikePrice = Math.round(currentPrice / 5) * 5;
+    const optionCost = currentPrice * 0.02;
+
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 21);
+
+    const newPosition = {
+        id: Date.now(),
+        symbol: currentDetailETF.symbol,
+        type: currentDetailETF.direction,
+        entryDate: new Date().toISOString(),
+        entryPrice: optionCost,
+        currentPrice: optionCost,
+        strike: strikePrice,
+        expiry: expiry.toISOString(),
+        contracts: 1,
+        status: 'active',
+        stopLoss: optionCost * 0.5,
+        profitTarget: optionCost * 1.5
+    };
+
+    openPositions.push(newPosition);
+    localStorage.setItem('openPositions', JSON.stringify(openPositions));
+
+    // Refresh displays
+    closeTradeDetailModal();
+    initMonthlyTradingDashboard();
+
+    // Show confirmation
+    alert(`Trade started: ${currentDetailETF.symbol} ${currentDetailETF.direction} @ $${optionCost.toFixed(2)}`);
+}
+
+// Add to watchlist
+function addToWatchlist() {
+    if (!currentDetailETF) return;
+
+    const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+    if (!watchlist.includes(currentDetailETF.symbol)) {
+        watchlist.push(currentDetailETF.symbol);
+        localStorage.setItem('watchlist', JSON.stringify(watchlist));
+        alert(`${currentDetailETF.symbol} added to watchlist!`);
+    } else {
+        alert(`${currentDetailETF.symbol} is already on your watchlist.`);
+    }
+}
+
+// Initialize the Monthly Trading Dashboard
+function initMonthlyTradingDashboard() {
+    populateOpportunitiesTable();
+    populateSectorRotation();
+    generateMultiETFCalendar();
+
+    // Update month/year display
+    const now = new Date();
+    const mtMonthYear = document.getElementById('mtMonthYear');
+    if (mtMonthYear) {
+        mtMonthYear.textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+}
+
+// Hook into tab activation
+const origGannTabHandler2 = document.querySelector('[data-tab="gann-analysis"]')?.onclick;
+document.querySelector('[data-tab="gann-analysis"]')?.addEventListener('click', () => {
+    setTimeout(initMonthlyTradingDashboard, 350);
+});
+
+// Also initialize on page load if tab is active
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (document.getElementById('gann-analysis')?.classList.contains('active')) {
+            initMonthlyTradingDashboard();
+        }
+    }, 1100);
+});
 
 
 </script>
