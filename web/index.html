@@ -11785,23 +11785,23 @@ function updateGannAnalysisTab() {
         const scoreAgentsEl = document.getElementById('gannScoreAgents');
         const scoreConfluenceEl = document.getElementById('gannScoreConfluence');
 
-        if (scoreCycleEl) scoreCycleEl.textContent = `${unifiedScore.details.timing}/30`;
-        if (scorePriceEl) scorePriceEl.textContent = `${unifiedScore.details.price}/25`;
-        if (scoreMTFEl) scoreMTFEl.textContent = `${unifiedScore.details.trend}/20`;
-        if (scoreAgentsEl) scoreAgentsEl.textContent = `${unifiedScore.details.agents}/15`;
-        if (scoreConfluenceEl) scoreConfluenceEl.textContent = `${unifiedScore.details.confluence}/10`;
-    }
+        if (scoreCycleEl) scoreCycleEl.textContent = `${unifiedScore.details.timing || 0}/30`;
+        if (scorePriceEl) scorePriceEl.textContent = `${unifiedScore.details.price || 0}/25`;
+        if (scoreMTFEl) scoreMTFEl.textContent = `${unifiedScore.details.trend || 0}/20`;
+        if (scoreAgentsEl) scoreAgentsEl.textContent = `${unifiedScore.details.agents || 0}/15`;
+        if (scoreConfluenceEl) scoreConfluenceEl.textContent = `${unifiedScore.details.confluence || 0}/10`;
 
-    const scoreCycleEl = document.getElementById('gannScoreCycle');
-    if (scoreCycleEl) scoreCycleEl.textContent = `${scoreData.details.cycle}/30`;
-    const scorePriceEl = document.getElementById('gannScorePrice');
-    if (scorePriceEl) scorePriceEl.textContent = `${scoreData.details.price}/25`;
-    const scoreMTFEl = document.getElementById('gannScoreMTF');
-    if (scoreMTFEl) scoreMTFEl.textContent = `${scoreData.details.mtf}/20`;
-    const scoreAgentsEl = document.getElementById('gannScoreAgents');
-    if (scoreAgentsEl) scoreAgentsEl.textContent = `${scoreData.details.agents}/15`;
-    const scoreConfluenceEl = document.getElementById('gannScoreConfluence');
-    if (scoreConfluenceEl) scoreConfluenceEl.textContent = `${scoreData.details.confluence}/10`;
+        // Debug logging for score breakdown
+        console.log('Gann Score Breakdown:', {
+            symbol: symbol,
+            timing: unifiedScore.details.timing,
+            price: unifiedScore.details.price,
+            trend: unifiedScore.details.trend,
+            agents: unifiedScore.details.agents,
+            confluence: unifiedScore.details.confluence,
+            total: unifiedScore.score
+        });
+    }
 
     // Go/No-Go indicator
     const goNoGoEl = document.getElementById('gannGoNoGo');
@@ -11822,13 +11822,13 @@ function updateGannAnalysisTab() {
     }
 
     // ===== UPDATE CHECKLIST =====
-    const mtfBullish = Math.round(scoreData.details.mtf / 4);
+    const mtfBullish = Math.round(scoreData.details.trend / 4);
     const agentBullish = Math.round(scoreData.details.agents / 4);
 
     const checks = [
         { id: 'gannCheck1', condition: cycles.cycle30Phase === 'BOTTOMING' || cycles.cycle30Phase === 'TOPPING', text: 'Near a turn date (time is right)' },
         { id: 'gannCheck2', condition: scoreData.details.price >= 20, text: 'Price at support or resistance' },
-        { id: 'gannCheck3', condition: scoreData.details.mtf >= 12, text: 'Most timeframes agree on direction' },
+        { id: 'gannCheck3', condition: scoreData.details.trend >= 12, text: 'Most timeframes agree on direction' },
         { id: 'gannCheck4', condition: scoreData.details.agents >= 11, text: 'AI agents mostly agree' },
         { id: 'gannCheck5', condition: scoreData.score >= 70, text: 'Score is 70 or higher' },
         { id: 'gannCheck6', condition: isInEntryWindow, text: 'Entry window is open' }
@@ -12104,7 +12104,7 @@ function checkExitConditions(position) {
     }
 
     // ===== TREND CHANGE EXITS =====
-    const mtfScore = scoreData.details.mtf;
+    const mtfScore = scoreData.details.trend;
     const agentScore = scoreData.details.agents;
     const confluenceScore = scoreData.details.confluence;
 
@@ -12187,9 +12187,9 @@ function updatePositionHealth(position) {
             text: position.currentPrice >= position.target2 ? 'TARGET HIT!' : `${((position.target2 - position.currentPrice) / position.currentPrice * 100).toFixed(0)}% away`
         },
         mtfAlignment: {
-            value: Math.round(scoreData.details.mtf / 4),
-            status: scoreData.details.mtf >= 12 ? 'good' : scoreData.details.mtf >= 8 ? 'warning' : 'danger',
-            text: scoreData.details.mtf >= 12 ? 'Trend intact' : scoreData.details.mtf >= 8 ? 'Trend weakening' : 'TREND REVERSED'
+            value: Math.round(scoreData.details.trend / 4),
+            status: scoreData.details.trend >= 12 ? 'good' : scoreData.details.trend >= 8 ? 'warning' : 'danger',
+            text: scoreData.details.trend >= 12 ? 'Trend intact' : scoreData.details.trend >= 8 ? 'Trend weakening' : 'TREND REVERSED'
         },
         agentConsensus: {
             value: Math.round(scoreData.details.agents / 4),
