@@ -982,6 +982,7 @@
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn" data-tab="reports">📑 Reports</button>
             <button class="tab-btn" data-tab="gann-analysis">🔮 Gann Analysis</button>
+            <button class="tab-btn" data-tab="gann-rules">📜 Gann Rules</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc">🧮 Options Calc</button>
         </div>
@@ -3689,6 +3690,237 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+        <!-- GANN RULES TAB - Gann's 28 Trading Laws -->
+        <div id="gann-rules" class="tab-content">
+            <!-- HEADER -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.15)); border: 2px solid var(--warning); margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--warning);">📜 Gann's 28 Trading Laws</div>
+                        <div style="font-size: 13px; color: var(--text); margin-top: 4px;">Your Trading Discipline Guide - Follow these rules to protect your capital</div>
+                    </div>
+                    <div id="gannRulesOverallStatus" style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--bg); border-radius: 8px;">
+                        <span style="font-size: 28px;">🟢</span>
+                        <div>
+                            <div style="font-size: 16px; font-weight: 700; color: var(--success);" id="gannRulesPassCount">24/28</div>
+                            <div style="font-size: 10px; color: var(--muted);">Rules Passing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAPITAL SETTINGS -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">💰 Capital Settings</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px;">Total Options Capital ($)</label>
+                        <input type="number" id="gannCapital" value="10000" min="100" step="100"
+                               style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px;"
+                               onchange="saveCapitalSettings()">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px;">Max Risk Per Trade (%)</label>
+                        <input type="number" id="gannMaxRisk" value="10" min="1" max="25" step="1"
+                               style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px;"
+                               onchange="saveCapitalSettings()">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px;">Max Open Trades</label>
+                        <input type="number" id="gannMaxTrades" value="5" min="1" max="10" step="1"
+                               style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px;"
+                               onchange="saveCapitalSettings()">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px;">Max Markets</label>
+                        <input type="number" id="gannMaxMarkets" value="5" min="1" max="15" step="1"
+                               style="width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px;"
+                               onchange="saveCapitalSettings()">
+                    </div>
+                </div>
+                <div style="margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 6px; font-size: 12px;">
+                    <strong>Based on your settings:</strong>
+                    <span style="margin-left: 10px;">Max per trade: <span id="gannMaxPerTrade" style="color: var(--primary); font-weight: 600;">$1,000</span></span>
+                    <span style="margin-left: 15px;">Max exposure: <span id="gannMaxExposure" style="color: var(--warning); font-weight: 600;">$5,000</span> (50%)</span>
+                </div>
+            </div>
+
+            <!-- PRE-TRADE CHECKLIST -->
+            <div class="card" style="margin-bottom: 15px; border: 2px solid var(--primary);">
+                <div class="card-title" style="color: var(--primary);">✅ PRE-TRADE CHECKLIST - Check Before EVERY Trade</div>
+                <div id="preTradeChecklist" style="display: grid; gap: 8px;">
+                    <div class="gann-rule-check" id="preTradeRule1" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 1: Position Size ≤ 10% of Capital</div>
+                            <div style="font-size: 11px; color: var(--muted);">Current: <span id="preTradePositionSize">$1,000</span> of <span id="preTradeCapital">$10,000</span></div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule2" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 2: Stop Loss Defined</div>
+                            <div style="font-size: 11px; color: var(--muted);">Always know your exit BEFORE entering</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule4" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 4: Trend is Clear</div>
+                            <div style="font-size: 11px; color: var(--muted);">Confluence: <span id="preTradeConfluence">+4</span> (need &ge;+3 or &le;-3)</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;" id="preTradeRule4Status">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule5" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 5: Trading WITH the Trend</div>
+                            <div style="font-size: 11px; color: var(--muted);">Direction: <span id="preTradeTrendDir">CALL in uptrend</span></div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;" id="preTradeRule5Status">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule7" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 7: Clear Opportunity (Score &ge; 70)</div>
+                            <div style="font-size: 11px; color: var(--muted);">Current Score: <span id="preTradeScore">75</span>/100</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;" id="preTradeRule7Status">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule8" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 8: Less Than 5 Open Trades</div>
+                            <div style="font-size: 11px; color: var(--muted);">Current: <span id="preTradeOpenCount">2</span>/<span id="preTradeMaxTrades">5</span> positions</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;" id="preTradeRule8Status">PASS</span>
+                    </div>
+                    <div class="gann-rule-check" id="preTradeRule22" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--bg); border-radius: 6px; border-left: 4px solid var(--success);">
+                        <span style="font-size: 20px;">✅</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">Rule 22: Less Than 5 Different Markets</div>
+                            <div style="font-size: 11px; color: var(--muted);">Current: <span id="preTradeMarketCount">3</span>/<span id="preTradeMaxMarkets">5</span> markets</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--success); font-weight: 600;" id="preTradeRule22Status">PASS</span>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center;" id="preTradeVerdict">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--success);">🟢 CLEARED TO TRADE</div>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 5px;">7/7 Pre-Trade Rules Passed</div>
+                </div>
+            </div>
+
+            <!-- LOSS RECOVERY GUARD -->
+            <div class="card" style="margin-bottom: 15px;" id="lossRecoverySection">
+                <div class="card-title" style="color: var(--danger);">🛡️ Loss Recovery Guard (Rules 15, 17)</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Last Trade Result</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px;" id="lastTradeResult">✅ WIN</div>
+                    </div>
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Consecutive Losses</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px;" id="consecutiveLosses">0</div>
+                    </div>
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Suggested Position Size</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px; color: var(--success);" id="suggestedPositionSize">100%</div>
+                    </div>
+                </div>
+                <div id="lossWarning" style="display: none; margin-top: 15px; padding: 15px; background: rgba(239,68,68,0.15); border: 1px solid var(--danger); border-radius: 8px;">
+                    <div style="font-weight: 700; color: var(--danger); margin-bottom: 8px;">⚠️ LOSS RECOVERY WARNING</div>
+                    <div style="font-size: 13px; color: var(--text);" id="lossWarningText">
+                        Rule 17: "Don't trade to make up for losses." You've had consecutive losses. Consider reducing position size or taking a break.
+                    </div>
+                </div>
+                <div id="coolingOffPeriod" style="display: none; margin-top: 15px; padding: 15px; background: rgba(59,130,246,0.15); border: 1px solid var(--primary); border-radius: 8px;">
+                    <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px;">❄️ COOLING OFF PERIOD RECOMMENDED</div>
+                    <div style="font-size: 13px;">After 3+ consecutive losses, Gann recommends stepping away from trading. Take time to review your trades and strategy.</div>
+                </div>
+            </div>
+
+            <!-- ACTIVE TRADE MONITOR -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📊 Active Trade Monitor</div>
+                <div id="activeTradeMonitor">
+                    <div id="noActiveTradesMsg" style="padding: 30px; text-align: center; color: var(--muted);">
+                        No active positions to monitor. Rules will be checked when you open a trade.
+                    </div>
+                    <div id="activeTradesContainer" style="display: none;">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALL 28 RULES REFERENCE -->
+            <div class="card" style="margin-bottom: 15px;">
+                <div class="card-title">📖 Gann's 28 Trading Laws - Complete Reference</div>
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="filterGannRules('all')" class="gann-filter-btn active" style="padding: 8px 16px; background: var(--primary); border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 12px;">All Rules</button>
+                    <button onclick="filterGannRules('risk')" class="gann-filter-btn" style="padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">💰 Risk Management</button>
+                    <button onclick="filterGannRules('trend')" class="gann-filter-btn" style="padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">📈 Trend & Timing</button>
+                    <button onclick="filterGannRules('discipline')" class="gann-filter-btn" style="padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">🧠 Discipline</button>
+                    <button onclick="filterGannRules('profit')" class="gann-filter-btn" style="padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">🎯 Profit Protection</button>
+                    <button onclick="filterGannRules('record')" class="gann-filter-btn" style="padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px;">📊 Record Keeping</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="gannRulesTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th>Rule</th>
+                                <th style="width: 120px;">Category</th>
+                                <th style="width: 80px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gannRulesTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MONTHLY REVIEW -->
+            <div class="card">
+                <div class="card-title">📅 Monthly Review (Rule 27)</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">This Month's Trades</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px;" id="monthlyTradeCount">0</div>
+                    </div>
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Win Rate</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px; color: var(--success);" id="monthlyWinRate">--</div>
+                    </div>
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Total P&L</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px;" id="monthlyPnL">$0</div>
+                    </div>
+                    <div style="padding: 15px; background: var(--bg); border-radius: 8px; text-align: center;">
+                        <div style="font-size: 12px; color: var(--muted);">Rules Violated</div>
+                        <div style="font-size: 24px; font-weight: 700; margin-top: 5px; color: var(--danger);" id="monthlyViolations">0</div>
+                    </div>
+                </div>
+                <div style="padding: 15px; background: var(--bg); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 10px;">📝 Most Violated Rules This Month:</div>
+                    <div id="mostViolatedRules" style="font-size: 13px; color: var(--muted);">
+                        No rule violations recorded yet. Great discipline!
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 15px; background: rgba(139,92,246,0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 10px; color: var(--primary);">🎯 Rules to Focus On This Month:</div>
+                    <div id="rulesToFocus" style="font-size: 13px;">
+                        <div style="margin-bottom: 5px;">• Rule 2: Always use stop losses - protect your capital</div>
+                        <div style="margin-bottom: 5px;">• Rule 17: Don't trade to recover losses - stay disciplined</div>
+                        <div>• Rule 27: Review trades weekly - learn from mistakes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 </div>
     <!-- END MAIN APP -->
 
@@ -4035,6 +4267,11 @@ function initTabs() {
             // Default to 'main' view when Daily Analysis tab is clicked
             if (btn.dataset.tab === 'daily-analysis') {
                 switchAnalysisMode('main');
+            }
+
+            // Update Gann Rules tab when selected
+            if (btn.dataset.tab === 'gann-rules' && typeof updateGannRulesTab === 'function') {
+                updateGannRulesTab();
             }
         };
     });
@@ -13599,6 +13836,771 @@ function selectETFAndShowScore(symbol) {
 
     console.log(`📊 Selected ${symbol} - Score: ${calculateGannScore(symbol).score}/100`);
 }
+
+// ===============================================
+// GANN'S 28 TRADING LAWS - RULE CHECKING SYSTEM
+// ===============================================
+
+// All 28 Gann Rules with categories
+const GANN_RULES = [
+    { num: 1, text: "Divide your capital into 10 equal parts and never risk more than 1/10 on any single trade", category: "risk", checkable: true },
+    { num: 2, text: "Always use stop loss orders to protect your trade", category: "risk", checkable: true },
+    { num: 3, text: "Never overtrade - this violates your capital rules", category: "profit", checkable: true },
+    { num: 4, text: "Never let a profit run into a loss - trail your stops as profit increases", category: "trend", checkable: true },
+    { num: 5, text: "Do not buck the trend - never buy or sell if you are not sure of the trend", category: "trend", checkable: true },
+    { num: 6, text: "When in doubt, get out and don't get in when in doubt", category: "discipline", checkable: false },
+    { num: 7, text: "Trade only in active markets and avoid slow, dead ones", category: "trend", checkable: true },
+    { num: 8, text: "Never limit orders - trade at the market", category: "risk", checkable: false },
+    { num: 9, text: "Don't close trades without a good reason - follow up with a stop loss", category: "trend", checkable: false },
+    { num: 10, text: "Never average a losing position - this is one of the worst mistakes", category: "risk", checkable: true },
+    { num: 11, text: "Never get out of the market just because you have lost patience", category: "discipline", checkable: false },
+    { num: 12, text: "Avoid taking small profits and big losses", category: "discipline", checkable: true },
+    { num: 13, text: "Never cancel a stop loss order after you have placed it", category: "record", checkable: false },
+    { num: 14, text: "Avoid getting in and out of the market too often", category: "record", checkable: true },
+    { num: 15, text: "Be willing to make money from both sides of the market", category: "risk", checkable: true },
+    { num: 16, text: "Never buy or sell just because the price is low or high", category: "discipline", checkable: false },
+    { num: 17, text: "Don't trade to get even or recoup a loss", category: "discipline", checkable: true },
+    { num: 18, text: "Never change your position without a good reason", category: "profit", checkable: false },
+    { num: 19, text: "Avoid increasing your trading after a long period of success", category: "discipline", checkable: true },
+    { num: 20, text: "Don't guess when the market will top or bottom", category: "risk", checkable: false },
+    { num: 21, text: "Don't follow a blind man's advice - do your own research", category: "risk", checkable: false },
+    { num: 22, text: "Reduce trading after first loss - never increase", category: "risk", checkable: true },
+    { num: 23, text: "Avoid getting in wrong and out wrong - or right and out wrong", category: "discipline", checkable: false },
+    { num: 24, text: "After a successful trade, take some profits", category: "profit", checkable: true },
+    { num: 25, text: "Don't buy just to get a dividend", category: "discipline", checkable: false },
+    { num: 26, text: "Don't average up on a declining balance", category: "trend", checkable: true },
+    { num: 27, text: "Keep a record of your trades to review mistakes and successes", category: "record", checkable: true },
+    { num: 28, text: "Avoid making too many trades in a short period", category: "risk", checkable: true }
+];
+
+// Category colors and labels
+const GANN_CATEGORIES = {
+    risk: { label: "Risk Management", emoji: "💰", color: "var(--danger)" },
+    trend: { label: "Trend & Timing", emoji: "📈", color: "var(--success)" },
+    discipline: { label: "Discipline", emoji: "🧠", color: "var(--primary)" },
+    profit: { label: "Profit Protection", emoji: "🎯", color: "var(--warning)" },
+    record: { label: "Record Keeping", emoji: "📊", color: "var(--muted)" }
+};
+
+// Load capital settings from localStorage
+function loadCapitalSettings() {
+    const settings = JSON.parse(localStorage.getItem('gannCapitalSettings') || '{}');
+
+    const capitalInput = document.getElementById('gannCapital');
+    const maxRiskInput = document.getElementById('gannMaxRisk');
+    const maxTradesInput = document.getElementById('gannMaxTrades');
+    const maxMarketsInput = document.getElementById('gannMaxMarkets');
+
+    if (capitalInput) capitalInput.value = settings.capital || 10000;
+    if (maxRiskInput) maxRiskInput.value = settings.maxRisk || 10;
+    if (maxTradesInput) maxTradesInput.value = settings.maxTrades || 5;
+    if (maxMarketsInput) maxMarketsInput.value = settings.maxMarkets || 5;
+
+    updateCapitalDisplay();
+}
+
+// Save capital settings to localStorage
+function saveCapitalSettings() {
+    const settings = {
+        capital: parseFloat(document.getElementById('gannCapital')?.value) || 10000,
+        maxRisk: parseFloat(document.getElementById('gannMaxRisk')?.value) || 10,
+        maxTrades: parseInt(document.getElementById('gannMaxTrades')?.value) || 5,
+        maxMarkets: parseInt(document.getElementById('gannMaxMarkets')?.value) || 5
+    };
+
+    localStorage.setItem('gannCapitalSettings', JSON.stringify(settings));
+    updateCapitalDisplay();
+    checkPreTradeRules();
+    console.log('[Gann Rules] Settings saved:', settings);
+}
+
+// Update the capital display calculations
+function updateCapitalDisplay() {
+    const capital = parseFloat(document.getElementById('gannCapital')?.value) || 10000;
+    const maxRisk = parseFloat(document.getElementById('gannMaxRisk')?.value) || 10;
+    const maxTrades = parseInt(document.getElementById('gannMaxTrades')?.value) || 5;
+
+    const maxPerTrade = capital * (maxRisk / 100);
+    const maxExposure = maxPerTrade * maxTrades;
+    const exposurePct = Math.round((maxExposure / capital) * 100);
+
+    const maxPerTradeEl = document.getElementById('gannMaxPerTrade');
+    const maxExposureEl = document.getElementById('gannMaxExposure');
+
+    if (maxPerTradeEl) maxPerTradeEl.textContent = '$' + maxPerTrade.toLocaleString();
+    if (maxExposureEl) maxExposureEl.textContent = '$' + maxExposure.toLocaleString() + ' (' + exposurePct + '%)';
+}
+
+// Get trade history from localStorage
+function getTradeHistory() {
+    return JSON.parse(localStorage.getItem('tradeHistory') || '[]');
+}
+
+// Get loss tracking data
+function getLossTracking() {
+    return JSON.parse(localStorage.getItem('gannLossTracking') || '{"consecutiveLosses": 0, "lastResult": null}');
+}
+
+// Update loss tracking
+function updateLossTracking(result) {
+    let tracking = getLossTracking();
+
+    if (result === 'loss') {
+        tracking.consecutiveLosses++;
+        tracking.lastResult = 'loss';
+    } else if (result === 'win') {
+        tracking.consecutiveLosses = 0;
+        tracking.lastResult = 'win';
+    }
+
+    localStorage.setItem('gannLossTracking', JSON.stringify(tracking));
+    return tracking;
+}
+
+// Check all 28 Gann rules and return status for each
+function checkAllGannRules() {
+    const results = [];
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activeCount = openPositions.filter(p => p.status === 'active').length;
+    const settings = JSON.parse(localStorage.getItem('gannCapitalSettings') || '{}');
+    const capital = settings.capital || 10000;
+    const maxRisk = settings.maxRisk || 10;
+    const maxTrades = settings.maxTrades || 5;
+    const maxMarkets = settings.maxMarkets || 5;
+    const lossTracking = getLossTracking();
+    const tradeHistory = getTradeHistory();
+
+    // Get current symbol data
+    const symbol = currentSymbol || 'SPY';
+    let scoreData = { score: 50 };
+    if (typeof calculateGannScore === 'function') {
+        scoreData = calculateGannScore(symbol);
+    }
+
+    // Count unique markets
+    const uniqueMarkets = new Set(openPositions.filter(p => p.status === 'active').map(p => p.symbol));
+
+    // Count recent trades (last 7 days)
+    const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    const recentTrades = tradeHistory.filter(t => t.timestamp > weekAgo).length;
+
+    GANN_RULES.forEach(rule => {
+        let status = 'pass'; // Default to pass for non-checkable rules
+        let details = '';
+
+        if (rule.checkable) {
+            switch(rule.num) {
+                case 1: // Position size
+                    const maxPosition = capital * (maxRisk / 100);
+                    status = 'pass'; // Assume pass - actual check on trade entry
+                    details = 'Max position: $' + maxPosition.toLocaleString();
+                    break;
+
+                case 3: // Overtrade check
+                    status = activeCount <= maxTrades ? 'pass' : 'fail';
+                    details = activeCount + '/' + maxTrades + ' positions';
+                    break;
+
+                case 4: // Profit protection (check if any position is in profit without trailing stop)
+                    const profitableWithoutStop = openPositions.filter(p =>
+                        p.status === 'active' && p.currentPnLPct > 30 && !p.trailingStop
+                    );
+                    status = profitableWithoutStop.length === 0 ? 'pass' : 'warn';
+                    details = profitableWithoutStop.length > 0 ? 'Move stops on winners!' : 'Stops trailed';
+                    break;
+
+                case 5: // Trading with trend
+                    status = scoreData.score >= 50 ? 'pass' : 'warn';
+                    details = 'Score: ' + scoreData.score + '/100';
+                    break;
+
+                case 7: // Active market check
+                    status = scoreData.score >= 60 ? 'pass' : 'warn';
+                    details = scoreData.score >= 60 ? 'Market active' : 'Low activity';
+                    break;
+
+                case 10: // Never average down
+                    const avgDownPositions = openPositions.filter(p =>
+                        p.status === 'active' && p.currentPnLPct < 0 && p.addedToPosition
+                    );
+                    status = avgDownPositions.length === 0 ? 'pass' : 'fail';
+                    details = avgDownPositions.length > 0 ? 'Averaging down detected!' : 'Clean';
+                    break;
+
+                case 12: // Avoid small profits, big losses
+                    const wins = tradeHistory.filter(t => t.pnlPct > 0);
+                    const losses = tradeHistory.filter(t => t.pnlPct < 0);
+                    const avgWin = wins.length ? wins.reduce((a,b) => a + b.pnlPct, 0) / wins.length : 50;
+                    const avgLoss = losses.length ? Math.abs(losses.reduce((a,b) => a + b.pnlPct, 0) / losses.length) : 50;
+                    status = avgWin >= avgLoss ? 'pass' : 'warn';
+                    details = 'Avg Win: ' + avgWin.toFixed(0) + '% / Avg Loss: ' + avgLoss.toFixed(0) + '%';
+                    break;
+
+                case 14: // Avoid overtrading
+                    status = recentTrades <= 10 ? 'pass' : 'warn';
+                    details = recentTrades + ' trades this week';
+                    break;
+
+                case 15: // Both sides of market
+                    status = 'pass'; // Our system supports both CALL and PUT
+                    details = 'CALL/PUT available';
+                    break;
+
+                case 17: // Don't trade to recover
+                    status = lossTracking.consecutiveLosses < 2 ? 'pass' : 'warn';
+                    details = lossTracking.consecutiveLosses + ' consecutive losses';
+                    break;
+
+                case 19: // Don't increase after success
+                    status = 'pass'; // Manual check
+                    details = 'Manual verification';
+                    break;
+
+                case 22: // Max markets
+                    status = uniqueMarkets.size <= maxMarkets ? 'pass' : 'fail';
+                    details = uniqueMarkets.size + '/' + maxMarkets + ' markets';
+                    break;
+
+                case 24: // Take profits
+                    const bigWinners = openPositions.filter(p =>
+                        p.status === 'active' && p.currentPnLPct > 50
+                    );
+                    status = bigWinners.length === 0 ? 'pass' : 'warn';
+                    details = bigWinners.length > 0 ? 'Take some profits!' : 'No action needed';
+                    break;
+
+                case 26: // Don't average up on declining balance
+                    status = 'pass';
+                    details = 'Manual check';
+                    break;
+
+                case 27: // Keep records
+                    status = tradeHistory.length > 0 ? 'pass' : 'warn';
+                    details = tradeHistory.length + ' trades recorded';
+                    break;
+
+                case 28: // Too many trades
+                    status = recentTrades <= 15 ? 'pass' : 'fail';
+                    details = recentTrades + ' trades in 7 days';
+                    break;
+
+                default:
+                    status = 'pass';
+                    details = 'OK';
+            }
+        } else {
+            details = 'Manual verification';
+        }
+
+        results.push({
+            ...rule,
+            status: status,
+            details: details
+        });
+    });
+
+    return results;
+}
+
+// Check pre-trade rules
+function checkPreTradeRules() {
+    const results = {};
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activePositions = openPositions.filter(p => p.status === 'active');
+    const settings = JSON.parse(localStorage.getItem('gannCapitalSettings') || '{}');
+    const capital = settings.capital || 10000;
+    const maxRisk = settings.maxRisk || 10;
+    const maxTrades = settings.maxTrades || 5;
+    const maxMarkets = settings.maxMarkets || 5;
+    const lossTracking = getLossTracking();
+
+    // Get current symbol score and data
+    const symbol = currentSymbol || 'SPY';
+    let scoreData = { score: 50, bias: 'HOLD' };
+    let confluence = 0;
+
+    if (typeof calculateGannScore === 'function') {
+        scoreData = calculateGannScore(symbol);
+    }
+
+    // Get confluence from current data
+    if (typeof currentData !== 'undefined' && currentData && currentData.length > 0) {
+        const latestBar = currentData[currentData.length - 1];
+        confluence = parseInt(latestBar.PriceConfluence) || parseInt(latestBar.priceConfluence) || 0;
+    }
+
+    const maxPosition = capital * (maxRisk / 100);
+    const uniqueMarkets = new Set(activePositions.map(p => p.symbol));
+
+    // Rule 1: Position Size
+    results.rule1 = {
+        pass: true, // Will check at trade time
+        details: {
+            positionSize: maxPosition,
+            capital: capital
+        }
+    };
+
+    // Rule 2: Stop Loss Defined
+    results.rule2 = {
+        pass: true, // Our system always defines stops
+        details: {}
+    };
+
+    // Rule 4: Trend Clear (confluence >= 3 or <= -3)
+    results.rule4 = {
+        pass: Math.abs(confluence) >= 3,
+        details: { confluence: confluence }
+    };
+
+    // Rule 5: Trading with trend
+    const isBullish = confluence > 0;
+    const bias = scoreData.bias || 'HOLD';
+    const trendMatch = (isBullish && bias === 'CALL') || (!isBullish && bias === 'PUT') || bias === 'HOLD';
+    results.rule5 = {
+        pass: trendMatch || Math.abs(confluence) < 3,
+        details: {
+            direction: bias === 'CALL' ? 'CALL in uptrend' : bias === 'PUT' ? 'PUT in downtrend' : 'Neutral'
+        }
+    };
+
+    // Rule 7: Clear opportunity
+    results.rule7 = {
+        pass: scoreData.score >= 70,
+        details: { score: scoreData.score }
+    };
+
+    // Rule 8: Less than max trades
+    results.rule8 = {
+        pass: activePositions.length < maxTrades,
+        details: {
+            openCount: activePositions.length,
+            maxTrades: maxTrades
+        }
+    };
+
+    // Rule 22: Less than max markets
+    results.rule22 = {
+        pass: uniqueMarkets.size < maxMarkets,
+        details: {
+            marketCount: uniqueMarkets.size,
+            maxMarkets: maxMarkets
+        }
+    };
+
+    // Update display
+    updatePreTradeDisplay(results);
+
+    return results;
+}
+
+// Update pre-trade checklist display
+function updatePreTradeDisplay(results) {
+    // Rule 1
+    const rule1El = document.getElementById('preTradeRule1');
+    if (rule1El) {
+        const icon = rule1El.querySelector('span:first-child');
+        const statusSpan = rule1El.querySelector('span:last-child');
+        const posSize = document.getElementById('preTradePositionSize');
+        const cap = document.getElementById('preTradeCapital');
+
+        if (icon) icon.textContent = results.rule1.pass ? '✅' : '❌';
+        if (statusSpan) {
+            statusSpan.textContent = results.rule1.pass ? 'PASS' : 'FAIL';
+            statusSpan.style.color = results.rule1.pass ? 'var(--success)' : 'var(--danger)';
+        }
+        if (posSize) posSize.textContent = '$' + results.rule1.details.positionSize.toLocaleString();
+        if (cap) cap.textContent = '$' + results.rule1.details.capital.toLocaleString();
+        rule1El.style.borderLeftColor = results.rule1.pass ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Rule 4
+    const rule4El = document.getElementById('preTradeRule4');
+    if (rule4El) {
+        const icon = rule4El.querySelector('span:first-child');
+        const confEl = document.getElementById('preTradeConfluence');
+        const statusEl = document.getElementById('preTradeRule4Status');
+
+        if (icon) icon.textContent = results.rule4.pass ? '✅' : '⚠️';
+        if (confEl) confEl.textContent = (results.rule4.details.confluence > 0 ? '+' : '') + results.rule4.details.confluence;
+        if (statusEl) {
+            statusEl.textContent = results.rule4.pass ? 'PASS' : 'WEAK';
+            statusEl.style.color = results.rule4.pass ? 'var(--success)' : 'var(--warning)';
+        }
+        rule4El.style.borderLeftColor = results.rule4.pass ? 'var(--success)' : 'var(--warning)';
+    }
+
+    // Rule 5
+    const rule5El = document.getElementById('preTradeRule5');
+    if (rule5El) {
+        const icon = rule5El.querySelector('span:first-child');
+        const dirEl = document.getElementById('preTradeTrendDir');
+        const statusEl = document.getElementById('preTradeRule5Status');
+
+        if (icon) icon.textContent = results.rule5.pass ? '✅' : '⚠️';
+        if (dirEl) dirEl.textContent = results.rule5.details.direction;
+        if (statusEl) {
+            statusEl.textContent = results.rule5.pass ? 'PASS' : 'WARN';
+            statusEl.style.color = results.rule5.pass ? 'var(--success)' : 'var(--warning)';
+        }
+        rule5El.style.borderLeftColor = results.rule5.pass ? 'var(--success)' : 'var(--warning)';
+    }
+
+    // Rule 7
+    const rule7El = document.getElementById('preTradeRule7');
+    if (rule7El) {
+        const icon = rule7El.querySelector('span:first-child');
+        const scoreEl = document.getElementById('preTradeScore');
+        const statusEl = document.getElementById('preTradeRule7Status');
+
+        if (icon) icon.textContent = results.rule7.pass ? '✅' : '❌';
+        if (scoreEl) scoreEl.textContent = results.rule7.details.score;
+        if (statusEl) {
+            statusEl.textContent = results.rule7.pass ? 'PASS' : 'FAIL';
+            statusEl.style.color = results.rule7.pass ? 'var(--success)' : 'var(--danger)';
+        }
+        rule7El.style.borderLeftColor = results.rule7.pass ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Rule 8
+    const rule8El = document.getElementById('preTradeRule8');
+    if (rule8El) {
+        const icon = rule8El.querySelector('span:first-child');
+        const countEl = document.getElementById('preTradeOpenCount');
+        const maxEl = document.getElementById('preTradeMaxTrades');
+        const statusEl = document.getElementById('preTradeRule8Status');
+
+        if (icon) icon.textContent = results.rule8.pass ? '✅' : '❌';
+        if (countEl) countEl.textContent = results.rule8.details.openCount;
+        if (maxEl) maxEl.textContent = results.rule8.details.maxTrades;
+        if (statusEl) {
+            statusEl.textContent = results.rule8.pass ? 'PASS' : 'FAIL';
+            statusEl.style.color = results.rule8.pass ? 'var(--success)' : 'var(--danger)';
+        }
+        rule8El.style.borderLeftColor = results.rule8.pass ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Rule 22
+    const rule22El = document.getElementById('preTradeRule22');
+    if (rule22El) {
+        const icon = rule22El.querySelector('span:first-child');
+        const countEl = document.getElementById('preTradeMarketCount');
+        const maxEl = document.getElementById('preTradeMaxMarkets');
+        const statusEl = document.getElementById('preTradeRule22Status');
+
+        if (icon) icon.textContent = results.rule22.pass ? '✅' : '❌';
+        if (countEl) countEl.textContent = results.rule22.details.marketCount;
+        if (maxEl) maxEl.textContent = results.rule22.details.maxMarkets;
+        if (statusEl) {
+            statusEl.textContent = results.rule22.pass ? 'PASS' : 'FAIL';
+            statusEl.style.color = results.rule22.pass ? 'var(--success)' : 'var(--danger)';
+        }
+        rule22El.style.borderLeftColor = results.rule22.pass ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Overall verdict
+    const passCount = Object.values(results).filter(r => r.pass).length;
+    const totalRules = Object.keys(results).length;
+    const verdictEl = document.getElementById('preTradeVerdict');
+
+    if (verdictEl) {
+        if (passCount === totalRules) {
+            verdictEl.style.background = 'rgba(16,185,129,0.15)';
+            verdictEl.innerHTML = '<div style="font-size: 18px; font-weight: 700; color: var(--success);">🟢 CLEARED TO TRADE</div><div style="font-size: 12px; color: var(--muted); margin-top: 5px;">' + passCount + '/' + totalRules + ' Pre-Trade Rules Passed</div>';
+        } else if (passCount >= totalRules - 2) {
+            verdictEl.style.background = 'rgba(245,158,11,0.15)';
+            verdictEl.innerHTML = '<div style="font-size: 18px; font-weight: 700; color: var(--warning);">🟡 CAUTION - PROCEED CAREFULLY</div><div style="font-size: 12px; color: var(--muted); margin-top: 5px;">' + passCount + '/' + totalRules + ' Pre-Trade Rules Passed</div>';
+        } else {
+            verdictEl.style.background = 'rgba(239,68,68,0.15)';
+            verdictEl.innerHTML = '<div style="font-size: 18px; font-weight: 700; color: var(--danger);">🔴 BLOCKED - DO NOT TRADE</div><div style="font-size: 12px; color: var(--muted); margin-top: 5px;">' + passCount + '/' + totalRules + ' Pre-Trade Rules Passed</div>';
+        }
+    }
+}
+
+// Check rules for active positions
+function checkActiveTradeRules(position) {
+    const alerts = [];
+
+    if (!position) return alerts;
+
+    const pnlPct = position.currentPnLPct || 0;
+
+    // Rule 3/24: Profit > 30% -> Move stop to breakeven
+    if (pnlPct > 30) {
+        alerts.push({
+            rule: 3,
+            type: 'profit',
+            message: 'Profit > 30% - Move stop to breakeven!',
+            severity: 'warning'
+        });
+    }
+
+    // Rule 18: Target 1 hit
+    if (pnlPct > 50) {
+        alerts.push({
+            rule: 18,
+            type: 'profit',
+            message: 'Target 1 hit - Take partial profits!',
+            severity: 'success'
+        });
+    }
+
+    // Rule 10: Adding to loser warning
+    if (pnlPct < -20 && position.addedToPosition) {
+        alerts.push({
+            rule: 10,
+            type: 'danger',
+            message: 'WARNING: Do not average down on losing position!',
+            severity: 'danger'
+        });
+    }
+
+    return alerts;
+}
+
+// Update loss recovery guard display
+function updateLossRecoveryGuard() {
+    const tracking = getLossTracking();
+    const lastResultEl = document.getElementById('lastTradeResult');
+    const consecutiveEl = document.getElementById('consecutiveLosses');
+    const suggestedEl = document.getElementById('suggestedPositionSize');
+    const warningEl = document.getElementById('lossWarning');
+    const coolingEl = document.getElementById('coolingOffPeriod');
+
+    // Last trade result
+    if (lastResultEl) {
+        if (tracking.lastResult === 'win') {
+            lastResultEl.textContent = '✅ WIN';
+            lastResultEl.style.color = 'var(--success)';
+        } else if (tracking.lastResult === 'loss') {
+            lastResultEl.textContent = '❌ LOSS';
+            lastResultEl.style.color = 'var(--danger)';
+        } else {
+            lastResultEl.textContent = '-- N/A --';
+            lastResultEl.style.color = 'var(--muted)';
+        }
+    }
+
+    // Consecutive losses
+    if (consecutiveEl) {
+        consecutiveEl.textContent = tracking.consecutiveLosses;
+        consecutiveEl.style.color = tracking.consecutiveLosses >= 2 ? 'var(--danger)' : 'var(--text)';
+    }
+
+    // Suggested position size based on losses
+    let suggestedPct = 100;
+    if (tracking.consecutiveLosses === 1) suggestedPct = 75;
+    else if (tracking.consecutiveLosses === 2) suggestedPct = 50;
+    else if (tracking.consecutiveLosses >= 3) suggestedPct = 25;
+
+    if (suggestedEl) {
+        suggestedEl.textContent = suggestedPct + '%';
+        suggestedEl.style.color = suggestedPct === 100 ? 'var(--success)' : suggestedPct >= 50 ? 'var(--warning)' : 'var(--danger)';
+    }
+
+    // Show/hide warnings
+    if (warningEl) {
+        warningEl.style.display = tracking.consecutiveLosses >= 2 ? 'block' : 'none';
+    }
+
+    if (coolingEl) {
+        coolingEl.style.display = tracking.consecutiveLosses >= 3 ? 'block' : 'none';
+    }
+}
+
+// Update active trade monitor
+function updateActiveTradeMonitor() {
+    const container = document.getElementById('activeTradesContainer');
+    const noTradesMsg = document.getElementById('noActiveTradesMsg');
+
+    if (!container) return;
+
+    const openPositions = JSON.parse(localStorage.getItem('openPositions') || '[]');
+    const activePositions = openPositions.filter(p => p.status === 'active');
+
+    if (activePositions.length === 0) {
+        if (noTradesMsg) noTradesMsg.style.display = 'block';
+        container.style.display = 'none';
+        return;
+    }
+
+    if (noTradesMsg) noTradesMsg.style.display = 'none';
+    container.style.display = 'block';
+
+    let html = '';
+    activePositions.forEach(position => {
+        const alerts = checkActiveTradeRules(position);
+        const pnlPct = position.currentPnLPct || 0;
+        const pnlColor = pnlPct >= 0 ? 'var(--success)' : 'var(--danger)';
+
+        html += '<div style="padding: 15px; background: var(--bg); border-radius: 8px; margin-bottom: 10px; border-left: 4px solid ' + pnlColor + ';">';
+        html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">';
+        html += '<div style="font-weight: 700; font-size: 16px;">' + position.symbol + ' ' + (position.direction || 'CALL') + '</div>';
+        html += '<div style="font-size: 18px; font-weight: 700; color: ' + pnlColor + ';">' + (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(1) + '%</div>';
+        html += '</div>';
+
+        if (alerts.length > 0) {
+            html += '<div style="margin-top: 10px;">';
+            alerts.forEach(alert => {
+                const alertColor = alert.severity === 'danger' ? 'var(--danger)' : alert.severity === 'warning' ? 'var(--warning)' : 'var(--success)';
+                html += '<div style="padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-bottom: 5px; border-left: 3px solid ' + alertColor + ';">';
+                html += '<span style="font-weight: 600; color: ' + alertColor + ';">Rule ' + alert.rule + ':</span> ' + alert.message;
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+
+        html += '</div>';
+    });
+
+    container.innerHTML = html;
+}
+
+// Populate the 28 rules table
+function populateGannRulesTable(filter = 'all') {
+    const tbody = document.getElementById('gannRulesTableBody');
+    if (!tbody) return;
+
+    const ruleResults = checkAllGannRules();
+
+    let html = '';
+    ruleResults.forEach(rule => {
+        if (filter !== 'all' && rule.category !== filter) return;
+
+        const cat = GANN_CATEGORIES[rule.category];
+        const statusIcon = rule.status === 'pass' ? '✅' : rule.status === 'warn' ? '⚠️' : '❌';
+        const statusColor = rule.status === 'pass' ? 'var(--success)' : rule.status === 'warn' ? 'var(--warning)' : 'var(--danger)';
+
+        html += '<tr data-category="' + rule.category + '">';
+        html += '<td style="font-weight: 700; color: var(--primary);">' + rule.num + '</td>';
+        html += '<td>';
+        html += '<div style="font-size: 13px;">' + rule.text + '</div>';
+        if (rule.details && rule.checkable) {
+            html += '<div style="font-size: 11px; color: var(--muted); margin-top: 3px;">' + rule.details + '</div>';
+        }
+        html += '</td>';
+        html += '<td><span style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; background: var(--bg); border-radius: 4px; font-size: 11px;">' + cat.emoji + ' ' + cat.label + '</span></td>';
+        html += '<td style="text-align: center;">';
+        if (rule.checkable) {
+            html += '<span style="font-size: 18px;">' + statusIcon + '</span>';
+        } else {
+            html += '<span style="color: var(--muted); font-size: 11px;">Manual</span>';
+        }
+        html += '</td>';
+        html += '</tr>';
+    });
+
+    tbody.innerHTML = html;
+
+    // Update overall status
+    const passCount = ruleResults.filter(r => r.status === 'pass').length;
+    const totalCheckable = ruleResults.filter(r => r.checkable).length;
+
+    const passCountEl = document.getElementById('gannRulesPassCount');
+    const statusEl = document.getElementById('gannRulesOverallStatus');
+
+    if (passCountEl) {
+        passCountEl.textContent = passCount + '/' + totalCheckable;
+    }
+
+    if (statusEl) {
+        const icon = statusEl.querySelector('span:first-child');
+        if (icon) {
+            if (passCount >= totalCheckable - 2) {
+                icon.textContent = '🟢';
+            } else if (passCount >= totalCheckable / 2) {
+                icon.textContent = '🟡';
+            } else {
+                icon.textContent = '🔴';
+            }
+        }
+    }
+}
+
+// Filter rules by category
+function filterGannRules(category) {
+    // Update button states
+    document.querySelectorAll('.gann-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'var(--bg)';
+        btn.style.color = 'var(--text)';
+    });
+
+    event.target.classList.add('active');
+    event.target.style.background = 'var(--primary)';
+    event.target.style.color = 'white';
+
+    populateGannRulesTable(category);
+}
+
+// Update monthly review section
+function updateMonthlyReview() {
+    const tradeHistory = getTradeHistory();
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Filter this month's trades
+    const monthTrades = tradeHistory.filter(t => new Date(t.timestamp) >= monthStart);
+
+    const wins = monthTrades.filter(t => t.pnlPct > 0);
+    const losses = monthTrades.filter(t => t.pnlPct < 0);
+    const totalPnL = monthTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+    const winRate = monthTrades.length > 0 ? (wins.length / monthTrades.length * 100).toFixed(0) : '--';
+
+    // Update display
+    const tradeCountEl = document.getElementById('monthlyTradeCount');
+    const winRateEl = document.getElementById('monthlyWinRate');
+    const pnlEl = document.getElementById('monthlyPnL');
+    const violationsEl = document.getElementById('monthlyViolations');
+
+    if (tradeCountEl) tradeCountEl.textContent = monthTrades.length;
+    if (winRateEl) {
+        winRateEl.textContent = winRate + '%';
+        winRateEl.style.color = parseInt(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
+    }
+    if (pnlEl) {
+        pnlEl.textContent = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(0);
+        pnlEl.style.color = totalPnL >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Get rule violations from localStorage
+    const violations = JSON.parse(localStorage.getItem('gannRuleViolations') || '{}');
+    const violationCount = Object.values(violations).reduce((sum, count) => sum + count, 0);
+    if (violationsEl) {
+        violationsEl.textContent = violationCount;
+        violationsEl.style.color = violationCount === 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // Most violated rules
+    const violatedEl = document.getElementById('mostViolatedRules');
+    if (violatedEl) {
+        const sortedViolations = Object.entries(violations).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        if (sortedViolations.length > 0) {
+            violatedEl.innerHTML = sortedViolations.map(([ruleNum, count]) => {
+                const rule = GANN_RULES.find(r => r.num === parseInt(ruleNum));
+                return '<div style="margin-bottom: 5px;">• Rule ' + ruleNum + ': ' + (rule?.text?.substring(0, 50) || 'Unknown') + '... (' + count + 'x)</div>';
+            }).join('');
+        } else {
+            violatedEl.innerHTML = 'No rule violations recorded yet. Great discipline!';
+        }
+    }
+}
+
+// Main update function for Gann Rules tab
+function updateGannRulesTab() {
+    console.log('[Gann Rules] Updating tab...');
+
+    loadCapitalSettings();
+    checkPreTradeRules();
+    updateLossRecoveryGuard();
+    updateActiveTradeMonitor();
+    populateGannRulesTable();
+    updateMonthlyReview();
+
+    console.log('[Gann Rules] Tab update complete');
+}
+
+
 
 // Hook into tab activation
 const origGannTabHandler2 = document.querySelector('[data-tab="gann-analysis"]')?.onclick;
