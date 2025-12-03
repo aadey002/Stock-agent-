@@ -12710,7 +12710,7 @@ function calculateETFEntryWindows() {
     allETFData.forEach((etf, index) => {
         // Each ETF has a slightly different cycle offset based on its characteristics
         const cycleOffset = (index * 2) % 30; // Stagger cycles across ETFs
-        const baseCycleDay = calculateGannCycles().day30;
+        const baseCycleDay = calculateGannCycles().cycle30Day || 15;
 
         // Calculate this ETF's turn date
         const etfTurnDate = new Date(today);
@@ -12875,7 +12875,7 @@ function populateOpportunitiesTable() {
 
         const windowText = etf.status === 'READY' ? 'NOW!' :
                           etf.status === 'ACTIVE' ? 'OPEN' :
-                          `${etf.daysUntilWindow}d`;
+                          `${etf.daysUntilWindow || 0}d`;
 
         const directionIcon = etf.direction === 'CALL' ? '📈' : '📉';
         const directionColor = etf.direction === 'CALL' ? 'var(--success)' : 'var(--danger)';
@@ -13164,7 +13164,7 @@ function openTradeDetail(symbol) {
         statusBanner.style.borderColor = 'var(--warning)';
         statusBanner.innerHTML = `
             <div style="font-size: 16px; font-weight: 700; color: var(--warning);">⏳ WAITING</div>
-            <div style="font-size: 12px; color: var(--muted);">Entry window opens in ${etf.daysUntilWindow} days</div>
+            <div style="font-size: 12px; color: var(--muted);">Entry window opens in ${etf.daysUntilWindow || 0} days</div>
         `;
     }
 
@@ -13220,7 +13220,7 @@ function openTradeDetail(symbol) {
         tradeBtn.style.opacity = '1';
     } else {
         tradeBtn.disabled = true;
-        tradeBtn.textContent = `Wait ${etf.daysUntilWindow} Days`;
+        tradeBtn.textContent = `Wait ${etf.daysUntilWindow || 0} Days`;
         tradeBtn.style.opacity = '0.5';
     }
 
