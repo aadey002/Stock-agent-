@@ -3124,9 +3124,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <!-- MONTHLY TRADING DASHBOARD - Trade Each When Ready -->
             <!-- =============================================== -->
 
-            <!-- ENTRY ALERT BANNER - Shows when trades become ready -->
+            <!-- ENTRY ALERT BANNER - Shows when trades become ready (dynamic based on score) -->
             <div id="entryAlertBanner" class="card" style="display: none; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2)); border: 2px solid var(--success); margin-bottom: 15px; animation: pulse 2s infinite;">
-                <div class="card-title" style="color: var(--success);">🔔 ENTRY ALERT - TRADE NOW AVAILABLE! 🔔</div>
+                <div class="card-title" style="color: var(--success);">🔔 CHECKING TRADE SETUP... 🔔</div>
                 <div id="entryAlertContent" style="font-size: 13px;">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -11234,8 +11234,28 @@ function calculateGannScore(symbol) {
     }
 
     let score = 0;
-    const details = {};
-    const cycles = calculateGannCycles();
+    const details = {
+        timing: 0,
+        price: 0,
+        trend: 0,
+        agents: 0,
+        confluence: 0
+    };
+
+    // Get cycles with safety check
+    let cycles;
+    try {
+        cycles = calculateGannCycles();
+    } catch (e) {
+        console.warn('Error calculating Gann cycles:', e);
+        cycles = {
+            cycle30Phase: 'TRENDING',
+            cycle30Day: 15,
+            daysTo30Turn: 15,
+            cycle90Phase: 'TRENDING',
+            cycle90Simple: 'Neutral'
+        };
+    }
 
     // Get price data for this symbol
     let price = 0;
@@ -11266,18 +11286,20 @@ function calculateGannScore(symbol) {
     // Is it the right time based on Gann cycles?
     let timingScore = 0;
 
-    // 30-day cycle phase (up to 20 points)
-    if (cycles.cycle30Phase === 'BOTTOMING') timingScore += 20;
-    else if (cycles.cycle30Phase === 'TOPPING') timingScore += 15;
+    // 30-day cycle phase (up to 20 points) - with safety checks
+    const phase30 = cycles?.cycle30Phase || 'TRENDING';
+    if (phase30 === 'BOTTOMING') timingScore += 20;
+    else if (phase30 === 'TOPPING') timingScore += 15;
     else timingScore += 5; // TRENDING
 
-    // Proximity to turn date (up to 10 points)
-    if (cycles.daysTo30Turn <= 2) timingScore += 10;
-    else if (cycles.daysTo30Turn <= 5) timingScore += 7;
-    else if (cycles.daysTo30Turn <= 10) timingScore += 4;
+    // Proximity to turn date (up to 10 points) - with safety checks
+    const daysTo30 = cycles?.daysTo30Turn ?? 15;
+    if (daysTo30 <= 2) timingScore += 10;
+    else if (daysTo30 <= 5) timingScore += 7;
+    else if (daysTo30 <= 10) timingScore += 4;
     else timingScore += 1;
 
-    details.timing = Math.min(30, timingScore);
+    details.timing = Math.min(30, Math.max(0, timingScore || 0));
     score += details.timing;
 
     // ========== 2. PRICE LOCATION (0-25 points) ==========
@@ -11301,7 +11323,7 @@ function calculateGannScore(symbol) {
         else priceScore = 5;
     }
 
-    details.price = priceScore;
+    details.price = Math.max(0, priceScore || 0);
     score += details.price;
 
     // ========== 3. TREND ALIGNMENT (0-20 points) ==========
@@ -11313,15 +11335,17 @@ function calculateGannScore(symbol) {
         trendScore += 5; // Clear direction
     }
 
-    // Check if 90-day cycle aligns with 30-day
-    const cycle90Bullish = cycles.cycle90Phase === 'BOTTOMING' || cycles.cycle90Simple.includes('UP');
-    const cycle30Bullish = cycles.cycle30Phase === 'BOTTOMING';
+    // Check if 90-day cycle aligns with 30-day - with safety checks
+    const phase90 = cycles?.cycle90Phase || 'TRENDING';
+    const simple90 = cycles?.cycle90Simple || '';
+    const cycle90Bullish = phase90 === 'BOTTOMING' || (typeof simple90 === 'string' && simple90.includes('UP'));
+    const cycle30Bullish = phase30 === 'BOTTOMING';
 
     if ((cycle90Bullish && cycle30Bullish) || (!cycle90Bullish && !cycle30Bullish)) {
         trendScore += 5; // Cycles aligned
     }
 
-    details.trend = Math.min(20, trendScore);
+    details.trend = Math.min(20, Math.max(0, trendScore || 0));
     score += details.trend;
 
     // ========== 4. AI AGENTS AGREEMENT (0-15 points) ==========
@@ -11334,7 +11358,7 @@ function calculateGannScore(symbol) {
     else if (priceConfluence >= 2) agentScore = 8;
     else agentScore = 4;
 
-    details.agents = agentScore;
+    details.agents = Math.max(0, agentScore || 0);
     score += details.agents;
 
     // ========== 5. MULTIPLE SIGNALS (0-10 points) ==========
@@ -13058,10 +13082,11 @@ function updatePositionSummary(windows) {
     showEntryAlerts(windows.filter(w => w.status === 'READY'));
 }
 
-// Show entry alerts for ready trades
+// Show entry alerts for ready trades - WITH SCORE-BASED LOGIC
 function showEntryAlerts(readyTrades) {
     const banner = document.getElementById('entryAlertBanner');
     const content = document.getElementById('entryAlertContent');
+    const titleEl = banner?.querySelector('.card-title');
 
     if (!banner || !content) return;
 
@@ -13078,31 +13103,92 @@ function showEntryAlerts(readyTrades) {
         banner.style.display = 'block';
         banner.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2))';
         banner.style.borderColor = 'var(--warning)';
+        if (titleEl) titleEl.innerHTML = '⚠️ POSITION LIMIT REACHED ⚠️';
         content.innerHTML = `
-            <div style="font-weight: 700; margin-bottom: 8px;">⚠️ POSITION LIMIT REACHED</div>
-            <div>You have ${activeCount}/${positionLimits.maxPositions} positions open. Close a position to trade:</div>
-            <div style="margin-top: 8px;">${readyTrades.map(t => `<strong>${t.symbol}</strong>`).join(', ')}</div>
+            <div style="font-weight: 700; margin-bottom: 8px;">You have ${activeCount}/${positionLimits.maxPositions} positions open.</div>
+            <div>Close a position to trade: ${readyTrades.map(t => `<strong>${t.symbol}</strong>`).join(', ')}</div>
         `;
         return;
     }
 
-    banner.style.display = 'block';
-    banner.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2))';
-    banner.style.borderColor = 'var(--success)';
+    // Filter trades by score threshold
+    const greatTrades = readyTrades.filter(t => t.score >= 80);  // Great setup
+    const goodTrades = readyTrades.filter(t => t.score >= 70 && t.score < 80);  // Good setup
+    const okTrades = readyTrades.filter(t => t.score >= 50 && t.score < 70);  // OK setup
+    const weakTrades = readyTrades.filter(t => t.score < 50);  // Weak setup
 
-    content.innerHTML = `
-        <div style="font-weight: 700; margin-bottom: 8px;">🎯 ${readyTrades.length} TRADE${readyTrades.length > 1 ? 'S' : ''} READY TO ENTER</div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-            ${readyTrades.map(t => `
-                <div style="background: var(--bg); padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
-                    <strong>${t.symbol}</strong>
-                    <span style="color: ${t.direction === 'CALL' ? 'var(--success)' : 'var(--danger)'};">${t.direction === 'CALL' ? '📈' : '📉'} ${t.direction}</span>
-                    <span style="color: var(--muted);">Score: ${t.score}</span>
-                    <button onclick="openTradeDetail('${t.symbol}')" style="padding: 4px 10px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 11px; cursor: pointer;">TRADE</button>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    // Determine what to show based on best available trades
+    if (greatTrades.length > 0 || goodTrades.length > 0) {
+        // SHOW: Trade Now Available (score >= 70)
+        const tradesToShow = [...greatTrades, ...goodTrades];
+        banner.style.display = 'block';
+        banner.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2))';
+        banner.style.borderColor = 'var(--success)';
+        if (titleEl) {
+            titleEl.style.color = 'var(--success)';
+            titleEl.innerHTML = '🟢 TRADE NOW - GOOD SETUP! 🟢';
+        }
+        content.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 8px;">🎯 ${tradesToShow.length} HIGH-QUALITY TRADE${tradesToShow.length > 1 ? 'S' : ''} AVAILABLE</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                ${tradesToShow.map(t => `
+                    <div style="background: var(--bg); padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px; border: 1px solid ${t.score >= 80 ? 'var(--success)' : 'var(--primary)'};">
+                        <strong>${t.symbol}</strong>
+                        <span style="color: ${t.direction === 'CALL' ? 'var(--success)' : 'var(--danger)'};">${t.direction === 'CALL' ? '📈' : '📉'} ${t.direction}</span>
+                        <span style="color: ${t.score >= 80 ? 'var(--success)' : 'var(--primary)'}; font-weight: 600;">${t.score >= 80 ? '🌟' : '✓'} ${t.score}</span>
+                        <button onclick="openTradeDetail('${t.symbol}')" style="padding: 4px 10px; background: var(--success); border: none; border-radius: 4px; color: white; font-size: 11px; cursor: pointer;">TRADE</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (okTrades.length > 0) {
+        // SHOW: Almost Ready (score 50-69)
+        banner.style.display = 'block';
+        banner.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.15))';
+        banner.style.borderColor = 'var(--warning)';
+        if (titleEl) {
+            titleEl.style.color = 'var(--warning)';
+            titleEl.innerHTML = '🟡 ALMOST READY - WAIT FOR BETTER SETUP 🟡';
+        }
+        content.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 8px;">⏳ ${okTrades.length} trade${okTrades.length > 1 ? 's' : ''} in entry window but score is mediocre (50-69)</div>
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Consider waiting for better conditions or trade with smaller position size.</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                ${okTrades.map(t => `
+                    <div style="background: var(--bg); padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px; opacity: 0.8;">
+                        <strong>${t.symbol}</strong>
+                        <span style="color: ${t.direction === 'CALL' ? 'var(--success)' : 'var(--danger)'};">${t.direction === 'CALL' ? '📈' : '📉'}</span>
+                        <span style="color: var(--warning);">⚠️ ${t.score}</span>
+                        <button onclick="openTradeDetail('${t.symbol}')" style="padding: 4px 10px; background: var(--warning); border: none; border-radius: 4px; color: black; font-size: 11px; cursor: pointer;">VIEW</button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (weakTrades.length > 0) {
+        // SHOW: Not Ready (score < 50)
+        banner.style.display = 'block';
+        banner.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(107,114,128,0.1))';
+        banner.style.borderColor = 'var(--danger)';
+        if (titleEl) {
+            titleEl.style.color = 'var(--danger)';
+            titleEl.innerHTML = '🔴 NOT READY - DO NOT TRADE 🔴';
+        }
+        content.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 8px;">⛔ Entry window open but setup is WEAK (score < 50)</div>
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Skip this cycle. Wait for next month's better setup.</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                ${weakTrades.slice(0, 3).map(t => `
+                    <div style="background: var(--bg); padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px; opacity: 0.6;">
+                        <strong>${t.symbol}</strong>
+                        <span style="color: var(--danger);">❌ ${t.score}</span>
+                    </div>
+                `).join('')}
+                ${weakTrades.length > 3 ? `<span style="color: var(--muted);">+${weakTrades.length - 3} more</span>` : ''}
+            </div>
+        `;
+    } else {
+        banner.style.display = 'none';
+    }
 }
 
 // Populate sector rotation grid
