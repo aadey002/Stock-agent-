@@ -13110,10 +13110,20 @@ function generateMultiETFCalendar() {
             style += ` background: rgba(16,185,129,${0.1 + intensity * 0.3}); font-weight: 600;`;
         }
 
-        const tooltip = hasWindows ? `title="${calendarMap[day].join(', ')}"` : '';
-        const badge = windowCount > 0 ? `<span style="position: absolute; top: 0; right: 0; font-size: 8px; background: var(--success); color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">${windowCount}</span>` : '';
+        const etfList = hasWindows ? calendarMap[day].join(', ') : '';
+        const badge = windowCount > 0 ? `<span style="position: absolute; top: -2px; right: -2px; font-size: 8px; background: var(--success); color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">${windowCount}</span>` : '';
 
-        html += `<div style="${style}" ${tooltip}>${day}${badge}</div>`;
+        // Create tooltip element for better visibility
+        const tooltipDiv = hasWindows ? `<div class="calendar-tooltip" style="display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 8px; font-size: 10px; white-space: nowrap; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+            <div style="font-weight: 700; margin-bottom: 4px; color: var(--success);">Entry Windows Open:</div>
+            <div style="color: var(--text);">${etfList}</div>
+        </div>` : '';
+
+        html += `<div style="${style} cursor: ${hasWindows ? 'pointer' : 'default'};"
+            onmouseenter="this.querySelector('.calendar-tooltip')?.style.setProperty('display', 'block')"
+            onmouseleave="this.querySelector('.calendar-tooltip')?.style.setProperty('display', 'none')"
+            onclick="${hasWindows ? `alert('Entry windows on day ${day}: ${etfList}')` : ''}"
+            >${day}${badge}${tooltipDiv}</div>`;
     }
 
     container.innerHTML = html;
@@ -13132,16 +13142,32 @@ function openTradeDetail(symbol) {
 
     currentDetailETF = etf;
 
-    // Get price data if available
-    const priceData = window.symbolData?.[symbol];
-    const currentPrice = priceData?.price || 100;
+    // Get price data from allSymbolsData (the actual data source)
+    let currentPrice = 100; // fallback
+    let atr = 5; // fallback ATR
+
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        const latestBar = allSymbolsData[symbol][allSymbolsData[symbol].length - 1];
+        currentPrice = parseFloat(latestBar.Close) || parseFloat(latestBar.close) || 100;
+        atr = parseFloat(latestBar.ATR) || parseFloat(latestBar.atr) || (currentPrice * 0.015);
+    } else if (symbol === currentSymbol && currentData && currentData.length > 0) {
+        // Fallback to current symbol data if it matches
+        const latestBar = currentData[currentData.length - 1];
+        currentPrice = parseFloat(latestBar.Close) || parseFloat(latestBar.close) || 100;
+        atr = parseFloat(latestBar.ATR) || parseFloat(latestBar.atr) || (currentPrice * 0.015);
+    }
+
     const sq9 = calculateSquareOf9Levels(currentPrice);
+
+    // Calculate entry and profit targets using Gann levels
+    const entryTarget = etf.direction === 'CALL' ? sq9.s1 : sq9.r1;
+    const profitTarget = etf.direction === 'CALL' ? sq9.r1 : sq9.s1;
 
     // Update modal content
     document.getElementById('tdSymbolTitle').textContent = `${etf.symbol} - ${etf.name}`;
     document.getElementById('tdCurrentPrice').textContent = `$${currentPrice.toFixed(2)}`;
-    document.getElementById('tdEntryTarget').textContent = `$${(currentPrice * 0.99).toFixed(2)}`;
-    document.getElementById('tdProfitTarget').textContent = `$${(currentPrice * 1.03).toFixed(2)}`;
+    document.getElementById('tdEntryTarget').textContent = `$${entryTarget.toFixed(2)}`;
+    document.getElementById('tdProfitTarget').textContent = `$${profitTarget.toFixed(2)}`;
 
     // Update status banner
     const statusBanner = document.getElementById('tdStatusBanner');
@@ -13180,23 +13206,35 @@ function openTradeDetail(symbol) {
         putBox.style.opacity = '1';
     }
 
-    // Calculate options details
+    // Calculate options details with realistic pricing
     const strikePrice = Math.round(currentPrice / 5) * 5;
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 21); // 3 weeks out
     const expiryStr = expiry.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
 
+    // More realistic option pricing based on ATR and price level
+    // ATM options typically cost around 2-4% of stock price for 3-week expiry
+    const baseOptionCost = Math.max(1.50, atr * 1.5); // Use ATR for realistic pricing
+    const callCost = baseOptionCost.toFixed(2);
+    const putCost = (baseOptionCost * 0.9).toFixed(2); // Puts slightly cheaper typically
+
+    // Stop at 50% loss, target at 50% gain
+    const callStop = (baseOptionCost * 0.5).toFixed(2);
+    const callTarget = (baseOptionCost * 1.5).toFixed(2);
+    const putStop = (baseOptionCost * 0.9 * 0.5).toFixed(2);
+    const putTarget = (baseOptionCost * 0.9 * 1.5).toFixed(2);
+
     document.getElementById('tdCallStrike').textContent = `$${strikePrice}`;
     document.getElementById('tdCallExpiry').textContent = expiryStr;
-    document.getElementById('tdCallCost').textContent = `$${(currentPrice * 0.02).toFixed(2)}`;
-    document.getElementById('tdCallStop').textContent = `$${(currentPrice * 0.01).toFixed(2)}`;
-    document.getElementById('tdCallTargetPrice').textContent = `$${(currentPrice * 0.03).toFixed(2)}`;
+    document.getElementById('tdCallCost').textContent = `$${callCost}`;
+    document.getElementById('tdCallStop').textContent = `$${callStop}`;
+    document.getElementById('tdCallTargetPrice').textContent = `$${callTarget}`;
 
     document.getElementById('tdPutStrike').textContent = `$${strikePrice}`;
     document.getElementById('tdPutExpiry').textContent = expiryStr;
-    document.getElementById('tdPutCost').textContent = `$${(currentPrice * 0.018).toFixed(2)}`;
-    document.getElementById('tdPutStop').textContent = `$${(currentPrice * 0.009).toFixed(2)}`;
-    document.getElementById('tdPutTargetPrice').textContent = `$${(currentPrice * 0.027).toFixed(2)}`;
+    document.getElementById('tdPutCost').textContent = `$${putCost}`;
+    document.getElementById('tdPutStop').textContent = `$${putStop}`;
+    document.getElementById('tdPutTargetPrice').textContent = `$${putTarget}`;
 
     // Update score breakdown
     const timingScore = etf.daysUntilWindow === 0 ? 30 : etf.daysUntilWindow <= 3 ? 20 : 10;
