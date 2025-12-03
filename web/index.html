@@ -4053,7 +4053,13 @@ async function changeSymbol() {
     const newSymbol = document.getElementById('symbolSelect').value;
     console.log(`🔄 Changing symbol from ${currentSymbol} to ${newSymbol}`);
     currentSymbol = newSymbol;
-    
+
+    // Clear Gann score cache to force recalculation for new symbol
+    if (typeof gannScoreCache !== 'undefined') {
+        gannScoreCache = {};
+        gannScoreCacheTime = 0;
+    }
+
     // Update ALL symbol displays immediately
     document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
     document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
@@ -4080,9 +4086,17 @@ async function changeSymbol() {
     
     // Load the new symbol's data and update everything
     await loadAllData();
-    
+
     // Update Options Calculator with new symbol's price
     updateOptionsCalcPrice();
+
+    // Update Gann Analysis tab with new symbol's unified score
+    if (typeof updateGannAnalysisTab === 'function') {
+        setTimeout(updateGannAnalysisTab, 300);
+    }
+    if (typeof initMonthlyTradingDashboard === 'function') {
+        setTimeout(initMonthlyTradingDashboard, 400);
+    }
 }
 
 function parseCSV(text) {
@@ -11532,11 +11546,13 @@ function updateGannAnalysisTab() {
     const today = new Date();
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    // Calculate all data
+    // Calculate all data using UNIFIED scoring
     const sq9 = calculateSquareOf9Levels(price);
     const cycles = calculateGannCycles();
-    const scoreData = calculateTradeSetupScore();
+    const scoreData = calculateGannScore(symbol); // Use unified scoring function
     const trade = generateDualTradeRecommendation();
+
+    console.log(`🔮 Gann Score for ${symbol}: ${scoreData.score}/100`);
 
     // Entry window calculations
     const entryStart = new Date(cycles.nextTurnDate);
@@ -11666,7 +11682,7 @@ function updateGannAnalysisTab() {
 
             html += `<tr>
                 <td>${idx + 1}</td>
-                <td style="cursor:pointer; color: var(--primary); font-weight: 600;" onclick="loadSymbolData('${etf.symbol}')">${etf.symbol}</td>
+                <td style="cursor:pointer; color: var(--primary); font-weight: 600;" onclick="selectETFAndShowScore('${etf.symbol}')">${etf.symbol}</td>
                 <td>${etf.name}</td>
                 <td>$${etf.price.toFixed(2)}</td>
                 <td style="color: ${trendColor};">${trendIcon} ${etf.trend}</td>
@@ -13452,6 +13468,11 @@ function addToWatchlist() {
 
 // Initialize the Monthly Trading Dashboard
 function initMonthlyTradingDashboard() {
+    // Clear score cache to ensure fresh calculations
+    if (typeof gannScoreCache !== 'undefined') {
+        gannScoreCache = {};
+    }
+
     populateOpportunitiesTable();
     populateSectorRotation();
     generateMultiETFCalendar();
@@ -13462,6 +13483,35 @@ function initMonthlyTradingDashboard() {
     if (mtMonthYear) {
         mtMonthYear.textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
+}
+
+// Helper function to select ETF from table and show unified score
+function selectETFAndShowScore(symbol) {
+    // Clear score cache
+    if (typeof gannScoreCache !== 'undefined') {
+        gannScoreCache = {};
+        gannScoreCacheTime = 0;
+    }
+
+    // Update the dropdown to the selected symbol
+    const select = document.getElementById('symbolSelect');
+    if (select) {
+        select.value = symbol;
+        changeSymbol(); // This will update everything including scores
+    }
+
+    // Also load the symbol data
+    if (typeof loadSymbolData === 'function') {
+        loadSymbolData(symbol);
+    }
+
+    // Scroll to Trade Quality Score section if on Gann tab
+    const scoreCard = document.getElementById('gannOverallScore');
+    if (scoreCard) {
+        scoreCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    console.log(`📊 Selected ${symbol} - Score: ${calculateGannScore(symbol).score}/100`);
 }
 
 // Hook into tab activation
