@@ -6787,6 +6787,12 @@ const OLLAMA_CONFIG = {
 
 // Check Ollama connection status
 async function checkOllamaConnection() {
+    // Skip check if running on GitHub Pages (CORS will block it)
+    if (window.location.hostname.includes('github.io')) {
+        updateOllamaStatus(false, 'Local only');
+        return false;
+    }
+
     try {
         const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/tags`, {
             method: 'GET',
@@ -6800,7 +6806,7 @@ async function checkOllamaConnection() {
             return true;
         }
     } catch (e) {
-        console.log('Ollama not available:', e.message);
+        // Silently handle CORS/connection errors
     }
     updateOllamaStatus(false);
     return false;
@@ -6827,8 +6833,8 @@ async function generateAiResponse(userMessage) {
     const dashboardContext = buildDashboardContext();
     const systemPrompt = buildSystemPrompt(dashboardContext);
 
-    // Try Ollama first (local LLM)
-    if (OLLAMA_CONFIG.enabled) {
+    // Try Ollama first (local LLM) - skip if on GitHub Pages
+    if (OLLAMA_CONFIG.enabled && !window.location.hostname.includes('github.io')) {
         try {
             console.log('🤖 Calling Ollama with model:', OLLAMA_CONFIG.model);
 
@@ -6856,7 +6862,7 @@ async function generateAiResponse(userMessage) {
                 console.log('❌ Ollama error:', response.status);
             }
         } catch (e) {
-            console.log('❌ Ollama unavailable:', e.message);
+            // Silently handle CORS/connection errors
             updateOllamaStatus(false);
         }
     }
@@ -8430,7 +8436,8 @@ function runHealthCheck() {
     updateOverallHealth();
     
     // Update last check time
-    document.getElementById('lastHealthCheck').textContent = new Date().toLocaleString();
+    const lastCheckEl = document.getElementById('lastHealthCheck');
+    if (lastCheckEl) lastCheckEl.textContent = new Date().toLocaleString();
     
     // Update health section timestamp
     updateSectionTimestamp('health');
@@ -10271,17 +10278,25 @@ function calculateAllSignals(data, price, prevClose) {
 let realAgentVotes = null;
 
 async function loadRealAgentSignals() {
-    try {
-        const response = await fetch('voting_log.json');
-        if (response.ok) {
-            const data = await response.json();
-            realAgentVotes = data;
-            console.log('✅ Loaded real agent signals from voting_log.json');
-            return true;
+    // Try multiple paths for voting_log.json
+    const paths = ['voting_log.json', 'data/voting_log.json', './voting_log.json'];
+
+    for (const path of paths) {
+        try {
+            const response = await fetch(path);
+            if (response.ok) {
+                const data = await response.json();
+                realAgentVotes = data;
+                console.log(`✅ Loaded real agent signals from ${path}`);
+                return true;
+            }
+        } catch (e) {
+            // Try next path
         }
-    } catch (e) {
-        console.log('⚠️ voting_log.json not available, using calculated signals');
     }
+
+    // Silently fall back to calculated signals - this is expected if file doesn't exist
+    console.log('ℹ️ Using calculated agent signals (voting_log.json not found)');
     return false;
 }
 
@@ -13072,9 +13087,9 @@ function updateMarketConditions() {
     // This function analyzes overall market conditions
     // and provides a "guard rail" before trade recommendations
 
-    if (!allData || allData.length < 20) return;
+    if (!currentData || currentData.length < 20) return;
 
-    const data = allData;
+    const data = currentData;
     const latestPrice = data[data.length - 1].Close;
 
     // Calculate 20-MA for SPY trend
