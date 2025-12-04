@@ -3550,36 +3550,97 @@ Try: "Analyze SPY for today" or "Find best CALL setups"</div>
                         <h4 style="font-size: 12px; margin-bottom: 12px; color: var(--text);">📝 Option Parameters</h4>
 
                         <div style="display: grid; gap: 12px;">
+                            <!-- Stock Price with +/- buttons -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Stock Price ($)</label>
-                                <input type="number" id="optStockPrice" value="600" step="0.01" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                <div style="display: flex; gap: 4px;">
+                                    <button onclick="adjustOptValue('optStockPrice', -5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-5</button>
+                                    <button onclick="adjustOptValue('optStockPrice', -1)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-1</button>
+                                    <input type="number" id="optStockPrice" value="600" step="0.01" style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text); text-align: center;">
+                                    <button onclick="adjustOptValue('optStockPrice', 1)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+1</button>
+                                    <button onclick="adjustOptValue('optStockPrice', 5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+5</button>
+                                </div>
                             </div>
+
+                            <!-- Strike Price with +/- buttons -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Strike Price ($)</label>
-                                <input type="number" id="optStrikePrice" value="605" step="0.01" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                <div style="display: flex; gap: 4px;">
+                                    <button onclick="adjustOptValue('optStrikePrice', -5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-5</button>
+                                    <button onclick="adjustOptValue('optStrikePrice', -1)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-1</button>
+                                    <input type="number" id="optStrikePrice" value="605" step="0.01" style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text); text-align: center;">
+                                    <button onclick="adjustOptValue('optStrikePrice', 1)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+1</button>
+                                    <button onclick="adjustOptValue('optStrikePrice', 5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+5</button>
+                                </div>
+                                <!-- Quick Strike Buttons -->
+                                <div style="display: flex; gap: 4px; margin-top: 6px;">
+                                    <button onclick="setStrikeATM()" style="flex: 1; padding: 5px; font-size: 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">ATM</button>
+                                    <button onclick="setStrikeOTM(5)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--success); color: white; border: none; border-radius: 4px; cursor: pointer;">OTM +$5</button>
+                                    <button onclick="setStrikeOTM(10)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--success); color: white; border: none; border-radius: 4px; cursor: pointer;">OTM +$10</button>
+                                    <button onclick="setStrikeITM(5)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer;">ITM -$5</button>
+                                </div>
                             </div>
+
+                            <!-- DTE with preset buttons -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Days to Expiration</label>
                                 <input type="number" id="optDTE" value="7" min="1" max="365" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                <!-- Quick DTE Buttons -->
+                                <div style="display: flex; gap: 4px; margin-top: 6px;">
+                                    <button onclick="setDTE(0)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer;">0DTE</button>
+                                    <button onclick="setDTE(1)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer;">1DTE</button>
+                                    <button onclick="setDTE(7)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">7D</button>
+                                    <button onclick="setDTE(14)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">14D</button>
+                                    <button onclick="setDTE(30)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--success); color: white; border: none; border-radius: 4px; cursor: pointer;">30D</button>
+                                    <button onclick="setDTE(45)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--success); color: white; border: none; border-radius: 4px; cursor: pointer;">45D</button>
+                                </div>
                             </div>
+
+                            <!-- IV with +/- buttons -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Implied Volatility (%)</label>
-                                <input type="number" id="optIV" value="20" step="0.1" min="1" max="200" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                <div style="display: flex; gap: 4px;">
+                                    <button onclick="adjustOptValue('optIV', -5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-5</button>
+                                    <input type="number" id="optIV" value="20" step="0.1" min="1" max="200" style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text); text-align: center;">
+                                    <button onclick="adjustOptValue('optIV', 5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+5</button>
+                                </div>
+                                <!-- Quick IV Presets -->
+                                <div style="display: flex; gap: 4px; margin-top: 6px;">
+                                    <button onclick="setIV(15)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--success); color: white; border: none; border-radius: 4px; cursor: pointer;">Low 15%</button>
+                                    <button onclick="setIV(25)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">Med 25%</button>
+                                    <button onclick="setIV(40)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--warning); color: white; border: none; border-radius: 4px; cursor: pointer;">High 40%</button>
+                                    <button onclick="setIV(60)" style="flex: 1; padding: 5px; font-size: 10px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer;">VHigh 60%</button>
+                                </div>
                             </div>
+
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Risk-Free Rate (%)</label>
                                 <input type="number" id="optRate" value="5.0" step="0.1" min="0" max="20" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
                             </div>
+
+                            <!-- Option Type with visual toggle -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Option Type</label>
-                                <select id="optType" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
-                                    <option value="call">📈 CALL</option>
-                                    <option value="put">📉 PUT</option>
+                                <div style="display: flex; gap: 8px;">
+                                    <button id="btnCall" onclick="setOptionType('call')" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 600; background: var(--success); color: white; border: none; border-radius: 6px; cursor: pointer;">📈 CALL</button>
+                                    <button id="btnPut" onclick="setOptionType('put')" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 600; background: var(--card-bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">📉 PUT</button>
+                                </div>
+                                <select id="optType" style="display: none;">
+                                    <option value="call">CALL</option>
+                                    <option value="put">PUT</option>
                                 </select>
                             </div>
+
+                            <!-- Contracts with +/- buttons -->
                             <div class="form-group-trade">
                                 <label style="font-size: 11px; color: var(--muted);">Number of Contracts</label>
-                                <input type="number" id="optContracts" value="1" min="1" max="100" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text);">
+                                <div style="display: flex; gap: 4px;">
+                                    <button onclick="adjustOptValue('optContracts', -1)" style="padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">-</button>
+                                    <input type="number" id="optContracts" value="1" min="1" max="100" style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text); text-align: center;">
+                                    <button onclick="adjustOptValue('optContracts', 1)" style="padding: 8px 12px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text);">+</button>
+                                    <button onclick="setContracts(5)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text); font-size: 10px;">5</button>
+                                    <button onclick="setContracts(10)" style="padding: 8px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text); font-size: 10px;">10</button>
+                                </div>
                             </div>
                         </div>
 
@@ -3587,9 +3648,14 @@ Try: "Analyze SPY for today" or "Find best CALL setups"</div>
                             🧮 Calculate
                         </button>
 
-                        <button onclick="useCurrentSymbolPrice()" style="width: 100%; margin-top: 8px; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px;">
-                            📊 Use Current Symbol Price
-                        </button>
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <button onclick="useCurrentSymbolPrice()" style="flex: 1; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                                📊 Use Current Price
+                            </button>
+                            <button onclick="resetOptionsCalc()" style="flex: 1; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 11px;">
+                                🔄 Reset
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Results Panel -->
@@ -13455,6 +13521,104 @@ function drawOptionPnLChart(stockPrice, strike, premium, optionType, contracts) 
             }
         }
     });
+}
+
+// ==========================================
+// OPTIONS CALCULATOR MANUAL UPDATE HELPERS
+// ==========================================
+
+// Adjust any input value by a delta
+function adjustOptValue(inputId, delta) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    const current = parseFloat(el.value) || 0;
+    const newVal = Math.max(0, current + delta);
+    el.value = inputId === 'optContracts' ? Math.max(1, Math.round(newVal)) : newVal.toFixed(2);
+    calculateOptionPrice();
+}
+
+// Set strike to ATM (at the money)
+function setStrikeATM() {
+    const stockPrice = parseFloat(document.getElementById('optStockPrice').value) || 600;
+    const nearestStrike = Math.round(stockPrice / 5) * 5;
+    document.getElementById('optStrikePrice').value = nearestStrike;
+    calculateOptionPrice();
+}
+
+// Set strike OTM (out of the money)
+function setStrikeOTM(amount) {
+    const stockPrice = parseFloat(document.getElementById('optStockPrice').value) || 600;
+    const optType = document.getElementById('optType').value;
+    const nearestStrike = Math.round(stockPrice / 5) * 5;
+    // For calls: OTM = above stock price; For puts: OTM = below stock price
+    const strike = optType === 'call' ? nearestStrike + amount : nearestStrike - amount;
+    document.getElementById('optStrikePrice').value = strike;
+    calculateOptionPrice();
+}
+
+// Set strike ITM (in the money)
+function setStrikeITM(amount) {
+    const stockPrice = parseFloat(document.getElementById('optStockPrice').value) || 600;
+    const optType = document.getElementById('optType').value;
+    const nearestStrike = Math.round(stockPrice / 5) * 5;
+    // For calls: ITM = below stock price; For puts: ITM = above stock price
+    const strike = optType === 'call' ? nearestStrike - amount : nearestStrike + amount;
+    document.getElementById('optStrikePrice').value = strike;
+    calculateOptionPrice();
+}
+
+// Set DTE preset
+function setDTE(days) {
+    document.getElementById('optDTE').value = days;
+    calculateOptionPrice();
+}
+
+// Set IV preset
+function setIV(iv) {
+    document.getElementById('optIV').value = iv;
+    calculateOptionPrice();
+}
+
+// Set option type with visual toggle
+function setOptionType(type) {
+    document.getElementById('optType').value = type;
+    const btnCall = document.getElementById('btnCall');
+    const btnPut = document.getElementById('btnPut');
+
+    if (type === 'call') {
+        btnCall.style.background = 'var(--success)';
+        btnCall.style.color = 'white';
+        btnCall.style.border = 'none';
+        btnPut.style.background = 'var(--card-bg)';
+        btnPut.style.color = 'var(--text)';
+        btnPut.style.border = '1px solid var(--border)';
+    } else {
+        btnPut.style.background = 'var(--danger)';
+        btnPut.style.color = 'white';
+        btnPut.style.border = 'none';
+        btnCall.style.background = 'var(--card-bg)';
+        btnCall.style.color = 'var(--text)';
+        btnCall.style.border = '1px solid var(--border)';
+    }
+    calculateOptionPrice();
+}
+
+// Set contracts preset
+function setContracts(num) {
+    document.getElementById('optContracts').value = num;
+    calculateOptionPrice();
+}
+
+// Reset options calculator to defaults
+function resetOptionsCalc() {
+    document.getElementById('optStockPrice').value = '600';
+    document.getElementById('optStrikePrice').value = '605';
+    document.getElementById('optDTE').value = '7';
+    document.getElementById('optIV').value = '20';
+    document.getElementById('optRate').value = '5.0';
+    document.getElementById('optContracts').value = '1';
+    setOptionType('call');
+    calculateOptionPrice();
 }
 
 function useCurrentSymbolPrice() {
