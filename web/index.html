@@ -13287,25 +13287,42 @@ function blackScholes(S, K, T, r, sigma, optionType) {
     // S = Stock price, K = Strike, T = Time to expiry (years)
     // r = Risk-free rate (decimal), sigma = volatility (decimal)
 
-    if (T <= 0) T = 0.0001; // Prevent division by zero
+    // Validate inputs
+    if (!S || S <= 0) S = 100;
+    if (!K || K <= 0) K = 100;
+    if (T <= 0) T = 0.0001; // Prevent division by zero for 0DTE
+    if (!sigma || sigma <= 0) sigma = 0.01; // Minimum 1% IV
+    if (r === undefined || r === null) r = 0.05;
 
-    const d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
-    const d2 = d1 - sigma * Math.sqrt(T);
+    console.log(`📊 Black-Scholes inputs: S=${S}, K=${K}, T=${T}, r=${r}, sigma=${sigma}, type=${optionType}`);
+
+    const sqrtT = Math.sqrt(T);
+    const d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * sqrtT);
+    const d2 = d1 - sigma * sqrtT;
 
     let price, delta, gamma, theta, vega;
 
     if (optionType === 'call') {
         price = S * normCDF(d1) - K * Math.exp(-r * T) * normCDF(d2);
         delta = normCDF(d1);
-        theta = (-S * normPDF(d1) * sigma / (2 * Math.sqrt(T)) - r * K * Math.exp(-r * T) * normCDF(d2)) / 365;
+        theta = (-S * normPDF(d1) * sigma / (2 * sqrtT) - r * K * Math.exp(-r * T) * normCDF(d2)) / 365;
     } else {
         price = K * Math.exp(-r * T) * normCDF(-d2) - S * normCDF(-d1);
         delta = normCDF(d1) - 1;
-        theta = (-S * normPDF(d1) * sigma / (2 * Math.sqrt(T)) + r * K * Math.exp(-r * T) * normCDF(-d2)) / 365;
+        theta = (-S * normPDF(d1) * sigma / (2 * sqrtT) + r * K * Math.exp(-r * T) * normCDF(-d2)) / 365;
     }
 
-    gamma = normPDF(d1) / (S * sigma * Math.sqrt(T));
-    vega = S * normPDF(d1) * Math.sqrt(T) / 100; // Per 1% change in IV
+    gamma = normPDF(d1) / (S * sigma * sqrtT);
+    vega = S * normPDF(d1) * sqrtT / 100; // Per 1% change in IV
+
+    // Ensure no NaN values
+    if (isNaN(price)) price = 0;
+    if (isNaN(delta)) delta = 0;
+    if (isNaN(gamma)) gamma = 0;
+    if (isNaN(theta)) theta = 0;
+    if (isNaN(vega)) vega = 0;
+
+    console.log(`📈 Black-Scholes result: price=${price.toFixed(4)}, delta=${delta.toFixed(4)}`);
 
     return { price, delta, gamma, theta, vega, d1, d2 };
 }
