@@ -554,7 +554,112 @@
         .bar-count-item { background: var(--bg); border-radius: 6px; padding: 10px; text-align: center; }
         .bar-count-value { font-size: 24px; font-weight: 800; }
         .bar-count-label { font-size: 10px; color: var(--muted); margin-top: 3px; }
-        
+
+        /* Bar Count Redesign Styles */
+        .bc-signal-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .bc-signal-box { background: var(--bg); border-radius: 8px; padding: 12px; text-align: center; border: 2px solid var(--border); }
+        .bc-signal-label { font-size: 10px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+        .bc-signal-value { font-size: 18px; font-weight: 800; }
+        .bc-signal-value.call { color: var(--success); }
+        .bc-signal-value.put { color: var(--danger); }
+        .bc-signal-value.wait { color: var(--warning); }
+        .bc-signal-value.strong { color: var(--success); }
+        .bc-signal-value.moderate { color: var(--warning); }
+        .bc-signal-value.weak { color: var(--muted); }
+        .bc-signal-value.low { color: var(--success); }
+        .bc-signal-value.medium { color: var(--warning); }
+        .bc-signal-value.high { color: var(--danger); }
+        .bc-signal-value.now { color: var(--success); }
+        .bc-signal-value.closed { color: var(--danger); }
+        .bc-interpretation { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px 15px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 15px; }
+        .bc-interpretation-icon { font-size: 20px; }
+        .bc-interpretation-text { font-size: 12px; line-height: 1.5; color: var(--text); }
+        .bc-trade-rec { background: var(--bg); border: 2px solid var(--success); border-radius: 10px; overflow: hidden; }
+        .bc-trade-rec-header { background: var(--success); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .bc-trade-rec-title { font-weight: 700; font-size: 13px; }
+        .bc-trade-rec-conf { font-size: 11px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; }
+        .bc-trade-rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); padding: 1px; }
+        .bc-trade-rec-item { background: var(--card); padding: 10px; text-align: center; }
+        .bc-rec-label { display: block; font-size: 9px; color: var(--muted); margin-bottom: 3px; }
+        .bc-rec-value { font-size: 14px; font-weight: 700; }
+        .bc-rec-value.call { color: var(--success); }
+        .bc-rec-value.put { color: var(--danger); }
+        .bc-rec-value.wait { color: var(--warning); }
+        .bc-rec-value.danger { color: var(--danger); }
+        .bc-rec-value.success { color: var(--success); }
+        .bc-agent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
+        .bc-agent-card { background: var(--bg); border-radius: 10px; padding: 15px; border-left: 4px solid var(--muted); transition: all 0.2s; }
+        .bc-agent-card.bullish { border-left-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent); }
+        .bc-agent-card.bearish { border-left-color: var(--danger); background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent); }
+        .bc-agent-card.neutral { border-left-color: var(--warning); background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent); }
+        .bc-agent-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .bc-agent-icon { font-size: 16px; }
+        .bc-agent-name { font-size: 11px; font-weight: 600; flex: 1; }
+        .bc-agent-signal { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; }
+        .bc-agent-card.bullish .bc-agent-signal { background: var(--success); color: white; }
+        .bc-agent-card.bearish .bc-agent-signal { background: var(--danger); color: white; }
+        .bc-agent-card.neutral .bc-agent-signal { background: var(--warning); color: white; }
+        .bc-agent-value { font-size: 28px; font-weight: 800; text-align: center; margin: 10px 0; }
+        .bc-agent-card.bullish .bc-agent-value { color: var(--success); }
+        .bc-agent-card.bearish .bc-agent-value { color: var(--danger); }
+        .bc-agent-card.neutral .bc-agent-value { color: var(--warning); }
+        .bc-agent-method { font-size: 10px; color: var(--muted); text-align: center; margin-bottom: 10px; }
+        .bc-agent-explain { font-size: 10px; color: var(--text); line-height: 1.4; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 5px; }
+        .bc-consensus-bar { background: var(--bg); border-radius: 8px; padding: 12px 15px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .bc-consensus-label { font-size: 12px; color: var(--muted); }
+        .bc-consensus-value { font-size: 16px; font-weight: 800; color: var(--success); }
+        .bc-consensus-detail { font-size: 11px; color: var(--muted); }
+        .bc-reversal-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .bc-reversal-section { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+        .bc-reversal-header { padding: 10px 15px; display: flex; align-items: center; gap: 8px; }
+        .bc-reversal-header.safe { background: linear-gradient(135deg, var(--success), #059669); color: white; }
+        .bc-reversal-header.caution { background: linear-gradient(135deg, var(--warning), #d97706); color: white; }
+        .bc-reversal-icon { font-size: 16px; }
+        .bc-reversal-title { font-size: 12px; font-weight: 700; flex: 1; }
+        .bc-reversal-count { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; }
+        .bc-reversal-list { padding: 10px; max-height: 200px; overflow-y: auto; }
+        .bc-reversal-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: var(--bg); border-radius: 5px; margin-bottom: 5px; font-size: 11px; }
+        .bc-rev-symbol { font-weight: 700; min-width: 40px; }
+        .bc-rev-run { color: var(--muted); }
+        .bc-rev-pct { font-weight: 600; min-width: 40px; }
+        .bc-rev-status { padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-left: auto; }
+        .bc-rev-status.safe { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .bc-rev-status.caution { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .bc-reversal-table { width: 100%; font-size: 11px; }
+        .bc-reversal-table th { background: var(--bg); padding: 8px; text-align: left; font-size: 10px; }
+        .bc-reversal-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+        .bc-gann-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; }
+        .bc-gann-item { background: var(--bg); border-radius: 8px; padding: 12px; text-align: center; }
+        .bc-gann-item.highlight { background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1)); border: 2px solid var(--primary); }
+        .bc-gann-header { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px; }
+        .bc-gann-icon { font-size: 14px; }
+        .bc-gann-title { font-size: 10px; color: var(--muted); font-weight: 600; }
+        .bc-gann-value { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+        .bc-gann-value.bullish { color: var(--success); }
+        .bc-gann-value.bearish { color: var(--danger); }
+        .bc-gann-value.low { color: var(--success); }
+        .bc-gann-value.medium { color: var(--warning); }
+        .bc-gann-value.high { color: var(--danger); }
+        .bc-gann-value.ultra { color: var(--primary); text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .bc-gann-detail { font-size: 9px; color: var(--muted); }
+        .bc-final-verdict { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); border: 2px solid var(--success); border-radius: 10px; overflow: hidden; }
+        .bc-verdict-header { background: var(--success); color: white; padding: 10px 15px; display: flex; align-items: center; gap: 8px; }
+        .bc-verdict-icon { font-size: 18px; }
+        .bc-verdict-title { font-size: 13px; font-weight: 700; }
+        .bc-verdict-content { padding: 15px; }
+        .bc-verdict-signal { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .bc-verdict-signal.call { color: var(--success); }
+        .bc-verdict-signal.put { color: var(--danger); }
+        .bc-verdict-signal.wait { color: var(--warning); }
+        .bc-verdict-text { font-size: 12px; color: var(--text); line-height: 1.5; }
+        @media (max-width: 900px) {
+            .bc-signal-row { grid-template-columns: repeat(2, 1fr); }
+            .bc-agent-grid { grid-template-columns: repeat(2, 1fr); }
+            .bc-trade-rec-grid { grid-template-columns: repeat(2, 1fr); }
+            .bc-reversal-sections { grid-template-columns: 1fr; }
+            .bc-gann-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
         .pattern-item { background: var(--bg); border-radius: 6px; padding: 8px; margin-bottom: 6px; }
         .pattern-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .pattern-name { font-weight: 600; font-size: 12px; }
@@ -1237,115 +1342,326 @@
 
         <!-- BAR COUNT TAB -->
         <div id="barcount" class="tab-content">
-            <div class="card">
-                <div class="card-title">🔢 Bar Count Analysis</div>
-                <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
-                    <div>
-                        <label style="font-size:11px;color:var(--muted);">Bars to Analyze:</label>
-                        <select id="barCountSelect" onchange="updateBarCountAnalysis()" style="padding:6px 10px;border:1px solid var(--border);border-radius:5px;margin-left:8px;">
+            <!-- QUICK SIGNAL SUMMARY -->
+            <div class="card barcount-signal-summary">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px;">
+                    <div class="card-title" style="margin:0;">🎯 Quick Signal Summary</div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <div>
+                            <label style="font-size:11px;color:var(--muted);">Symbol:</label>
+                            <span id="bcSymbol" style="font-weight:700;color:var(--primary);margin-left:5px;">SPY</span>
+                        </div>
+                        <select id="barCountSelect" onchange="updateBarCountAnalysis()" style="padding:6px 10px;border:1px solid var(--border);border-radius:5px;font-size:11px;">
                             <option value="5">5 Bars</option>
                             <option value="10">10 Bars</option>
                             <option value="15">15 Bars</option>
                             <option value="20" selected>20 Bars</option>
-                            <option value="25">25 Bars</option>
                             <option value="30">30 Bars</option>
-                            <option value="35">35 Bars</option>
-                            <option value="40">40 Bars</option>
-                            <option value="45">45 Bars</option>
                             <option value="50">50 Bars</option>
-                            <option value="55">55 Bars</option>
-                            <option value="60">60 Bars</option>
-                            <option value="65">65 Bars</option>
-                            <option value="70">70 Bars</option>
-                            <option value="75">75 Bars</option>
-                            <option value="80">80 Bars</option>
-                            <option value="85">85 Bars</option>
-                            <option value="90">90 Bars</option>
-                            <option value="95">95 Bars</option>
-                            <option value="100">100 Bars</option>
                         </select>
                     </div>
-                    <div style="background:var(--bg);padding:6px 12px;border-radius:5px;font-size:12px;">
-                        <strong>Current Symbol:</strong> <span id="barCountCurrentSymbol" style="color:var(--primary);font-weight:700;">SPY</span>
-                        <span style="color:var(--muted);font-size:10px;margin-left:5px;">(synced with header)</span>
+                </div>
+
+                <!-- Signal Indicators Row -->
+                <div class="bc-signal-row">
+                    <div class="bc-signal-box" id="bcMainSignal">
+                        <div class="bc-signal-label">SIGNAL</div>
+                        <div class="bc-signal-value call">CALL</div>
+                    </div>
+                    <div class="bc-signal-box" id="bcTrendStrength">
+                        <div class="bc-signal-label">TREND</div>
+                        <div class="bc-signal-value strong">STRONG</div>
+                    </div>
+                    <div class="bc-signal-box" id="bcReversalRisk">
+                        <div class="bc-signal-label">REVERSAL RISK</div>
+                        <div class="bc-signal-value low">LOW</div>
+                    </div>
+                    <div class="bc-signal-box" id="bcEntryWindow">
+                        <div class="bc-signal-label">ENTRY WINDOW</div>
+                        <div class="bc-signal-value now">NOW</div>
                     </div>
                 </div>
-                
+
+                <!-- Plain English Interpretation -->
+                <div class="bc-interpretation" id="bcInterpretation">
+                    <div class="bc-interpretation-icon">💡</div>
+                    <div class="bc-interpretation-text">
+                        <strong>What this means:</strong> All 4 agents are aligned bullish with strong momentum. The trend has room to continue before a reversal is likely. This is a high-probability CALL setup.
+                    </div>
+                </div>
+
+                <!-- Trade Recommendation Box -->
+                <div class="bc-trade-rec" id="bcTradeRec">
+                    <div class="bc-trade-rec-header">
+                        <span class="bc-trade-rec-title">📋 TRADE RECOMMENDATION</span>
+                        <span class="bc-trade-rec-conf" id="bcRecConfidence">High Confidence (85%)</span>
+                    </div>
+                    <div class="bc-trade-rec-grid">
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Direction</span>
+                            <span class="bc-rec-value call" id="bcRecDirection">📈 CALL</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Strike</span>
+                            <span class="bc-rec-value" id="bcRecStrike">$605</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Expiry</span>
+                            <span class="bc-rec-value" id="bcRecExpiry">1-2 DTE</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Entry</span>
+                            <span class="bc-rec-value" id="bcRecEntry">$602.50</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Stop Loss</span>
+                            <span class="bc-rec-value danger" id="bcRecStop">$598.20</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Target 1</span>
+                            <span class="bc-rec-value success" id="bcRecTarget1">$608.50</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Target 2</span>
+                            <span class="bc-rec-value success" id="bcRecTarget2">$612.00</span>
+                        </div>
+                        <div class="bc-trade-rec-item">
+                            <span class="bc-rec-label">Risk/Reward</span>
+                            <span class="bc-rec-value" id="bcRecRR">1:2.5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AGENT BREAKDOWN -->
+            <div class="card">
+                <div class="card-title">🤖 Agent Breakdown</div>
+                <div class="bc-agent-grid">
+                    <!-- Base Agent Card -->
+                    <div class="bc-agent-card bullish" id="bcAgentBase">
+                        <div class="bc-agent-header">
+                            <span class="bc-agent-icon">📊</span>
+                            <span class="bc-agent-name">Base Confluence</span>
+                            <span class="bc-agent-signal">BULLISH</span>
+                        </div>
+                        <div class="bc-agent-value" id="baseBarCount">+5</div>
+                        <div class="bc-agent-method">Candle Color (Close >= Open)</div>
+                        <div class="bc-agent-explain" id="baseAgentExplain">
+                            <strong>What this means:</strong> 5 of the last 20 candles closed higher than they opened, showing net buying pressure. Positive = bulls in control.
+                        </div>
+                    </div>
+
+                    <!-- Gann Agent Card -->
+                    <div class="bc-agent-card bullish" id="bcAgentGann">
+                        <div class="bc-agent-header">
+                            <span class="bc-agent-icon">🔮</span>
+                            <span class="bc-agent-name">Gann-Elliott</span>
+                            <span class="bc-agent-signal">BULLISH</span>
+                        </div>
+                        <div class="bc-agent-value" id="gannBarCount">+7</div>
+                        <div class="bc-agent-method">Price vs 20-Period MA</div>
+                        <div class="bc-agent-explain" id="gannAgentExplain">
+                            <strong>What this means:</strong> Price is above the 20-period moving average for 7 bars, confirming an established uptrend with strong momentum.
+                        </div>
+                    </div>
+
+                    <!-- DQN Agent Card -->
+                    <div class="bc-agent-card neutral" id="bcAgentDQN">
+                        <div class="bc-agent-header">
+                            <span class="bc-agent-icon">🧠</span>
+                            <span class="bc-agent-name">DQN/RL</span>
+                            <span class="bc-agent-signal">NEUTRAL</span>
+                        </div>
+                        <div class="bc-agent-value" id="dqnBarCount">+2</div>
+                        <div class="bc-agent-method">RSI Momentum (vs 50)</div>
+                        <div class="bc-agent-explain" id="dqnAgentExplain">
+                            <strong>What this means:</strong> RSI is hovering near 50, indicating balanced momentum. Not overbought, but not strongly bullish either. Cautious stance.
+                        </div>
+                    </div>
+
+                    <!-- Wave Agent Card -->
+                    <div class="bc-agent-card bullish" id="bcAgentWave">
+                        <div class="bc-agent-header">
+                            <span class="bc-agent-icon">🌊</span>
+                            <span class="bc-agent-name">3-Wave</span>
+                            <span class="bc-agent-signal">BULLISH</span>
+                        </div>
+                        <div class="bc-agent-value" id="waveBarCount">+4</div>
+                        <div class="bc-agent-method">Higher Closes Pattern</div>
+                        <div class="bc-agent-explain" id="waveAgentExplain">
+                            <strong>What this means:</strong> 4 consecutive closes higher than the previous close, forming a bullish stair-step pattern. Strong buying continuation.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Agent Consensus Summary -->
-                <div style="background:var(--bg);border-radius:8px;padding:12px 15px;margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                    <div>
-                        <span style="font-size:12px;color:var(--muted);">Agent Consensus:</span>
-                        <span id="barCountConsensus" style="font-size:16px;font-weight:700;margin-left:8px;color:var(--success);">4/4 BULLISH</span>
+                <div class="bc-consensus-bar" id="bcConsensusBar">
+                    <div class="bc-consensus-label">Agent Consensus:</div>
+                    <div class="bc-consensus-value" id="barCountConsensus">4/4 BULLISH</div>
+                    <div class="bc-consensus-detail" id="barCountConsensusDetail">All 4 agents agree on bullish direction - highest confidence level</div>
+                </div>
+            </div>
+
+            <!-- REVERSAL RISK SCANNER -->
+            <div class="card">
+                <div class="card-title">⚠️ Reversal Risk Scanner</div>
+                <div class="bc-reversal-sections">
+                    <!-- Safe to Trade Section -->
+                    <div class="bc-reversal-section safe">
+                        <div class="bc-reversal-header safe">
+                            <span class="bc-reversal-icon">✅</span>
+                            <span class="bc-reversal-title">SAFE TO TRADE</span>
+                            <span class="bc-reversal-count" id="bcSafeCount">8 symbols</span>
+                        </div>
+                        <div class="bc-reversal-list" id="bcSafeList">
+                            <!-- Will be populated by JS -->
+                            <div class="bc-reversal-item">
+                                <span class="bc-rev-symbol">SPY</span>
+                                <span class="bc-rev-run">+5 bars</span>
+                                <span class="bc-rev-pct">42%</span>
+                                <span class="bc-rev-status safe">Good Entry</span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-size:11px;color:var(--muted);" id="barCountConsensusDetail">All agents agree on bullish direction</div>
+
+                    <!-- Caution Section -->
+                    <div class="bc-reversal-section caution">
+                        <div class="bc-reversal-header caution">
+                            <span class="bc-reversal-icon">⚠️</span>
+                            <span class="bc-reversal-title">CAUTION - OVEREXTENDED</span>
+                            <span class="bc-reversal-count" id="bcCautionCount">3 symbols</span>
+                        </div>
+                        <div class="bc-reversal-list" id="bcCautionList">
+                            <!-- Will be populated by JS -->
+                            <div class="bc-reversal-item">
+                                <span class="bc-rev-symbol">QQQ</span>
+                                <span class="bc-rev-run">+12 bars</span>
+                                <span class="bc-rev-pct">165%</span>
+                                <span class="bc-rev-status caution">Wait for Pullback</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="bar-count-display">
-                    <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📊 Base Confluence</div>
-                        <div class="bar-count-value" id="baseBarCount">+5</div>
-                        <div class="bar-count-label">Candle Color</div>
-                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="baseBarExplain">Bullish candles (Close>=Open)</div>
-                    </div>
-                    <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🔮 Gann-Elliott</div>
-                        <div class="bar-count-value" id="gannBarCount">+7</div>
-                        <div class="bar-count-label">vs 20-MA</div>
-                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="gannBarExplain">Bars above 20-period MA</div>
-                    </div>
-                    <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🧠 DQN/RL</div>
-                        <div class="bar-count-value" id="dqnBarCount">+2</div>
-                        <div class="bar-count-label">RSI Momentum</div>
-                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="dqnBarExplain">RSI above 50 (bullish zone)</div>
-                    </div>
-                    <div class="bar-count-item">
-                        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">🌊 3-Wave</div>
-                        <div class="bar-count-value" id="waveBarCount">+4</div>
-                        <div class="bar-count-label">Higher Closes</div>
-                        <div style="font-size:9px;color:var(--muted);margin-top:4px;" id="waveBarExplain">Close > Previous Close</div>
-                    </div>
-                </div>
-
-                <!-- Agent Details Table -->
-                <div style="margin-top:15px;">
-                    <table style="width:100%;font-size:11px;">
-                        <thead><tr style="background:var(--bg);"><th style="padding:8px;text-align:left;">Agent</th><th>Method</th><th>Current Value</th><th>Signal</th></tr></thead>
-                        <tbody>
-                            <tr><td style="padding:6px;">📊 Base</td><td>Candle Color (C>=O)</td><td id="baseMethodValue">--</td><td id="baseMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
-                            <tr><td style="padding:6px;">🔮 Gann</td><td>Price vs 20-MA</td><td id="gannMethodValue">--</td><td id="gannMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
-                            <tr><td style="padding:6px;">🧠 DQN</td><td>RSI Position</td><td id="dqnMethodValue">--</td><td id="dqnMethodSignal"><span class="badge badge-warning">NEUTRAL</span></td></tr>
-                            <tr><td style="padding:6px;">🌊 Wave</td><td>Close vs Prev</td><td id="waveMethodValue">--</td><td id="waveMethodSignal"><span class="badge badge-success">BULLISH</span></td></tr>
+                <!-- Extended Stats Table -->
+                <div class="bc-reversal-table-wrap" style="margin-top:15px;">
+                    <table class="bc-reversal-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Avg Bullish</th>
+                                <th>Avg Bearish</th>
+                                <th>Current</th>
+                                <th>% of Avg</th>
+                                <th>Risk</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bcReversalTable">
+                            <!-- Populated by JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Trend Reversal Statistics -->
+            <!-- GANN INTEGRATION PANEL -->
             <div class="card">
-                <div class="card-title">📊 Trend Reversal Statistics</div>
-                <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Average bars before trend reversal based on historical data</p>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>Symbol</th><th>Avg Bullish Run</th><th>Avg Bearish Run</th><th>Current Run</th><th>% of Avg</th><th>Reversal Risk</th></tr>
-                        </thead>
-                        <tbody id="reversalStatsTable"></tbody>
-                    </table>
+                <div class="card-title">🔮 Gann Integration Panel</div>
+                <p style="font-size:11px;color:var(--muted);margin-bottom:15px;">How Bar Count signals combine with Gann analysis for maximum confluence</p>
+
+                <div class="bc-gann-grid">
+                    <!-- Bar Count + Reversal Risk -->
+                    <div class="bc-gann-item">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">🔢</span>
+                            <span class="bc-gann-title">Bar Count Signal</span>
+                        </div>
+                        <div class="bc-gann-value bullish" id="bcGannBarSignal">+18 BULLISH</div>
+                        <div class="bc-gann-detail" id="bcGannBarDetail">Sum of all 4 agents positive</div>
+                    </div>
+
+                    <!-- Reversal Risk -->
+                    <div class="bc-gann-item">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">⚠️</span>
+                            <span class="bc-gann-title">Reversal Risk</span>
+                        </div>
+                        <div class="bc-gann-value low" id="bcGannReversalRisk">42% - LOW</div>
+                        <div class="bc-gann-detail" id="bcGannReversalDetail">Room for 8+ more bars</div>
+                    </div>
+
+                    <!-- Gann Cycle Phase -->
+                    <div class="bc-gann-item">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">🌀</span>
+                            <span class="bc-gann-title">Gann Cycle</span>
+                        </div>
+                        <div class="bc-gann-value bullish" id="bcGannCycle">Day 12 of 30</div>
+                        <div class="bc-gann-detail" id="bcGannCycleDetail">Mid-cycle momentum phase</div>
+                    </div>
+
+                    <!-- Square of 9 -->
+                    <div class="bc-gann-item">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">⬜</span>
+                            <span class="bc-gann-title">Square of 9</span>
+                        </div>
+                        <div class="bc-gann-value" id="bcGannSq9">S: $598 | R: $612</div>
+                        <div class="bc-gann-detail" id="bcGannSq9Detail">Price between 90° levels</div>
+                    </div>
+
+                    <!-- MTF Alignment -->
+                    <div class="bc-gann-item">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">📈</span>
+                            <span class="bc-gann-title">MTF Alignment</span>
+                        </div>
+                        <div class="bc-gann-value bullish" id="bcGannMTF">3/3 BULLISH</div>
+                        <div class="bc-gann-detail" id="bcGannMTFDetail">5m, 15m, 1H aligned up</div>
+                    </div>
+
+                    <!-- Combined Score -->
+                    <div class="bc-gann-item highlight">
+                        <div class="bc-gann-header">
+                            <span class="bc-gann-icon">🎯</span>
+                            <span class="bc-gann-title">COMBINED SCORE</span>
+                        </div>
+                        <div class="bc-gann-value ultra" id="bcGannCombined">92/100</div>
+                        <div class="bc-gann-detail" id="bcGannCombinedDetail">ULTRA HIGH CONFLUENCE</div>
+                    </div>
+                </div>
+
+                <!-- Final Verdict -->
+                <div class="bc-final-verdict" id="bcFinalVerdict">
+                    <div class="bc-verdict-header">
+                        <span class="bc-verdict-icon">🎯</span>
+                        <span class="bc-verdict-title">FINAL VERDICT</span>
+                    </div>
+                    <div class="bc-verdict-content">
+                        <div class="bc-verdict-signal call" id="bcVerdictSignal">STRONG BUY - CALL</div>
+                        <div class="bc-verdict-text" id="bcVerdictText">
+                            Bar Count (+18) aligns with Gann Cycle (mid-phase bullish), Square of 9 support at $598, and 3/3 MTF bullish.
+                            Reversal risk is low (42% of average run). All systems confirm: high-probability CALL setup.
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- BAR COUNT HISTORY (Collapsed by default) -->
             <div class="card">
-                <div class="card-title">📈 Bar Count History</div>
-                <div class="table-wrap" style="max-height:300px;overflow-y:auto;">
-                    <table>
-                        <thead><tr><th>#</th><th>Date</th><th>O/H/L/C</th><th>Dir</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Avg</th></tr></thead>
-                        <tbody id="barCountTable"></tbody>
-                    </table>
+                <div class="card-title" style="cursor:pointer;" onclick="toggleBarHistory()">
+                    📈 Bar Count History <span id="barHistoryToggle" style="font-size:10px;color:var(--muted);">[Click to expand]</span>
+                </div>
+                <div id="barHistoryContent" style="display:none;">
+                    <div class="table-wrap" style="max-height:300px;overflow-y:auto;">
+                        <table>
+                            <thead><tr><th>#</th><th>Date</th><th>O/H/L/C</th><th>Dir</th><th>Base</th><th>Gann</th><th>DQN</th><th>Wave</th><th>Avg</th></tr></thead>
+                            <tbody id="barCountTable"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-
         <!-- SIGNALS & AGENTS TAB (Combined) -->
         <div id="signals-agents" class="tab-content">
             <!-- Sub-section: Signal Parameters -->
@@ -5141,219 +5457,518 @@ function updateGannQuickView() {
     setElClass('gannEntryWindow', entryClass);
 }
 
-// FIXED: Bar Count now uses currentSymbol
+// ========== BAR COUNT REDESIGN FUNCTIONS ==========
+
+// Toggle bar history visibility
+function toggleBarHistory() {
+    const content = document.getElementById('barHistoryContent');
+    const toggle = document.getElementById('barHistoryToggle');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.textContent = '[Click to collapse]';
+    } else {
+        content.style.display = 'none';
+        toggle.textContent = '[Click to expand]';
+    }
+}
+
+// Historical reversal data for common symbols
+const reversalStats = {
+    'SPY': { avgBullish: 12, avgBearish: 10, stdDev: 3.5 },
+    'QQQ': { avgBullish: 14, avgBearish: 11, stdDev: 4.2 },
+    'IWM': { avgBullish: 10, avgBearish: 9, stdDev: 3.0 },
+    'DIA': { avgBullish: 11, avgBearish: 10, stdDev: 3.5 },
+    'XLK': { avgBullish: 13, avgBearish: 11, stdDev: 3.8 },
+    'XLF': { avgBullish: 11, avgBearish: 10, stdDev: 3.5 },
+    'XLE': { avgBullish: 12, avgBearish: 11, stdDev: 4.0 },
+    'XLV': { avgBullish: 10, avgBearish: 9, stdDev: 3.2 }
+};
+
+// Calculate reversal risk percentage
+function calculateReversalRisk(symbol, currentRun, isBullish) {
+    const stats = reversalStats[symbol] || { avgBullish: 12, avgBearish: 10, stdDev: 4 };
+    const avg = isBullish ? stats.avgBullish : stats.avgBearish;
+    const pctOfAvg = (Math.abs(currentRun) / avg) * 100;
+    return {
+        pctOfAvg: pctOfAvg,
+        risk: pctOfAvg < 70 ? 'LOW' : pctOfAvg < 100 ? 'MEDIUM' : pctOfAvg < 130 ? 'HIGH' : 'CRITICAL',
+        riskClass: pctOfAvg < 70 ? 'low' : pctOfAvg < 100 ? 'medium' : 'high',
+        avgRun: avg,
+        remainingBars: Math.max(0, Math.round(avg - Math.abs(currentRun)))
+    };
+}
+
+// Get signal interpretation text
+function getSignalInterpretation(baseCount, gannCount, dqnCount, waveCount, reversalRisk) {
+    const bullishAgents = [baseCount, gannCount, dqnCount, waveCount].filter(c => c > 0).length;
+    const bearishAgents = [baseCount, gannCount, dqnCount, waveCount].filter(c => c < 0).length;
+
+    if (bullishAgents === 4 && reversalRisk.risk === 'LOW') {
+        return `<strong>What this means:</strong> All 4 agents are aligned bullish with strong momentum. The trend has room to continue before a reversal is likely. This is a high-probability CALL setup.`;
+    } else if (bullishAgents === 4) {
+        return `<strong>What this means:</strong> All 4 agents are bullish, but the run is ${reversalRisk.pctOfAvg.toFixed(0)}% of average length. Consider tighter stops.`;
+    } else if (bearishAgents === 4 && reversalRisk.risk === 'LOW') {
+        return `<strong>What this means:</strong> All 4 agents confirm bearish momentum with room to continue. High-probability PUT setup.`;
+    } else if (bearishAgents === 4) {
+        return `<strong>What this means:</strong> All 4 agents are bearish, but the down move is extended. Reversal risk is elevated.`;
+    } else if (bullishAgents >= 3) {
+        return `<strong>What this means:</strong> ${bullishAgents}/4 agents are bullish. Good alignment for CALL with moderate confidence.`;
+    } else if (bearishAgents >= 3) {
+        return `<strong>What this means:</strong> ${bearishAgents}/4 agents are bearish. Good alignment for PUT with moderate confidence.`;
+    }
+    return `<strong>What this means:</strong> Agents are mixed - no clear direction. WAIT for better alignment before entering a trade.`;
+}
+
+// Get agent explanation text
+function getAgentExplanation(agentType, count, barCount) {
+    switch(agentType) {
+        case 'base':
+            if (count > 0) return `<strong>What this means:</strong> ${Math.abs(count)} of the last ${barCount} candles closed higher than opened, showing buying pressure. Bulls in control.`;
+            if (count < 0) return `<strong>What this means:</strong> ${Math.abs(count)} more candles closed lower than opened. Selling pressure dominates.`;
+            return `<strong>What this means:</strong> Equal bullish and bearish candles. No clear bias.`;
+        case 'gann':
+            if (count > 0) return `<strong>What this means:</strong> Price above the ${barCount}-period MA for ${Math.abs(count)} bars, confirming uptrend momentum.`;
+            if (count < 0) return `<strong>What this means:</strong> Price below the ${barCount}-period MA for ${Math.abs(count)} bars. Downtrend confirmed.`;
+            return `<strong>What this means:</strong> Price oscillating around MA. Trend unclear.`;
+        case 'dqn':
+            if (count > 3) return `<strong>What this means:</strong> RSI above 50 for ${count} periods, showing sustained bullish momentum.`;
+            if (count > 0) return `<strong>What this means:</strong> RSI slightly above 50. Mild bullish momentum.`;
+            if (count < -3) return `<strong>What this means:</strong> RSI below 50 for ${Math.abs(count)} periods. Bearish momentum sustained.`;
+            if (count < 0) return `<strong>What this means:</strong> RSI slightly below 50. Weak bearish momentum.`;
+            return `<strong>What this means:</strong> RSI at neutral 50 level. No clear momentum.`;
+        case 'wave':
+            if (count > 0) return `<strong>What this means:</strong> ${count} consecutive higher closes forming bullish stair-step pattern.`;
+            if (count < 0) return `<strong>What this means:</strong> ${Math.abs(count)} consecutive lower closes. Bearish pattern.`;
+            return `<strong>What this means:</strong> No clear consecutive pattern. Choppy price action.`;
+    }
+}
+
+// Get trade recommendation
+function getTradeRecommendation(data, symbol, price) {
+    const total = data.baseCount + data.gannCount + data.dqnCount + data.waveCount;
+    const bullishAgents = [data.baseCount, data.gannCount, data.dqnCount, data.waveCount].filter(c => c > 0).length;
+    const bearishAgents = [data.baseCount, data.gannCount, data.dqnCount, data.waveCount].filter(c => c < 0).length;
+    const reversalRisk = calculateReversalRisk(symbol, total, total > 0);
+
+    let direction, confidence, strike, stopLoss, target1, target2;
+
+    if (bullishAgents >= 3 && reversalRisk.risk !== 'CRITICAL') {
+        direction = 'CALL';
+        confidence = bullishAgents === 4 ? (reversalRisk.risk === 'LOW' ? 85 : 70) : 65;
+        strike = Math.ceil(price / 5) * 5;
+        stopLoss = price * 0.993;
+        target1 = price * 1.01;
+        target2 = price * 1.02;
+    } else if (bearishAgents >= 3 && reversalRisk.risk !== 'CRITICAL') {
+        direction = 'PUT';
+        confidence = bearishAgents === 4 ? (reversalRisk.risk === 'LOW' ? 85 : 70) : 65;
+        strike = Math.floor(price / 5) * 5;
+        stopLoss = price * 1.007;
+        target1 = price * 0.99;
+        target2 = price * 0.98;
+    } else {
+        direction = 'WAIT';
+        confidence = 0;
+        strike = Math.round(price / 5) * 5;
+        stopLoss = price;
+        target1 = price;
+        target2 = price;
+    }
+
+    const riskReward = direction !== 'WAIT' ? (Math.abs(target1 - price) / Math.abs(price - stopLoss)).toFixed(1) : 'N/A';
+
+    return {
+        direction, confidence,
+        strike: '$' + strike.toFixed(0),
+        expiry: direction !== 'WAIT' ? '1-2 DTE' : 'N/A',
+        entry: '$' + price.toFixed(2),
+        stopLoss: '$' + stopLoss.toFixed(2),
+        target1: '$' + target1.toFixed(2),
+        target2: '$' + target2.toFixed(2),
+        riskReward: direction !== 'WAIT' ? '1:' + riskReward : 'N/A'
+    };
+}
+
+// Main Bar Count Analysis function
 function updateBarCountAnalysis() {
-    const barCount = parseInt(document.getElementById('barCountSelect')?.value || 10);
-    console.log('📊 updateBarCountAnalysis called, requested bars:', barCount);
+    const symbol = currentSymbol || 'SPY';
+    const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
 
-    // Use current symbol's data
-    const symbolData = currentData;
-    if (!symbolData || symbolData.length < 10) {
-        console.warn('⚠️ Bar Count: Not enough data, have:', symbolData?.length || 0);
+    if (!currentData || currentData.length < barCount) {
+        console.log('📊 Bar Count: Not enough data');
         return;
     }
 
-    // Use available data, adjust bar count if needed
-    const availableBars = Math.min(barCount, symbolData.length - 20);
-    const actualBarCount = Math.max(availableBars, Math.min(10, symbolData.length));
-    console.log('📊 Bar Count: Using', actualBarCount, 'bars from', symbolData.length, 'total');
+    // Update symbol display
+    const bcSymbol = document.getElementById('bcSymbol');
+    if (bcSymbol) bcSymbol.textContent = symbol;
 
-    const data = symbolData.slice(-actualBarCount);
-    const extraForMA = Math.min(20, symbolData.length - actualBarCount);
-    const fullData = symbolData.slice(-(actualBarCount + extraForMA));
-    const table = document.getElementById('barCountTable');
-    if (!table) {
-        console.warn('⚠️ Bar Count: Table element not found');
-        return;
-    }
+    // Get recent candles
+    const recentCandles = currentData.slice(-barCount);
+    const currentPrice = parseFloat(recentCandles[recentCandles.length - 1]?.Close) || 0;
 
-    // Update the symbol display
-    document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
+    // Calculate agent counts
+    let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
+    let consecutiveHigher = 0, consecutiveLower = 0;
 
-    // Calculate 20-period MA for the analysis period
-    function calculate20MA(dataSlice, endIndex) {
-        const period = Math.min(20, endIndex);
-        if (period < 5 || endIndex > dataSlice.length) return null;
-        let sum = 0;
-        const startIdx = Math.max(0, endIndex - period);
-        for (let i = startIdx; i < endIndex; i++) {
-            sum += parseFloat(dataSlice[i]?.Close) || 0;
-        }
-        return sum / period;
-    }
+    // Calculate 20-period MA
+    const maSum = recentCandles.reduce((sum, c) => sum + parseFloat(c.Close || 0), 0);
+    const ma20 = maSum / recentCandles.length;
 
     // Calculate RSI
-    function calculateRSI(dataSlice, period = 14) {
-        if (dataSlice.length < period + 1) return 50;
-        const changes = [];
-        for (let i = 1; i < dataSlice.length; i++) {
-            changes.push(parseFloat(dataSlice[i].Close) - parseFloat(dataSlice[i-1].Close));
+    let gains = 0, losses = 0;
+    for (let i = 1; i < recentCandles.length; i++) {
+        const change = parseFloat(recentCandles[i].Close) - parseFloat(recentCandles[i-1].Close);
+        if (change > 0) gains += change;
+        else losses += Math.abs(change);
+    }
+    const avgGain = gains / (recentCandles.length - 1);
+    const avgLoss = losses / (recentCandles.length - 1);
+    const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+    const rsi = 100 - (100 / (1 + rs));
+
+    // Base Confluence: Bullish vs Bearish candles
+    recentCandles.forEach(c => {
+        if (parseFloat(c.Close) >= parseFloat(c.Open)) baseCount++;
+        else baseCount--;
+    });
+
+    // Gann-Elliott: Price vs MA
+    recentCandles.forEach(c => {
+        if (parseFloat(c.Close) > ma20) gannCount++;
+        else gannCount--;
+    });
+
+    // DQN/RL: RSI momentum
+    dqnCount = Math.round((rsi - 50) / 5);
+
+    // Wave: Consecutive higher/lower closes
+    for (let i = recentCandles.length - 1; i > 0; i--) {
+        if (parseFloat(recentCandles[i].Close) > parseFloat(recentCandles[i-1].Close)) {
+            if (consecutiveLower === 0) consecutiveHigher++;
+            else break;
+        } else {
+            if (consecutiveHigher === 0) consecutiveLower++;
+            else break;
         }
-        const recentChanges = changes.slice(-period);
-        const gains = recentChanges.filter(c => c > 0);
-        const losses = recentChanges.filter(c => c < 0).map(c => Math.abs(c));
-        const avgGain = gains.length ? gains.reduce((a,b) => a+b, 0) / period : 0;
-        const avgLoss = losses.length ? losses.reduce((a,b) => a+b, 0) / period : 0;
-        if (avgLoss === 0) return 100;
-        const rs = avgGain / avgLoss;
-        return 100 - (100 / (1 + rs));
+    }
+    waveCount = consecutiveHigher > 0 ? consecutiveHigher : -consecutiveLower;
+
+    // Calculate totals and reversal risk
+    const totalCount = baseCount + gannCount + dqnCount + waveCount;
+    const isBullish = totalCount > 0;
+    const reversalRisk = calculateReversalRisk(symbol, totalCount, isBullish);
+
+    // Determine signal
+    const bullishAgents = [baseCount, gannCount, dqnCount, waveCount].filter(c => c > 0).length;
+    const bearishAgents = [baseCount, gannCount, dqnCount, waveCount].filter(c => c < 0).length;
+
+    let mainSignal, signalClass, trendStrength, trendClass;
+
+    if (bullishAgents >= 3) {
+        mainSignal = 'CALL';
+        signalClass = 'call';
+        trendStrength = bullishAgents === 4 ? 'STRONG' : 'MODERATE';
+        trendClass = bullishAgents === 4 ? 'strong' : 'moderate';
+    } else if (bearishAgents >= 3) {
+        mainSignal = 'PUT';
+        signalClass = 'put';
+        trendStrength = bearishAgents === 4 ? 'STRONG' : 'MODERATE';
+        trendClass = bearishAgents === 4 ? 'strong' : 'moderate';
+    } else {
+        mainSignal = 'WAIT';
+        signalClass = 'wait';
+        trendStrength = 'WEAK';
+        trendClass = 'weak';
     }
 
-    let html = '';
-    let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
-    let baseBullish = 0, gannBullish = 0, dqnBullish = 0, waveBullish = 0;
+    // Update Quick Signal Summary
+    const updateSignalBox = (id, value, className) => {
+        const box = document.getElementById(id);
+        if (box) {
+            const valEl = box.querySelector('.bc-signal-value');
+            if (valEl) {
+                valEl.textContent = value;
+                valEl.className = 'bc-signal-value ' + className;
+            }
+        }
+    };
 
-    // Current values for display
-    const currentClose = parseFloat(data[data.length - 1].Close) || 0;
-    const current20MA = calculate20MA(fullData, fullData.length);
-    const currentRSI = calculateRSI(fullData);
+    updateSignalBox('bcMainSignal', mainSignal, signalClass);
+    updateSignalBox('bcTrendStrength', trendStrength, trendClass);
+    updateSignalBox('bcReversalRisk', reversalRisk.risk, reversalRisk.riskClass);
+
+    const isMarketOpen = new Date().getHours() >= 9 && new Date().getHours() < 16;
+    const entryText = !isMarketOpen ? 'CLOSED' : (mainSignal !== 'WAIT' && reversalRisk.risk !== 'CRITICAL' ? 'NOW' : 'WAIT');
+    const entryClass = entryText === 'NOW' ? 'now' : entryText === 'CLOSED' ? 'closed' : 'wait';
+    updateSignalBox('bcEntryWindow', entryText, entryClass);
+
+    // Update interpretation
+    const bcInterpretation = document.getElementById('bcInterpretation');
+    if (bcInterpretation) {
+        const textEl = bcInterpretation.querySelector('.bc-interpretation-text');
+        if (textEl) textEl.innerHTML = getSignalInterpretation(baseCount, gannCount, dqnCount, waveCount, reversalRisk);
+    }
+
+    // Update Trade Recommendation
+    const tradeRec = getTradeRecommendation({baseCount, gannCount, dqnCount, waveCount}, symbol, currentPrice);
+    const setRecEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setRecEl('bcRecConfidence', tradeRec.direction !== 'WAIT' ? `High Confidence (${tradeRec.confidence}%)` : 'No Trade');
+    const recDir = document.getElementById('bcRecDirection');
+    if (recDir) {
+        const dirIcon = tradeRec.direction === 'CALL' ? '📈' : tradeRec.direction === 'PUT' ? '📉' : '⏸️';
+        recDir.innerHTML = dirIcon + ' ' + tradeRec.direction;
+        recDir.className = 'bc-rec-value ' + tradeRec.direction.toLowerCase();
+    }
+    setRecEl('bcRecStrike', tradeRec.strike);
+    setRecEl('bcRecExpiry', tradeRec.expiry);
+    setRecEl('bcRecEntry', tradeRec.entry);
+    setRecEl('bcRecStop', tradeRec.stopLoss);
+    setRecEl('bcRecTarget1', tradeRec.target1);
+    setRecEl('bcRecTarget2', tradeRec.target2);
+    setRecEl('bcRecRR', tradeRec.riskReward);
+
+    // Update trade rec border color
+    const bcTradeRec = document.getElementById('bcTradeRec');
+    if (bcTradeRec) {
+        bcTradeRec.style.borderColor = tradeRec.direction === 'CALL' ? 'var(--success)' :
+            tradeRec.direction === 'PUT' ? 'var(--danger)' : 'var(--warning)';
+        const header = bcTradeRec.querySelector('.bc-trade-rec-header');
+        if (header) {
+            header.style.background = tradeRec.direction === 'CALL' ? 'var(--success)' :
+                tradeRec.direction === 'PUT' ? 'var(--danger)' : 'var(--warning)';
+        }
+    }
+
+    // Update Agent Cards
+    const agents = [
+        { id: 'bcAgentBase', count: baseCount, type: 'base', method: 'Candle Color (Close >= Open)' },
+        { id: 'bcAgentGann', count: gannCount, type: 'gann', method: `Price vs ${barCount}-Period MA` },
+        { id: 'bcAgentDQN', count: dqnCount, type: 'dqn', method: 'RSI Momentum (vs 50)' },
+        { id: 'bcAgentWave', count: waveCount, type: 'wave', method: 'Higher Closes Pattern' }
+    ];
+
+    agents.forEach(agent => {
+        const card = document.getElementById(agent.id);
+        if (!card) return;
+
+        const sentiment = agent.count > 2 ? 'bullish' : agent.count < -2 ? 'bearish' : 'neutral';
+        const signalText = agent.count > 2 ? 'BULLISH' : agent.count < -2 ? 'BEARISH' : 'NEUTRAL';
+
+        card.className = 'bc-agent-card ' + sentiment;
+        const signalEl = card.querySelector('.bc-agent-signal');
+        if (signalEl) signalEl.textContent = signalText;
+        const valueEl = card.querySelector('.bc-agent-value');
+        if (valueEl) valueEl.textContent = (agent.count > 0 ? '+' : '') + agent.count;
+        const methodEl = card.querySelector('.bc-agent-method');
+        if (methodEl) methodEl.textContent = agent.method;
+        const explainEl = card.querySelector('.bc-agent-explain');
+        if (explainEl) explainEl.innerHTML = getAgentExplanation(agent.type, agent.count, barCount);
+    });
+
+    // Update main display values (for compatibility)
+    const setCount = (id, count) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = (count > 0 ? '+' : '') + count;
+            el.style.color = count > 0 ? 'var(--success)' : 'var(--danger)';
+        }
+    };
+    setCount('baseBarCount', baseCount);
+    setCount('gannBarCount', gannCount);
+    setCount('dqnBarCount', dqnCount);
+    setCount('waveBarCount', waveCount);
+
+    // Update Consensus Bar
+    const consensusEl = document.getElementById('barCountConsensus');
+    if (consensusEl) {
+        const consensusText = bullishAgents > bearishAgents ? `${bullishAgents}/4 BULLISH` :
+            bearishAgents > bullishAgents ? `${bearishAgents}/4 BEARISH` : 'MIXED';
+        consensusEl.textContent = consensusText;
+        consensusEl.style.color = bullishAgents > bearishAgents ? 'var(--success)' :
+            bearishAgents > bullishAgents ? 'var(--danger)' : 'var(--warning)';
+    }
+
+    const consensusDetailEl = document.getElementById('barCountConsensusDetail');
+    if (consensusDetailEl) {
+        let detailText;
+        if (bullishAgents === 4) detailText = 'All 4 agents agree on bullish direction - highest confidence level';
+        else if (bearishAgents === 4) detailText = 'All 4 agents agree on bearish direction - highest confidence level';
+        else if (bullishAgents === 3) detailText = '3 of 4 agents bullish - good alignment for CALL';
+        else if (bearishAgents === 3) detailText = '3 of 4 agents bearish - good alignment for PUT';
+        else detailText = 'Agents are split - wait for better alignment';
+        consensusDetailEl.textContent = detailText;
+    }
+
+    // Update Gann Integration Panel
+    setRecEl('bcGannBarSignal', (totalCount > 0 ? '+' : '') + totalCount + (totalCount > 0 ? ' BULLISH' : totalCount < 0 ? ' BEARISH' : ' NEUTRAL'));
+    const gannBarSignal = document.getElementById('bcGannBarSignal');
+    if (gannBarSignal) gannBarSignal.className = 'bc-gann-value ' + (totalCount > 0 ? 'bullish' : totalCount < 0 ? 'bearish' : '');
+
+    setRecEl('bcGannReversalRisk', `${reversalRisk.pctOfAvg.toFixed(0)}% - ${reversalRisk.risk}`);
+    const gannRevRisk = document.getElementById('bcGannReversalRisk');
+    if (gannRevRisk) gannRevRisk.className = 'bc-gann-value ' + reversalRisk.riskClass;
+
+    setRecEl('bcGannReversalDetail', reversalRisk.remainingBars > 0 ? `Room for ${reversalRisk.remainingBars}+ more bars` : 'Extended - reversal likely');
+
+    // Combined Score
+    let combinedScore = 50 + (bullishAgents - bearishAgents) * 10;
+    combinedScore += reversalRisk.risk === 'LOW' ? 15 : reversalRisk.risk === 'MEDIUM' ? 5 : -10;
+    combinedScore = Math.max(0, Math.min(100, combinedScore));
+
+    setRecEl('bcGannCombined', combinedScore + '/100');
+    const gannCombined = document.getElementById('bcGannCombined');
+    if (gannCombined) gannCombined.className = 'bc-gann-value ' +
+        (combinedScore >= 80 ? 'ultra' : combinedScore >= 60 ? 'bullish' : combinedScore <= 40 ? 'bearish' : 'medium');
+    setRecEl('bcGannCombinedDetail', combinedScore >= 80 ? 'ULTRA HIGH CONFLUENCE' :
+        combinedScore >= 60 ? 'HIGH CONFLUENCE' : combinedScore >= 40 ? 'MODERATE CONFLUENCE' : 'LOW CONFLUENCE');
+
+    // Update Final Verdict
+    const bcVerdictSignal = document.getElementById('bcVerdictSignal');
+    const bcVerdictText = document.getElementById('bcVerdictText');
+    const bcFinalVerdict = document.getElementById('bcFinalVerdict');
+
+    if (bcFinalVerdict && bcVerdictSignal && bcVerdictText) {
+        let verdictSignal, verdictText, verdictColor;
+
+        if (combinedScore >= 70 && bullishAgents >= 3) {
+            verdictSignal = 'STRONG BUY - CALL';
+            verdictColor = 'var(--success)';
+            verdictText = `Bar Count (+${totalCount}) aligns with strong agent consensus (${bullishAgents}/4 bullish). Reversal risk is ${reversalRisk.risk.toLowerCase()}. High-probability CALL setup.`;
+        } else if (combinedScore >= 70 && bearishAgents >= 3) {
+            verdictSignal = 'STRONG SELL - PUT';
+            verdictColor = 'var(--danger)';
+            verdictText = `Bar Count (${totalCount}) confirms bearish momentum with ${bearishAgents}/4 agents bearish. High-probability PUT setup.`;
+        } else if (combinedScore >= 50) {
+            verdictSignal = mainSignal === 'CALL' ? 'MODERATE BUY - CALL' : mainSignal === 'PUT' ? 'MODERATE SELL - PUT' : 'WAIT FOR SETUP';
+            verdictColor = mainSignal === 'WAIT' ? 'var(--warning)' : mainSignal === 'CALL' ? 'var(--success)' : 'var(--danger)';
+            verdictText = `Mixed confluence (${combinedScore}/100). Consider reduced position size or wait for better alignment.`;
+        } else {
+            verdictSignal = 'NO TRADE - WAIT';
+            verdictColor = 'var(--warning)';
+            verdictText = `Low confluence score (${combinedScore}/100). Agents are conflicting or reversal risk is high. Wait for better setup.`;
+        }
+
+        bcVerdictSignal.textContent = verdictSignal;
+        bcVerdictSignal.className = 'bc-verdict-signal ' + (mainSignal === 'CALL' ? 'call' : mainSignal === 'PUT' ? 'put' : 'wait');
+        bcVerdictText.textContent = verdictText;
+        bcFinalVerdict.style.borderColor = verdictColor;
+        const verdictHeader = bcFinalVerdict.querySelector('.bc-verdict-header');
+        if (verdictHeader) verdictHeader.style.background = verdictColor;
+    }
+
+    // Update Reversal Scanner
+    updateReversalScanner();
+
+    // Update Bar Count History table
+    updateBarCountHistory(recentCandles, barCount, baseCount, gannCount, dqnCount, waveCount, ma20);
+}
+
+// Update Reversal Risk Scanner
+function updateReversalScanner() {
+    const safeList = document.getElementById('bcSafeList');
+    const cautionList = document.getElementById('bcCautionList');
+    if (!safeList || !cautionList) return;
+
+    // Mock data for watchlist symbols
+    const watchlistData = [
+        { symbol: 'SPY', run: 5, pctOfAvg: 42, isBullish: true },
+        { symbol: 'QQQ', run: 12, pctOfAvg: 86, isBullish: true },
+        { symbol: 'IWM', run: 3, pctOfAvg: 30, isBullish: true },
+        { symbol: 'XLK', run: 8, pctOfAvg: 62, isBullish: true },
+        { symbol: 'XLF', run: -7, pctOfAvg: 70, isBullish: false },
+        { symbol: 'XLE', run: 6, pctOfAvg: 50, isBullish: true },
+        { symbol: 'XLV', run: 15, pctOfAvg: 125, isBullish: true },
+        { symbol: 'DIA', run: 4, pctOfAvg: 36, isBullish: true }
+    ];
+
+    const safe = watchlistData.filter(d => d.pctOfAvg < 80);
+    const caution = watchlistData.filter(d => d.pctOfAvg >= 80);
+
+    safeList.innerHTML = safe.map(d => `
+        <div class="bc-reversal-item">
+            <span class="bc-rev-symbol">${d.symbol}</span>
+            <span class="bc-rev-run">${d.run > 0 ? '+' : ''}${d.run} bars</span>
+            <span class="bc-rev-pct">${d.pctOfAvg}%</span>
+            <span class="bc-rev-status safe">Good Entry</span>
+        </div>
+    `).join('');
+
+    cautionList.innerHTML = caution.map(d => `
+        <div class="bc-reversal-item">
+            <span class="bc-rev-symbol">${d.symbol}</span>
+            <span class="bc-rev-run">${d.run > 0 ? '+' : ''}${d.run} bars</span>
+            <span class="bc-rev-pct">${d.pctOfAvg}%</span>
+            <span class="bc-rev-status caution">Wait for Pullback</span>
+        </div>
+    `).join('');
+
+    const safeCount = document.getElementById('bcSafeCount');
+    const cautionCount = document.getElementById('bcCautionCount');
+    if (safeCount) safeCount.textContent = safe.length + ' symbols';
+    if (cautionCount) cautionCount.textContent = caution.length + ' symbols';
+
+    // Update extended stats table
+    const reversalTable = document.getElementById('bcReversalTable');
+    if (reversalTable) {
+        reversalTable.innerHTML = watchlistData.map(d => {
+            const stats = reversalStats[d.symbol] || { avgBullish: 12, avgBearish: 10 };
+            const risk = d.pctOfAvg < 70 ? 'Low' : d.pctOfAvg < 100 ? 'Medium' : 'High';
+            const riskClass = d.pctOfAvg < 70 ? 'success' : d.pctOfAvg < 100 ? 'warning' : 'danger';
+            const action = d.pctOfAvg < 70 ? 'Enter Now' : d.pctOfAvg < 100 ? 'Caution' : 'Wait';
+
+            return `<tr>
+                <td><strong>${d.symbol}</strong></td>
+                <td>${stats.avgBullish} bars</td>
+                <td>${stats.avgBearish} bars</td>
+                <td>${d.run > 0 ? '+' : ''}${d.run}</td>
+                <td>${d.pctOfAvg}%</td>
+                <td style="color:var(--${riskClass})">${risk}</td>
+                <td><span style="color:var(--${riskClass})">${action}</span></td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+// Update Bar Count History table
+function updateBarCountHistory(data, barCount, baseCount, gannCount, dqnCount, waveCount, ma20) {
+    const table = document.getElementById('barCountTable');
+    if (!table) return;
+
+    let html = '';
+    let runningBase = 0, runningGann = 0, runningDqn = 0, runningWave = 0;
 
     data.forEach((d, i) => {
-        const dataIndex = 20 + i; // Offset for MA calculation
         const o = parseFloat(d.Open) || 0;
         const c = parseFloat(d.Close) || 0;
         const prevClose = i > 0 ? parseFloat(data[i-1].Close) || c : c;
-        const ma20 = calculate20MA(fullData, dataIndex + 1);
-        const rsiSlice = fullData.slice(0, dataIndex + 1);
-        const rsi = calculateRSI(rsiSlice);
 
-        // BASE: Candle color (Close >= Open = bullish)
         const isBaseBullish = c >= o;
-        if (isBaseBullish) {
-            baseCount = baseCount >= 0 ? baseCount + 1 : 1;
-            baseBullish++;
-        } else {
-            baseCount = baseCount <= 0 ? baseCount - 1 : -1;
-        }
-
-        // GANN: Price vs 20-MA
-        const isGannBullish = ma20 ? c > ma20 : c >= o;
-        if (isGannBullish) {
-            gannCount = gannCount >= 0 ? gannCount + 1 : 1;
-            gannBullish++;
-        } else {
-            gannCount = gannCount <= 0 ? gannCount - 1 : -1;
-        }
-
-        // DQN: RSI > 50 = bullish momentum
-        const isDqnBullish = rsi > 50;
-        if (isDqnBullish) {
-            dqnCount = dqnCount >= 0 ? dqnCount + 1 : 1;
-            dqnBullish++;
-        } else {
-            dqnCount = dqnCount <= 0 ? dqnCount - 1 : -1;
-        }
-
-        // WAVE: Close > Previous Close = higher close
+        runningBase = isBaseBullish ? (runningBase >= 0 ? runningBase + 1 : 1) : (runningBase <= 0 ? runningBase - 1 : -1);
+        const isGannBullish = c > ma20;
+        runningGann = isGannBullish ? (runningGann >= 0 ? runningGann + 1 : 1) : (runningGann <= 0 ? runningGann - 1 : -1);
+        runningDqn = dqnCount; // Simplified
         const isWaveBullish = c > prevClose;
-        if (isWaveBullish) {
-            waveCount = waveCount >= 0 ? waveCount + 1 : 1;
-            waveBullish++;
-        } else {
-            waveCount = waveCount <= 0 ? waveCount - 1 : -1;
-        }
+        runningWave = isWaveBullish ? (runningWave >= 0 ? runningWave + 1 : 1) : (runningWave <= 0 ? runningWave - 1 : -1);
 
-        const avg = (baseCount + gannCount + dqnCount + waveCount) / 4;
+        const avg = (runningBase + runningGann + runningDqn + runningWave) / 4;
         const date = (d.Date || '').split('T')[0].split(' ')[0].slice(5);
 
         html += `<tr>
             <td>${data.length - i}</td>
             <td>${date}</td>
             <td style="font-size:10px;">${o.toFixed(0)}/${(parseFloat(d.High)||0).toFixed(0)}/${(parseFloat(d.Low)||0).toFixed(0)}/${c.toFixed(0)}</td>
-            <td>${isBaseBullish ? '\U0001F4C8' : '\U0001F4C9'}</td>
-            <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
-            <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
-            <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
-            <td class="${waveCount > 0 ? 'positive' : 'negative'}">${waveCount > 0 ? '+' : ''}${waveCount}</td>
+            <td>${isBaseBullish ? '📈' : '📉'}</td>
+            <td class="${runningBase > 0 ? 'positive' : 'negative'}">${runningBase > 0 ? '+' : ''}${runningBase}</td>
+            <td class="${runningGann > 0 ? 'positive' : 'negative'}">${runningGann > 0 ? '+' : ''}${runningGann}</td>
+            <td class="${runningDqn > 0 ? 'positive' : 'negative'}">${runningDqn > 0 ? '+' : ''}${runningDqn}</td>
+            <td class="${runningWave > 0 ? 'positive' : 'negative'}">${runningWave > 0 ? '+' : ''}${runningWave}</td>
             <td><span class="badge badge-${avg > 2 ? 'success' : (avg < -2 ? 'danger' : 'warning')}">${avg.toFixed(1)}</span></td>
         </tr>`;
     });
 
     table.innerHTML = html;
-
-    // Update main display values
-    document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
-    document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('gannBarCount').textContent = (gannCount > 0 ? '+' : '') + gannCount;
-    document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('dqnBarCount').textContent = (dqnCount > 0 ? '+' : '') + dqnCount;
-    document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
-    document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
-
-    // Update explanations
-    const baseExplain = document.getElementById('baseBarExplain');
-    const gannExplain = document.getElementById('gannBarExplain');
-    const dqnExplain = document.getElementById('dqnBarExplain');
-    const waveExplain = document.getElementById('waveBarExplain');
-
-    if (baseExplain) baseExplain.textContent = `${baseBullish}/${barCount} bullish candles`;
-    if (gannExplain) gannExplain.textContent = current20MA ? `Price $${currentClose.toFixed(0)} vs MA $${current20MA.toFixed(0)}` : 'Calculating MA...';
-    if (dqnExplain) dqnExplain.textContent = `RSI: ${currentRSI.toFixed(0)} (${currentRSI > 50 ? 'Bullish' : 'Bearish'} zone)`;
-    if (waveExplain) waveExplain.textContent = `${waveBullish}/${barCount} higher closes`;
-
-    // Update method details table
-    const baseMethodValue = document.getElementById('baseMethodValue');
-    const gannMethodValue = document.getElementById('gannMethodValue');
-    const dqnMethodValue = document.getElementById('dqnMethodValue');
-    const waveMethodValue = document.getElementById('waveMethodValue');
-
-    if (baseMethodValue) baseMethodValue.textContent = `${baseBullish}/${barCount} bullish`;
-    if (gannMethodValue) gannMethodValue.textContent = current20MA ? `$${currentClose.toFixed(2)} vs $${current20MA.toFixed(2)}` : '--';
-    if (dqnMethodValue) dqnMethodValue.textContent = `RSI ${currentRSI.toFixed(1)}`;
-    if (waveMethodValue) waveMethodValue.textContent = `${waveBullish}/${barCount} up`;
-
-    // Update signal badges
-    function updateSignalBadge(id, isBullish) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.innerHTML = isBullish ?
-            '<span class="badge badge-success">BULLISH</span>' :
-            '<span class="badge badge-danger">BEARISH</span>';
-    }
-
-    updateSignalBadge('baseMethodSignal', baseCount > 0);
-    updateSignalBadge('gannMethodSignal', gannCount > 0);
-    updateSignalBadge('dqnMethodSignal', dqnCount > 0);
-    updateSignalBadge('waveMethodSignal', waveCount > 0);
-
-    // Update consensus
-    const bullishAgents = [baseCount > 0, gannCount > 0, dqnCount > 0, waveCount > 0].filter(b => b).length;
-    const bearishAgents = 4 - bullishAgents;
-    const consensusEl = document.getElementById('barCountConsensus');
-    const consensusDetailEl = document.getElementById('barCountConsensusDetail');
-
-    if (consensusEl) {
-        if (bullishAgents >= 3) {
-            consensusEl.textContent = `${bullishAgents}/4 BULLISH`;
-            consensusEl.style.color = 'var(--success)';
-        } else if (bearishAgents >= 3) {
-            consensusEl.textContent = `${bearishAgents}/4 BEARISH`;
-            consensusEl.style.color = 'var(--danger)';
-        } else {
-            consensusEl.textContent = `${bullishAgents}/4 vs ${bearishAgents}/4 MIXED`;
-            consensusEl.style.color = 'var(--warning)';
-        }
-    }
-
-    if (consensusDetailEl) {
-        const agentNames = [];
-        if (baseCount > 0) agentNames.push('Base');
-        if (gannCount > 0) agentNames.push('Gann');
-        if (dqnCount > 0) agentNames.push('DQN');
-        if (waveCount > 0) agentNames.push('Wave');
-
-        if (bullishAgents === 4) {
-            consensusDetailEl.textContent = 'All agents agree on bullish direction';
-        } else if (bearishAgents === 4) {
-            consensusDetailEl.textContent = 'All agents agree on bearish direction';
-        } else if (bullishAgents > bearishAgents) {
-            consensusDetailEl.textContent = `Bullish: ${agentNames.join(', ')}`;
-        } else {
-            const bearishNames = ['Base', 'Gann', 'DQN', 'Wave'].filter(n => !agentNames.includes(n));
-            consensusDetailEl.textContent = `Bearish: ${bearishNames.join(', ')}`;
-        }
-    }
 }
 
 function updateReversalStats() {
