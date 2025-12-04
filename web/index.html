@@ -1666,17 +1666,24 @@
         <div id="signals-agents" class="tab-content">
             <!-- Sub-section: Signal Parameters -->
             <div class="card">
-                <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
+                <div class="card-title">⚡ Intraday vs 🌊 Swing vs 🎯 Position Parameters</div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th style="color:var(--intraday);">⚡ INTRADAY</th>
+                                <th style="color:var(--swing);">🌊 SWING</th>
+                                <th style="color:var(--secondary);">🎯 POSITION</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
-                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
-                            <tr><td>Fast SMA</td><td>5</td><td>10</td></tr>
-                            <tr><td>Slow SMA</td><td>20</td><td>30</td></tr>
-                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td></tr>
-                            <tr><td>Target</td><td>1.0-2.0 ATR</td><td>3.0-4.0 ATR</td></tr>
+                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td><td>Weekly, Monthly</td></tr>
+                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td><td>30-60 DTE</td></tr>
+                            <tr><td>Fast SMA</td><td>5</td><td>10</td><td>20</td></tr>
+                            <tr><td>Slow SMA</td><td>20</td><td>30</td><td>50</td></tr>
+                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td><td>2.0-3.0 ATR</td></tr>
+                            <tr><td>Target</td><td>1.0-2.0 ATR</td><td>3.0-4.0 ATR</td><td>4.0-6.0 ATR</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1686,25 +1693,154 @@
             <div class="card">
                 <div class="card-title">🤖 Agent Signals</div>
                 <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Agent</th><th>Intraday</th><th>Conf</th><th>Swing</th><th>Conf</th></tr></thead>
+                    <table style="font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th style="color:var(--intraday);">⚡ Intraday</th>
+                                <th>Conf</th>
+                                <th style="color:var(--swing);">🌊 Swing</th>
+                                <th>Conf</th>
+                                <th style="color:var(--secondary);">🎯 Position</th>
+                                <th>Conf</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            <tr><td>📊 Base Confluence</td><td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td><td id="baseIntradayConf">72%</td><td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td><td id="baseSwingConf">68%</td></tr>
-                            <tr><td>🔮 Gann-Elliott</td><td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td><td id="gannIntradayConf">75%</td><td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td><td id="gannSwingConf">70%</td></tr>
-                            <tr><td>🧠 DQN/RL</td><td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td><td id="dqnIntradayConf">58%</td><td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td><td id="dqnSwingConf">65%</td></tr>
-                            <tr><td>🌊 3-Wave</td><td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td><td id="waveIntradayConf">68%</td><td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td><td id="waveSwingConf">72%</td></tr>
-                            <tr style="background:var(--bg);"><td><strong>CONSENSUS</strong></td><td><span class="badge badge-ultra" id="intradayConsensus">3/4</span></td><td id="intradayConsensusConf">68%</td><td><span class="badge badge-ultra" id="swingConsensus">4/4</span></td><td id="swingConsensusConf">69%</td></tr>
+                            <tr>
+                                <td>📊 Base Confluence</td>
+                                <td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td>
+                                <td id="baseIntradayConf">72%</td>
+                                <td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td>
+                                <td id="baseSwingConf">68%</td>
+                                <td><span class="badge badge-success" id="basePositionSignal">CALL</span></td>
+                                <td id="basePositionConf">65%</td>
+                            </tr>
+                            <tr>
+                                <td>🔮 Gann-Elliott</td>
+                                <td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td>
+                                <td id="gannIntradayConf">75%</td>
+                                <td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td>
+                                <td id="gannSwingConf">70%</td>
+                                <td><span class="badge badge-success" id="gannPositionSignal">CALL</span></td>
+                                <td id="gannPositionConf">72%</td>
+                            </tr>
+                            <tr>
+                                <td>🧠 DQN/RL</td>
+                                <td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td>
+                                <td id="dqnIntradayConf">58%</td>
+                                <td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td>
+                                <td id="dqnSwingConf">65%</td>
+                                <td><span class="badge badge-success" id="dqnPositionSignal">CALL</span></td>
+                                <td id="dqnPositionConf">68%</td>
+                            </tr>
+                            <tr>
+                                <td>🌊 3-Wave</td>
+                                <td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td>
+                                <td id="waveIntradayConf">68%</td>
+                                <td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td>
+                                <td id="waveSwingConf">72%</td>
+                                <td><span class="badge badge-warning" id="wavePositionSignal">HOLD</span></td>
+                                <td id="wavePositionConf">55%</td>
+                            </tr>
+                            <tr style="background:var(--bg);">
+                                <td><strong>CONSENSUS</strong></td>
+                                <td><span class="badge badge-ultra" id="intradayConsensus">3/4</span></td>
+                                <td id="intradayConsensusConf">68%</td>
+                                <td><span class="badge badge-ultra" id="swingConsensus">4/4</span></td>
+                                <td id="swingConsensusConf">69%</td>
+                                <td><span class="badge badge-ultra" id="positionConsensus">3/4</span></td>
+                                <td id="positionConsensusConf">65%</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Sub-section: Fibonacci Levels -->
+            <!-- Sub-section: Fibonacci Levels Enhanced -->
             <div class="card">
                 <div class="card-title">📐 Fibonacci Levels</div>
-                <div class="grid grid-2">
-                    <div><div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3">--</span></div><div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2">--</span></div><div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1">--</span></div></div>
-                    <div><div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div><div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div><div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div></div>
+
+                <!-- Price Proximity Alert -->
+                <div id="fibProximityAlert" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1)); border: 1px solid var(--warning); border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 18px;">⚠️</span>
+                    <span id="fibProximityText" style="font-size: 12px;"><strong>SPY</strong> is <span id="fibProximityPct">--</span> away from <span id="fibProximityLevel">--</span> (<span id="fibProximityPrice">$--</span>)</span>
+                </div>
+
+                <!-- Fibonacci Table -->
+                <div class="table-wrap">
+                    <table style="font-size: 11px;">
+                        <thead>
+                            <tr style="background: var(--bg);">
+                                <th style="padding: 10px;">Level</th>
+                                <th style="padding: 10px;">Price</th>
+                                <th style="padding: 10px;">Distance</th>
+                                <th style="padding: 10px;">Timeframe</th>
+                                <th style="padding: 10px;">Date Set</th>
+                                <th style="padding: 10px;">Implication</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fibTableBody">
+                            <tr id="fibRowR3">
+                                <td style="padding: 8px;"><span id="fibR3Icon"></span> R3 (161.8%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--secondary);" id="fibTableR3">$--</td>
+                                <td style="padding: 8px;" id="fibDistR3">--%</td>
+                                <td style="padding: 8px;" id="fibTfR3">Daily</td>
+                                <td style="padding: 8px;" id="fibDateR3">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">Extended target - take profits</td>
+                            </tr>
+                            <tr id="fibRowR2">
+                                <td style="padding: 8px;"><span id="fibR2Icon"></span> R2 (127.2%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--primary);" id="fibTableR2">$--</td>
+                                <td style="padding: 8px;" id="fibDistR2">--%</td>
+                                <td style="padding: 8px;" id="fibTfR2">Daily</td>
+                                <td style="padding: 8px;" id="fibDateR2">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">Strong resistance - watch for rejection</td>
+                            </tr>
+                            <tr id="fibRowR1" style="background: rgba(16, 185, 129, 0.05);">
+                                <td style="padding: 8px;"><span id="fibR1Icon"></span> R1 (100%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--success);" id="fibTableR1">$--</td>
+                                <td style="padding: 8px;" id="fibDistR1">--%</td>
+                                <td style="padding: 8px;" id="fibTfR1">Daily</td>
+                                <td style="padding: 8px;" id="fibDateR1">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">First resistance - partial profit zone</td>
+                            </tr>
+                            <tr style="background: var(--bg);">
+                                <td colspan="6" style="padding: 6px 8px; text-align: center; font-size: 10px; color: var(--muted);">
+                                    📍 Current Price: <strong id="fibCurrentPrice" style="color: var(--text);">$--</strong>
+                                </td>
+                            </tr>
+                            <tr id="fibRowS1" style="background: rgba(239, 68, 68, 0.05);">
+                                <td style="padding: 8px;"><span id="fibS1Icon"></span> S1 (38.2%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--warning);" id="fibTableS1">$--</td>
+                                <td style="padding: 8px;" id="fibDistS1">--%</td>
+                                <td style="padding: 8px;" id="fibTfS1">Daily</td>
+                                <td style="padding: 8px;" id="fibDateS1">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">First support - potential bounce</td>
+                            </tr>
+                            <tr id="fibRowS2">
+                                <td style="padding: 8px;"><span id="fibS2Icon"></span> S2 (50.0%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--danger);" id="fibTableS2">$--</td>
+                                <td style="padding: 8px;" id="fibDistS2">--%</td>
+                                <td style="padding: 8px;" id="fibTfS2">Daily</td>
+                                <td style="padding: 8px;" id="fibDateS2">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">Key support - strong bounce zone</td>
+                            </tr>
+                            <tr id="fibRowS3">
+                                <td style="padding: 8px;"><span id="fibS3Icon"></span> S3 (61.8%)</td>
+                                <td style="padding: 8px; font-weight: 600; color: var(--danger);" id="fibTableS3">$--</td>
+                                <td style="padding: 8px;" id="fibDistS3">--%</td>
+                                <td style="padding: 8px;" id="fibTfS3">Daily</td>
+                                <td style="padding: 8px;" id="fibDateS3">--</td>
+                                <td style="padding: 8px; font-size: 10px; color: var(--muted);">Deep support - reversal likely if held</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Fib Info Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 10px; color: var(--muted);">
+                    <span>Swing High: <strong id="fibSwingHighDate">--</strong> | Swing Low: <strong id="fibSwingLowDate">--</strong></span>
+                    <span>Timeframe: <strong id="fibTimeframe">Daily (60 bars)</strong></span>
                 </div>
             </div>
 
@@ -5357,7 +5493,98 @@ function updateFibonacci() {
         gapDisplay.style.color = gap >= 0 ? 'var(--success)' : 'var(--danger)';
     }
 
-    window.fibLevels = { fib100, fib1272, fib1618, fib236, fib382, fib618, swingHigh, swingLow };
+    // Update Fibonacci table in Signals & Agents tab
+    // Note: S1=23.6%, S2=38.2%, S3=61.8% for supports (price below swing high)
+    // Corrected mapping based on table labels:
+    // S1 (38.2%) = fib382, S2 (50.0%) = fib50, S3 (61.8%) = fib618
+    const fib50 = swingHigh - (range * 0.5); // S2 - 50% retracement
+
+    // Price values
+    setEl('fibTableR3', '$' + fib1618.toFixed(2));
+    setEl('fibTableR2', '$' + fib1272.toFixed(2));
+    setEl('fibTableR1', '$' + fib100.toFixed(2));
+    setEl('fibTableS1', '$' + fib382.toFixed(2));
+    setEl('fibTableS2', '$' + fib50.toFixed(2));
+    setEl('fibTableS3', '$' + fib618.toFixed(2));
+    setEl('fibCurrentPrice', '$' + price.toFixed(2));
+
+    // Calculate distances from current price
+    const distR3 = ((fib1618 - price) / price * 100).toFixed(1);
+    const distR2 = ((fib1272 - price) / price * 100).toFixed(1);
+    const distR1 = ((fib100 - price) / price * 100).toFixed(1);
+    const distS1 = ((price - fib382) / price * 100).toFixed(1);
+    const distS2 = ((price - fib50) / price * 100).toFixed(1);
+    const distS3 = ((price - fib618) / price * 100).toFixed(1);
+
+    setEl('fibDistR3', '+' + distR3 + '%');
+    setEl('fibDistR2', '+' + distR2 + '%');
+    setEl('fibDistR1', (parseFloat(distR1) >= 0 ? '+' : '') + distR1 + '%');
+    setEl('fibDistS1', '-' + distS1 + '%');
+    setEl('fibDistS2', '-' + distS2 + '%');
+    setEl('fibDistS3', '-' + distS3 + '%');
+
+    // Find closest Fib level for proximity alert
+    const levels = [
+        { name: 'R3 (161.8%)', price: fib1618, dist: Math.abs(fib1618 - price) },
+        { name: 'R2 (127.2%)', price: fib1272, dist: Math.abs(fib1272 - price) },
+        { name: 'R1 (100%)', price: fib100, dist: Math.abs(fib100 - price) },
+        { name: 'S1 (38.2%)', price: fib382, dist: Math.abs(fib382 - price) },
+        { name: 'S2 (50.0%)', price: fib50, dist: Math.abs(fib50 - price) },
+        { name: 'S3 (61.8%)', price: fib618, dist: Math.abs(fib618 - price) }
+    ];
+    levels.sort((a, b) => a.dist - b.dist);
+    const closest = levels[0];
+    const closestPct = (closest.dist / price * 100).toFixed(2);
+
+    // Update proximity alert
+    setElHtml('fibProximityPct', `<strong style="color: ${parseFloat(closestPct) < 1 ? 'var(--danger)' : 'var(--warning)'};">${closestPct}%</strong>`);
+    setEl('fibProximityLevel', closest.name);
+    setEl('fibProximityPrice', '$' + closest.price.toFixed(2));
+
+    // Highlight proximity alert color based on distance
+    const alertEl = document.getElementById('fibProximityAlert');
+    if (alertEl) {
+        if (parseFloat(closestPct) < 0.5) {
+            alertEl.style.borderColor = 'var(--danger)';
+            alertEl.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05))';
+        } else if (parseFloat(closestPct) < 1.5) {
+            alertEl.style.borderColor = 'var(--warning)';
+            alertEl.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05))';
+        } else {
+            alertEl.style.borderColor = 'var(--border)';
+            alertEl.style.background = 'rgba(255,255,255,0.02)';
+        }
+    }
+
+    // Add approaching icon (🎯) to closest level
+    ['R1', 'R2', 'R3', 'S1', 'S2', 'S3'].forEach(lvl => {
+        const iconEl = document.getElementById('fib' + lvl + 'Icon');
+        if (iconEl) iconEl.textContent = '';
+    });
+    const closestLvl = closest.name.split(' ')[0]; // 'R1', 'R2', etc.
+    const closestIcon = document.getElementById('fib' + closestLvl + 'Icon');
+    if (closestIcon) closestIcon.textContent = '🎯 ';
+
+    // Find swing high and low dates
+    let swingHighIdx = 0, swingLowIdx = 0;
+    for (let i = 0; i < recent.length; i++) {
+        if (parseFloat(recent[i].High) === swingHigh) swingHighIdx = i;
+        if (parseFloat(recent[i].Low) === swingLow) swingLowIdx = i;
+    }
+    const highDate = recent[swingHighIdx]?.Date || '--';
+    const lowDate = recent[swingLowIdx]?.Date || '--';
+    setEl('fibSwingHighDate', highDate);
+    setEl('fibSwingLowDate', lowDate);
+
+    // Update individual row dates (use swing high date for R levels, swing low date for S levels)
+    setEl('fibDateR1', highDate);
+    setEl('fibDateR2', highDate);
+    setEl('fibDateR3', highDate);
+    setEl('fibDateS1', highDate);
+    setEl('fibDateS2', highDate);
+    setEl('fibDateS3', lowDate);
+
+    window.fibLevels = { fib100, fib1272, fib1618, fib236, fib382, fib618, fib50, swingHigh, swingLow };
     window.mtfTrends = { intraday: intradayTrend, swing: swingTrend, position: positionTrend };
 }
 
