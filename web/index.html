@@ -997,37 +997,39 @@
                 <div class="metric"><div class="metric-label">ATR</div><div class="metric-value" id="atrDisplay">--</div><div class="metric-sub">Volatility</div></div>
             </div>
 
-            <div class="dual-signal-container">
-                <div class="signal-panel intraday">
-                    <div class="signal-panel-title intraday">⚡ INTRADAY (0-1 DTE)</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="intradaySignal">CALL</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="intradayEntry">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="intradayStop">--</span></div>
-                        </div>
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="intradayT1">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="intradayT2">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="intradayStrike">--</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="signal-panel swing">
-                    <div class="signal-panel-title swing">🌊 SWING (3-5 DTE)</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="swingEntry">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="swingStop">--</span></div>
-                        </div>
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="swingT1">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="swingT2">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="swingStrike">--</span></div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Gann Quick View Summary Table -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(139,92,246,0.05) 0%, rgba(59,130,246,0.05) 100%); border: 1px solid rgba(139,92,246,0.2);">
+                <div class="card-title" style="color: var(--secondary);">🔮 Gann Quick View - At a Glance Summary</div>
+                <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                    <tr style="background: rgba(139,92,246,0.1);">
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Trend</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Volume vs Avg</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Bars in Trend</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Cycle Phase</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Next Cycle Turn</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannTrendQuick" class="badge badge-success">BULLISH</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannVolQuick">--</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannBarsInTrend">--</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannCyclePhase">Day -- of 30</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannNextTurn">--</span></td>
+                    </tr>
+                    <tr style="background: rgba(59,130,246,0.1);">
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Gann Score</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Agent Consensus</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Reversal Risk</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">MTF Alignment</th>
+                        <th style="padding: 10px; text-align: center; border: 1px solid var(--border);">Entry Window</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannScoreQuick" style="font-weight: 700; color: var(--success);">--/100</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannConsensusQuick">--/4 Agents</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannReversalRisk" class="badge badge-warning">--</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannMTFAlign">--/3</span></td>
+                        <td style="padding: 10px; text-align: center; border: 1px solid var(--border);"><span id="gannEntryWindow" class="badge badge-info">--</span></td>
+                    </tr>
+                </table>
             </div>
 
             <div class="card">
@@ -1046,8 +1048,104 @@
                         <div class="ref-data-row"><span class="ref-label">Vol vs Avg</span><span class="ref-value" id="volumeVsAvg">--</span></div>
                     </div>
                     <div style="background:var(--bg);border-radius:6px;padding:10px;">
-                        <div class="ref-data-row"><span class="ref-label">Fibonacci Zone</span><span class="badge badge-info" id="fibZone">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">Trend</span><span class="badge" id="trendBadge">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Open Type</span><span class="badge" id="openTypeBadge">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Gap</span><span class="ref-value" id="gapDisplay">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Multi-Timeframe Trend Display -->
+                <div style="background: var(--bg); border-radius: 8px; padding: 12px; margin-top: 12px;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Multi-Timeframe Trend:</div>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px;">
+                        <div>⚡ <strong>Intraday:</strong> <span id="trendIntraday" class="badge badge-success">--</span></div>
+                        <div>📈 <strong>Swing:</strong> <span id="trendSwing" class="badge badge-success">--</span></div>
+                        <div>🎯 <strong>Position:</strong> <span id="trendPosition" class="badge badge-success">--</span></div>
+                        <div style="margin-left: auto;"><span id="trendBadge" class="badge">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Fibonacci Levels Display -->
+                <div style="background: linear-gradient(90deg, rgba(239,68,68,0.1) 0%, rgba(245,158,11,0.1) 25%, rgba(16,185,129,0.1) 50%, rgba(59,130,246,0.1) 75%, rgba(139,92,246,0.1) 100%); border-radius: 8px; padding: 12px; margin-top: 12px;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Fibonacci Levels:</div>
+                    <div id="fibLevelsDisplay" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 11px; font-family: monospace;">
+                        <span id="fibS3" style="color: var(--danger);">S3: $--</span>
+                        <span id="fibS2" style="color: var(--danger);">S2: $--</span>
+                        <span id="fibS1" style="color: var(--warning);">S1: $--</span>
+                        <span id="fibCurrent" style="background: var(--success); color: white; padding: 4px 8px; border-radius: 4px; font-weight: 700;">📍 $--</span>
+                        <span id="fibR1" style="color: var(--info);">R1: $--</span>
+                        <span id="fibR2" style="color: var(--primary);">R2: $--</span>
+                        <span id="fibR3" style="color: var(--secondary);">R3: $--</span>
+                    </div>
+                    <div id="fibZoneText" style="font-size: 10px; color: var(--muted); margin-top: 6px; text-align: center;">Current Zone: --</div>
+                </div>
+            </div>
+
+            <!-- Trade Statistics Section -->
+            <div class="card">
+                <div class="card-title"><span id="tradeStatsSymbol">SPY - S&P 500</span> 📊 Trade Statistics (Last 30 Days)</div>
+                <div class="grid grid-4" style="margin-bottom: 12px;">
+                    <div style="background: var(--bg); border-radius: 6px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Win Rate</div>
+                        <div id="statWinRate" style="font-size: 20px; font-weight: 700; color: var(--success);">--%</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 6px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Avg Win</div>
+                        <div id="statAvgWin" style="font-size: 20px; font-weight: 700; color: var(--success);">$--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 6px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Avg Loss</div>
+                        <div id="statAvgLoss" style="font-size: 20px; font-weight: 700; color: var(--danger);">$--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 6px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Total Days</div>
+                        <div id="statTotalDays" style="font-size: 20px; font-weight: 700; color: var(--text);">--</div>
+                    </div>
+                </div>
+                <div class="grid grid-3">
+                    <div style="background: rgba(16,185,129,0.1); border-radius: 6px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Best Day</div>
+                        <div id="statBestDay" style="font-size: 14px; font-weight: 600; color: var(--success);">+$--</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); border-radius: 6px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Worst Day</div>
+                        <div id="statWorstDay" style="font-size: 14px; font-weight: 600; color: var(--danger);">-$--</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 6px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Current Streak</div>
+                        <div id="statCurrentStreak" style="font-size: 14px; font-weight: 600; color: var(--primary);">-- days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historical Analysis Summary -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(59,130,246,0.05) 0%, rgba(16,185,129,0.05) 100%); border: 1px solid rgba(59,130,246,0.2);">
+                <div class="card-title" style="color: var(--primary);">📊 Historical Analysis Summary</div>
+                <div id="historicalAnalysisSummary" style="font-size: 12px; line-height: 1.8;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Gap Analysis:</div>
+                            <div id="gapAnalysisText" style="color: var(--muted);">Analyzing gaps...</div>
+                            <div id="gapImplication" style="font-size: 11px; margin-top: 3px;">--</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Pattern Detected:</div>
+                            <div id="patternDetectedText" style="color: var(--muted);">Scanning for patterns...</div>
+                            <div id="patternImplication" style="font-size: 11px; margin-top: 3px;">--</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Volume Trend:</div>
+                            <div id="volumeTrendText" style="color: var(--muted);">Calculating volume...</div>
+                            <div id="volumeImplication" style="font-size: 11px; margin-top: 3px;">--</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 5px;">Price vs Volume:</div>
+                            <div id="priceVsVolumeText" style="color: var(--muted);">Analyzing divergence...</div>
+                            <div id="priceVsVolumeImplication" style="font-size: 11px; margin-top: 3px;">--</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 6px; padding: 10px; margin-top: 12px;">
+                        <div style="font-weight: 600; margin-bottom: 5px;">CONCLUSION:</div>
+                        <div id="analysisConclusion" style="color: var(--text);">Generating analysis...</div>
                     </div>
                 </div>
             </div>
@@ -1070,22 +1168,25 @@
                 </div>
                 <div id="historicalDataCount" style="font-size: 11px; color: var(--muted); margin-bottom: 10px;">Loading historical data...</div>
                 <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                    <table style="width: 100%;">
-                        <thead style="position: sticky; top: 0; background: var(--card-bg); z-index: 1;">
+                    <table style="width: 100%; font-size: 11px;">
+                        <thead style="position: sticky; top: 0; background: var(--card); z-index: 1;">
                             <tr>
-                                <th>Date</th>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Close</th>
-                                <th>Volume</th>
-                                <th>Daily Change</th>
-                                <th>Change %</th>
+                                <th style="padding: 8px 4px;">Date</th>
+                                <th style="padding: 8px 4px;">Open</th>
+                                <th style="padding: 8px 4px;">High</th>
+                                <th style="padding: 8px 4px;">Low</th>
+                                <th style="padding: 8px 4px;">Close</th>
+                                <th style="padding: 8px 4px;">Volume</th>
+                                <th style="padding: 8px 4px;">Change</th>
+                                <th style="padding: 8px 4px;">%</th>
+                                <th style="padding: 8px 4px;">O→H Signal</th>
+                                <th style="padding: 8px 4px;">Pattern</th>
+                                <th style="padding: 8px 4px;">Implication</th>
                             </tr>
                         </thead>
                         <tbody id="historicalDataBody">
                             <tr>
-                                <td colspan="8" style="text-align: center; color: var(--muted); padding: 20px;">Loading historical data...</td>
+                                <td colspan="11" style="text-align: center; color: var(--muted); padding: 20px;">Loading historical data...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -4742,28 +4843,9 @@ function updateDashboard() {
     document.getElementById('aiContextSignal').textContent = bias || 'HOLD';
     document.getElementById('aiContextConsensus').textContent = `${lat.PriceConfluence || 0}/4`;
 
-    // Signals
-    const ip = TRADING_PARAMS.intraday;
-    const sp = TRADING_PARAMS.swing;
-    
-    document.getElementById('intradaySignal').textContent = bias || 'HOLD';
-    document.getElementById('intradaySignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
-    document.getElementById('intradayEntry').textContent = '$' + price.toFixed(2);
-    document.getElementById('intradayStop').textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
-    document.getElementById('intradayT1').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
-    document.getElementById('intradayT2').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
-    document.getElementById('intradayStrike').textContent = '$' + Math.round(price) + ' ' + (bias || 'CALL');
-    
-    document.getElementById('swingSignal').textContent = bias || 'HOLD';
-    document.getElementById('swingSignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
-    document.getElementById('swingEntry').textContent = '$' + (price - 2).toFixed(0) + '-' + (price + 2).toFixed(0);
-    document.getElementById('swingStop').textContent = '$' + (bias === 'PUT' ? (price + atr * sp.stopATR) : (price - atr * sp.stopATR)).toFixed(2);
-    document.getElementById('swingT1').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target1ATR) : (price + atr * sp.target1ATR)).toFixed(2);
-    document.getElementById('swingT2').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target2ATR) : (price + atr * sp.target2ATR)).toFixed(2);
-    document.getElementById('swingStrike').textContent = '$' + (Math.round(price/5)*5) + ' ' + (bias || 'CALL');
-
     updateReferenceData();
     updateFibonacci();
+    updateGannQuickView();
 }
 
 function updateReferenceData() {
@@ -4845,44 +4927,218 @@ function updateFibonacci() {
     const lows = recent.map(d => parseFloat(d.Low) || 0);
     const swingHigh = Math.max(...highs);
     const swingLow = Math.min(...lows);
-    const price = parseFloat(currentData[currentData.length - 1].Close) || 0;
+    const lat = currentData[currentData.length - 1];
+    const price = parseFloat(lat.Close) || 0;
     const range = swingHigh - swingLow;
-    
-    const fib382 = swingHigh - (range * 0.382);
-    const fib500 = swingHigh - (range * 0.500);
-    const fib618 = swingHigh - (range * 0.618);
-    const fib100 = swingHigh;
-    const fib1272 = swingLow + (range * 1.272);
-    const fib1618 = swingLow + (range * 1.618);
-    
-    document.getElementById('fibR1').textContent = '$' + fib100.toFixed(2);
-    document.getElementById('fibR2').textContent = '$' + fib1272.toFixed(2);
-    document.getElementById('fibR3').textContent = '$' + fib1618.toFixed(2);
-    document.getElementById('fibS1').textContent = '$' + fib382.toFixed(2);
-    document.getElementById('fibS2').textContent = '$' + fib500.toFixed(2);
-    document.getElementById('fibS3').textContent = '$' + fib618.toFixed(2);
-    
-    document.getElementById('chartR1').textContent = '$' + fib100.toFixed(2);
-    document.getElementById('chartR2').textContent = '$' + fib1272.toFixed(2);
-    document.getElementById('chartR3').textContent = '$' + fib1618.toFixed(2);
-    document.getElementById('chartS1').textContent = '$' + fib382.toFixed(2);
-    document.getElementById('chartS2').textContent = '$' + fib500.toFixed(2);
-    document.getElementById('chartS3').textContent = '$' + fib618.toFixed(2);
-    
+
+    // Calculate Fibonacci levels
+    const fib236 = swingHigh - (range * 0.236); // S1
+    const fib382 = swingHigh - (range * 0.382); // S2
+    const fib618 = swingHigh - (range * 0.618); // S3
+    const fib100 = swingHigh;                   // R1
+    const fib1272 = swingLow + (range * 1.272); // R2
+    const fib1618 = swingLow + (range * 1.618); // R3
+
+    // Helper function for safe element updates
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setElHtml = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+
+    // Update Fibonacci display in Overview tab
+    setEl('fibS3', `S3: $${fib618.toFixed(0)}`);
+    setEl('fibS2', `S2: $${fib382.toFixed(0)}`);
+    setEl('fibS1', `S1: $${fib236.toFixed(0)}`);
+    setEl('fibCurrent', `📍 $${price.toFixed(2)}`);
+    setEl('fibR1', `R1: $${fib100.toFixed(0)}`);
+    setEl('fibR2', `R2: $${fib1272.toFixed(0)}`);
+    setEl('fibR3', `R3: $${fib1618.toFixed(0)}`);
+
+    // Update chart Fib levels if they exist
+    setEl('chartR1', '$' + fib100.toFixed(2));
+    setEl('chartR2', '$' + fib1272.toFixed(2));
+    setEl('chartR3', '$' + fib1618.toFixed(2));
+    setEl('chartS1', '$' + fib236.toFixed(2));
+    setEl('chartS2', '$' + fib382.toFixed(2));
+    setEl('chartS3', '$' + fib618.toFixed(2));
+
+    // Determine zone and update display
     let zone = 'NEUTRAL';
-    if (price > fib100) zone = 'BREAKOUT';
-    else if (price > fib382) zone = 'STRONG';
-    else if (price > fib500) zone = 'PULLBACK';
-    else zone = 'DEEP';
-    document.getElementById('fibZone').textContent = zone;
-    
-    const fastSMA = parseFloat(currentData[currentData.length-1].FastSMA) || price;
-    const slowSMA = parseFloat(currentData[currentData.length-1].SlowSMA) || price;
+    let zoneColor = 'var(--muted)';
+    if (price > fib100) { zone = 'BREAKOUT (Above R1)'; zoneColor = 'var(--success)'; }
+    else if (price > fib236) { zone = 'STRONG (S1-R1)'; zoneColor = 'var(--success)'; }
+    else if (price > fib382) { zone = 'PULLBACK (S2-S1)'; zoneColor = 'var(--warning)'; }
+    else if (price > fib618) { zone = 'SUPPORT TEST (S3-S2)'; zoneColor = 'var(--warning)'; }
+    else { zone = 'DEEP PULLBACK (Below S3)'; zoneColor = 'var(--danger)'; }
+
+    const fibZoneText = document.getElementById('fibZoneText');
+    if (fibZoneText) {
+        fibZoneText.innerHTML = `Current Zone: <span style="color:${zoneColor};font-weight:600;">${zone}</span>`;
+    }
+
+    // Calculate multi-timeframe trends
+    const fastSMA = parseFloat(lat.FastSMA) || price;
+    const slowSMA = parseFloat(lat.SlowSMA) || price;
+    const overallTrend = fastSMA > slowSMA ? 'BULLISH' : 'BEARISH';
+
+    // Intraday trend (5-period vs 10-period)
+    const last5 = currentData.slice(-5);
+    const last10 = currentData.slice(-10);
+    const avg5 = last5.reduce((s, d) => s + parseFloat(d.Close || 0), 0) / 5;
+    const avg10 = last10.reduce((s, d) => s + parseFloat(d.Close || 0), 0) / 10;
+    const intradayTrend = avg5 > avg10 ? 'BULL' : 'BEAR';
+
+    // Swing trend (10-period vs 20-period)
+    const last20 = currentData.slice(-20);
+    const avg20 = last20.reduce((s, d) => s + parseFloat(d.Close || 0), 0) / Math.min(20, last20.length);
+    const swingTrend = avg10 > avg20 ? 'BULL' : 'BEAR';
+
+    // Position trend (20-period vs 50-period)
+    const last50 = currentData.slice(-50);
+    const avg50 = last50.reduce((s, d) => s + parseFloat(d.Close || 0), 0) / Math.min(50, last50.length);
+    const positionTrend = avg20 > avg50 ? 'BULL' : 'BEAR';
+
+    // Update trend displays
+    const setTrendBadge = (id, trend) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = trend;
+            el.className = `badge badge-${trend === 'BULL' ? 'success' : 'danger'}`;
+        }
+    };
+    setTrendBadge('trendIntraday', intradayTrend);
+    setTrendBadge('trendSwing', swingTrend);
+    setTrendBadge('trendPosition', positionTrend);
+
+    const trendBadge = document.getElementById('trendBadge');
+    if (trendBadge) {
+        trendBadge.textContent = overallTrend;
+        trendBadge.className = `badge badge-${overallTrend === 'BULLISH' ? 'success' : 'danger'}`;
+    }
+
+    // Update Open Type (gap analysis for today)
+    const prevClose = currentData.length > 1 ? parseFloat(currentData[currentData.length - 2].Close || 0) : price;
+    const todayOpen = parseFloat(lat.Open || 0);
+    const gap = todayOpen - prevClose;
+    const gapPct = prevClose > 0 ? (gap / prevClose * 100) : 0;
+
+    const openTypeBadge = document.getElementById('openTypeBadge');
+    if (openTypeBadge) {
+        if (gapPct > 0.3) {
+            openTypeBadge.textContent = 'GAP UP';
+            openTypeBadge.className = 'badge badge-success';
+        } else if (gapPct < -0.3) {
+            openTypeBadge.textContent = 'GAP DOWN';
+            openTypeBadge.className = 'badge badge-danger';
+        } else {
+            openTypeBadge.textContent = 'FLAT OPEN';
+            openTypeBadge.className = 'badge badge-warning';
+        }
+    }
+
+    const gapDisplay = document.getElementById('gapDisplay');
+    if (gapDisplay) {
+        const sign = gap >= 0 ? '+' : '';
+        gapDisplay.textContent = `${sign}$${gap.toFixed(2)} (${sign}${gapPct.toFixed(2)}%)`;
+        gapDisplay.style.color = gap >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    window.fibLevels = { fib100, fib1272, fib1618, fib236, fib382, fib618, swingHigh, swingLow };
+    window.mtfTrends = { intraday: intradayTrend, swing: swingTrend, position: positionTrend };
+}
+
+// Update Gann Quick View table
+function updateGannQuickView() {
+    if (!currentData || currentData.length < 30) return;
+
+    const lat = currentData[currentData.length - 1];
+    const price = parseFloat(lat.Close || 0);
+    const bias = (lat.Bias || '').toUpperCase();
+
+    // Calculate Gann metrics
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setElClass = (id, cls) => { const el = document.getElementById(id); if (el) el.className = cls; };
+
+    // Trend
+    const fastSMA = parseFloat(lat.FastSMA) || price;
+    const slowSMA = parseFloat(lat.SlowSMA) || price;
     const trend = fastSMA > slowSMA ? 'BULLISH' : 'BEARISH';
-    document.getElementById('trendBadge').textContent = trend;
-    document.getElementById('trendBadge').className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
-    
-    window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, swingHigh, swingLow };
+    setEl('gannTrendQuick', trend);
+    setElClass('gannTrendQuick', `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`);
+
+    // Volume vs Avg
+    const todayVol = parseFloat(lat.Volume || 0);
+    const volumes20 = currentData.slice(-20).map(d => parseFloat(d.Volume || 0));
+    const avgVol = volumes20.reduce((a, b) => a + b, 0) / 20;
+    const volPct = avgVol > 0 ? (todayVol / avgVol * 100) : 100;
+    setEl('gannVolQuick', `${volPct.toFixed(0)}% of avg`);
+
+    // Count bars in current trend
+    let barsInTrend = 0;
+    const currentTrendBullish = trend === 'BULLISH';
+    for (let i = currentData.length - 1; i >= 0 && i > currentData.length - 60; i--) {
+        const d = currentData[i];
+        const dFast = parseFloat(d.FastSMA) || 0;
+        const dSlow = parseFloat(d.SlowSMA) || 0;
+        if ((dFast > dSlow) === currentTrendBullish) {
+            barsInTrend++;
+        } else {
+            break;
+        }
+    }
+    setEl('gannBarsInTrend', `${barsInTrend} bars`);
+
+    // Gann 30-day cycle phase
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const cycleDay = (dayOfYear % 30) + 1;
+    setEl('gannCyclePhase', `Day ${cycleDay} of 30`);
+
+    // Next cycle turn date
+    const daysToNextTurn = 30 - cycleDay;
+    const nextTurn = new Date();
+    nextTurn.setDate(nextTurn.getDate() + daysToNextTurn);
+    setEl('gannNextTurn', nextTurn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+    // Gann Score (simplified calculation)
+    let gannScore = 50;
+    if (trend === 'BULLISH') gannScore += 15;
+    if (volPct > 100) gannScore += 10;
+    if (barsInTrend < 10) gannScore += 10; // Fresh trend
+    if (cycleDay < 10 || cycleDay > 20) gannScore += 5; // Near cycle turn
+    gannScore = Math.min(100, Math.max(0, gannScore));
+    setEl('gannScoreQuick', `${gannScore}/100`);
+    const scoreEl = document.getElementById('gannScoreQuick');
+    if (scoreEl) {
+        scoreEl.style.color = gannScore >= 70 ? 'var(--success)' : gannScore >= 50 ? 'var(--warning)' : 'var(--danger)';
+    }
+
+    // Agent Consensus
+    const confluence = parseInt(lat.PriceConfluence || 0);
+    setEl('gannConsensusQuick', `${confluence}/4 Agents`);
+
+    // Reversal Risk
+    let reversalRisk = 'LOW';
+    let reversalClass = 'badge badge-success';
+    if (barsInTrend > 20) { reversalRisk = 'HIGH'; reversalClass = 'badge badge-danger'; }
+    else if (barsInTrend > 12) { reversalRisk = 'MEDIUM'; reversalClass = 'badge badge-warning'; }
+    setEl('gannReversalRisk', reversalRisk);
+    setElClass('gannReversalRisk', reversalClass);
+
+    // MTF Alignment
+    const mtf = window.mtfTrends || { intraday: 'BULL', swing: 'BULL', position: 'BULL' };
+    const aligned = [mtf.intraday, mtf.swing, mtf.position].filter(t => t === 'BULL').length;
+    setEl('gannMTFAlign', `${aligned}/3`);
+
+    // Entry Window
+    let entryWindow = 'WAIT';
+    let entryClass = 'badge badge-warning';
+    if (aligned === 3 && reversalRisk !== 'HIGH') {
+        entryWindow = 'OPEN';
+        entryClass = 'badge badge-success';
+    } else if (aligned >= 2) {
+        entryWindow = 'POSSIBLE';
+        entryClass = 'badge badge-info';
+    }
+    setEl('gannEntryWindow', entryWindow);
+    setElClass('gannEntryWindow', entryClass);
 }
 
 // FIXED: Bar Count now uses currentSymbol
@@ -10543,7 +10799,7 @@ function updateHistoricalData() {
     const periodSelect = document.getElementById('historicalPeriod');
 
     if (!tbody || !currentData || currentData.length === 0) {
-        if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">No data available. Select a symbol first.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:20px;">No data available. Select a symbol first.</td></tr>';
         return;
     }
 
@@ -10557,7 +10813,7 @@ function updateHistoricalData() {
         countEl.textContent = `Showing ${dataToShow.length} days of ${currentSymbol} data`;
     }
 
-    tbody.innerHTML = dataToShow.map(row => {
+    tbody.innerHTML = dataToShow.map((row, index) => {
         const date = row.Date ? new Date(row.Date.split(' ')[0]).toLocaleDateString() : '-';
         const open = parseFloat(row.Open || 0);
         const high = parseFloat(row.High || 0);
@@ -10570,17 +10826,262 @@ function updateHistoricalData() {
         const changeColor = dailyChange >= 0 ? 'var(--success)' : 'var(--danger)';
         const changeSign = dailyChange >= 0 ? '+' : '';
 
+        // O→H Signal: If Open near Low = Bullish, If Open near High = Bearish
+        const openToLow = open - low;
+        const highToOpen = high - open;
+        const ohSignal = openToLow < highToOpen ?
+            '<span style="color:var(--success);">🟢 Bull</span>' :
+            '<span style="color:var(--danger);">🔴 Bear</span>';
+
+        // Pattern detection
+        const prevRow = index < dataToShow.length - 1 ? dataToShow[index + 1] : null;
+        const pattern = detectCandlePattern(row, prevRow);
+
         return `<tr>
-            <td>${date}</td>
-            <td>$${open.toFixed(2)}</td>
-            <td style="color:var(--success);">$${high.toFixed(2)}</td>
-            <td style="color:var(--danger);">$${low.toFixed(2)}</td>
-            <td style="font-weight:600;">$${close.toFixed(2)}</td>
-            <td>${formatVolume(volume)}</td>
-            <td style="color:${changeColor};font-weight:600;">${changeSign}$${dailyChange.toFixed(2)}</td>
-            <td style="color:${changeColor};font-weight:600;">${changeSign}${dailyChangePct.toFixed(2)}%</td>
+            <td style="padding:6px 4px;">${date}</td>
+            <td style="padding:6px 4px;">$${open.toFixed(2)}</td>
+            <td style="padding:6px 4px;color:var(--success);">$${high.toFixed(2)}</td>
+            <td style="padding:6px 4px;color:var(--danger);">$${low.toFixed(2)}</td>
+            <td style="padding:6px 4px;font-weight:600;">$${close.toFixed(2)}</td>
+            <td style="padding:6px 4px;">${formatVolume(volume)}</td>
+            <td style="padding:6px 4px;color:${changeColor};font-weight:600;">${changeSign}$${dailyChange.toFixed(2)}</td>
+            <td style="padding:6px 4px;color:${changeColor};font-weight:600;">${changeSign}${dailyChangePct.toFixed(1)}%</td>
+            <td style="padding:6px 4px;">${ohSignal}</td>
+            <td style="padding:6px 4px;">${pattern.emoji}</td>
+            <td style="padding:6px 4px;font-size:10px;">${pattern.implication}</td>
         </tr>`;
     }).join('');
+
+    // Update historical analysis summary
+    updateHistoricalAnalysis(dataToShow);
+
+    // Update trade statistics
+    updateTradeStatistics(dataToShow);
+}
+
+// Detect candlestick patterns
+function detectCandlePattern(current, prev) {
+    const open = parseFloat(current.Open || 0);
+    const high = parseFloat(current.High || 0);
+    const low = parseFloat(current.Low || 0);
+    const close = parseFloat(current.Close || 0);
+
+    const body = Math.abs(close - open);
+    const upperWick = high - Math.max(open, close);
+    const lowerWick = Math.min(open, close) - low;
+    const range = high - low;
+    const isBullish = close >= open;
+
+    // Doji: Open ≈ Close (within 0.1% of range)
+    if (body < range * 0.1 && range > 0) {
+        return { emoji: '⚡ Doji', implication: '⚠️ Indecision' };
+    }
+
+    // Hammer: Small body at top, long lower wick (2x body)
+    if (lowerWick >= body * 2 && upperWick < body * 0.5 && body > 0) {
+        return { emoji: '🔨 Hammer', implication: '📈 Bullish reversal' };
+    }
+
+    // Shooting Star: Small body at bottom, long upper wick (2x body)
+    if (upperWick >= body * 2 && lowerWick < body * 0.5 && body > 0) {
+        return { emoji: '⭐ Star', implication: '📉 Bearish reversal' };
+    }
+
+    if (prev) {
+        const prevOpen = parseFloat(prev.Open || 0);
+        const prevHigh = parseFloat(prev.High || 0);
+        const prevLow = parseFloat(prev.Low || 0);
+        const prevClose = parseFloat(prev.Close || 0);
+        const prevIsBullish = prevClose >= prevOpen;
+
+        // Bullish Engulfing
+        if (isBullish && !prevIsBullish &&
+            open < prevClose && close > prevOpen &&
+            body > Math.abs(prevClose - prevOpen)) {
+            return { emoji: '🟢 Engulf', implication: '📈 Strong reversal' };
+        }
+
+        // Bearish Engulfing
+        if (!isBullish && prevIsBullish &&
+            open > prevClose && close < prevOpen &&
+            body > Math.abs(prevClose - prevOpen)) {
+            return { emoji: '🔴 Engulf', implication: '📉 Strong reversal' };
+        }
+
+        // Inside Bar
+        if (high < prevHigh && low > prevLow) {
+            return { emoji: '📦 Inside', implication: '⏳ Breakout coming' };
+        }
+
+        // Outside Bar
+        if (high > prevHigh && low < prevLow) {
+            return { emoji: '💥 Outside', implication: '⚡ Volatility' };
+        }
+    }
+
+    return { emoji: '--', implication: '--' };
+}
+
+// Update Historical Analysis Summary
+function updateHistoricalAnalysis(data) {
+    if (!data || data.length < 5) return;
+
+    const last5 = data.slice(0, 5);
+    const last20 = data.slice(0, Math.min(20, data.length));
+
+    // Gap Analysis
+    let gapUps = 0, gapDowns = 0;
+    for (let i = 0; i < last5.length - 1; i++) {
+        const todayOpen = parseFloat(last5[i].Open || 0);
+        const yesterdayClose = parseFloat(last5[i + 1].Close || 0);
+        if (todayOpen > yesterdayClose) gapUps++;
+        else if (todayOpen < yesterdayClose) gapDowns++;
+    }
+
+    const gapText = document.getElementById('gapAnalysisText');
+    const gapImpl = document.getElementById('gapImplication');
+    if (gapText) gapText.textContent = `Last 5 Days: ${gapUps} Gap Ups, ${gapDowns} Gap Downs`;
+    if (gapImpl) {
+        if (gapUps > gapDowns + 1) {
+            gapImpl.innerHTML = '<span style="color:var(--success);">📈 BULLISH MOMENTUM - Buyers eager overnight</span>';
+        } else if (gapDowns > gapUps + 1) {
+            gapImpl.innerHTML = '<span style="color:var(--danger);">📉 BEARISH PRESSURE - Sellers active overnight</span>';
+        } else {
+            gapImpl.innerHTML = '<span style="color:var(--warning);">↔️ INDECISION - No clear overnight bias</span>';
+        }
+    }
+
+    // Pattern Detection - most recent
+    const pattern = detectCandlePattern(last5[0], last5[1]);
+    const patternText = document.getElementById('patternDetectedText');
+    const patternImpl = document.getElementById('patternImplication');
+    if (patternText) patternText.textContent = pattern.emoji !== '--' ?
+        `${pattern.emoji} on latest day` : 'No significant pattern';
+    if (patternImpl) patternImpl.innerHTML = pattern.implication !== '--' ?
+        `<span style="color:${pattern.implication.includes('📈') ? 'var(--success)' : pattern.implication.includes('📉') ? 'var(--danger)' : 'var(--warning)'};">${pattern.implication}</span>` : '--';
+
+    // Volume Trend
+    const avgVol20 = last20.reduce((sum, d) => sum + parseInt(d.Volume || 0), 0) / last20.length;
+    const avgVol5 = last5.reduce((sum, d) => sum + parseInt(d.Volume || 0), 0) / last5.length;
+    const volRatio = avgVol20 > 0 ? (avgVol5 / avgVol20 * 100) : 100;
+
+    const volText = document.getElementById('volumeTrendText');
+    const volImpl = document.getElementById('volumeImplication');
+    if (volText) {
+        if (volRatio > 150) {
+            volText.textContent = `📈 Increasing (${volRatio.toFixed(0)}% of avg)`;
+        } else if (volRatio > 80) {
+            volText.textContent = `➡️ Normal (${volRatio.toFixed(0)}% of avg)`;
+        } else {
+            volText.textContent = `📉 Declining (${volRatio.toFixed(0)}% of avg)`;
+        }
+    }
+    if (volImpl) {
+        if (volRatio > 200) {
+            volImpl.innerHTML = '<span style="color:var(--warning);">⚡ CLIMAX POSSIBLE - Extreme volume may signal exhaustion</span>';
+        } else if (volRatio > 130) {
+            volImpl.innerHTML = '<span style="color:var(--success);">✅ STRONG CONVICTION - High volume confirms trend</span>';
+        } else if (volRatio < 70) {
+            volImpl.innerHTML = '<span style="color:var(--warning);">⚠️ WEAK CONVICTION - Low volume rally may fail</span>';
+        } else {
+            volImpl.innerHTML = '<span style="color:var(--muted);">➡️ NEUTRAL - No unusual activity</span>';
+        }
+    }
+
+    // Price vs Volume divergence
+    const priceChange = parseFloat(last5[0].Close || 0) - parseFloat(last5[last5.length - 1].Close || 0);
+    const priceUp = priceChange > 0;
+    const volUp = volRatio > 100;
+
+    const pvText = document.getElementById('priceVsVolumeText');
+    const pvImpl = document.getElementById('priceVsVolumeImplication');
+    if (pvText) {
+        pvText.textContent = `${priceUp ? '📈 Price Up' : '📉 Price Down'} + ${volUp ? '📈 Volume Up' : '📉 Volume Down'}`;
+    }
+    if (pvImpl) {
+        if (priceUp && volUp) {
+            pvImpl.innerHTML = '<span style="color:var(--success);">✅ Healthy uptrend - confirmed</span>';
+        } else if (priceUp && !volUp) {
+            pvImpl.innerHTML = '<span style="color:var(--warning);">⚠️ Weak rally - divergence warning</span>';
+        } else if (!priceUp && volUp) {
+            pvImpl.innerHTML = '<span style="color:var(--danger);">🔴 Strong selling - more downside likely</span>';
+        } else {
+            pvImpl.innerHTML = '<span style="color:var(--warning);">🟡 Weak selling - may be near bottom</span>';
+        }
+    }
+
+    // Conclusion
+    const conclusion = document.getElementById('analysisConclusion');
+    if (conclusion) {
+        let conclusionText = '';
+        if (gapUps > gapDowns && priceUp && volUp) {
+            conclusionText = 'Strong bullish momentum confirmed by volume. Trend likely to continue.';
+        } else if (gapUps > gapDowns && priceUp && !volUp) {
+            conclusionText = 'Uptrend intact but showing fatigue. Watch for pullback to support before adding positions.';
+        } else if (gapDowns > gapUps && !priceUp) {
+            conclusionText = 'Bearish pressure building. Consider defensive positioning or wait for reversal signals.';
+        } else {
+            conclusionText = 'Mixed signals. Wait for clearer direction before taking new positions.';
+        }
+        if (pattern.emoji !== '--') {
+            conclusionText += ` ${pattern.emoji} pattern suggests ${pattern.implication.replace(/[📈📉⚠️⏳⚡✅]/g, '').trim()}.`;
+        }
+        conclusion.textContent = conclusionText;
+    }
+}
+
+// Update Trade Statistics
+function updateTradeStatistics(data) {
+    if (!data || data.length === 0) return;
+
+    // Update symbol title
+    const symbolTitle = document.getElementById('tradeStatsSymbol');
+    if (symbolTitle) {
+        symbolTitle.textContent = `${currentSymbol} - ${SYMBOL_NAMES[currentSymbol] || currentSymbol}`;
+    }
+
+    let wins = 0, losses = 0;
+    let totalWin = 0, totalLoss = 0;
+    let bestDay = -Infinity, worstDay = Infinity;
+    let currentStreak = 0;
+    let lastWasWin = null;
+
+    data.forEach((row, index) => {
+        const open = parseFloat(row.Open || 0);
+        const close = parseFloat(row.Close || 0);
+        const change = close - open;
+
+        if (change >= 0) {
+            wins++;
+            totalWin += change;
+            if (change > bestDay) bestDay = change;
+            if (index === 0) { currentStreak = 1; lastWasWin = true; }
+            else if (lastWasWin) currentStreak++;
+            else lastWasWin = true;
+        } else {
+            losses++;
+            totalLoss += Math.abs(change);
+            if (change < worstDay) worstDay = change;
+            if (index === 0) { currentStreak = 1; lastWasWin = false; }
+            else if (!lastWasWin) currentStreak++;
+            else lastWasWin = false;
+        }
+    });
+
+    const totalDays = wins + losses;
+    const winRate = totalDays > 0 ? (wins / totalDays * 100) : 0;
+    const avgWin = wins > 0 ? totalWin / wins : 0;
+    const avgLoss = losses > 0 ? totalLoss / losses : 0;
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setEl('statWinRate', `${winRate.toFixed(1)}%`);
+    setEl('statAvgWin', `$${avgWin.toFixed(2)}`);
+    setEl('statAvgLoss', `$${avgLoss.toFixed(2)}`);
+    setEl('statTotalDays', totalDays.toString());
+    setEl('statBestDay', `+$${bestDay === -Infinity ? 0 : bestDay.toFixed(2)}`);
+    setEl('statWorstDay', `$${worstDay === Infinity ? 0 : worstDay.toFixed(2)}`);
+    setEl('statCurrentStreak', `${currentStreak} ${lastWasWin ? 'win' : 'loss'} days`);
 }
 
 function formatVolume(vol) {
