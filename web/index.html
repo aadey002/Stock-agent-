@@ -2460,26 +2460,31 @@
                 <div class="ai-chat-panel">
                     <div class="ai-chat-header">
                         <div class="ai-avatar">🧠</div>
-                        <div>
+                        <div style="flex: 1;">
                             <div style="font-weight:700;">Gann Trading Assistant</div>
-                            <div style="font-size:10px;opacity:0.9;">Tunnel Through the Air • Mystifying Square • Divine Proportions</div>
+                            <div style="font-size:10px;opacity:0.9;">Powered by Ollama • <span id="ollamaModel">gemma3:4b</span></div>
+                        </div>
+                        <div class="ollama-status" style="text-align: right; font-size: 10px;">
+                            <div id="ollamaStatus"><span style="color: var(--muted);">⏳ Checking...</span></div>
                         </div>
                     </div>
                     <div class="ai-chat-messages" id="aiChatMessages">
                         <div class="ai-message assistant">
                             <div class="message-content">Welcome to the Gann Trading Assistant! 🎯
 
-I'm trained on W.D. Gann's principles from "Tunnel Through the Air", the Mystifying Square (Square of 9), and Divine Proportions (Fibonacci/Golden Ratio).
+I'm powered by **Ollama (gemma3:4b)** running locally, trained on W.D. Gann's principles from "Tunnel Through the Air", the Mystifying Square (Square of 9), and Divine Proportions.
+
+**Make sure Ollama is running:** `ollama serve`
 
 I can help you with:
 • 📊 Analyze any ETF/stock on the dashboard
 • 🎯 Find high-consensus trades (3/4, 4/4)
-• 📈 Recommend optimal strikes
+• 📈 Recommend optimal strikes & entries
 • 🔮 Gann time cycles & Square of 9
-• 📐 Divine Proportions (Phi/Fibonacci)
+• 📐 Fibonacci/Divine Proportions
 • 📋 Generate custom reports
 
-Try: "Show me all ETFs with 4/4 consensus"</div>
+Try: "Analyze SPY for today" or "Find best CALL setups"</div>
                         </div>
                     </div>
                     <div class="ai-chat-input">
@@ -4853,6 +4858,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (typeof renderSystemLog === 'function') renderSystemLog();
     }, 1000);
+    // Check Ollama connection
+    setTimeout(() => {
+        if (typeof checkOllamaConnection === 'function') checkOllamaConnection();
+    }, 2000);
 });
 
 // ============================================
@@ -6703,35 +6712,91 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-async function generateAiResponse(userMessage) {
-    const lowerMsg = userMessage.toLowerCase();
-    
-    // Build context
-    const dashboardContext = buildDashboardContext();
-    
-    // Try Claude API first
+// Ollama Configuration
+const OLLAMA_CONFIG = {
+    endpoint: 'http://localhost:11434',
+    model: 'gemma3:4b',
+    enabled: true
+};
+
+// Check Ollama connection status
+async function checkOllamaConnection() {
     try {
-        const systemPrompt = buildSystemPrompt(dashboardContext);
-        
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1500,
-                messages: [...conversationHistory.slice(-10)]
-            })
+        const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/tags`, {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000)
         });
-        
         if (response.ok) {
             const data = await response.json();
-            return data.content[0].text;
+            const models = data.models || [];
+            const hasModel = models.some(m => m.name.includes('gemma'));
+            updateOllamaStatus(true, hasModel ? OLLAMA_CONFIG.model : 'Connected');
+            return true;
         }
     } catch (e) {
-        console.log("API unavailable, using local");
+        console.log('Ollama not available:', e.message);
     }
-    
-    // Enhanced local responses
+    updateOllamaStatus(false);
+    return false;
+}
+
+// Update Ollama status indicator in UI
+function updateOllamaStatus(connected, model = null) {
+    const statusEl = document.getElementById('ollamaStatus');
+    const modelEl = document.getElementById('ollamaModel');
+    if (statusEl) {
+        statusEl.innerHTML = connected
+            ? '<span style="color: var(--success);">🟢 Connected</span>'
+            : '<span style="color: var(--danger);">🔴 Offline</span>';
+    }
+    if (modelEl && model) {
+        modelEl.textContent = model;
+    }
+}
+
+async function generateAiResponse(userMessage) {
+    const lowerMsg = userMessage.toLowerCase();
+
+    // Build context
+    const dashboardContext = buildDashboardContext();
+    const systemPrompt = buildSystemPrompt(dashboardContext);
+
+    // Try Ollama first (local LLM)
+    if (OLLAMA_CONFIG.enabled) {
+        try {
+            console.log('🤖 Calling Ollama with model:', OLLAMA_CONFIG.model);
+
+            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: OLLAMA_CONFIG.model,
+                    prompt: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`,
+                    stream: false,
+                    options: {
+                        temperature: 0.7,
+                        num_predict: 1000
+                    }
+                }),
+                signal: AbortSignal.timeout(60000) // 60 second timeout
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Ollama response received');
+                updateOllamaStatus(true, OLLAMA_CONFIG.model);
+                return data.response || 'No response generated';
+            } else {
+                console.log('❌ Ollama error:', response.status);
+            }
+        } catch (e) {
+            console.log('❌ Ollama unavailable:', e.message);
+            updateOllamaStatus(false);
+        }
+    }
+
+    // Fallback to local responses if Ollama fails
+    console.log('📝 Using local fallback responses');
     return generateLocalResponse(userMessage, dashboardContext);
 }
 
