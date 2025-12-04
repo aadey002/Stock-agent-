@@ -13245,55 +13245,95 @@ function blackScholes(S, K, T, r, sigma, optionType) {
 }
 
 function calculateOptionPrice() {
-    const S = parseFloat(document.getElementById('optStockPrice').value);
-    const K = parseFloat(document.getElementById('optStrikePrice').value);
-    const DTE = parseInt(document.getElementById('optDTE').value);
-    const IV = parseFloat(document.getElementById('optIV').value) / 100;
-    const r = parseFloat(document.getElementById('optRate').value) / 100;
-    const optionType = document.getElementById('optType').value;
-    const contracts = parseInt(document.getElementById('optContracts').value);
+    console.log('🧮 calculateOptionPrice() called');
 
-    const T = DTE / 365;
+    try {
+        // Get input elements
+        const stockPriceEl = document.getElementById('optStockPrice');
+        const strikePriceEl = document.getElementById('optStrikePrice');
+        const dteEl = document.getElementById('optDTE');
+        const ivEl = document.getElementById('optIV');
+        const rateEl = document.getElementById('optRate');
+        const typeEl = document.getElementById('optType');
+        const contractsEl = document.getElementById('optContracts');
 
-    const result = blackScholes(S, K, T, r, IV, optionType);
+        // Validate elements exist
+        if (!stockPriceEl || !strikePriceEl || !dteEl || !ivEl || !rateEl || !typeEl || !contractsEl) {
+            console.error('❌ Options Calculator: Missing input elements');
+            return;
+        }
 
-    // Option price and total cost
-    const optionPrice = result.price;
-    const totalCost = optionPrice * 100 * contracts;
+        const S = parseFloat(stockPriceEl.value) || 600;
+        const K = parseFloat(strikePriceEl.value) || 605;
+        const DTE = parseInt(dteEl.value) || 7;
+        const IV = (parseFloat(ivEl.value) || 20) / 100;
+        const r = (parseFloat(rateEl.value) || 5) / 100;
+        const optionType = typeEl.value || 'call';
+        const contracts = parseInt(contractsEl.value) || 1;
 
-    document.getElementById('optPriceResult').textContent = `$${optionPrice.toFixed(2)}`;
-    document.getElementById('optTotalCost').textContent = `Total: $${totalCost.toFixed(2)} (${contracts} contract${contracts > 1 ? 's' : ''})`;
+        console.log(`📊 Inputs: S=${S}, K=${K}, DTE=${DTE}, IV=${IV}, r=${r}, type=${optionType}, contracts=${contracts}`);
 
-    // Intrinsic and extrinsic value
-    let intrinsic = optionType === 'call' ? Math.max(0, S - K) : Math.max(0, K - S);
-    let extrinsic = Math.max(0, optionPrice - intrinsic);
+        const T = DTE / 365;
 
-    document.getElementById('optIntrinsic').textContent = `$${intrinsic.toFixed(2)}`;
-    document.getElementById('optExtrinsic').textContent = `Extrinsic: $${extrinsic.toFixed(2)}`;
+        const result = blackScholes(S, K, T, r, IV, optionType);
+        console.log('📈 Black-Scholes result:', result);
 
-    // Breakeven
-    const breakeven = optionType === 'call' ? K + optionPrice : K - optionPrice;
-    document.getElementById('optBreakeven').textContent = `$${breakeven.toFixed(2)}`;
+        // Validate result
+        if (!result || isNaN(result.price)) {
+            console.error('❌ Invalid Black-Scholes result');
+            return;
+        }
 
-    // Max profit and loss
-    const maxLoss = totalCost;
-    document.getElementById('optMaxLoss').textContent = `-$${maxLoss.toFixed(2)}`;
+        // Option price and total cost
+        const optionPrice = result.price;
+        const totalCost = optionPrice * 100 * contracts;
 
-    if (optionType === 'call') {
-        document.getElementById('optMaxProfit').textContent = 'Unlimited';
-    } else {
-        const maxProfit = (K - optionPrice) * 100 * contracts;
-        document.getElementById('optMaxProfit').textContent = `$${Math.max(0, maxProfit).toFixed(2)}`;
+        // Update display elements with safety checks
+        const setEl = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+            else console.warn(`Element ${id} not found`);
+        };
+
+        setEl('optPriceResult', `$${optionPrice.toFixed(2)}`);
+        setEl('optTotalCost', `Total: $${totalCost.toFixed(2)} (${contracts} contract${contracts > 1 ? 's' : ''})`);
+
+        // Intrinsic and extrinsic value
+        let intrinsic = optionType === 'call' ? Math.max(0, S - K) : Math.max(0, K - S);
+        let extrinsic = Math.max(0, optionPrice - intrinsic);
+
+        setEl('optIntrinsic', `$${intrinsic.toFixed(2)}`);
+        setEl('optExtrinsic', `Extrinsic: $${extrinsic.toFixed(2)}`);
+
+        // Breakeven
+        const breakeven = optionType === 'call' ? K + optionPrice : K - optionPrice;
+        setEl('optBreakeven', `$${breakeven.toFixed(2)}`);
+
+        // Max profit and loss
+        const maxLoss = totalCost;
+        setEl('optMaxLoss', `-$${maxLoss.toFixed(2)}`);
+
+        if (optionType === 'call') {
+            setEl('optMaxProfit', 'Unlimited');
+        } else {
+            const maxProfit = (K - optionPrice) * 100 * contracts;
+            setEl('optMaxProfit', `$${Math.max(0, maxProfit).toFixed(2)}`);
+        }
+
+        // Greeks
+        setEl('optDelta', result.delta.toFixed(4));
+        setEl('optGamma', result.gamma.toFixed(4));
+        setEl('optTheta', result.theta.toFixed(4));
+        setEl('optVega', result.vega.toFixed(4));
+
+        console.log('✅ Options Calculator updated successfully');
+
+        // Draw P&L chart
+        drawOptionPnLChart(S, K, optionPrice, optionType, contracts);
+
+    } catch (error) {
+        console.error('❌ Options Calculator error:', error);
     }
-
-    // Greeks
-    document.getElementById('optDelta').textContent = result.delta.toFixed(4);
-    document.getElementById('optGamma').textContent = result.gamma.toFixed(4);
-    document.getElementById('optTheta').textContent = result.theta.toFixed(4);
-    document.getElementById('optVega').textContent = result.vega.toFixed(4);
-
-    // Draw P&L chart
-    drawOptionPnLChart(S, K, optionPrice, optionType, contracts);
 }
 
 function drawOptionPnLChart(stockPrice, strike, premium, optionType, contracts) {
@@ -13484,7 +13524,26 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('[data-tab="options-calc"]')?.addEventListener('click', () => {
         setTimeout(updateOptionsCalcPrice, 100);
         setTimeout(initializeStrikeSlider, 200);
+        setTimeout(calculateOptionPrice, 300);
     });
+
+    // Add auto-recalculate on input change
+    setTimeout(() => {
+        const inputIds = ['optStockPrice', 'optStrikePrice', 'optDTE', 'optIV', 'optRate', 'optContracts'];
+        inputIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', calculateOptionPrice);
+                el.addEventListener('change', calculateOptionPrice);
+            }
+        });
+        // Option type select
+        const typeEl = document.getElementById('optType');
+        if (typeEl) {
+            typeEl.addEventListener('change', calculateOptionPrice);
+        }
+        console.log('✅ Options Calculator event listeners attached');
+    }, 1000);
 });
 
 // ==========================================
