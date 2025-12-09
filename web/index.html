@@ -6840,23 +6840,21 @@ async function generateAiResponse(userMessage) {
         try {
             console.log('🤖 Calling Ollama with model:', OLLAMA_CONFIG.model);
 
-            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/generate`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${OLLAMA_CONFIG.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: OLLAMA_CONFIG.model,
-                    prompt: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`,
-                    stream: false,
-                    options: {
-                        temperature: 0.7,
-                        num_predict: 1000
-                    }
-                }),
-                signal: AbortSignal.timeout(60000) // 60 second timeout
-            });
+            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/chat/completions`, {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OLLAMA_CONFIG.apiKey}`
+    },
+    body: JSON.stringify({
+        model: OLLAMA_CONFIG.model,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+    }),
 
             if (response.ok) {
                 const data = await response.json();
