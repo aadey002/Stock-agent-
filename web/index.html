@@ -6841,7 +6841,10 @@ async function generateAiResponse(userMessage) {
 
             const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/generate`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OLLAMA_CONFIG.apiKey}`
+                },
                 body: JSON.stringify({
                     model: OLLAMA_CONFIG.model,
                     prompt: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`,
