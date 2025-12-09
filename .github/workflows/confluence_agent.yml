@@ -124,67 +124,90 @@ logger = setup_logging()
 # OLLAMA LLM CLIENT - ALL 3 INTEGRATIONS
 # =========================================================================
 
-class OllamaClient:
-    """
-    Ollama LLM Client for AI-powered trading analysis.
-    
-    THREE INTEGRATIONS:
-    1. analyze_market_sentiment() - Agent #4 voting member
-    2. interpret_gann_analysis() - Natural language Gann interpretation
-    3. generate_trade_plan() - Final trade recommendation
-    """
+class GroqClient:
+    """Groq Cloud API Client for AI-powered trading analysis."""
     
     def __init__(self):
-        self.api_url = OLLAMA_API_URL
-        self.api_key = OLLAMA_API_KEY
-        self.model = OLLAMA_MODEL
-        self.enabled = OLLAMA_ENABLED and bool(self.api_key)
-        self.last_response = None
+        self.api_url = GROQ_API_URL
+        self.api_key = GROQ_API_KEY
+        self.model = GROQ_MODEL
+        self.enabled = GROQ_ENABLED and bool(self.api_key)
     
-    def _call_api(self, prompt: str, system_prompt: str = None) -> Optional[str]:
-        """Make API call to Ollama with API key authentication."""
+    def _call(self, prompt: str, system: str = None) -> Optional[str]:
         if not self.enabled:
-            logger.info("[OLLAMA] Disabled or no API key - skipping")
             return None
-        
         try:
+            messages = []
+            if system:
+                messages.append({"role": "system", "content": system})
+            messages.append({"role": "user", "content": prompt})
+            
             payload = {
                 "model": self.model,
-                "prompt": prompt,
-                "stream": False,
-                "options": {
-                    "temperature": 0.3,
-                    "num_predict": 500
-                }
+                "messages": messages,
+                "temperature": 0.3,
+                "max_tokens": 600
             }
-            
-            if system_prompt:
-                payload["system"] = system_prompt
-            
             data = json.dumps(payload).encode('utf-8')
-            
             req = urllib.request.Request(self.api_url, data=data)
             req.add_header('Content-Type', 'application/json')
             req.add_header('Authorization', f'Bearer {self.api_key}')
             
-            logger.info(f"[OLLAMA] Calling {self.model}...")
-            
-            with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT) as response:
-                result = json.loads(response.read().decode('utf-8'))
-                self.last_response = result.get('response', '')
-                logger.info(f"[OLLAMA] Got response ({len(self.last_response)} chars)")
-                return self.last_response
-        
-        except urllib.error.HTTPError as e:
-            logger.warning(f"[OLLAMA] HTTP Error {e.code}: {e.reason}")
-            return None
-        except urllib.error.URLError as e:
-            logger.warning(f"[OLLAMA] Connection error: {e.reason}")
-            return None
+            logger.info(f"[Groq] Calling {self.model}...")
+            with urllib.request.urlopen(req, timeout=GROQ_TIMEOUT) as resp:
+                result = json.loads(resp.read().decode('utf-8'))
+                content = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+                logger.info(f"[Groq] Response received ({len(content)} chars)")
+                return content
         except Exception as e:
-            logger.error(f"[OLLAMA] Error: {e}")
+            logger.warning(f"[Groq] Error: {e}")
             return None
     
+    def analyze_sentiment(self, symbol: str, data: Dict) -> Dict:
+        system = 'You are a trading analyst. Reply with "SIGNAL: CALL" or "SIGNAL: PUT" or "SIGNAL: NEUTRAL" first.'
+        prompt = f"""Analyze {symbol}: Price=${data.get('price',0):.2f}, SMA20=${data.get('sma20',0):.2f}, 
+SMA50=${data.get('sma50',0):.2f}, Trend={data.get('trend','?')}, GannConf={data.get('gann_conf',0)}/100"""
+        resp = self._call(prompt, system)
+        if not resp:
+            return {'signal': 'NEUTRAL', 'confidence': 0}
+        upper = resp.upper()
+        if 'SIGNAL: CALL' in upper:
+            return {'signal': 'CALL', 'confidence': 75, 'reasoning': resp[:300]}
+        elif 'SIGNAL: PUT' in upper:
+            return {'signal': 'PUT', 'confidence': 75, 'reasoning': resp[:300]}
+        return {'signal': 'NEUTRAL', 'confidence': 50, 'reasoning': resp[:300]}
+    
+    def interpret_gann(self, symbol: str, gann: Dict) -> str:
+        system = "You are W.D. Gann. Interpret the data and give price targets."
+        prompt = f"""{symbol} @ ${gann.get('price',0):.2f}
+SQ9 Resistance: {gann.get('resistance',[])}
+SQ9 Support: {gann.get('support',[])}
+Confluence: {gann.get('confluence',0)}/100"""
+        return self._call(prompt, system) or "Unavailable"
+    
+    def trade_plan(self, symbol: str, signals: Dict, market: Dict) -> Dict:
+        system = 'Reply with "RECOMMENDATION: BUY [SYMBOL] CALLS" or "PUTS" or "NO TRADE". Include strike/expiry/stops.'
+        prompt = f"""{symbol} @ ${market.get('price',0):.2f}
+Agents: Base={signals.get('base','?')}, Gann={signals.get('gann','?')}, DQN={signals.get('dqn','?')}, AI={signals.get('groq','?')}
+Consensus: {signals.get('direction','?')} ({signals.get('agreement',0)}/4)
+ATR: ${market.get('atr',0):.2f}"""
+        resp = self._call(prompt, system)
+        if not resp:
+            return {'recommendation': 'NO TRADE', 'plan': None}
+        upper = resp.upper()
+        price, atr = market.get('price', 0), market.get('atr', 1)
+        if f'BUY {symbol.upper()} CALLS' in upper:
+            rec, d = f'BUY {symbol} CALLS', 'CALL'
+        elif f'BUY {symbol.upper()} PUTS' in upper:
+            rec, d = f'BUY {symbol} PUTS', 'PUT'
+        else:
+            return {'recommendation': 'NO TRADE', 'reasoning': resp, 'plan': None}
+        plan = {'strike': round(price), 'expiry': '7-14 DTE',
+                'stop': round(price - atr*1.5, 2) if d == 'CALL' else round(price + atr*1.5, 2),
+                'target1': round(price + atr*2, 2) if d == 'CALL' else round(price - atr*2, 2),
+                'target2': round(price + atr*3, 2) if d == 'CALL' else round(price - atr*3, 2)}
+        return {'recommendation': rec, 'reasoning': resp, 'plan': plan}
+
     # =========================================================================
     # INTEGRATION #1: OLLAMA AS 4TH VOTING AGENT
     # =========================================================================
