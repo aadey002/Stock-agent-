@@ -6835,7 +6835,7 @@ async function generateAiResponse(userMessage) {
     const systemPrompt = buildSystemPrompt(dashboardContext);
 
     // Try Ollama first (local LLM) - skip if on GitHub Pages
-    if (OLLAMA_CONFIG.enabled && !window.location.hostname.includes('github.io')) {
+    if (OLLAMA_CONFIG.enabled) {
         try {
             console.log('🤖 Calling Ollama with model:', OLLAMA_CONFIG.model);
 
