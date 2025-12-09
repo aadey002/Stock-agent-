@@ -396,10 +396,66 @@ def home():
             '/api/price/<symbol>',
             '/api/historical/<symbol>',
             '/api/signal/<symbol>',
-            '/api/status'
+            '/api/status',
+            '/api/options/<symbol>',
+            '/api/options/<symbol>/<expiration>'
         ],
         'timestamp': datetime.now().isoformat()
     })
+
+# Options API endpoints
+@app.route('/api/options/<symbol>', methods=['GET'])
+def get_options(symbol):
+    """Get options chain for a symbol (nearest expiration)"""
+    try:
+        from options_data import get_options_chain, get_options_summary
+
+        # Check if summary only is requested
+        summary_only = request.args.get('summary', 'false').lower() == 'true'
+
+        if summary_only:
+            data = get_options_summary(symbol.upper())
+        else:
+            data = get_options_chain(symbol.upper())
+
+        if 'error' in data:
+            return jsonify(data), 404
+
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Options endpoint error for {symbol}: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/options/<symbol>/<expiration>', methods=['GET'])
+def get_options_by_expiry(symbol, expiration):
+    """Get options chain for a specific expiration"""
+    try:
+        from options_data import get_options_chain
+        data = get_options_chain(symbol.upper(), expiration)
+
+        if 'error' in data:
+            return jsonify(data), 404
+
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Options endpoint error for {symbol}/{expiration}: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/options/atm/<symbol>', methods=['GET'])
+def get_atm_options(symbol):
+    """Get at-the-money options for quick reference"""
+    try:
+        from options_data import get_atm_options as fetch_atm
+        expiration = request.args.get('expiration', None)
+        data = fetch_atm(symbol.upper(), expiration)
+
+        if 'error' in data:
+            return jsonify(data), 404
+
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"ATM options endpoint error for {symbol}: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # Main execution
 if __name__ == '__main__':
