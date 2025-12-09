@@ -7943,8 +7943,97 @@ Just type naturally - I understand most trading questions!`;
 
 // Smart Default Response
 function generateSmartDefaultResponse(message, context) {
-    // Try to extract intent
+    // GLM-4 Cloud Configuration
+const GLM4_CONFIG = {
+    apiUrl: 'https://api.ollama.ai/api/generate',
+    apiKey: '362e2652bbc345e5b7b427f6cdd6a8a5.Yn6Zb2PoVcOxdwCTZZ5tG0ZE',
+    model: 'glm-4.6:cloud'
+};
+
+// Call GLM-4 Cloud API
+async function callGLM4(prompt) {
+    try {
+        const response = await fetch(GLM4_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GLM4_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: GLM4_CONFIG.model,
+                prompt: prompt,
+                stream: false,
+                options: { temperature: 0.3, num_predict: 600 }
+            })
+        });
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.response || 'No response from GLM-4';
+    } catch (error) {
+        console.error('[GLM-4] Error:', error);
+        return null;
+    }
+}
+
+// Smart Default Response - Now with GLM-4!
+async function generateSmartDefaultResponse(message, context) {
     const lowerMsg = message.toLowerCase();
+    const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase())) || currentSymbol;
+    
+    // Build context for GLM-4
+    let marketContext = '';
+    const data = allSymbolsData[mentionedSymbol] || currentData;
+    if (data && data.length) {
+        const lat = data[data.length - 1];
+        marketContext = `
+Symbol: ${mentionedSymbol}
+Price: $${parseFloat(lat.Close).toFixed(2)}
+Signal: ${lat.Bias || 'HOLD'}
+Consensus: ${lat.PriceConfluence || 0}/4 agents
+ATR: $${parseFloat(lat.ATR).toFixed(2)}`;
+    }
+    
+    const prompt = `You are a Gann Trading Assistant. Answer this trading question concisely.
+
+MARKET DATA:${marketContext}
+
+USER QUESTION: ${message}
+
+Provide a helpful, actionable response. If recommending a trade, include:
+- Direction (BUY CALLS or BUY PUTS)
+- Entry price
+- Stop loss
+- Target levels`;
+
+    // Try GLM-4 first
+    const glm4Response = await callGLM4(prompt);
+    
+    if (glm4Response) {
+        return `🤖 **GLM-4 Analysis:**\n\n${glm4Response}`;
+    }
+    
+    // Fallback if GLM-4 fails
+    let response = `🤔 I want to help! Let me clarify...\n\n`;
+    response += `You asked: "${message}"\n\n`;
+    
+    if (data && data.length) {
+        const lat = data[data.length - 1];
+        response += `**${mentionedSymbol} Quick Info:**\n`;
+        response += `• Price: $${parseFloat(lat.Close).toFixed(2)}\n`;
+        response += `• Signal: ${lat.Bias || 'HOLD'}\n`;
+        response += `• Consensus: ${lat.PriceConfluence || 0}/4\n\n`;
+    }
+    
+    response += `**Try asking:**\n`;
+    response += `• "What should I trade today?"\n`;
+    response += `• "Show me ${currentSymbol} bar count"\n`;
+    response += `• "Best time to trade options"\n`;
+    response += `• "High consensus trades"\n\n`;
+    response += `Or click a Quick Action button on the right →`;
+    
+    return response;
+    }
     
     // Check for symbol mentions
     const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase()));
