@@ -7949,10 +7949,11 @@ Just type naturally - I understand most trading questions!`;
 // Smart Default Response
 function generateSmartDefaultResponse(message, context) {
     // GLM-4 Cloud Configuration
+// Groq Cloud Configuration
 const GLM4_CONFIG = {
-    apiUrl: 'https://ollama.com/api/generate',
-    apiKey: '362e2652bbc345e5b7b427f6cdd6a8a5.Yn6Zb2PoVcOxdwCTZZ5tG0ZE',
-    model: 'glm-4.6:cloud'
+    apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
+    apiKey: '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',
+    model: 'llama-3.1-70b-versatile'
 };
 
 // Call GLM-4 Cloud API
