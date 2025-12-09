@@ -7954,7 +7954,7 @@ const GLM4_CONFIG = {
     model: 'llama-3.1-70b-versatile'
 };
 
-// Call GLM-4 Cloud API
+// Call Groq Cloud API
 async function callGLM4(prompt) {
     try {
         const response = await fetch(GLM4_CONFIG.apiUrl, {
@@ -7965,15 +7965,27 @@ async function callGLM4(prompt) {
             },
             body: JSON.stringify({
                 model: GLM4_CONFIG.model,
-                prompt: prompt,
-                stream: false,
-                options: { temperature: 0.3, num_predict: 600 }
+                messages: [
+                    { role: 'system', content: 'You are a Gann Trading Assistant. Be concise and actionable.' },
+                    { role: 'user', content: prompt }
+                ],
+                temperature: 0.3,
+                max_tokens: 600
             })
         });
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        return data.response || 'No response from GLM-4';
+        return data.choices?.[0]?.message?.content || 'No response from Groq';
+    } catch (error) {
+        console.error('[Groq] Error:', error);
+        return null;
+    }
+}
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'No response from AI';
     } catch (error) {
         console.error('[GLM-4] Error:', error);
         return null;
