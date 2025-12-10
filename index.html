@@ -1253,18 +1253,220 @@
 
         <!-- SIGNALS TAB -->
         <div id="signals" class="tab-content">
+            <!-- Parameters Table -->
             <div class="card">
-                <div class="card-title">⚡ Intraday vs 🌊 Swing Parameters</div>
+                <div class="card-title">⚡ Intraday vs 🌊 Swing vs 📈 Position Parameters</div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th></tr></thead>
+                        <thead><tr><th>Parameter</th><th style="color:var(--intraday);">⚡ INTRADAY</th><th style="color:var(--swing);">🌊 SWING</th><th style="color:#a855f7;">📈 POSITION</th></tr></thead>
                         <tbody>
-                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td></tr>
-                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td></tr>
-                            <tr><td>Fast SMA</td><td>5</td><td>10</td></tr>
-                            <tr><td>Slow SMA</td><td>20</td><td>30</td></tr>
-                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td></tr>
-                            <tr><td>Target</td><td>1.0-2.0 ATR</td><td>3.0-4.0 ATR</td></tr>
+                            <tr><td>Timeframe</td><td>5-min, 15-min</td><td>Daily, 4-Hour</td><td>Weekly, Monthly</td></tr>
+                            <tr><td>Options Expiry</td><td>0DTE - 1DTE</td><td>3-5 DTE</td><td>30-45 DTE</td></tr>
+                            <tr><td>Fast SMA</td><td>5</td><td>10</td><td>20</td></tr>
+                            <tr><td>Slow SMA</td><td>20</td><td>30</td><td>50</td></tr>
+                            <tr><td>Stop Loss</td><td>0.5-1.0 ATR</td><td>1.5-2.0 ATR</td><td>2.5-3.0 ATR</td></tr>
+                            <tr><td>Target</td><td>1.0-2.0 ATR</td><td>3.0-4.0 ATR</td><td>5.0-8.0 ATR</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Agent Signals Table -->
+            <div class="card">
+                <div class="card-title">🤖 Agent Signals</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th style="color:var(--intraday);">Intraday</th>
+                                <th>Conf</th>
+                                <th style="color:var(--swing);">Swing</th>
+                                <th>Conf</th>
+                                <th style="color:#a855f7;">Position</th>
+                                <th>Conf</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>📊 Base Confluence Agent</td>
+                                <td><span class="badge badge-success" id="sigBaseIntraday">BULLISH</span></td>
+                                <td id="sigBaseIntradayConf">72%</td>
+                                <td><span class="badge badge-success" id="sigBaseSwing">BULLISH</span></td>
+                                <td id="sigBaseSwingConf">68%</td>
+                                <td><span class="badge badge-success" id="sigBasePosition">BULLISH</span></td>
+                                <td id="sigBasePositionConf">75%</td>
+                            </tr>
+                            <tr>
+                                <td>🔮 Gann-Elliott Agent</td>
+                                <td><span class="badge badge-success" id="sigGannIntraday">BULLISH</span></td>
+                                <td id="sigGannIntradayConf">75%</td>
+                                <td><span class="badge badge-success" id="sigGannSwing">BULLISH</span></td>
+                                <td id="sigGannSwingConf">70%</td>
+                                <td><span class="badge badge-success" id="sigGannPosition">BULLISH</span></td>
+                                <td id="sigGannPositionConf">78%</td>
+                            </tr>
+                            <tr>
+                                <td>🧠 DQN/RL Agent</td>
+                                <td><span class="badge badge-warning" id="sigDqnIntraday">NEUTRAL</span></td>
+                                <td id="sigDqnIntradayConf">58%</td>
+                                <td><span class="badge badge-success" id="sigDqnSwing">BULLISH</span></td>
+                                <td id="sigDqnSwingConf">65%</td>
+                                <td><span class="badge badge-success" id="sigDqnPosition">BULLISH</span></td>
+                                <td id="sigDqnPositionConf">71%</td>
+                            </tr>
+                            <tr>
+                                <td>🌊 3-Wave Agent</td>
+                                <td><span class="badge badge-success" id="sigWaveIntraday">BULLISH</span></td>
+                                <td id="sigWaveIntradayConf">68%</td>
+                                <td><span class="badge badge-danger" id="sigWaveSwing">BEARISH</span></td>
+                                <td id="sigWaveSwingConf">62%</td>
+                                <td><span class="badge badge-success" id="sigWavePosition">BULLISH</span></td>
+                                <td id="sigWavePositionConf">74%</td>
+                            </tr>
+                            <tr style="background:var(--bg); font-weight: 600;">
+                                <td><strong>CONSENSUS</strong></td>
+                                <td><span class="badge badge-ultra" id="sigConsensusIntraday">3/4 BULLISH</span></td>
+                                <td id="sigConsensusIntradayConf">68%</td>
+                                <td><span class="badge badge-ultra" id="sigConsensusSwing">3/4 BULLISH</span></td>
+                                <td id="sigConsensusSwingConf">66%</td>
+                                <td><span class="badge badge-ultra" id="sigConsensusPosition">4/4 BULLISH</span></td>
+                                <td id="sigConsensusPositionConf">75%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Fibonacci Levels Section -->
+            <div class="card">
+                <div class="card-title">📐 Fibonacci Levels</div>
+                <div style="background: rgba(59,130,246,0.1); border-left: 4px solid #3b82f6; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <div style="font-size: 12px; color: #666;">Proximity Alert</div>
+                    <div style="font-size: 16px; font-weight: 600;" id="sigFibProximity">SPY is 0.8% away from R1 ($598.50)</div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Price</th>
+                                <th>Distance</th>
+                                <th>Timeframe</th>
+                                <th>Implication</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="color: #22c55e;">
+                                <td><strong>R3 (161.8%)</strong></td>
+                                <td id="sigFibR3">$612.40</td>
+                                <td>+2.9%</td>
+                                <td>Weekly</td>
+                                <td>Strong Resistance - Major Target</td>
+                            </tr>
+                            <tr style="color: #22c55e;">
+                                <td><strong>R2 (127.2%)</strong></td>
+                                <td id="sigFibR2">$605.20</td>
+                                <td>+1.7%</td>
+                                <td>Daily</td>
+                                <td>Resistance - Take Partial Profits</td>
+                            </tr>
+                            <tr style="color: #22c55e;">
+                                <td><strong>R1 (100%)</strong></td>
+                                <td id="sigFibR1">$598.50</td>
+                                <td>+0.6%</td>
+                                <td>Daily</td>
+                                <td>First Target - Watch for Rejection</td>
+                            </tr>
+                            <tr style="background: rgba(59,130,246,0.1);">
+                                <td><strong>PIVOT</strong></td>
+                                <td id="sigFibPivot">$594.82</td>
+                                <td>Current</td>
+                                <td>Daily</td>
+                                <td>Key Decision Level</td>
+                            </tr>
+                            <tr style="color: #ef4444;">
+                                <td><strong>S1 (38.2%)</strong></td>
+                                <td id="sigFibS1">$590.15</td>
+                                <td>-0.8%</td>
+                                <td>Daily</td>
+                                <td>First Support - Bounce Zone</td>
+                            </tr>
+                            <tr style="color: #ef4444;">
+                                <td><strong>S2 (50.0%)</strong></td>
+                                <td id="sigFibS2">$586.80</td>
+                                <td>-1.3%</td>
+                                <td>Daily</td>
+                                <td>Support - Consider Adding</td>
+                            </tr>
+                            <tr style="color: #ef4444;">
+                                <td><strong>S3 (61.8%)</strong></td>
+                                <td id="sigFibS3">$582.50</td>
+                                <td>-2.1%</td>
+                                <td>Weekly</td>
+                                <td>Strong Support - Major Buy Zone</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Technical Patterns Section -->
+            <div class="card">
+                <div class="card-title">📊 Technical Patterns Detected</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Type</th>
+                                <th>Timeframe</th>
+                                <th>Confidence</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Double Bottom</strong></td>
+                                <td style="color: #22c55e;">Bullish</td>
+                                <td>Daily</td>
+                                <td>72%</td>
+                                <td>$605.00</td>
+                                <td><span class="badge badge-success">ACTIVE</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ascending Triangle</strong></td>
+                                <td style="color: #22c55e;">Bullish</td>
+                                <td>4-Hour</td>
+                                <td>65%</td>
+                                <td>$600.00</td>
+                                <td><span class="badge badge-success">ACTIVE</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bullish Engulfing</strong></td>
+                                <td style="color: #22c55e;">Bullish</td>
+                                <td>Daily</td>
+                                <td>78%</td>
+                                <td>$598.50</td>
+                                <td><span class="badge badge-warning">FORMING</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Head & Shoulders (Inv)</strong></td>
+                                <td style="color: #22c55e;">Bullish</td>
+                                <td>Weekly</td>
+                                <td>58%</td>
+                                <td>$620.00</td>
+                                <td><span class="badge badge-secondary">WATCH</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rising Wedge</strong></td>
+                                <td style="color: #ef4444;">Bearish</td>
+                                <td>4-Hour</td>
+                                <td>45%</td>
+                                <td>$585.00</td>
+                                <td><span class="badge badge-secondary">WATCH</span></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
