@@ -1070,6 +1070,10 @@
                 <span style="color: var(--muted);">Vol:</span>
                 <span id="statVolumeVsAvg" style="color: var(--text);">-- vs Avg</span>
             </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                <span style="color: var(--muted);">⏱️</span>
+                <span id="globalLastUpdated" style="color: var(--muted); font-size: 11px;" title="Last data refresh">--</span>
+            </div>
         </div>
 
         <div class="tabs">
@@ -1611,6 +1615,11 @@
 
         <!-- TRADES TAB - COMPREHENSIVE TRADE LOG -->
         <div id="trades" class="tab-content">
+            <!-- Trade Journal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: var(--text); margin: 0;">📝 Trade Journal</h3>
+                <span id="tradesLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted);" title="Last updated">⏱️ --</span>
+            </div>
             <!-- Trade Statistics Dashboard -->
             <div class="grid grid-5">
                 <div class="metric">
@@ -1917,6 +1926,7 @@
                     <div class="health-banner-title" id="healthBannerTitle">System Healthy</div>
                     <div class="health-banner-subtitle" id="healthBannerSubtitle">All systems operational</div>
                 </div>
+                <span id="healthLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); margin-right: 10px;" title="Last health check">⏱️ --</span>
                 <button class="refresh-health-btn" onclick="runHealthCheck()">🔄 Run Check</button>
             </div>
 
@@ -2167,6 +2177,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="analysis-time">
                     <button class="analysis-time-btn active" onclick="switchAnalysisMode('morning')" id="morningBtn">☀️ Morning Plan</button>
                     <button class="analysis-time-btn" onclick="switchAnalysisMode('evening')" id="eveningBtn">🌙 Evening Review</button>
+                    <span id="analysisLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); margin-left: 10px;" title="Last updated">⏱️ --</span>
                 </div>
                 <div class="report-actions">
                     <button class="report-btn primary" onclick="generateDailyReport()">📄 Generate Report</button>
@@ -2448,7 +2459,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div id="multi-charts" class="tab-content">
             <div class="card" style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis</div>
+                    <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis <span id="multiChartsLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); font-weight: normal; margin-left: 10px;" title="Last updated">⏱️ --</span></div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
                         <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
@@ -3383,6 +3394,139 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMarketStats();
 });
 
+// ==================== TIMESTAMP FUNCTIONS ====================
+
+// Format timestamp as "Dec 2, 2025 2:45 PM ET" or short "2:45 PM"
+function formatLastUpdated(date, short = false) {
+    if (!date) return '--';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '--';
+
+    const options = short ?
+        { hour: 'numeric', minute: '2-digit', hour12: true } :
+        { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+
+    let formatted = d.toLocaleString('en-US', options);
+    if (!short) formatted += ' ET';
+    return formatted;
+}
+
+// Get color based on staleness
+function getTimestampColor(lastUpdateTime) {
+    if (!lastUpdateTime) return 'var(--muted)';
+
+    const now = new Date();
+    const updated = new Date(lastUpdateTime);
+    const diffMinutes = (now - updated) / (1000 * 60);
+
+    // Check if data is from previous day
+    if (updated.toDateString() !== now.toDateString()) {
+        return '#ef4444'; // Red - previous day
+    }
+
+    if (diffMinutes <= 30) return '#22c55e';      // Green - within 30 min
+    if (diffMinutes <= 60) return '#eab308';      // Yellow - 30-60 min
+    if (diffMinutes <= 240) return '#f97316';     // Orange - 1-4 hours
+    return '#ef4444';                              // Red - more than 4 hours
+}
+
+// Update all timestamp displays
+function updateAllTimestamps() {
+    const now = new Date();
+    const timestamps = {
+        global: now,
+        analysis: now,
+        health: now,
+        multiCharts: now,
+        trades: now
+    };
+
+    // Save to localStorage
+    localStorage.setItem('stockAgentTimestamps', JSON.stringify(timestamps));
+
+    // Update displays
+    updateTimestampDisplays(timestamps);
+}
+
+// Update specific section timestamp
+function updateSectionTimestamp(section) {
+    const timestamps = JSON.parse(localStorage.getItem('stockAgentTimestamps') || '{}');
+    timestamps[section] = new Date().toISOString();
+    localStorage.setItem('stockAgentTimestamps', JSON.stringify(timestamps));
+    updateTimestampDisplays(timestamps);
+}
+
+// Update timestamp display elements
+function updateTimestampDisplays(timestamps) {
+    // Global timestamp
+    const globalEl = document.getElementById('globalLastUpdated');
+    if (globalEl && timestamps.global) {
+        globalEl.textContent = formatLastUpdated(timestamps.global, true);
+        globalEl.style.color = getTimestampColor(timestamps.global);
+        globalEl.title = 'Last updated: ' + formatLastUpdated(timestamps.global);
+    }
+
+    // Analysis timestamp
+    const analysisEl = document.getElementById('analysisLastUpdated');
+    if (analysisEl && timestamps.analysis) {
+        analysisEl.textContent = '⏱️ ' + formatLastUpdated(timestamps.analysis, true);
+        analysisEl.style.color = getTimestampColor(timestamps.analysis);
+        analysisEl.title = 'Last updated: ' + formatLastUpdated(timestamps.analysis);
+    }
+
+    // Health timestamp
+    const healthEl = document.getElementById('healthLastUpdated');
+    if (healthEl && timestamps.health) {
+        healthEl.textContent = '⏱️ ' + formatLastUpdated(timestamps.health, true);
+        healthEl.style.color = getTimestampColor(timestamps.health);
+        healthEl.title = 'Last health check: ' + formatLastUpdated(timestamps.health);
+    }
+
+    // Multi-Charts timestamp
+    const multiChartsEl = document.getElementById('multiChartsLastUpdated');
+    if (multiChartsEl && timestamps.multiCharts) {
+        multiChartsEl.textContent = '⏱️ ' + formatLastUpdated(timestamps.multiCharts, true);
+        multiChartsEl.style.color = getTimestampColor(timestamps.multiCharts);
+        multiChartsEl.title = 'Last updated: ' + formatLastUpdated(timestamps.multiCharts);
+    }
+
+    // Trades timestamp
+    const tradesEl = document.getElementById('tradesLastUpdated');
+    if (tradesEl && timestamps.trades) {
+        tradesEl.textContent = '⏱️ ' + formatLastUpdated(timestamps.trades, true);
+        tradesEl.style.color = getTimestampColor(timestamps.trades);
+        tradesEl.title = 'Last updated: ' + formatLastUpdated(timestamps.trades);
+    }
+}
+
+// Load saved timestamps from localStorage on page load
+function loadSavedTimestamps() {
+    const saved = localStorage.getItem('stockAgentTimestamps');
+    if (saved) {
+        try {
+            const timestamps = JSON.parse(saved);
+            updateTimestampDisplays(timestamps);
+        } catch (e) {
+            console.log('Error loading timestamps:', e);
+        }
+    }
+}
+
+// Check staleness and update colors every minute
+setInterval(function() {
+    const saved = localStorage.getItem('stockAgentTimestamps');
+    if (saved) {
+        try {
+            updateTimestampDisplays(JSON.parse(saved));
+        } catch (e) {}
+    }
+}, 60000); // Check every minute
+
+// Load timestamps on page load
+document.addEventListener('DOMContentLoaded', loadSavedTimestamps);
+
+// ==================== END TIMESTAMP FUNCTIONS ====================
+
 function setTradingMode(mode) {
     tradingMode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -3494,6 +3638,9 @@ async function loadAllData() {
 
                 // Update market stats in header
                 loadMarketStats(currentSymbol);
+
+                // Update timestamps
+                updateAllTimestamps();
 
 // Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
             }
@@ -5436,9 +5583,12 @@ function runHealthCheck() {
     
     // Update overall status
     updateOverallHealth();
-    
+
     // Update last check time
     document.getElementById('lastHealthCheck').textContent = new Date().toLocaleString();
+
+    // Update health timestamp
+    updateSectionTimestamp('health');
 }
 
 function checkDataFreshness() {
@@ -5943,6 +6093,9 @@ async function updateAllMultiCharts() {
     await updateChart('intraday');
     await updateChart('swing');
     await updateChart('position');
+
+    // Update multi-charts timestamp
+    updateSectionTimestamp('multiCharts');
 }
 
 function refreshAllCharts() {
@@ -6784,6 +6937,9 @@ function generateDailyReport() {
         price: price,
         signals: signals
     };
+
+    // Update analysis timestamp
+    updateSectionTimestamp('analysis');
 }
 
 function calculateAllSignals(data, price, prevClose) {
