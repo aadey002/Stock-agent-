@@ -1096,20 +1096,20 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
-            <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
-            <button class="tab-btn" data-tab="signals-agents">🤖 Signals & Agents</button>
-            <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
-            <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
-            <button class="tab-btn" data-tab="mtf-bias">📈 MTF Bias</button>
-            <button class="tab-btn" data-tab="trade-journal">📓 Trade Journal</button>
-            <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
-            <button class="tab-btn" data-tab="reports">📑 Reports</button>
-            <button class="tab-btn" data-tab="gann-analysis">🔮 Gann Analysis</button>
-            <button class="tab-btn" data-tab="gann-rules">📜 Gann Rules</button>
-            <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
-            <button class="tab-btn" data-tab="options-calc">🧮 Options Calc</button>
-        </div>
+              <button class="tab-btn active" data-tab="overview">Overview</button>
+              <button class="tab-btn" data-tab="barcount">Bar Count</button>
+              <button class="tab-btn" data-tab="signals-agents">Signals & Agents</button>
+              <button class="tab-btn health-tab" data-tab="health">Health</button>
+              <button class="tab-btn analysis-tab" data-tab="daily-analysis">Daily Analysis</button>
+              <button class="tab-btn" data-tab="mtf-bias">MTF Bias</button>
+              <button class="tab-btn" data-tab="trade-journal">Trade Journal</button>
+              <button class="tab-btn ai-tab" data-tab="ai-assistant">AI Assistant</button>
+              <button class="tab-btn" data-tab="reports">Reports</button>
+              <button class="tab-btn" data-tab="gann-analysis">Gann Analysis</button>
+              <button class="tab-btn" data-tab="gann-rules">Gann Rules</button>
+              <button class="tab-btn charts-tab" data-tab="multi-charts">Multi-Charts</button>
+              <button class="tab-btn" data-tab="options-calc">Options Calc</button>
+            </div>
 
         <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
@@ -6793,10 +6793,12 @@ function escapeHtml(text) {
 }
 
 // Ollama Configuration
+// Groq Cloud Configuration (FREE & Fast!)
 const OLLAMA_CONFIG = {
-    endpoint: 'http://localhost:11434',
-    model: 'gemma3:4b',
-    enabled: true
+    enabled: true,
+    endpoint: 'https://api.groq.com/openai/v1',
+    model: 'llama-3.1-70b-versatile',
+    apiKey: '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'
 };
 
 // Check Ollama connection status
@@ -6848,24 +6850,25 @@ async function generateAiResponse(userMessage) {
     const systemPrompt = buildSystemPrompt(dashboardContext);
 
     // Try Ollama first (local LLM) - skip if on GitHub Pages
-    if (OLLAMA_CONFIG.enabled && !window.location.hostname.includes('github.io')) {
+    if (OLLAMA_CONFIG.enabled) {
         try {
             console.log('🤖 Calling Ollama with model:', OLLAMA_CONFIG.model);
 
-            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/api/generate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: OLLAMA_CONFIG.model,
-                    prompt: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`,
-                    stream: false,
-                    options: {
-                        temperature: 0.7,
-                        num_predict: 1000
-                    }
-                }),
-                signal: AbortSignal.timeout(60000) // 60 second timeout
-            });
+            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/chat/completions`, {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OLLAMA_CONFIG.apiKey}`
+    },
+    body: JSON.stringify({
+        model: OLLAMA_CONFIG.model,
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+    }),
 
             if (response.ok) {
                 const data = await response.json();
@@ -7213,7 +7216,7 @@ ATR: $${atr.toFixed(2)}
     }
     
     // DEFAULT RESPONSE - More intelligent
-    return generateSmartDefaultResponse(message, context);
+    return await generateSmartDefaultResponse(message, context);
 }
 
 function generateOptionRecommendations(direction) {
@@ -7957,8 +7960,110 @@ Just type naturally - I understand most trading questions!`;
 
 // Smart Default Response
 function generateSmartDefaultResponse(message, context) {
-    // Try to extract intent
+    // GLM-4 Cloud Configuration
+// Groq Cloud Configuration
+const GLM4_CONFIG = {
+    apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
+    apiKey: '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',
+    model: 'llama-3.1-70b-versatile'
+};
+
+// Call Groq Cloud API
+async function callGLM4(prompt) {
+    try {
+        const response = await fetch(GLM4_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GLM4_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: GLM4_CONFIG.model,
+                messages: [
+                    { role: 'system', content: 'You are a Gann Trading Assistant. Be concise and actionable.' },
+                    { role: 'user', content: prompt }
+                ],
+                temperature: 0.3,
+                max_tokens: 600
+            })
+        });
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'No response from Groq';
+    } catch (error) {
+        console.error('[Groq] Error:', error);
+        return null;
+    }
+}
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'No response from AI';
+    } catch (error) {
+        console.error('[GLM-4] Error:', error);
+        return null;
+    }
+}
+
+// Smart Default Response - Now with GLM-4!
+async function generateSmartDefaultResponse(message, context) {
     const lowerMsg = message.toLowerCase();
+    const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase())) || currentSymbol;
+    
+    // Build context for GLM-4
+    let marketContext = '';
+    const data = allSymbolsData[mentionedSymbol] || currentData;
+    if (data && data.length) {
+        const lat = data[data.length - 1];
+        marketContext = `
+Symbol: ${mentionedSymbol}
+Price: $${parseFloat(lat.Close).toFixed(2)}
+Signal: ${lat.Bias || 'HOLD'}
+Consensus: ${lat.PriceConfluence || 0}/4 agents
+ATR: $${parseFloat(lat.ATR).toFixed(2)}`;
+    }
+    
+    const prompt = `You are a Gann Trading Assistant. Answer this trading question concisely.
+
+MARKET DATA:${marketContext}
+
+USER QUESTION: ${message}
+
+Provide a helpful, actionable response. If recommending a trade, include:
+- Direction (BUY CALLS or BUY PUTS)
+- Entry price
+- Stop loss
+- Target levels`;
+
+    // Try GLM-4 first
+    const glm4Response = await callGLM4(prompt);
+    
+    if (glm4Response) {
+        return `🤖 **GLM-4 Analysis:**\n\n${glm4Response}`;
+    }
+    
+    // Fallback if GLM-4 fails
+    let response = `🤔 I want to help! Let me clarify...\n\n`;
+    response += `You asked: "${message}"\n\n`;
+    
+    if (data && data.length) {
+        const lat = data[data.length - 1];
+        response += `**${mentionedSymbol} Quick Info:**\n`;
+        response += `• Price: $${parseFloat(lat.Close).toFixed(2)}\n`;
+        response += `• Signal: ${lat.Bias || 'HOLD'}\n`;
+        response += `• Consensus: ${lat.PriceConfluence || 0}/4\n\n`;
+    }
+    
+    response += `**Try asking:**\n`;
+    response += `• "What should I trade today?"\n`;
+    response += `• "Show me ${currentSymbol} bar count"\n`;
+    response += `• "Best time to trade options"\n`;
+    response += `• "High consensus trades"\n\n`;
+    response += `Or click a Quick Action button on the right →`;
+    
+    return response;
+    }
     
     // Check for symbol mentions
     const mentionedSymbol = SYMBOLS.find(s => lowerMsg.includes(s.toLowerCase()));
