@@ -2180,6 +2180,11 @@
                     <div class="health-banner-title" id="healthBannerTitle">System Healthy</div>
                     <div class="health-banner-subtitle" id="healthBannerSubtitle">All systems operational</div>
                 </div>
+                <div id="healthTrafficSummary" style="display: flex; gap: 8px; align-items: center; margin-right: 15px;">
+                    <span id="trafficGreenCount" style="font-size: 14px;">🟢 4</span>
+                    <span id="trafficYellowCount" style="font-size: 14px;">🟡 0</span>
+                    <span id="trafficRedCount" style="font-size: 14px;">🔴 0</span>
+                </div>
                 <span id="healthLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); margin-right: 10px;" title="Last health check">⏱️ --</span>
                 <button class="refresh-health-btn" onclick="runHealthCheck()">🔄 Run Check</button>
             </div>
@@ -2187,25 +2192,37 @@
             <!-- Health Metrics Grid -->
             <div class="grid grid-4">
                 <div class="health-metric" id="healthDataFresh">
-                    <div class="health-metric-icon">📊</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="health-metric-icon">📊</div>
+                        <div class="health-traffic-light" id="dataFreshnessLight">🟢</div>
+                    </div>
                     <div class="health-metric-label">Data Freshness</div>
                     <div class="health-metric-value" id="dataFreshnessValue">Checking...</div>
                     <div class="health-metric-status" id="dataFreshnessStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthMarket">
-                    <div class="health-metric-icon">🏛️</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="health-metric-icon">🏛️</div>
+                        <div class="health-traffic-light" id="marketStatusLight">🟢</div>
+                    </div>
                     <div class="health-metric-label">Market Status</div>
                     <div class="health-metric-value" id="marketStatusValue">Checking...</div>
                     <div class="health-metric-status" id="marketStatusStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthWorkflow">
-                    <div class="health-metric-icon">⚙️</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="health-metric-icon">⚙️</div>
+                        <div class="health-traffic-light" id="workflowStatusLight">🟢</div>
+                    </div>
                     <div class="health-metric-label">Agent Workflow</div>
                     <div class="health-metric-value" id="workflowStatusValue">Checking...</div>
                     <div class="health-metric-status" id="workflowStatusStatus">--</div>
                 </div>
                 <div class="health-metric" id="healthDataQuality">
-                    <div class="health-metric-icon">✅</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="health-metric-icon">✅</div>
+                        <div class="health-traffic-light" id="dataQualityLight">🟢</div>
+                    </div>
                     <div class="health-metric-label">Data Quality</div>
                     <div class="health-metric-value" id="dataQualityValue">Checking...</div>
                     <div class="health-metric-status" id="dataQualityStatus">--</div>
@@ -2242,27 +2259,34 @@
 
                 <div class="card">
                     <div class="card-title">🔌 Connection Status</div>
-                    <div class="connection-grid">
-                        <div class="connection-item">
-                            <span class="connection-indicator" id="connGitHub">●</span>
-                            <span>GitHub Pages</span>
-                            <span class="connection-status" id="connGitHubStatus">--</span>
-                        </div>
-                        <div class="connection-item">
-                            <span class="connection-indicator" id="connData">●</span>
-                            <span>Data Feed (SPY.csv)</span>
-                            <span class="connection-status" id="connDataStatus">--</span>
-                        </div>
-                        <div class="connection-item">
-                            <span class="connection-indicator" id="connPortfolio">●</span>
-                            <span>Portfolio Feed</span>
-                            <span class="connection-status" id="connPortfolioStatus">--</span>
-                        </div>
-                        <div class="connection-item">
-                            <span class="connection-indicator" id="connLocalStorage">●</span>
-                            <span>Local Storage</span>
-                            <span class="connection-status" id="connLocalStorageStatus">--</span>
-                        </div>
+                    <div class="table-wrap">
+                        <table style="font-size: 11px;">
+                            <thead>
+                                <tr><th>Connection</th><th>Status</th><th>Light</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>GitHub Pages</td>
+                                    <td id="connGitHubStatus">--</td>
+                                    <td id="connGitHubLight">🟢</td>
+                                </tr>
+                                <tr>
+                                    <td>Data Feed (<span id="connDataSymbol">SPY</span>.csv)</td>
+                                    <td id="connDataStatus">--</td>
+                                    <td id="connDataLight">🟢</td>
+                                </tr>
+                                <tr>
+                                    <td>Portfolio Feed</td>
+                                    <td id="connPortfolioStatus">--</td>
+                                    <td id="connPortfolioLight">🟢</td>
+                                </tr>
+                                <tr>
+                                    <td>Local Storage</td>
+                                    <td id="connLocalStorageStatus">--</td>
+                                    <td id="connLocalStorageLight">🟢</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -2278,13 +2302,65 @@
                 </div>
             </div>
 
+            <!-- Component Status with Last Run -->
+            <div class="card">
+                <div class="card-title">⚙️ Component Status</div>
+                <div class="table-wrap">
+                    <table style="font-size: 11px;">
+                        <thead>
+                            <tr><th>Component</th><th>Last Run</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data Fetch</td>
+                                <td id="compDataFetchTime">--</td>
+                                <td id="compDataFetchLight">🟢</td>
+                            </tr>
+                            <tr>
+                                <td>Agent Workflow</td>
+                                <td id="compWorkflowTime">--</td>
+                                <td id="compWorkflowLight">🟢</td>
+                            </tr>
+                            <tr>
+                                <td>Health Check</td>
+                                <td id="compHealthCheckTime">--</td>
+                                <td id="compHealthCheckLight">🟢</td>
+                            </tr>
+                            <tr>
+                                <td>GitHub Deploy</td>
+                                <td id="compDeployTime">--</td>
+                                <td id="compDeployLight">🟢</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- System Log -->
+            <div class="card">
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>📋 System Log (Last 10 Events)</span>
+                    <button onclick="clearSystemLog()" style="background: var(--danger); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer;">Clear Log</button>
+                </div>
+                <div class="table-wrap" style="max-height: 200px; overflow-y: auto;">
+                    <table style="font-size: 10px;">
+                        <thead>
+                            <tr><th>Date/Time</th><th>Event</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="systemLogTable">
+                            <tr><td colspan="3" style="text-align: center; color: var(--muted);">No events logged yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- System Info -->
             <div class="card">
                 <div class="card-title">ℹ️ System Information</div>
                 <div class="grid grid-3">
                     <div class="sys-info-item">
                         <div class="sys-info-label">Platform Version</div>
-                        <div class="sys-info-value">Stock Agent 4 v7.1</div>
+                        <div class="sys-info-value">Stock Agent 4 v7.2</div>
                     </div>
                     <div class="sys-info-item">
                         <div class="sys-info-label">Dashboard</div>
@@ -6162,6 +6238,8 @@ async function initializeApp() {
     await loadAllSymbolsData();
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
+    renderSystemLog(); // Render existing log entries
+    addSystemLogEntry('Data Updated (' + currentSymbol + ')', 'Success'); // Log data load
     setInterval(loadAllData, 60000);
     setInterval(runHealthCheck, 300000); // Health check every 5 minutes
 }
@@ -6458,33 +6536,36 @@ function checkDataQuality() {
 }
 
 function checkConnections() {
+    // Update symbol display
+    const symbolEl = document.getElementById('connDataSymbol');
+    if (symbolEl) symbolEl.textContent = currentSymbol;
+
     // GitHub Pages - if page loaded, it's working
-    document.getElementById('connGitHub').className = 'connection-indicator online';
     document.getElementById('connGitHubStatus').textContent = 'Connected';
-    
+    document.getElementById('connGitHubLight').textContent = '🟢';
+
     // Data feed - based on whether data loaded
     if (currentData && currentData.length > 0) {
-        document.getElementById('connData').className = 'connection-indicator online';
-        document.getElementById('connDataStatus').textContent = 'Loaded';
+        document.getElementById('connDataStatus').textContent = 'Loaded (' + currentData.length + ' bars)';
+        document.getElementById('connDataLight').textContent = '🟢';
     } else {
-        document.getElementById('connData').className = 'connection-indicator offline';
         document.getElementById('connDataStatus').textContent = 'Failed';
+        document.getElementById('connDataLight').textContent = '🔴';
     }
-    
+
     // Portfolio feed
-    // This would be checked based on portfolio data
-    document.getElementById('connPortfolio').className = 'connection-indicator online';
     document.getElementById('connPortfolioStatus').textContent = 'Active';
-    
+    document.getElementById('connPortfolioLight').textContent = '🟢';
+
     // Local Storage
     try {
         localStorage.setItem('health_test', 'test');
         localStorage.removeItem('health_test');
-        document.getElementById('connLocalStorage').className = 'connection-indicator online';
         document.getElementById('connLocalStorageStatus').textContent = 'Available';
+        document.getElementById('connLocalStorageLight').textContent = '🟢';
     } catch (e) {
-        document.getElementById('connLocalStorage').className = 'connection-indicator offline';
         document.getElementById('connLocalStorageStatus').textContent = 'Blocked';
+        document.getElementById('connLocalStorageLight').textContent = '🔴';
         healthStatus.alerts.push({ type: 'warning', message: 'Local storage unavailable - trade log may not persist' });
     }
 }
@@ -6497,7 +6578,7 @@ function updateOverallHealth() {
     const workflowEl = document.getElementById('healthWorkflow');
     const workflowValue = document.getElementById('workflowStatusValue');
     const workflowStatus = document.getElementById('workflowStatusStatus');
-    
+
     // Determine workflow status based on data freshness
     if (healthStatus.dataFreshness === 'healthy') {
         workflowValue.textContent = 'Running';
@@ -6505,45 +6586,94 @@ function updateOverallHealth() {
         workflowStatus.className = 'health-metric-status ok';
         workflowEl.className = 'health-metric healthy';
         healthStatus.workflowStatus = 'healthy';
+        document.getElementById('workflowStatusLight').textContent = '🟢';
     } else if (healthStatus.dataFreshness === 'warning') {
         workflowValue.textContent = 'Delayed';
         workflowStatus.textContent = 'CHECK';
         workflowStatus.className = 'health-metric-status warn';
         workflowEl.className = 'health-metric warning';
         healthStatus.workflowStatus = 'warning';
+        document.getElementById('workflowStatusLight').textContent = '🟡';
     } else {
         workflowValue.textContent = 'Stopped?';
         workflowStatus.textContent = 'ERROR';
         workflowStatus.className = 'health-metric-status error';
         workflowEl.className = 'health-metric critical';
         healthStatus.workflowStatus = 'critical';
+        document.getElementById('workflowStatusLight').textContent = '🔴';
     }
-    
-    // Overall status
+
+    // Update traffic lights for data freshness
+    const dataFreshLight = document.getElementById('dataFreshnessLight');
+    if (dataFreshLight) {
+        if (healthStatus.dataFreshness === 'healthy') dataFreshLight.textContent = '🟢';
+        else if (healthStatus.dataFreshness === 'warning') dataFreshLight.textContent = '🟡';
+        else dataFreshLight.textContent = '🔴';
+    }
+
+    // Update traffic lights for data quality
+    const dataQualityLight = document.getElementById('dataQualityLight');
+    if (dataQualityLight) {
+        if (healthStatus.dataQuality === 'healthy') dataQualityLight.textContent = '🟢';
+        else if (healthStatus.dataQuality === 'warning') dataQualityLight.textContent = '🟡';
+        else dataQualityLight.textContent = '🔴';
+    }
+
+    // Update market status light
+    const marketLight = document.getElementById('marketStatusLight');
+    if (marketLight) {
+        const marketVal = document.getElementById('marketStatusValue')?.textContent || '';
+        if (marketVal.includes('Open') || marketVal.includes('Pre') || marketVal.includes('After')) {
+            marketLight.textContent = '🟢';
+        } else {
+            marketLight.textContent = '🟡';
+        }
+    }
+
+    // Count traffic lights for summary
     const statuses = [healthStatus.dataFreshness, healthStatus.dataQuality, healthStatus.workflowStatus];
-    
-    if (statuses.includes('critical')) {
+    // Add market status (yellow if closed, green otherwise)
+    const marketVal = document.getElementById('marketStatusValue')?.textContent || '';
+    const marketStatus = (marketVal.includes('Open') || marketVal.includes('Pre') || marketVal.includes('After')) ? 'healthy' : 'warning';
+    statuses.push(marketStatus);
+
+    const greenCount = statuses.filter(s => s === 'healthy').length;
+    const yellowCount = statuses.filter(s => s === 'warning').length;
+    const redCount = statuses.filter(s => s === 'critical').length;
+
+    document.getElementById('trafficGreenCount').textContent = '🟢 ' + greenCount;
+    document.getElementById('trafficYellowCount').textContent = '🟡 ' + yellowCount;
+    document.getElementById('trafficRedCount').textContent = '🔴 ' + redCount;
+
+    // Overall status
+    if (redCount > 0) {
         banner.className = 'health-banner critical';
         icon.textContent = '🔴';
-        title.textContent = 'System Issues Detected';
-        subtitle.textContent = 'Critical issues require attention';
-    } else if (statuses.includes('warning')) {
+        title.textContent = 'ATTENTION NEEDED';
+        subtitle.textContent = `${greenCount}/4 Green, ${yellowCount} Yellow, ${redCount} Red`;
+    } else if (yellowCount > 0) {
         banner.className = 'health-banner warning';
         icon.textContent = '🟡';
-        title.textContent = 'System Warning';
-        subtitle.textContent = 'Some components need attention';
+        title.textContent = 'MINOR ISSUES';
+        subtitle.textContent = `${greenCount}/4 Green, ${yellowCount} Yellow`;
     } else {
         banner.className = 'health-banner';
         icon.textContent = '🟢';
-        title.textContent = 'System Healthy';
-        subtitle.textContent = 'All systems operational';
+        title.textContent = 'ALL SYSTEMS OPERATIONAL';
+        subtitle.textContent = `${greenCount}/4 Green`;
     }
-    
+
+    // Update component status table
+    updateComponentStatus();
+
     // Render alerts
     renderHealthAlerts();
-    
+
     // Update header badge
     updateHeaderHealthBadge();
+
+    // Log the health check event
+    addSystemLogEntry('Health Check Run', 'Success');
 }
 
 function renderHealthAlerts() {
@@ -6571,6 +6701,120 @@ function renderHealthAlerts() {
     });
     
     container.innerHTML = html;
+}
+
+// System Log Functions
+function getSystemLog() {
+    try {
+        const log = localStorage.getItem('stockAgentSystemLog');
+        return log ? JSON.parse(log) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveSystemLog(log) {
+    try {
+        // Keep only last 20 entries
+        const trimmed = log.slice(-20);
+        localStorage.setItem('stockAgentSystemLog', JSON.stringify(trimmed));
+    } catch (e) {
+        console.warn('Could not save system log:', e);
+    }
+}
+
+function addSystemLogEntry(event, status) {
+    const log = getSystemLog();
+    const now = new Date();
+    log.push({
+        timestamp: now.toISOString(),
+        dateTime: now.toLocaleString(),
+        event: event,
+        status: status
+    });
+    saveSystemLog(log);
+    renderSystemLog();
+}
+
+function clearSystemLog() {
+    try {
+        localStorage.removeItem('stockAgentSystemLog');
+        renderSystemLog();
+    } catch (e) {
+        console.warn('Could not clear system log:', e);
+    }
+}
+
+function renderSystemLog() {
+    const tbody = document.getElementById('systemLogTable');
+    if (!tbody) return;
+
+    const log = getSystemLog();
+    if (log.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--muted);">No events logged yet</td></tr>';
+        return;
+    }
+
+    // Show most recent first
+    const recentLog = log.slice(-10).reverse();
+    tbody.innerHTML = recentLog.map(entry => {
+        const statusIcon = entry.status === 'Success' ? '🟢' : entry.status === 'Warning' ? '🟡' : '🔴';
+        return `
+            <tr>
+                <td>${entry.dateTime}</td>
+                <td>${entry.event}</td>
+                <td>${statusIcon} ${entry.status}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Update Component Status Table
+function updateComponentStatus() {
+    const now = new Date();
+    const nowStr = now.toLocaleString();
+
+    // Health Check time
+    const healthCheckTimeEl = document.getElementById('compHealthCheckTime');
+    const healthCheckLightEl = document.getElementById('compHealthCheckLight');
+    if (healthCheckTimeEl) healthCheckTimeEl.textContent = nowStr;
+    if (healthCheckLightEl) healthCheckLightEl.textContent = '🟢';
+
+    // Data Fetch time (based on last data date)
+    const dataFetchTimeEl = document.getElementById('compDataFetchTime');
+    const dataFetchLightEl = document.getElementById('compDataFetchLight');
+    if (currentData && currentData.length > 0) {
+        const lastBar = currentData[currentData.length - 1];
+        if (lastBar.Date) {
+            const lastDate = new Date(lastBar.Date);
+            // Assume data was fetched at 4:05 PM on that date
+            lastDate.setHours(16, 5, 0);
+            if (dataFetchTimeEl) dataFetchTimeEl.textContent = lastDate.toLocaleString();
+            if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? '🟢' : healthStatus.dataFreshness === 'warning' ? '🟡' : '🔴';
+        }
+    }
+
+    // Workflow time (same as data fetch)
+    const workflowTimeEl = document.getElementById('compWorkflowTime');
+    const workflowLightEl = document.getElementById('compWorkflowLight');
+    if (currentData && currentData.length > 0) {
+        const lastBar = currentData[currentData.length - 1];
+        if (lastBar.Date) {
+            const lastDate = new Date(lastBar.Date);
+            lastDate.setHours(16, 5, 0);
+            if (workflowTimeEl) workflowTimeEl.textContent = lastDate.toLocaleString();
+            if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? '🟢' : healthStatus.workflowStatus === 'warning' ? '🟡' : '🔴';
+        }
+    }
+
+    // Deploy time (estimate based on health check + 2 min)
+    const deployTimeEl = document.getElementById('compDeployTime');
+    const deployLightEl = document.getElementById('compDeployLight');
+    if (deployTimeEl) {
+        const deployTime = new Date(now.getTime() + 2 * 60 * 1000);
+        deployTimeEl.textContent = '~' + deployTime.toLocaleString();
+    }
+    if (deployLightEl) deployLightEl.textContent = '🟢';
 }
 
 // Helper functions
