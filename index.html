@@ -1058,8 +1058,7 @@
             <button class="tab-btn active" data-tab="overview">📊 Overview</button>
             <button class="tab-btn" data-tab="charts">📈 Charts</button>
             <button class="tab-btn" data-tab="barcount">🔢 Bar Count</button>
-            <button class="tab-btn" data-tab="signals">🎯 Signals</button>
-            <button class="tab-btn" data-tab="agents">🤖 Agents</button>
+            <button class="tab-btn" data-tab="signals">🎯 Signals & Agents</button>
             <button class="tab-btn" data-tab="patterns">📐 Patterns</button>
             <button class="tab-btn" data-tab="trades">📝 Trades</button>
             <button class="tab-btn" data-tab="opportunities">Opportunities</button>
@@ -1358,6 +1357,8 @@
                                 <th>Level</th>
                                 <th>Price</th>
                                 <th>Distance</th>
+                                <th>Approaching</th>
+                                <th>Date Detected</th>
                                 <th>Timeframe</th>
                                 <th>Implication</th>
                             </tr>
@@ -1367,27 +1368,35 @@
                                 <td><strong>R3 (161.8%)</strong></td>
                                 <td id="sigFibR3">$612.40</td>
                                 <td>+2.9%</td>
+                                <td>NO</td>
+                                <td>--</td>
                                 <td>Weekly</td>
-                                <td>Strong Resistance - Major Target</td>
+                                <td>Strong Resistance</td>
                             </tr>
                             <tr style="color: #22c55e;">
                                 <td><strong>R2 (127.2%)</strong></td>
                                 <td id="sigFibR2">$605.20</td>
                                 <td>+1.7%</td>
+                                <td>NO</td>
+                                <td>--</td>
                                 <td>Daily</td>
-                                <td>Resistance - Take Partial Profits</td>
+                                <td>Resistance - Take Profits</td>
                             </tr>
-                            <tr style="color: #22c55e;">
+                            <tr style="color: #22c55e; background: rgba(34,197,94,0.1);">
                                 <td><strong>R1 (100%)</strong></td>
                                 <td id="sigFibR1">$598.50</td>
                                 <td>+0.6%</td>
+                                <td><span class="badge badge-success">YES</span></td>
+                                <td>Dec 10</td>
                                 <td>Daily</td>
-                                <td>First Target - Watch for Rejection</td>
+                                <td>First Target - Watch</td>
                             </tr>
                             <tr style="background: rgba(59,130,246,0.1);">
                                 <td><strong>PIVOT</strong></td>
                                 <td id="sigFibPivot">$594.82</td>
                                 <td>Current</td>
+                                <td>--</td>
+                                <td>--</td>
                                 <td>Daily</td>
                                 <td>Key Decision Level</td>
                             </tr>
@@ -1395,13 +1404,17 @@
                                 <td><strong>S1 (38.2%)</strong></td>
                                 <td id="sigFibS1">$590.15</td>
                                 <td>-0.8%</td>
+                                <td>NO</td>
+                                <td>--</td>
                                 <td>Daily</td>
-                                <td>First Support - Bounce Zone</td>
+                                <td>First Support</td>
                             </tr>
                             <tr style="color: #ef4444;">
                                 <td><strong>S2 (50.0%)</strong></td>
                                 <td id="sigFibS2">$586.80</td>
                                 <td>-1.3%</td>
+                                <td>NO</td>
+                                <td>--</td>
                                 <td>Daily</td>
                                 <td>Support - Consider Adding</td>
                             </tr>
@@ -1409,8 +1422,10 @@
                                 <td><strong>S3 (61.8%)</strong></td>
                                 <td id="sigFibS3">$582.50</td>
                                 <td>-2.1%</td>
+                                <td>NO</td>
+                                <td>--</td>
                                 <td>Weekly</td>
-                                <td>Strong Support - Major Buy Zone</td>
+                                <td>Strong Support</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1426,9 +1441,11 @@
                             <tr>
                                 <th>Pattern</th>
                                 <th>Type</th>
+                                <th>Date Detected</th>
                                 <th>Timeframe</th>
                                 <th>Confidence</th>
                                 <th>Target</th>
+                                <th>Implication</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -1436,41 +1453,51 @@
                             <tr>
                                 <td><strong>Double Bottom</strong></td>
                                 <td style="color: #22c55e;">Bullish</td>
+                                <td>Dec 8</td>
                                 <td>Daily</td>
                                 <td>72%</td>
                                 <td>$605.00</td>
+                                <td>Reversal confirmed</td>
                                 <td><span class="badge badge-success">ACTIVE</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Ascending Triangle</strong></td>
                                 <td style="color: #22c55e;">Bullish</td>
+                                <td>Dec 6</td>
                                 <td>4-Hour</td>
                                 <td>65%</td>
                                 <td>$600.00</td>
+                                <td>Breakout pending</td>
                                 <td><span class="badge badge-success">ACTIVE</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Bullish Engulfing</strong></td>
                                 <td style="color: #22c55e;">Bullish</td>
+                                <td>Dec 10</td>
                                 <td>Daily</td>
                                 <td>78%</td>
                                 <td>$598.50</td>
+                                <td>Momentum shift</td>
                                 <td><span class="badge badge-warning">FORMING</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Head & Shoulders (Inv)</strong></td>
                                 <td style="color: #22c55e;">Bullish</td>
+                                <td>Dec 3</td>
                                 <td>Weekly</td>
                                 <td>58%</td>
                                 <td>$620.00</td>
+                                <td>Major reversal</td>
                                 <td><span class="badge badge-secondary">WATCH</span></td>
                             </tr>
                             <tr>
                                 <td><strong>Rising Wedge</strong></td>
                                 <td style="color: #ef4444;">Bearish</td>
+                                <td>Dec 5</td>
                                 <td>4-Hour</td>
                                 <td>45%</td>
                                 <td>$585.00</td>
+                                <td>Potential pullback</td>
                                 <td><span class="badge badge-secondary">WATCH</span></td>
                             </tr>
                         </tbody>
@@ -1479,24 +1506,10 @@
             </div>
         </div>
 
-        <!-- AGENTS TAB -->
-        <div id="agents" class="tab-content">
-            <div class="card">
-                <div class="card-title">🤖 Agent Signals</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>Agent</th><th>Intraday</th><th>Conf</th><th>Swing</th><th>Conf</th></tr></thead>
-                        <tbody>
-                            <tr><td>📊 Base Confluence</td><td><span class="badge badge-success" id="baseIntradaySignal">CALL</span></td><td id="baseIntradayConf">72%</td><td><span class="badge badge-success" id="baseSwingSignal">CALL</span></td><td id="baseSwingConf">68%</td></tr>
-                            <tr><td>🔮 Gann-Elliott</td><td><span class="badge badge-success" id="gannIntradaySignal">CALL</span></td><td id="gannIntradayConf">75%</td><td><span class="badge badge-success" id="gannSwingSignal">CALL</span></td><td id="gannSwingConf">70%</td></tr>
-                            <tr><td>🧠 DQN/RL</td><td><span class="badge badge-warning" id="dqnIntradaySignal">HOLD</span></td><td id="dqnIntradayConf">58%</td><td><span class="badge badge-success" id="dqnSwingSignal">CALL</span></td><td id="dqnSwingConf">65%</td></tr>
-                            <tr><td>🌊 3-Wave</td><td><span class="badge badge-success" id="waveIntradaySignal">CALL</span></td><td id="waveIntradayConf">68%</td><td><span class="badge badge-success" id="waveSwingSignal">CALL</span></td><td id="waveSwingConf">72%</td></tr>
-                            <tr style="background:var(--bg);"><td><strong>CONSENSUS</strong></td><td><span class="badge badge-ultra" id="intradayConsensus">3/4</span></td><td id="intradayConsensusConf">68%</td><td><span class="badge badge-ultra" id="swingConsensus">4/4</span></td><td id="swingConsensusConf">69%</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <!-- AGENTS TAB - MERGED INTO SIGNALS & AGENTS TAB -->
+        <!-- <div id="agents" class="tab-content">
+            Content merged into Signals & Agents tab above
+        </div> -->
 
         <!-- PATTERNS TAB -->
         <div id="patterns" class="tab-content">
