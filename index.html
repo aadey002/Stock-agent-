@@ -1375,7 +1375,7 @@
 
             <!-- Trade Statistics Section -->
             <div class="card" style="background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(6,182,212,0.05)); border: 1px solid rgba(16,185,129,0.2);">
-                <div class="card-title" style="color: #10b981;">📊 <span id="statsSymbol">SPY</span> Trade Statistics (Last 30 Days)</div>
+                <div class="card-title" style="color: #10b981;" id="statsTitle">SPY - S&P 500 📊 Trade Statistics (Last 30 Days)</div>
                 <div class="grid grid-4" style="gap: 10px;">
                     <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
                         <div style="font-size: 10px; color: var(--muted);">Win Rate</div>
@@ -8506,6 +8506,40 @@ function updateGannQuickView() {
     }
 }
 
+// Symbol to full name mapping
+const symbolNames = {
+    'SPY': 'S&P 500',
+    'QQQ': 'Nasdaq 100',
+    'IWM': 'Russell 2000',
+    'DIA': 'Dow Jones',
+    'XLK': 'Technology',
+    'XLF': 'Financials',
+    'XLE': 'Energy',
+    'XLV': 'Healthcare',
+    'XLI': 'Industrials',
+    'XLP': 'Consumer Staples',
+    'XLU': 'Utilities',
+    'XLB': 'Materials',
+    'XLC': 'Communications',
+    'XLRE': 'Real Estate',
+    'XLY': 'Consumer Disc',
+    'VXX': 'Volatility',
+    'TLT': 'Treasury Bonds',
+    'GLD': 'Gold',
+    'SLV': 'Silver',
+    'USO': 'Oil',
+    'UNG': 'Natural Gas',
+    'EEM': 'Emerging Mkts',
+    'EFA': 'Intl Developed',
+    'HYG': 'High Yield',
+    'LQD': 'Investment Grade',
+    'ARKK': 'Innovation',
+    'SMH': 'Semiconductors',
+    'XBI': 'Biotech',
+    'KRE': 'Regional Banks',
+    'XHB': 'Homebuilders'
+};
+
 // Update Trade Statistics
 function updateTradeStatistics() {
     if (!currentData || currentData.length < 30) return;
@@ -8540,7 +8574,13 @@ function updateTradeStatistics() {
     const avgWin = wins > 0 ? (totalWin / wins).toFixed(2) : 0;
     const avgLoss = losses > 0 ? (totalLoss / losses).toFixed(2) : 0;
 
-    document.getElementById('statsSymbol').textContent = currentSymbol;
+    // Update dynamic title with symbol name
+    const symbolName = symbolNames[currentSymbol] || currentSymbol;
+    const titleEl = document.getElementById('statsTitle');
+    if (titleEl) {
+        titleEl.textContent = `${currentSymbol} - ${symbolName} 📊 Trade Statistics (Last 30 Days)`;
+    }
+
     document.getElementById('statsWinRate').textContent = winRate + '%';
     document.getElementById('statsAvgWin').textContent = '$' + avgWin;
     document.getElementById('statsAvgLoss').textContent = '$' + avgLoss;
