@@ -527,7 +527,16 @@
         .badge-ultra { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .badge-intraday { background: linear-gradient(135deg, var(--intraday), #d97706); color: white; }
         .badge-swing { background: linear-gradient(135deg, var(--swing), #6d28d9); color: white; }
-        
+
+        /* Turn Direction and Trade Styles */
+        .turn-up { color: #00c853; font-weight: bold; }
+        .turn-down { color: #ff5252; font-weight: bold; }
+        .trade-call { color: #00c853; font-weight: 600; }
+        .trade-put { color: #ff5252; font-weight: 600; }
+        .pattern-bullish { color: #00c853; font-size: 10px; }
+        .pattern-bearish { color: #ff5252; font-size: 10px; }
+        .pattern-neutral { color: var(--muted); font-size: 10px; }
+
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { text-align: left; padding: 8px; font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--border); }
@@ -4070,10 +4079,15 @@ Try: "Analyze SPY for today" or "Find best CALL setups"</div>
                                 <th style="width: 60px;">Symbol</th>
                                 <th>Sector</th>
                                 <th style="width: 70px;">Price</th>
-                                <th style="width: 60px;">Window</th>
-                                <th style="width: 60px;">Setup</th>
+                                <th style="width: 65px;">Next Turn</th>
+                                <th style="width: 45px;">Days</th>
+                                <th style="width: 90px;">Turn Dir</th>
+                                <th style="width: 50px;">Trade</th>
+                                <th style="width: 65px;">Target</th>
+                                <th style="width: 100px;">Pattern</th>
+                                <th style="width: 45px;">TF</th>
+                                <th style="width: 60px;">Detected</th>
                                 <th style="width: 50px;">Score</th>
-                                <th style="width: 60px;">Direction</th>
                                 <th style="width: 70px;">Action</th>
                             </tr>
                         </thead>
@@ -15575,6 +15589,213 @@ if (originalRefreshData) {
 // ===============================================
 
 // All ETF data with sector information
+// Calculate Turn Direction based on cycle and price position
+// Returns: { direction: 'RALLY (UP)' or 'PULLBACK (DN)', trade: 'CALL' or 'PUT', isUp: boolean }
+function calculateTurnDirection(symbol, currentTrend, cycleDay, priceLevel, supportLevel, resistanceLevel) {
+    // Determine if near support or resistance
+    const priceRange = resistanceLevel - supportLevel;
+    const positionInRange = priceRange > 0 ? (priceLevel - supportLevel) / priceRange : 0.5;
+    const atResistance = positionInRange > 0.8;
+    const atSupport = positionInRange < 0.2;
+
+    // Determine cycle position (near high = days 25-30 or 1-5, near low = days 12-18)
+    const nearCycleHigh = cycleDay >= 25 || cycleDay <= 5;
+    const nearCycleLow = cycleDay >= 12 && cycleDay <= 18;
+    const midCycle = !nearCycleHigh && !nearCycleLow;
+
+    // Determine current trend (simplified)
+    const isUptrend = currentTrend === 'ASCENDING' || currentTrend === 'BULLISH' || currentTrend === 'UP';
+    const isDowntrend = currentTrend === 'DESCENDING' || currentTrend === 'BEARISH' || currentTrend === 'DOWN';
+
+    let direction = '';
+    let trade = '';
+    let isUp = true;
+
+    // Apply turn direction logic
+    if (isUptrend && nearCycleHigh && atResistance) {
+        // Uptrend + near cycle high + at resistance = PULLBACK (DN) = PUT
+        direction = 'PULLBACK (DN)';
+        trade = 'PUT';
+        isUp = false;
+    } else if (isUptrend && (midCycle || nearCycleLow) && atSupport) {
+        // Uptrend + mid cycle or low + at support = RALLY (UP) = CALL
+        direction = 'RALLY (UP)';
+        trade = 'CALL';
+        isUp = true;
+    } else if (isDowntrend && nearCycleLow && atSupport) {
+        // Downtrend + near cycle low + at support = RALLY (UP) = CALL
+        direction = 'RALLY (UP)';
+        trade = 'CALL';
+        isUp = true;
+    } else if (isDowntrend && (midCycle || nearCycleHigh) && atResistance) {
+        // Downtrend + mid cycle + at resistance = PULLBACK (DN) = PUT
+        direction = 'PULLBACK (DN)';
+        trade = 'PUT';
+        isUp = false;
+    } else if (isUptrend) {
+        // Default for uptrend: expect continuation or pullback near highs
+        if (nearCycleHigh) {
+            direction = 'PULLBACK (DN)';
+            trade = 'PUT';
+            isUp = false;
+        } else {
+            direction = 'RALLY (UP)';
+            trade = 'CALL';
+            isUp = true;
+        }
+    } else if (isDowntrend) {
+        // Default for downtrend: expect continuation or bounce near lows
+        if (nearCycleLow) {
+            direction = 'RALLY (UP)';
+            trade = 'CALL';
+            isUp = true;
+        } else {
+            direction = 'PULLBACK (DN)';
+            trade = 'PUT';
+            isUp = false;
+        }
+    } else {
+        // Neutral/sideways: use cycle position
+        if (nearCycleLow) {
+            direction = 'RALLY (UP)';
+            trade = 'CALL';
+            isUp = true;
+        } else {
+            direction = 'PULLBACK (DN)';
+            trade = 'PUT';
+            isUp = false;
+        }
+    }
+
+    return { direction, trade, isUp };
+}
+
+// Detect candlestick patterns from price data
+// Returns: { name: string, timeframe: string, dateDetected: string, implication: 'bullish'|'bearish'|'neutral' }
+function detectPatterns(candles, symbol) {
+    if (!candles || candles.length < 10) {
+        return { name: 'No Data', timeframe: '--', dateDetected: '--', implication: 'neutral' };
+    }
+
+    const patterns = [];
+    const today = new Date();
+
+    // Get last few candles for pattern detection
+    const recent = candles.slice(-5);
+    const current = recent[recent.length - 1];
+    const prev = recent[recent.length - 2];
+    const prev2 = recent.length > 2 ? recent[recent.length - 3] : null;
+
+    if (!current || !prev) {
+        return { name: 'Analyzing...', timeframe: 'Daily', dateDetected: formatShortDate(today), implication: 'neutral' };
+    }
+
+    // Parse candle values
+    const currOpen = parseFloat(current.Open || current.open) || 0;
+    const currClose = parseFloat(current.Close || current.close) || 0;
+    const currHigh = parseFloat(current.High || current.high) || 0;
+    const currLow = parseFloat(current.Low || current.low) || 0;
+
+    const prevOpen = parseFloat(prev.Open || prev.open) || 0;
+    const prevClose = parseFloat(prev.Close || prev.close) || 0;
+    const prevHigh = parseFloat(prev.High || prev.high) || 0;
+    const prevLow = parseFloat(prev.Low || prev.low) || 0;
+
+    const currBody = Math.abs(currClose - currOpen);
+    const currRange = currHigh - currLow;
+    const currUpperWick = currHigh - Math.max(currOpen, currClose);
+    const currLowerWick = Math.min(currOpen, currClose) - currLow;
+
+    const prevBody = Math.abs(prevClose - prevOpen);
+    const prevRange = prevHigh - prevLow;
+
+    const isCurrGreen = currClose > currOpen;
+    const isPrevGreen = prevClose > prevOpen;
+
+    // Pattern Detection Logic
+
+    // 1. Hammer - long lower wick, small body at top (bullish reversal)
+    if (currLowerWick > currBody * 2 && currUpperWick < currBody * 0.5 && currRange > 0) {
+        patterns.push({ name: 'Hammer', implication: 'bullish', weight: 3 });
+    }
+
+    // 2. Shooting Star - long upper wick, small body at bottom (bearish reversal)
+    if (currUpperWick > currBody * 2 && currLowerWick < currBody * 0.5 && currRange > 0) {
+        patterns.push({ name: 'Shooting Star', implication: 'bearish', weight: 3 });
+    }
+
+    // 3. Doji - very small body relative to range (indecision)
+    if (currBody < currRange * 0.1 && currRange > 0) {
+        patterns.push({ name: 'Doji', implication: 'neutral', weight: 2 });
+    }
+
+    // 4. Bullish Engulfing - green candle completely engulfs prior red candle
+    if (isCurrGreen && !isPrevGreen &&
+        currOpen <= prevClose && currClose >= prevOpen &&
+        currBody > prevBody * 1.1) {
+        patterns.push({ name: 'Bullish Engulfing', implication: 'bullish', weight: 4 });
+    }
+
+    // 5. Bearish Engulfing - red candle completely engulfs prior green candle
+    if (!isCurrGreen && isPrevGreen &&
+        currOpen >= prevClose && currClose <= prevOpen &&
+        currBody > prevBody * 1.1) {
+        patterns.push({ name: 'Bearish Engulfing', implication: 'bearish', weight: 4 });
+    }
+
+    // 6. Double Bottom Detection (simplified - check last 20 candles)
+    if (candles.length >= 20) {
+        const last20 = candles.slice(-20);
+        const lows = last20.map(c => parseFloat(c.Low || c.low) || 0);
+        const minLow = Math.min(...lows);
+        const minIndices = lows.map((l, i) => Math.abs(l - minLow) < minLow * 0.02 ? i : -1).filter(i => i >= 0);
+
+        // Check for two lows at similar levels with gap between them
+        if (minIndices.length >= 2) {
+            const gap = minIndices[minIndices.length - 1] - minIndices[0];
+            if (gap >= 5) {
+                patterns.push({ name: 'Double Bottom', implication: 'bullish', weight: 5 });
+            }
+        }
+    }
+
+    // 7. Double Top Detection (simplified - check last 20 candles)
+    if (candles.length >= 20) {
+        const last20 = candles.slice(-20);
+        const highs = last20.map(c => parseFloat(c.High || c.high) || 0);
+        const maxHigh = Math.max(...highs);
+        const maxIndices = highs.map((h, i) => Math.abs(h - maxHigh) < maxHigh * 0.02 ? i : -1).filter(i => i >= 0);
+
+        // Check for two highs at similar levels with gap between them
+        if (maxIndices.length >= 2) {
+            const gap = maxIndices[maxIndices.length - 1] - maxIndices[0];
+            if (gap >= 5) {
+                patterns.push({ name: 'Double Top', implication: 'bearish', weight: 5 });
+            }
+        }
+    }
+
+    // Sort by weight and return strongest pattern
+    if (patterns.length > 0) {
+        patterns.sort((a, b) => b.weight - a.weight);
+        return {
+            name: patterns[0].name,
+            timeframe: 'Daily',
+            dateDetected: formatShortDate(today),
+            implication: patterns[0].implication
+        };
+    }
+
+    // Default - no significant pattern detected
+    return { name: 'None', timeframe: 'Daily', dateDetected: formatShortDate(today), implication: 'neutral' };
+}
+
+// Helper function to format date as "Dec 21"
+function formatShortDate(date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}`;
+}
+
 const allETFData = [
     { symbol: 'SPY', name: 'S&P 500', sector: 'Broad Market', type: 'index' },
     { symbol: 'QQQ', name: 'Nasdaq 100', sector: 'Tech Heavy', type: 'index' },
@@ -15859,16 +16080,79 @@ function populateOpportunitiesTable() {
 
         const priceDisplay = currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : '--';
 
+        // Get candle data for pattern detection
+        let candles = [];
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[etf.symbol]) {
+            candles = allSymbolsData[etf.symbol];
+        } else if (etf.symbol === currentSymbol && typeof currentData !== 'undefined') {
+            candles = currentData;
+        }
+
+        // Calculate support and resistance levels from recent price data
+        let supportLevel = currentPrice * 0.95;
+        let resistanceLevel = currentPrice * 1.05;
+        if (candles.length >= 20) {
+            const last20 = candles.slice(-20);
+            const lows = last20.map(c => parseFloat(c.Low || c.low) || currentPrice);
+            const highs = last20.map(c => parseFloat(c.High || c.high) || currentPrice);
+            supportLevel = Math.min(...lows);
+            resistanceLevel = Math.max(...highs);
+        }
+
+        // Get Gann cycle day
+        const gannCycles = calculateGannCycles();
+        const cycleDay = gannCycles.cycle30Day || 15;
+
+        // Calculate turn direction using new function
+        const turnInfo = calculateTurnDirection(
+            etf.symbol,
+            etf.cyclePhase,
+            cycleDay,
+            currentPrice,
+            supportLevel,
+            resistanceLevel
+        );
+
+        // Detect patterns using new function
+        const patternInfo = detectPatterns(candles, etf.symbol);
+
+        // Format next turn date
+        const nextTurnDate = etf.turnDate ? formatShortDate(etf.turnDate) : '--';
+
+        // Calculate days until turn
+        const daysUntilTurn = etf.turnDate ? Math.max(0, Math.ceil((etf.turnDate - new Date()) / (24 * 60 * 60 * 1000))) : 0;
+
+        // Calculate price target (estimate based on direction and recent range)
+        let targetPrice = currentPrice;
+        if (currentPrice > 0) {
+            const priceRange = resistanceLevel - supportLevel;
+            if (turnInfo.isUp) {
+                targetPrice = currentPrice + (priceRange * 0.5);
+            } else {
+                targetPrice = currentPrice - (priceRange * 0.5);
+            }
+        }
+        const targetDisplay = targetPrice > 0 ? `$${targetPrice.toFixed(0)}` : '--';
+
+        // Pattern class based on implication
+        const patternClass = patternInfo.implication === 'bullish' ? 'pattern-bullish' :
+                            patternInfo.implication === 'bearish' ? 'pattern-bearish' : 'pattern-neutral';
+
         html += `
             <tr style="background: ${rowBg}; cursor: pointer;" onclick="openTradeDetail('${etf.symbol}')">
                 <td style="color: ${statusColor}; font-weight: 600;">${statusIcon} ${displayStatus}</td>
                 <td style="font-weight: 700; color: var(--primary);">${etf.symbol}</td>
                 <td style="font-size: 10px;">${etf.sector}</td>
                 <td style="font-weight: 600;">${priceDisplay}</td>
-                <td style="font-weight: 600;">${windowText}</td>
-                <td style="color: ${setupColor}; font-weight: 700;">${setupText}</td>
+                <td style="font-weight: 600;">${nextTurnDate}</td>
+                <td style="font-weight: 600;">${daysUntilTurn}</td>
+                <td class="${turnInfo.isUp ? 'turn-up' : 'turn-down'}">${turnInfo.direction}</td>
+                <td class="${turnInfo.trade === 'CALL' ? 'trade-call' : 'trade-put'}">${turnInfo.trade}</td>
+                <td style="font-weight: 600;">${targetDisplay}</td>
+                <td class="${patternClass}">${patternInfo.name}</td>
+                <td style="font-size: 10px; color: var(--muted);">${patternInfo.timeframe}</td>
+                <td style="font-size: 10px; color: var(--muted);">${patternInfo.dateDetected}</td>
                 <td style="color: ${scoreColor}; font-weight: 600;">${etf.score}</td>
-                <td style="color: ${directionColor};">${directionIcon} ${etf.direction}</td>
                 <td onclick="event.stopPropagation();">${actionBtn}</td>
             </tr>
         `;
