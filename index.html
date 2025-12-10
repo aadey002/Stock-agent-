@@ -3129,6 +3129,60 @@ function filterOppTable(filter) {
     if (document.getElementById('opp-ratio')) document.getElementById('opp-ratio').textContent = calls + ' / ' + puts;
 }
 
+// Load live prices from CSV data files
+async function loadOpportunitiesPrices() {
+    const symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    for (const symbol of symbols) {
+        try {
+            const response = await fetch('data/' + symbol + '.csv');
+            if (!response.ok) continue;
+
+            const text = await response.text();
+            const lines = text.trim().split('\n');
+
+            if (lines.length < 2) continue;
+
+            // Get the last row (most recent data)
+            const lastLine = lines[lines.length - 1];
+            const columns = lastLine.split(',');
+
+            // CSV format: Date,Open,High,Low,Close,Volume,...
+            const closePrice = parseFloat(columns[4]);
+
+            if (isNaN(closePrice)) continue;
+
+            // Find the row in the table and update the price
+            const tbody = document.getElementById('oppTableBody');
+            if (!tbody) continue;
+
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const symbolCell = row.cells[1]?.textContent?.trim();
+                if (symbolCell === symbol) {
+                    row.cells[3].textContent = '$' + closePrice.toFixed(2);
+                }
+            });
+
+        } catch (error) {
+            console.log('Error loading ' + symbol + ':', error);
+        }
+    }
+}
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadOpportunitiesPrices();
+});
+
+// Also call when Opportunities tab is clicked
+const oppTab = document.querySelector('[data-tab="opportunities"]');
+if (oppTab) {
+    oppTab.addEventListener('click', function() {
+        setTimeout(loadOpportunitiesPrices, 100);
+    });
+}
+
 function setTradingMode(mode) {
     tradingMode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
