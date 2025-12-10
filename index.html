@@ -425,6 +425,151 @@
         .phi-level { text-align: center; padding: 10px; background: white; border-radius: 6px; }
         .phi-level-name { font-size: 10px; color: var(--muted); }
         .phi-level-value { font-weight: 700; font-size: 14px; color: var(--secondary); }
+
+        /* Gann Analysis Tab Styles */
+        #gann-analysis { position: relative; }
+        .gann-background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(212,160,23,0.03) 0%, transparent 50%),
+                linear-gradient(0deg, transparent 49.5%, rgba(212,160,23,0.05) 50%, transparent 50.5%),
+                linear-gradient(90deg, transparent 49.5%, rgba(212,160,23,0.05) 50%, transparent 50.5%);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .gann-card { position: relative; z-index: 1; }
+        .gann-confluence-card .gann-glow {
+            animation: gannPulse 2s ease-in-out infinite;
+        }
+        @keyframes gannPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(212,160,23,0.3); }
+            50% { box-shadow: 0 0 25px rgba(212,160,23,0.6); }
+        }
+        .gann-tab:hover { filter: brightness(1.1); }
+        .cycle-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.05);
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+        .cycle-bar-label {
+            font-size: 10px;
+            min-width: 80px;
+            color: var(--muted);
+        }
+        .cycle-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .cycle-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .cycle-bar-value {
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: right;
+        }
+        .angle-badge {
+            background: rgba(212,160,23,0.1);
+            border: 1px solid rgba(212,160,23,0.2);
+            border-radius: 4px;
+            padding: 4px 6px;
+            text-align: center;
+        }
+        .angle-badge.active {
+            background: rgba(212,160,23,0.3);
+            border-color: #d4a017;
+        }
+        .angle-badge-name {
+            font-size: 9px;
+            color: var(--muted);
+        }
+        .angle-badge-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .sacred-number {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 4px;
+            padding: 6px;
+            text-align: center;
+        }
+        .sacred-number-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+        .sacred-number-label {
+            font-size: 8px;
+            color: var(--muted);
+        }
+        .confluence-factor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 6px;
+        }
+        .confluence-factor-icon {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+        .confluence-factor-text {
+            flex: 1;
+            font-size: 11px;
+        }
+        .confluence-factor-score {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .confluence-factor-score.active {
+            background: rgba(34,197,94,0.2);
+            color: #22c55e;
+        }
+        .confluence-factor-score.inactive {
+            background: rgba(107,114,128,0.1);
+            color: var(--muted);
+        }
+        .sq9-level {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.05);
+        }
+        .sq9-level:last-child { border-bottom: none; }
+        .sq9-angle { color: var(--muted); }
+        .sq9-price { font-weight: 600; }
+        .sq9-diff { font-size: 9px; color: var(--muted); }
+        .gann-date-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 4px;
+        }
+        .gann-date-item.near {
+            background: rgba(245,158,11,0.2);
+            border: 1px solid #f59e0b;
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -1087,6 +1232,7 @@
             <button class="tab-btn health-tab" data-tab="health">🏥 Health</button>
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
+            <button class="tab-btn gann-tab" data-tab="gann-analysis" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white;">🔮 Gann Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
         </div>
@@ -2469,6 +2615,252 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+        <!-- GANN ANALYSIS TAB -->
+        <div id="gann-analysis" class="tab-content">
+            <!-- Sacred geometry background pattern -->
+            <div class="gann-background-pattern"></div>
+
+            <!-- Gann Header -->
+            <div class="card gann-header-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.15), rgba(184,134,11,0.1)); border: 1px solid rgba(212,160,23,0.3); margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2 style="font-size: 20px; font-weight: 700; color: #d4a017; margin: 0; display: flex; align-items: center; gap: 10px;">
+                            🔮 W.D. Gann Master Analysis
+                            <span id="gannLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); font-weight: normal;">⏱️ --</span>
+                        </h2>
+                        <p style="font-size: 11px; color: var(--muted); margin: 4px 0 0 0;">"Time is more important than price" - W.D. Gann</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span style="font-size: 12px; color: var(--muted);">Analyzing:</span>
+                        <span id="gannCurrentSymbol" style="font-size: 16px; font-weight: 700; color: #d4a017;">SPY</span>
+                        <span id="gannCurrentPrice" style="font-size: 16px; font-weight: 600; color: var(--text);">$---</span>
+                        <button onclick="updateGannAnalysis()" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">🔄 Recalculate</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="gap: 15px;">
+                <!-- SECTION 1: Square of 9 Calculator -->
+                <div class="card gann-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(0,0,0,0)); border: 1px solid rgba(212,160,23,0.2);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        📐 Square of 9 Calculator
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px;">Input Price</label>
+                            <input type="number" id="sq9Input" placeholder="Enter price" style="width: 100%; padding: 8px 12px; border: 1px solid rgba(212,160,23,0.3); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 14px;" onchange="updateSquareOf9()">
+                        </div>
+                        <button onclick="autoFillSq9Price()" style="background: rgba(212,160,23,0.2); color: #d4a017; border: 1px solid rgba(212,160,23,0.3); padding: 8px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; align-self: flex-end;">Use Current</button>
+                    </div>
+
+                    <!-- Visual Square of 9 Spiral -->
+                    <div id="sq9Visual" style="position: relative; width: 100%; height: 200px; background: radial-gradient(circle, rgba(212,160,23,0.1) 0%, transparent 70%); border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                        <div id="sq9Spiral" style="font-size: 11px; text-align: center; color: var(--muted);">
+                            Enter price to generate Square of 9
+                        </div>
+                    </div>
+
+                    <!-- Support & Resistance Levels -->
+                    <div class="grid grid-2" style="gap: 10px;">
+                        <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px;">
+                            <h4 style="font-size: 11px; color: #22c55e; margin-bottom: 8px; font-weight: 600;">🟢 SUPPORT LEVELS</h4>
+                            <div id="sq9Support" style="font-size: 10px; line-height: 1.6;">
+                                <div style="color: var(--muted);">--</div>
+                            </div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px;">
+                            <h4 style="font-size: 11px; color: #ef4444; margin-bottom: 8px; font-weight: 600;">🔴 RESISTANCE LEVELS</h4>
+                            <div id="sq9Resistance" style="font-size: 10px; line-height: 1.6;">
+                                <div style="color: var(--muted);">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: Gann Time Cycles -->
+                <div class="card gann-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(0,0,0,0)); border: 1px solid rgba(212,160,23,0.2);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        ⏰ Gann Time Cycles
+                    </div>
+
+                    <!-- Cycle Turn Alert -->
+                    <div id="cycleAlert" style="display: none; background: rgba(245,158,11,0.2); border: 1px solid #f59e0b; border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center;">
+                        <span style="font-size: 14px;">⚠️</span>
+                        <span style="font-size: 12px; font-weight: 600; color: #f59e0b;"> CYCLE TURN ZONE - High probability reversal window!</span>
+                    </div>
+
+                    <!-- Important Gann Dates -->
+                    <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                        <h4 style="font-size: 11px; color: #8b5cf6; margin-bottom: 8px;">📅 Sacred Calendar Dates</h4>
+                        <div id="gannDates" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 10px;">
+                            <!-- Generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Cycle Progress Bars -->
+                    <div id="cycleProgress" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Generated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="gap: 15px; margin-top: 15px;">
+                <!-- SECTION 3: Gann Angles -->
+                <div class="card gann-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(0,0,0,0)); border: 1px solid rgba(212,160,23,0.2);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        📊 Gann Angles from Pivot
+                    </div>
+
+                    <!-- Pivot Detection -->
+                    <div class="grid grid-2" style="gap: 10px; margin-bottom: 15px;">
+                        <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px;">
+                            <div style="font-size: 10px; color: var(--muted);">Last Significant Low</div>
+                            <div id="gannPivotLow" style="font-size: 14px; font-weight: 600; color: #22c55e;">$-- (--)</div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px;">
+                            <div style="font-size: 10px; color: var(--muted);">Last Significant High</div>
+                            <div id="gannPivotHigh" style="font-size: 14px; font-weight: 600; color: #ef4444;">$-- (--)</div>
+                        </div>
+                    </div>
+
+                    <!-- Angles from Low -->
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="font-size: 11px; color: #22c55e; margin-bottom: 8px;">📈 Angles from Low (Bullish)</h4>
+                        <div id="anglesFromLow" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 10px;">
+                            <!-- Generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Angles from High -->
+                    <div>
+                        <h4 style="font-size: 11px; color: #ef4444; margin-bottom: 8px;">📉 Angles from High (Bearish)</h4>
+                        <div id="anglesFromHigh" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 10px;">
+                            <!-- Generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Current Position -->
+                    <div id="gannAnglePosition" style="background: rgba(212,160,23,0.15); border-radius: 8px; padding: 12px; margin-top: 15px; text-align: center;">
+                        <span style="font-size: 12px; color: var(--muted);">Current Position: </span>
+                        <span id="anglePositionText" style="font-size: 12px; font-weight: 600; color: #d4a017;">--</span>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: Sacred Numbers -->
+                <div class="card gann-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(0,0,0,0)); border: 1px solid rgba(212,160,23,0.2);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        🔢 Sacred Numbers & Proportions
+                    </div>
+
+                    <!-- Cardinal Numbers -->
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="font-size: 11px; color: #8b5cf6; margin-bottom: 8px;">Cardinal Numbers (Degrees)</h4>
+                        <div id="cardinalNumbers" class="grid grid-4" style="gap: 6px;">
+                            <!-- 90, 180, 270, 360 -->
+                        </div>
+                    </div>
+
+                    <!-- Sacred Numbers -->
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="font-size: 11px; color: #f59e0b; margin-bottom: 8px;">Sacred Numbers</h4>
+                        <div id="sacredNumbers" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
+                            <!-- 7, 9, 12, 52, 144 -->
+                        </div>
+                    </div>
+
+                    <!-- Price Relationships -->
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 12px;">
+                        <h4 style="font-size: 11px; color: #3b82f6; margin-bottom: 10px;">Price Mathematical Relationships</h4>
+                        <div id="priceRelationships" class="grid grid-2" style="gap: 8px; font-size: 11px;">
+                            <!-- sqrt, squared, /9, x9 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5 & 6: Confluence & Forecast (Full Width) -->
+            <div class="grid grid-2" style="gap: 15px; margin-top: 15px;">
+                <!-- SECTION 5: Master Confluence -->
+                <div class="card gann-card gann-confluence-card" style="background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(139,92,246,0.08)); border: 1px solid rgba(212,160,23,0.3);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        ⚡ Master Time & Price Confluence
+                    </div>
+
+                    <!-- Confluence Score Display -->
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                            <svg viewBox="0 0 120 120" style="transform: rotate(-90deg);">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10"/>
+                                <circle id="confluenceRing" cx="60" cy="60" r="50" fill="none" stroke="#d4a017" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="314" style="transition: stroke-dashoffset 1s ease;"/>
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div id="confluenceScore" style="font-size: 28px; font-weight: 700; color: #d4a017;">0</div>
+                                <div style="font-size: 10px; color: var(--muted);">/ 100</div>
+                            </div>
+                        </div>
+                        <div id="confluenceLabel" style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 10px;">Calculating...</div>
+                    </div>
+
+                    <!-- Confluence Factors -->
+                    <div id="confluenceFactors" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- SECTION 6: Gann Forecast -->
+                <div class="card gann-card gann-forecast-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(212,160,23,0.08)); border: 1px solid rgba(212,160,23,0.3);">
+                    <div class="card-title" style="color: #d4a017; border-bottom: 1px solid rgba(212,160,23,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                        🎯 Gann Forecast
+                    </div>
+
+                    <!-- Direction Bias -->
+                    <div id="gannBias" style="text-align: center; padding: 15px; background: rgba(212,160,23,0.1); border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">GANN DIRECTIONAL BIAS</div>
+                        <div id="gannBiasText" style="font-size: 20px; font-weight: 700; color: #d4a017;">NEUTRAL</div>
+                    </div>
+
+                    <!-- Key Levels -->
+                    <div class="grid grid-2" style="gap: 10px; margin-bottom: 15px;">
+                        <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 10px; color: var(--muted);">Next Support (Sq9)</div>
+                            <div id="forecastSupport" style="font-size: 16px; font-weight: 600; color: #22c55e;">$--</div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 10px; color: var(--muted);">Next Resistance (Sq9)</div>
+                            <div id="forecastResistance" style="font-size: 16px; font-weight: 600; color: #ef4444;">$--</div>
+                        </div>
+                    </div>
+
+                    <!-- Cycle Turn -->
+                    <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                        <div class="grid grid-2" style="gap: 10px;">
+                            <div>
+                                <div style="font-size: 10px; color: var(--muted);">Next Cycle Turn</div>
+                                <div id="forecastCycleDate" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: var(--muted);">Days Until</div>
+                                <div id="forecastDaysUntil" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projected Move -->
+                    <div id="projectedMove" style="background: linear-gradient(135deg, rgba(212,160,23,0.15), rgba(212,160,23,0.05)); border: 1px solid rgba(212,160,23,0.3); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">PROJECTED MOVE</div>
+                        <div id="projectedMoveText" style="font-size: 14px; font-weight: 600; color: #d4a017;">Expect $-- move within -- days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gann Wisdom Quote -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(212,160,23,0.05), transparent); border: 1px solid rgba(212,160,23,0.15); margin-top: 15px; text-align: center; padding: 15px;">
+                <div id="gannQuote" style="font-style: italic; color: var(--muted); font-size: 12px;">
+                    "The future is but a repetition of the past." - W.D. Gann
+                </div>
+            </div>
+        </div>
+
         <!-- MULTI-CHARTS TAB -->
                 <div id="multi-charts" class="tab-content">
             <div class="card" style="margin-bottom: 15px;">
@@ -3173,6 +3565,11 @@ function initTabs() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(btn.dataset.tab).classList.add('active');
             btn.classList.add('active');
+
+            // Trigger Gann Analysis update when tab is clicked
+            if (btn.dataset.tab === 'gann-analysis') {
+                updateGannAnalysis();
+            }
         };
     });
 }
@@ -3582,6 +3979,12 @@ async function changeSymbol() {
 
     // Update Options Calculator with new symbol
     updateOptionsCalcForSymbol();
+
+    // Update Gann Analysis if that tab is active
+    const gannTab = document.getElementById('gann-analysis');
+    if (gannTab && gannTab.classList.contains('active')) {
+        updateGannAnalysis();
+    }
 }
 
 function parseCSV(text) {
@@ -7094,6 +7497,645 @@ function updateDataPatternDetection() {
     html += '</div>';
 
     detectionEl.innerHTML = html;
+}
+
+// ============================================
+// GANN ANALYSIS FUNCTIONS
+// ============================================
+
+// Gann Quotes for rotation
+const gannQuotes = [
+    '"Time is more important than price." - W.D. Gann',
+    '"The future is but a repetition of the past." - W.D. Gann',
+    '"When time and price balance, change is imminent." - W.D. Gann',
+    '"Every movement in the market is a result of natural law." - W.D. Gann',
+    '"The market is never wrong, opinions often are." - W.D. Gann',
+    '"Knowledge is the key to success in speculation." - W.D. Gann',
+    '"Never trade without stop losses." - W.D. Gann',
+    '"Buy and sell on definite rules, not on hope or fear." - W.D. Gann'
+];
+
+// Calculate Square of 9 levels
+function calculateSquareOf9(price) {
+    if (!price || price <= 0) return null;
+
+    const sqrt = Math.sqrt(price);
+    const angles = [45, 90, 135, 180, 225, 270, 315, 360];
+    const support = [];
+    const resistance = [];
+
+    angles.forEach(angle => {
+        // Resistance levels (adding to sqrt)
+        const resistSqrt = sqrt + (angle / 180);
+        const resistPrice = resistSqrt * resistSqrt;
+        resistance.push({
+            angle: angle,
+            price: resistPrice,
+            diff: resistPrice - price,
+            diffPct: ((resistPrice - price) / price * 100).toFixed(2)
+        });
+
+        // Support levels (subtracting from sqrt)
+        const supportSqrt = sqrt - (angle / 180);
+        if (supportSqrt > 0) {
+            const supportPrice = supportSqrt * supportSqrt;
+            support.push({
+                angle: angle,
+                price: supportPrice,
+                diff: price - supportPrice,
+                diffPct: ((price - supportPrice) / price * 100).toFixed(2)
+            });
+        }
+    });
+
+    return { support, resistance, sqrt, price };
+}
+
+// Calculate Gann Time Cycles
+function calculateGannCycles(referenceDate) {
+    const today = new Date();
+    const ref = referenceDate ? new Date(referenceDate) : new Date(today.getFullYear(), 0, 1); // Start of year
+    const daysSinceRef = Math.floor((today - ref) / (1000 * 60 * 60 * 24));
+
+    const cycles = [
+        { name: '30-Day Minor', days: 30, color: '#3b82f6' },
+        { name: '45-Day (1/8 yr)', days: 45, color: '#8b5cf6' },
+        { name: '60-Day', days: 60, color: '#06b6d4' },
+        { name: '90-Day (Qtr)', days: 90, color: '#10b981' },
+        { name: '120-Day (1/3 yr)', days: 120, color: '#f59e0b' },
+        { name: '144-Day Sacred', days: 144, color: '#d4a017' },
+        { name: '180-Day (Semi)', days: 180, color: '#ef4444' },
+        { name: '360-Day (Annual)', days: 360, color: '#ec4899' }
+    ];
+
+    return cycles.map(cycle => {
+        const position = daysSinceRef % cycle.days;
+        const progress = (position / cycle.days) * 100;
+        const daysUntilTurn = cycle.days - position;
+        const nextTurnDate = new Date(today.getTime() + daysUntilTurn * 24 * 60 * 60 * 1000);
+        const isNearTurn = daysUntilTurn <= 2 || position <= 2;
+
+        return {
+            ...cycle,
+            position,
+            progress,
+            daysUntilTurn,
+            nextTurnDate,
+            isNearTurn
+        };
+    });
+}
+
+// Detect significant pivots from price data
+function detectGannPivots(data) {
+    if (!data || data.length < 20) return { high: null, low: null };
+
+    const lookback = Math.min(60, data.length);
+    const recentData = data.slice(-lookback);
+
+    let highestHigh = { price: 0, date: null, index: 0 };
+    let lowestLow = { price: Infinity, date: null, index: 0 };
+
+    recentData.forEach((bar, i) => {
+        const high = parseFloat(bar.High) || 0;
+        const low = parseFloat(bar.Low) || Infinity;
+        const date = bar.Date || bar.date;
+
+        if (high > highestHigh.price) {
+            highestHigh = { price: high, date, index: i };
+        }
+        if (low < lowestLow.price) {
+            lowestLow = { price: low, date, index: i };
+        }
+    });
+
+    return {
+        high: highestHigh.price > 0 ? highestHigh : null,
+        low: lowestLow.price < Infinity ? lowestLow : null,
+        dataLength: lookback
+    };
+}
+
+// Calculate Gann Angles from pivot
+function calculateGannAngles(pivotPrice, daysSincePivot, currentPrice) {
+    if (!pivotPrice || daysSincePivot < 1) return [];
+
+    // Gann angle ratios: price units per time unit
+    const angleRatios = [
+        { name: '1x8', ratio: 0.125, degrees: 7.5 },
+        { name: '1x4', ratio: 0.25, degrees: 15 },
+        { name: '1x3', ratio: 0.333, degrees: 18.75 },
+        { name: '1x2', ratio: 0.5, degrees: 26.25 },
+        { name: '1x1', ratio: 1, degrees: 45 },
+        { name: '2x1', ratio: 2, degrees: 63.75 },
+        { name: '3x1', ratio: 3, degrees: 71.25 },
+        { name: '4x1', ratio: 4, degrees: 75 },
+        { name: '8x1', ratio: 8, degrees: 82.5 }
+    ];
+
+    // Scale factor for price movement (ATR-based or percentage)
+    const scaleFactor = pivotPrice * 0.001; // 0.1% per day as base unit
+
+    return angleRatios.map(angle => {
+        const priceAtAngle = pivotPrice + (angle.ratio * scaleFactor * daysSincePivot);
+        const diffFromCurrent = currentPrice - priceAtAngle;
+        const isAbove = currentPrice > priceAtAngle;
+
+        return {
+            ...angle,
+            price: priceAtAngle,
+            diff: diffFromCurrent,
+            isAbove,
+            isNear: Math.abs(diffFromCurrent / currentPrice) < 0.005 // Within 0.5%
+        };
+    });
+}
+
+// Calculate Gann Confluence Score
+function calculateGannConfluence(sq9Levels, cycles, angles, price) {
+    let score = 0;
+    const factors = [];
+
+    // Factor 1: Price near Square of 9 level (+25)
+    let nearSq9 = false;
+    if (sq9Levels) {
+        const allLevels = [...sq9Levels.support, ...sq9Levels.resistance];
+        nearSq9 = allLevels.some(level => Math.abs(level.diffPct) < 1.5);
+    }
+    if (nearSq9) {
+        score += 25;
+        factors.push({ text: 'Price near Square of 9 level', points: 25, active: true });
+    } else {
+        factors.push({ text: 'Price near Square of 9 level', points: 0, active: false });
+    }
+
+    // Factor 2: Time near cycle turn (+25)
+    const nearCycleTurn = cycles && cycles.some(c => c.isNearTurn);
+    if (nearCycleTurn) {
+        score += 25;
+        factors.push({ text: 'Time near cycle turn date', points: 25, active: true });
+    } else {
+        factors.push({ text: 'Time near cycle turn date', points: 0, active: false });
+    }
+
+    // Factor 3: Price on Gann angle (+25)
+    const onAngle = angles && angles.some(a => a.isNear);
+    if (onAngle) {
+        score += 25;
+        factors.push({ text: 'Price on Gann angle', points: 25, active: true });
+    } else {
+        factors.push({ text: 'Price on Gann angle', points: 0, active: false });
+    }
+
+    // Factor 4: Multiple cycles converging (+25)
+    const convergingCycles = cycles ? cycles.filter(c => c.daysUntilTurn <= 5).length : 0;
+    if (convergingCycles >= 2) {
+        score += 25;
+        factors.push({ text: `${convergingCycles} cycles converging`, points: 25, active: true });
+    } else {
+        factors.push({ text: 'Multiple cycles converging', points: 0, active: false });
+    }
+
+    return { score, factors };
+}
+
+// Get important Gann dates for current year
+function getGannDates() {
+    const year = new Date().getFullYear();
+    const today = new Date();
+
+    const dates = [
+        { name: 'Spring Equinox', date: new Date(year, 2, 20), icon: '🌸' },
+        { name: 'Summer Solstice', date: new Date(year, 5, 21), icon: '☀️' },
+        { name: 'Fall Equinox', date: new Date(year, 8, 22), icon: '🍂' },
+        { name: 'Winter Solstice', date: new Date(year, 11, 21), icon: '❄️' },
+        { name: 'Year Start', date: new Date(year, 0, 1), icon: '🎆' },
+        { name: 'Mid-Year', date: new Date(year, 6, 1), icon: '📅' }
+    ];
+
+    return dates.map(d => {
+        const daysDiff = Math.floor((d.date - today) / (1000 * 60 * 60 * 24));
+        const isNear = Math.abs(daysDiff) <= 5;
+        const isPast = daysDiff < 0;
+
+        return {
+            ...d,
+            daysDiff,
+            isNear,
+            isPast,
+            dateStr: d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        };
+    }).sort((a, b) => a.date - b.date);
+}
+
+// Auto-fill Square of 9 with current price
+function autoFillSq9Price() {
+    const input = document.getElementById('sq9Input');
+    if (input && currentData && currentData.length > 0) {
+        const lastBar = currentData[currentData.length - 1];
+        const price = parseFloat(lastBar.Close) || 0;
+        input.value = price.toFixed(2);
+        updateSquareOf9();
+    }
+}
+
+// Update Square of 9 display
+function updateSquareOf9() {
+    const input = document.getElementById('sq9Input');
+    const price = parseFloat(input?.value) || 0;
+
+    if (price <= 0) return;
+
+    const levels = calculateSquareOf9(price);
+    if (!levels) return;
+
+    // Update visual spiral
+    const spiralEl = document.getElementById('sq9Spiral');
+    if (spiralEl) {
+        spiralEl.innerHTML = `
+            <div style="position: relative; width: 180px; height: 180px;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <div style="font-size: 8px; color: var(--muted);">CENTER</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #d4a017;">$${price.toFixed(2)}</div>
+                    <div style="font-size: 9px; color: var(--muted);">√${levels.sqrt.toFixed(4)}</div>
+                </div>
+                ${[45, 90, 135, 180, 225, 270, 315, 360].map((angle, i) => {
+                    const rad = (angle - 90) * Math.PI / 180;
+                    const r = 60 + (i * 5);
+                    const x = 90 + Math.cos(rad) * r;
+                    const y = 90 + Math.sin(rad) * r;
+                    return `<div style="position: absolute; left: ${x}px; top: ${y}px; transform: translate(-50%, -50%); font-size: 8px; color: var(--muted);">${angle}°</div>`;
+                }).join('')}
+                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" viewBox="0 0 180 180">
+                    <circle cx="90" cy="90" r="30" fill="none" stroke="rgba(212,160,23,0.2)" stroke-width="1"/>
+                    <circle cx="90" cy="90" r="50" fill="none" stroke="rgba(212,160,23,0.15)" stroke-width="1"/>
+                    <circle cx="90" cy="90" r="70" fill="none" stroke="rgba(212,160,23,0.1)" stroke-width="1"/>
+                    <line x1="90" y1="20" x2="90" y2="160" stroke="rgba(212,160,23,0.1)" stroke-width="1"/>
+                    <line x1="20" y1="90" x2="160" y2="90" stroke="rgba(212,160,23,0.1)" stroke-width="1"/>
+                </svg>
+            </div>
+        `;
+    }
+
+    // Update support levels
+    const supportEl = document.getElementById('sq9Support');
+    if (supportEl) {
+        supportEl.innerHTML = levels.support.map(l => `
+            <div class="sq9-level">
+                <span class="sq9-angle">${l.angle}°</span>
+                <span class="sq9-price" style="color: #22c55e;">$${l.price.toFixed(2)}</span>
+                <span class="sq9-diff">-${l.diffPct}%</span>
+            </div>
+        `).join('');
+    }
+
+    // Update resistance levels
+    const resistEl = document.getElementById('sq9Resistance');
+    if (resistEl) {
+        resistEl.innerHTML = levels.resistance.map(l => `
+            <div class="sq9-level">
+                <span class="sq9-angle">${l.angle}°</span>
+                <span class="sq9-price" style="color: #ef4444;">$${l.price.toFixed(2)}</span>
+                <span class="sq9-diff">+${l.diffPct}%</span>
+            </div>
+        `).join('');
+    }
+
+    return levels;
+}
+
+// Main Gann Analysis Update Function
+function updateGannAnalysis() {
+    if (!currentData || currentData.length < 10) {
+        console.warn('Insufficient data for Gann analysis');
+        return;
+    }
+
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close) || 0;
+
+    // Update header
+    document.getElementById('gannCurrentSymbol').textContent = currentSymbol;
+    document.getElementById('gannCurrentPrice').textContent = '$' + price.toFixed(2);
+
+    // Auto-fill and calculate Square of 9
+    const sq9Input = document.getElementById('sq9Input');
+    if (sq9Input && !sq9Input.value) {
+        sq9Input.value = price.toFixed(2);
+    }
+    const sq9Levels = updateSquareOf9();
+
+    // Calculate Time Cycles
+    const cycles = calculateGannCycles();
+    updateCycleDisplay(cycles);
+
+    // Detect Pivots and Calculate Angles
+    const pivots = detectGannPivots(currentData);
+    updatePivotDisplay(pivots, price);
+
+    // Calculate angles from pivots
+    let anglesFromLow = [];
+    let anglesFromHigh = [];
+    if (pivots.low) {
+        const daysSinceLow = pivots.dataLength - pivots.low.index;
+        anglesFromLow = calculateGannAngles(pivots.low.price, daysSinceLow, price);
+    }
+    if (pivots.high) {
+        const daysSinceHigh = pivots.dataLength - pivots.high.index;
+        anglesFromHigh = calculateGannAngles(pivots.high.price, daysSinceHigh, price);
+    }
+    updateAnglesDisplay(anglesFromLow, anglesFromHigh, price);
+
+    // Update Sacred Numbers
+    updateSacredNumbers(price);
+
+    // Calculate Confluence Score
+    const confluence = calculateGannConfluence(sq9Levels, cycles, [...anglesFromLow, ...anglesFromHigh], price);
+    updateConfluenceDisplay(confluence);
+
+    // Generate Forecast
+    generateGannForecast(sq9Levels, cycles, pivots, confluence, price);
+
+    // Update Gann Dates
+    updateGannDates();
+
+    // Rotate quote
+    const quoteEl = document.getElementById('gannQuote');
+    if (quoteEl) {
+        quoteEl.textContent = gannQuotes[Math.floor(Math.random() * gannQuotes.length)];
+    }
+
+    console.log('Gann Analysis updated for', currentSymbol);
+}
+
+// Update Cycle Display
+function updateCycleDisplay(cycles) {
+    const progressEl = document.getElementById('cycleProgress');
+    const alertEl = document.getElementById('cycleAlert');
+
+    if (!progressEl) return;
+
+    // Check for cycle turn zone
+    const anyNearTurn = cycles.some(c => c.isNearTurn);
+    if (alertEl) {
+        alertEl.style.display = anyNearTurn ? 'block' : 'none';
+    }
+
+    progressEl.innerHTML = cycles.map(cycle => {
+        const fillColor = cycle.isNearTurn ? '#f59e0b' : cycle.color;
+        return `
+            <div class="cycle-bar ${cycle.isNearTurn ? 'gann-glow' : ''}">
+                <span class="cycle-bar-label">${cycle.name}</span>
+                <div class="cycle-bar-track">
+                    <div class="cycle-bar-fill" style="width: ${cycle.progress.toFixed(1)}%; background: ${fillColor};"></div>
+                </div>
+                <span class="cycle-bar-value" style="color: ${fillColor};">${cycle.daysUntilTurn}d</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update Pivot Display
+function updatePivotDisplay(pivots, currentPrice) {
+    const lowEl = document.getElementById('gannPivotLow');
+    const highEl = document.getElementById('gannPivotHigh');
+
+    if (lowEl && pivots.low) {
+        const dateStr = new Date(pivots.low.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        lowEl.innerHTML = `$${pivots.low.price.toFixed(2)} <span style="font-size:10px;color:var(--muted);">(${dateStr})</span>`;
+    }
+
+    if (highEl && pivots.high) {
+        const dateStr = new Date(pivots.high.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        highEl.innerHTML = `$${pivots.high.price.toFixed(2)} <span style="font-size:10px;color:var(--muted);">(${dateStr})</span>`;
+    }
+}
+
+// Update Angles Display
+function updateAnglesDisplay(fromLow, fromHigh, currentPrice) {
+    const lowEl = document.getElementById('anglesFromLow');
+    const highEl = document.getElementById('anglesFromHigh');
+    const positionEl = document.getElementById('anglePositionText');
+
+    if (lowEl) {
+        lowEl.innerHTML = fromLow.map(angle => `
+            <div class="angle-badge ${angle.isNear ? 'active' : ''}">
+                <div class="angle-badge-name">${angle.name} (${angle.degrees}°)</div>
+                <div class="angle-badge-value">$${angle.price.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+
+    if (highEl) {
+        highEl.innerHTML = fromHigh.map(angle => `
+            <div class="angle-badge ${angle.isNear ? 'active' : ''}">
+                <div class="angle-badge-name">${angle.name} (${angle.degrees}°)</div>
+                <div class="angle-badge-value">$${angle.price.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+
+    // Determine position
+    if (positionEl) {
+        const above1x1Low = fromLow.find(a => a.name === '1x1')?.isAbove;
+        const below1x1High = fromHigh.find(a => a.name === '1x1')?.isAbove === false;
+
+        let posText = '';
+        if (above1x1Low && below1x1High) {
+            posText = 'Price BETWEEN 1x1 angles - Balanced zone';
+        } else if (above1x1Low) {
+            posText = 'Price ABOVE 1x1 from low - Bullish momentum';
+        } else {
+            posText = 'Price BELOW 1x1 from low - Bearish pressure';
+        }
+        positionEl.textContent = posText;
+    }
+}
+
+// Update Sacred Numbers Display
+function updateSacredNumbers(price) {
+    const cardinalEl = document.getElementById('cardinalNumbers');
+    const sacredEl = document.getElementById('sacredNumbers');
+    const relEl = document.getElementById('priceRelationships');
+
+    if (cardinalEl) {
+        const cardinals = [90, 180, 270, 360];
+        cardinalEl.innerHTML = cardinals.map(n => `
+            <div class="sacred-number">
+                <div class="sacred-number-value">${n}°</div>
+                <div class="sacred-number-label">Cardinal</div>
+            </div>
+        `).join('');
+    }
+
+    if (sacredEl) {
+        const sacred = [
+            { val: 7, label: 'Days/Week' },
+            { val: 9, label: 'Square of 9' },
+            { val: 12, label: 'Months' },
+            { val: 52, label: 'Weeks/Yr' },
+            { val: 144, label: 'Fibonacci' }
+        ];
+        sacredEl.innerHTML = sacred.map(s => `
+            <div class="sacred-number">
+                <div class="sacred-number-value">${s.val}</div>
+                <div class="sacred-number-label">${s.label}</div>
+            </div>
+        `).join('');
+    }
+
+    if (relEl) {
+        const sqrt = Math.sqrt(price);
+        const squared = price * price;
+        const div9 = price / 9;
+        const times9 = price * 9;
+
+        relEl.innerHTML = `
+            <div style="background:rgba(255,255,255,0.5);padding:8px;border-radius:4px;">
+                <div style="color:var(--muted);font-size:10px;">√Price</div>
+                <div style="font-weight:600;color:#d4a017;">${sqrt.toFixed(4)}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.5);padding:8px;border-radius:4px;">
+                <div style="color:var(--muted);font-size:10px;">Price²</div>
+                <div style="font-weight:600;color:#d4a017;">${squared.toFixed(2)}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.5);padding:8px;border-radius:4px;">
+                <div style="color:var(--muted);font-size:10px;">Price ÷ 9</div>
+                <div style="font-weight:600;color:#d4a017;">${div9.toFixed(4)}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.5);padding:8px;border-radius:4px;">
+                <div style="color:var(--muted);font-size:10px;">Price × 9</div>
+                <div style="font-weight:600;color:#d4a017;">${times9.toFixed(2)}</div>
+            </div>
+        `;
+    }
+}
+
+// Update Confluence Display
+function updateConfluenceDisplay(confluence) {
+    const scoreEl = document.getElementById('confluenceScore');
+    const labelEl = document.getElementById('confluenceLabel');
+    const ringEl = document.getElementById('confluenceRing');
+    const factorsEl = document.getElementById('confluenceFactors');
+
+    if (scoreEl) {
+        scoreEl.textContent = confluence.score;
+
+        // Color based on score
+        const color = confluence.score >= 75 ? '#22c55e' :
+                      confluence.score >= 50 ? '#d4a017' :
+                      confluence.score >= 25 ? '#f59e0b' : '#6b7280';
+        scoreEl.style.color = color;
+    }
+
+    if (labelEl) {
+        const label = confluence.score >= 75 ? 'HIGH PROBABILITY ZONE' :
+                      confluence.score >= 50 ? 'MODERATE CONFLUENCE' :
+                      confluence.score >= 25 ? 'WEAK CONFLUENCE' : 'LOW PROBABILITY';
+        labelEl.textContent = label;
+        labelEl.style.color = confluence.score >= 50 ? '#d4a017' : 'var(--muted)';
+    }
+
+    if (ringEl) {
+        const circumference = 314; // 2 * PI * 50
+        const offset = circumference - (confluence.score / 100 * circumference);
+        ringEl.style.strokeDashoffset = offset;
+        ringEl.style.stroke = confluence.score >= 75 ? '#22c55e' :
+                              confluence.score >= 50 ? '#d4a017' : '#6b7280';
+    }
+
+    if (factorsEl) {
+        factorsEl.innerHTML = confluence.factors.map(f => `
+            <div class="confluence-factor">
+                <span class="confluence-factor-icon">${f.active ? '✅' : '⬜'}</span>
+                <span class="confluence-factor-text">${f.text}</span>
+                <span class="confluence-factor-score ${f.active ? 'active' : 'inactive'}">
+                    ${f.active ? '+' + f.points : '0'}
+                </span>
+            </div>
+        `).join('');
+    }
+}
+
+// Generate Gann Forecast
+function generateGannForecast(sq9Levels, cycles, pivots, confluence, price) {
+    // Direction bias
+    const biasEl = document.getElementById('gannBiasText');
+    const biasContainerEl = document.getElementById('gannBias');
+
+    let bias = 'NEUTRAL';
+    let biasColor = '#d4a017';
+
+    if (pivots.high && pivots.low) {
+        const midPoint = (pivots.high.price + pivots.low.price) / 2;
+        if (price > midPoint * 1.02) {
+            bias = 'BULLISH';
+            biasColor = '#22c55e';
+        } else if (price < midPoint * 0.98) {
+            bias = 'BEARISH';
+            biasColor = '#ef4444';
+        }
+    }
+
+    if (biasEl) {
+        biasEl.textContent = bias;
+        biasEl.style.color = biasColor;
+    }
+
+    // Support & Resistance from Square of 9
+    const supportEl = document.getElementById('forecastSupport');
+    const resistEl = document.getElementById('forecastResistance');
+
+    if (sq9Levels && supportEl && resistEl) {
+        const nextSupport = sq9Levels.support[0]; // 45° down
+        const nextResist = sq9Levels.resistance[0]; // 45° up
+
+        supportEl.textContent = nextSupport ? '$' + nextSupport.price.toFixed(2) : '--';
+        resistEl.textContent = nextResist ? '$' + nextResist.price.toFixed(2) : '--';
+    }
+
+    // Next cycle turn
+    const cycleDateEl = document.getElementById('forecastCycleDate');
+    const daysUntilEl = document.getElementById('forecastDaysUntil');
+
+    if (cycles && cycles.length > 0) {
+        // Find nearest cycle turn
+        const sorted = [...cycles].sort((a, b) => a.daysUntilTurn - b.daysUntilTurn);
+        const nearest = sorted[0];
+
+        if (cycleDateEl) {
+            cycleDateEl.textContent = nearest.nextTurnDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        if (daysUntilEl) {
+            daysUntilEl.textContent = nearest.daysUntilTurn + ' days';
+            daysUntilEl.style.color = nearest.daysUntilTurn <= 3 ? '#f59e0b' : '#8b5cf6';
+        }
+    }
+
+    // Projected move
+    const projectedEl = document.getElementById('projectedMoveText');
+    if (projectedEl && sq9Levels) {
+        const atr = parseFloat(currentData[currentData.length - 1]?.ATR) || price * 0.015;
+        const projectedMove = atr * 2;
+        const nearestCycleDays = cycles ? Math.min(...cycles.map(c => c.daysUntilTurn)) : 30;
+
+        const direction = bias === 'BULLISH' ? '↑' : bias === 'BEARISH' ? '↓' : '↔';
+        projectedEl.textContent = `Expect ${direction} $${projectedMove.toFixed(2)} move within ${nearestCycleDays} days`;
+    }
+}
+
+// Update Gann Dates
+function updateGannDates() {
+    const datesEl = document.getElementById('gannDates');
+    if (!datesEl) return;
+
+    const dates = getGannDates();
+    datesEl.innerHTML = dates.map(d => `
+        <div class="gann-date-item ${d.isNear ? 'near' : ''}">
+            <span>${d.icon} ${d.name}</span>
+            <span style="font-weight:600;${d.isNear ? 'color:#f59e0b;' : ''}">${d.dateStr}</span>
+        </div>
+    `).join('');
 }
 
 function generateDailyReport() {
