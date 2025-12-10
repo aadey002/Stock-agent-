@@ -3072,52 +3072,61 @@ function filterOppTable(filter) {
 
     rows.forEach(row => {
         const status = row.cells[0]?.textContent?.trim().toUpperCase() || '';
-        const trade = row.cells[7]?.textContent?.trim().toUpperCase() || '';
+        const trade = row.cells[10]?.textContent?.trim().toUpperCase() || '';
 
         let show = true;
 
         if (filter === 'calls') {
-            show = trade === 'CALL';
+            show = trade.includes('CALL');
         } else if (filter === 'puts') {
-            show = trade === 'PUT';
+            show = trade.includes('PUT');
         } else if (filter === 'ready') {
-            show = status === 'READY';
+            show = status.includes('READY');
         }
 
         row.style.display = show ? '' : 'none';
     });
 
     // Update button styles
-    const buttons = document.querySelectorAll('#opportunities button');
-    buttons.forEach(btn => {
-        if (btn.textContent.toLowerCase().includes(filter) ||
-            (filter === 'all' && btn.textContent === 'All')) {
-            btn.style.background = '#3b82f6';
-            btn.style.color = 'white';
-        } else if (!btn.textContent.includes('VIEW')) {
-            btn.style.background = '#e5e7eb';
-            btn.style.color = '#333';
-        }
-    });
+    const filterDiv = document.querySelector('#opportunities .card');
+    if (filterDiv) {
+        const buttons = filterDiv.querySelectorAll('button');
+        buttons.forEach(btn => {
+            const btnText = btn.textContent.toLowerCase();
+            if (btnText.includes('view')) return;
 
-    // Update summary counts
-    let total = 0, ready = 0, soon = 0, calls = 0, puts = 0;
+            if ((filter === 'all' && btnText === 'all') ||
+                (filter === 'calls' && btnText.includes('calls')) ||
+                (filter === 'puts' && btnText.includes('puts')) ||
+                (filter === 'ready' && btnText.includes('ready'))) {
+                btn.style.background = '#3b82f6';
+                btn.style.color = 'white';
+            } else {
+                btn.style.background = '#e5e7eb';
+                btn.style.color = '#333';
+            }
+        });
+    }
+
+    // Update summary counts based on visible rows
+    let total = 0, ready = 0, lowRisk = 0, calls = 0, puts = 0;
     rows.forEach(row => {
         if (row.style.display !== 'none') {
             total++;
             const st = row.cells[0]?.textContent?.trim().toUpperCase() || '';
-            const tr = row.cells[7]?.textContent?.trim().toUpperCase() || '';
-            if (st === 'READY') ready++;
-            if (st === 'SOON') soon++;
-            if (tr === 'CALL') calls++;
-            if (tr === 'PUT') puts++;
+            const risk = row.cells[8]?.textContent?.trim().toUpperCase() || '';
+            const tr = row.cells[10]?.textContent?.trim().toUpperCase() || '';
+            if (st.includes('READY')) ready++;
+            if (risk.includes('LOW')) lowRisk++;
+            if (tr.includes('CALL')) calls++;
+            if (tr.includes('PUT')) puts++;
         }
     });
 
-    document.getElementById('opp-total').textContent = total;
-    document.getElementById('opp-ready').textContent = ready;
-    document.getElementById('opp-soon').textContent = soon;
-    document.getElementById('opp-ratio').textContent = calls + ' / ' + puts;
+    if (document.getElementById('opp-total')) document.getElementById('opp-total').textContent = total;
+    if (document.getElementById('opp-ready')) document.getElementById('opp-ready').textContent = ready;
+    if (document.getElementById('opp-soon')) document.getElementById('opp-soon').textContent = lowRisk;
+    if (document.getElementById('opp-ratio')) document.getElementById('opp-ratio').textContent = calls + ' / ' + puts;
 }
 
 function setTradingMode(mode) {
