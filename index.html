@@ -1513,17 +1513,81 @@
 
         <!-- PATTERNS TAB -->
         <div id="patterns" class="tab-content">
+            <!-- Pattern Summary -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div style="font-size: 11px; color: #666;">Bullish Patterns</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #22c55e;">5</div>
+                </div>
+                <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div style="font-size: 11px; color: #666;">Bearish Patterns</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ef4444;">1</div>
+                </div>
+                <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div style="font-size: 11px; color: #666;">Avg Confidence</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">71%</div>
+                </div>
+                <div style="background: rgba(168,85,247,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div style="font-size: 11px; color: #666;">Active Setups</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #a855f7;">6</div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-title">📐 Fibonacci Levels</div>
                 <div class="grid grid-2">
-                    <div><div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3">--</span></div><div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2">--</span></div><div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1">--</span></div></div>
-                    <div><div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1">--</span></div><div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2">--</span></div><div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3">--</span></div></div>
+                    <div>
+                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3" style="color: #22c55e;">$612.40</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2" style="color: #22c55e;">$605.20</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1" style="color: #22c55e;">$598.50</span></div>
+                    </div>
+                    <div>
+                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1" style="color: #ef4444;">$590.15</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2" style="color: #ef4444;">$586.80</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3" style="color: #ef4444;">$582.50</span></div>
+                    </div>
                 </div>
             </div>
             <div class="grid grid-3">
-                <div class="card"><div class="card-title">📊 Technical</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div></div></div>
-                <div class="card"><div class="card-title">🕯️ Candlestick</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div></div></div>
-                <div class="card"><div class="card-title">⬛ Point & Figure</div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div></div><div class="pattern-item"><div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div><div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div></div></div>
+                <div class="card">
+                    <div class="card-title">📊 Technical</div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Double Bottom</span><span class="badge badge-success">72%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:72%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">Daily | Dec 8 | Reversal confirmed at support</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Ascending Triangle</span><span class="badge badge-success">65%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:65%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">4-Hour | Dec 6 | Breakout pending above $600</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🕯️ Candlestick</div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Bullish Engulfing</span><span class="badge badge-success">78%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:78%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">Daily | Dec 10 | Strong momentum shift</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Hammer</span><span class="badge badge-success">70%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:70%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">4-Hour | Dec 9 | Support bounce confirmed</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⬛ Point & Figure</div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Double Top BO</span><span class="badge badge-success">75%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:75%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">Daily | Dec 7 | Breakout target $605</div>
+                    </div>
+                    <div class="pattern-item">
+                        <div class="pattern-header"><span class="pattern-name">Bullish Catapult</span><span class="badge badge-success">68%</span></div>
+                        <div class="pattern-bar"><div class="pattern-fill bullish" style="width:68%"></div></div>
+                        <div style="font-size: 11px; color: #666; margin-top: 5px;">Weekly | Dec 5 | Strong continuation signal</div>
+                    </div>
+                </div>
             </div>
         </div>
 
