@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Agent 4 - Opportunities Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333333;
+            font-size: 28px;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-label {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .card-value.green {
+            color: #22c55e;
+        }
+
+        .card-value.yellow {
+            color: #eab308;
+        }
+
+        .card-value.blue {
+            color: #3b82f6;
+        }
+
+        /* Filter Buttons */
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #333333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: #f0f0f0;
+            border-color: #3b82f6;
+        }
+
+        .filter-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: #fff;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #f0f0f0;
+        }
+
+        th {
+            padding: 14px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #666666;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ready {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-soon {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .status-waiting {
+            background: rgba(102, 102, 102, 0.15);
+            color: #666666;
+        }
+
+        /* Turn Direction */
+        .turn-up {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .turn-down {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Trade Type */
+        .trade-call {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .trade-put {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Symbol */
+        .symbol {
+            font-weight: 700;
+            color: #333333;
+        }
+
+        /* Score */
+        .score-high {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .score-medium {
+            color: #eab308;
+            font-weight: 600;
+        }
+
+        .score-low {
+            color: #666666;
+        }
+
+        /* Action Button */
+        .action-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #2563eb;
+        }
+
+        .action-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Hidden rows */
+        tr.hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Agent 4 - Opportunities</h1>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+        <div class="card">
+            <div class="card-label">Total Opportunities</div>
+            <div class="card-value" id="total-count">12</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Ready Now</div>
+            <div class="card-value green" id="ready-count">2</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Coming Soon</div>
+            <div class="card-value yellow" id="soon-count">4</div>
+        </div>
+        <div class="card">
+            <div class="card-label">Calls / Puts</div>
+            <div class="card-value blue" id="ratio-display">7 / 5</div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filter-section">
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="calls">Calls Only</button>
+            <button class="filter-btn" data-filter="puts">Puts Only</button>
+            <button class="filter-btn" data-filter="ready">Ready Now</button>
+        </div>
+    </div>
+
+    <!-- Opportunities Table -->
+    <div class="table-container">
+        <table id="opportunities-table">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Symbol</th>
+                    <th>Sector</th>
+                    <th>Price</th>
+                    <th>Next Turn</th>
+                    <th>Days</th>
+                    <th>Turn Dir</th>
+                    <th>Trade</th>
+                    <th>Target</th>
+                    <th>Pattern</th>
+                    <th>TF</th>
+                    <th>Detected</th>
+                    <th>Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Data populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Sample Data for 12 symbols
+        const opportunities = [
+            {
+                status: 'ready',
+                symbol: 'SPY',
+                sector: 'Index',
+                price: 594.82,
+                nextTurn: '2024-12-10',
+                days: 0,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 612.50,
+                pattern: 'Cycle Low',
+                tf: 'Daily',
+                detected: '2024-12-08',
+                score: 92
+            },
+            {
+                status: 'ready',
+                symbol: 'QQQ',
+                sector: 'Tech',
+                price: 518.34,
+                nextTurn: '2024-12-10',
+                days: 0,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 538.00,
+                pattern: 'Cycle Low',
+                tf: 'Daily',
+                detected: '2024-12-08',
+                score: 88
+            },
+            {
+                status: 'soon',
+                symbol: 'IWM',
+                sector: 'Small Cap',
+                price: 238.91,
+                nextTurn: '2024-12-12',
+                days: 2,
+                turnDir: 'down',
+                trade: 'PUT',
+                target: 228.00,
+                pattern: 'Cycle High',
+                tf: 'Daily',
+                detected: '2024-12-09',
+                score: 85
+            },
+            {
+                status: 'soon',
+                symbol: 'XLF',
+                sector: 'Financial',
+                price: 48.23,
+                nextTurn: '2024-12-13',
+                days: 3,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 51.00,
+                pattern: 'Cycle Low',
+                tf: 'Weekly',
+                detected: '2024-12-07',
+                score: 78
+            },
+            {
+                status: 'soon',
+                symbol: 'XLE',
+                sector: 'Energy',
+                price: 87.56,
+                nextTurn: '2024-12-14',
+                days: 4,
+                turnDir: 'down',
+                trade: 'PUT',
+                target: 82.00,
+                pattern: 'Cycle High',
+                tf: 'Daily',
+                detected: '2024-12-09',
+                score: 81
+            },
+            {
+                status: 'soon',
+                symbol: 'XLK',
+                sector: 'Technology',
+                price: 234.78,
+                nextTurn: '2024-12-11',
+                days: 1,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 245.00,
+                pattern: 'Cycle Low',
+                tf: 'Daily',
+                detected: '2024-12-08',
+                score: 86
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLV',
+                sector: 'Healthcare',
+                price: 146.32,
+                nextTurn: '2024-12-18',
+                days: 8,
+                turnDir: 'down',
+                trade: 'PUT',
+                target: 140.00,
+                pattern: 'Cycle High',
+                tf: 'Weekly',
+                detected: '2024-12-05',
+                score: 72
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLI',
+                sector: 'Industrial',
+                price: 139.87,
+                nextTurn: '2024-12-20',
+                days: 10,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 148.00,
+                pattern: 'Cycle Low',
+                tf: 'Weekly',
+                detected: '2024-12-04',
+                score: 68
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLB',
+                sector: 'Materials',
+                price: 89.45,
+                nextTurn: '2024-12-22',
+                days: 12,
+                turnDir: 'down',
+                trade: 'PUT',
+                target: 84.00,
+                pattern: 'Cycle High',
+                tf: 'Daily',
+                detected: '2024-12-06',
+                score: 65
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLU',
+                sector: 'Utilities',
+                price: 77.89,
+                nextTurn: '2024-12-25',
+                days: 15,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 82.00,
+                pattern: 'Cycle Low',
+                tf: 'Weekly',
+                detected: '2024-12-03',
+                score: 61
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLP',
+                sector: 'Consumer Staples',
+                price: 81.23,
+                nextTurn: '2024-12-28',
+                days: 18,
+                turnDir: 'down',
+                trade: 'PUT',
+                target: 76.50,
+                pattern: 'Cycle High',
+                tf: 'Daily',
+                detected: '2024-12-02',
+                score: 58
+            },
+            {
+                status: 'waiting',
+                symbol: 'XLY',
+                sector: 'Consumer Disc',
+                price: 225.67,
+                nextTurn: '2024-12-30',
+                days: 20,
+                turnDir: 'up',
+                trade: 'CALL',
+                target: 240.00,
+                pattern: 'Cycle Low',
+                tf: 'Weekly',
+                detected: '2024-12-01',
+                score: 55
+            }
+        ];
+
+        // Render table
+        function renderTable(filter = 'all') {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            opportunities.forEach(opp => {
+                // Apply filters
+                let show = true;
+                if (filter === 'calls' && opp.trade !== 'CALL') show = false;
+                if (filter === 'puts' && opp.trade !== 'PUT') show = false;
+                if (filter === 'ready' && opp.status !== 'ready') show = false;
+
+                const row = document.createElement('tr');
+                if (!show) row.classList.add('hidden');
+
+                // Status badge
+                const statusClass = opp.status === 'ready' ? 'status-ready' :
+                                   opp.status === 'soon' ? 'status-soon' : 'status-waiting';
+                const statusText = opp.status === 'ready' ? 'Ready' :
+                                  opp.status === 'soon' ? 'Soon' : 'Waiting';
+
+                // Turn direction class
+                const turnClass = opp.turnDir === 'up' ? 'turn-up' : 'turn-down';
+                const turnIcon = opp.turnDir === 'up' ? '▲' : '▼';
+
+                // Trade class
+                const tradeClass = opp.trade === 'CALL' ? 'trade-call' : 'trade-put';
+
+                // Score class
+                const scoreClass = opp.score >= 80 ? 'score-high' :
+                                  opp.score >= 65 ? 'score-medium' : 'score-low';
+
+                // Action button
+                const actionDisabled = opp.status !== 'ready' ? 'disabled' : '';
+
+                row.innerHTML = `
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="symbol">${opp.symbol}</td>
+                    <td>${opp.sector}</td>
+                    <td>$${opp.price.toFixed(2)}</td>
+                    <td>${opp.nextTurn}</td>
+                    <td>${opp.days}</td>
+                    <td class="${turnClass}">${turnIcon} ${opp.turnDir.toUpperCase()}</td>
+                    <td class="${tradeClass}">${opp.trade}</td>
+                    <td>$${opp.target.toFixed(2)}</td>
+                    <td>${opp.pattern}</td>
+                    <td>${opp.tf}</td>
+                    <td>${opp.detected}</td>
+                    <td class="${scoreClass}">${opp.score}</td>
+                    <td><button class="action-btn" ${actionDisabled} onclick="handleAction('${opp.symbol}')">Trade</button></td>
+                `;
+
+                tbody.appendChild(row);
+            });
+
+            updateCounts(filter);
+        }
+
+        // Update summary counts based on filter
+        function updateCounts(filter) {
+            let filtered = opportunities;
+            if (filter === 'calls') filtered = opportunities.filter(o => o.trade === 'CALL');
+            if (filter === 'puts') filtered = opportunities.filter(o => o.trade === 'PUT');
+            if (filter === 'ready') filtered = opportunities.filter(o => o.status === 'ready');
+
+            const total = filtered.length;
+            const ready = filtered.filter(o => o.status === 'ready').length;
+            const soon = filtered.filter(o => o.status === 'soon').length;
+            const calls = filtered.filter(o => o.trade === 'CALL').length;
+            const puts = filtered.filter(o => o.trade === 'PUT').length;
+
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('ready-count').textContent = ready;
+            document.getElementById('soon-count').textContent = soon;
+            document.getElementById('ratio-display').textContent = `${calls} / ${puts}`;
+        }
+
+        // Handle filter button clicks
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active state
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Apply filter
+                const filter = this.getAttribute('data-filter');
+                renderTable(filter);
+            });
+        });
+
+        // Handle trade action
+        function handleAction(symbol) {
+            alert(`Opening trade setup for ${symbol}...`);
+        }
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>
