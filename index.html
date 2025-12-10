@@ -2846,6 +2846,63 @@ function initTabs() {
     });
 }
 
+// Opportunities Tab Filter Function
+function filterOppTable(filter) {
+    const tbody = document.getElementById('oppTableBody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        const status = row.cells[0]?.textContent?.trim().toUpperCase() || '';
+        const trade = row.cells[7]?.textContent?.trim().toUpperCase() || '';
+
+        let show = true;
+
+        if (filter === 'calls') {
+            show = trade === 'CALL';
+        } else if (filter === 'puts') {
+            show = trade === 'PUT';
+        } else if (filter === 'ready') {
+            show = status === 'READY';
+        }
+
+        row.style.display = show ? '' : 'none';
+    });
+
+    // Update button styles
+    const buttons = document.querySelectorAll('#opportunities button');
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(filter) ||
+            (filter === 'all' && btn.textContent === 'All')) {
+            btn.style.background = '#3b82f6';
+            btn.style.color = 'white';
+        } else if (!btn.textContent.includes('VIEW')) {
+            btn.style.background = '#e5e7eb';
+            btn.style.color = '#333';
+        }
+    });
+
+    // Update summary counts
+    let total = 0, ready = 0, soon = 0, calls = 0, puts = 0;
+    rows.forEach(row => {
+        if (row.style.display !== 'none') {
+            total++;
+            const st = row.cells[0]?.textContent?.trim().toUpperCase() || '';
+            const tr = row.cells[7]?.textContent?.trim().toUpperCase() || '';
+            if (st === 'READY') ready++;
+            if (st === 'SOON') soon++;
+            if (tr === 'CALL') calls++;
+            if (tr === 'PUT') puts++;
+        }
+    });
+
+    document.getElementById('opp-total').textContent = total;
+    document.getElementById('opp-ready').textContent = ready;
+    document.getElementById('opp-soon').textContent = soon;
+    document.getElementById('opp-ratio').textContent = calls + ' / ' + puts;
+}
+
 function setTradingMode(mode) {
     tradingMode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
