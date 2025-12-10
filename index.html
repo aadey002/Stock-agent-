@@ -1410,21 +1410,45 @@
                 </div>
             </div>
 
+            <!-- Upcoming Events Widget -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(234,179,8,0.05)); border: 1px solid rgba(245,158,11,0.2);">
+                <div class="card-title" style="color: #f59e0b;">📅 Upcoming Market Events (Next 7 Days)</div>
+                <div id="upcomingEventsWidget" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Pattern Detection Summary -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2);">
+                <div class="card-title" style="color: #8b5cf6;">📊 Pattern Detection (Last 14 Days)</div>
+                <div id="patternDetectionSummary" style="font-size: 11px; line-height: 1.8;">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+
             <!-- Historical Data Table -->
             <div class="card">
                 <div class="card-title">📅 Historical Data (Last 10 Days)</div>
-                <div class="table-wrap" style="max-height: 350px; overflow-y: auto;">
-                    <table style="font-size: 11px;">
+
+                <!-- Summary Row -->
+                <div id="historicalSummary" style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 11px; display: flex; flex-wrap: wrap; gap: 15px;">
+                    <!-- Generated dynamically -->
+                </div>
+
+                <div class="table-wrap" style="max-height: 450px; overflow-y: auto; overflow-x: auto;">
+                    <table style="font-size: 10px; white-space: nowrap;">
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Close</th>
+                                <th>O/H/L/C</th>
                                 <th>Change</th>
-                                <th>Volume</th>
-                                <th>O→H Signal</th>
+                                <th>GAP</th>
+                                <th>Candle</th>
+                                <th>Trend</th>
+                                <th>Close Pos</th>
+                                <th>Vol</th>
+                                <th>O→H</th>
+                                <th>Events</th>
                             </tr>
                         </thead>
                         <tbody id="historicalDataTable">
@@ -8526,53 +8550,375 @@ function updateTradeStatistics() {
     document.getElementById('statsStreak').textContent = streak + ' ' + (currentStreakDir === 'win' ? '🟢' : '🔴');
 }
 
-// Update Historical Data Table with O→H Signal
+// Market Events Calendar Data
+const marketEvents = {
+    '2025-12-06': '👷 Jobs Report',
+    '2025-12-11': '📈 CPI',
+    '2025-12-17': '🏛️ FOMC Decision',
+    '2025-12-18': '🏛️ FOMC',
+    '2025-12-20': '📅 OpEx (Monthly)',
+    '2025-12-24': '🎄 Early Close',
+    '2025-12-25': '🎄 Market Closed',
+    '2025-12-31': '🎆 NYE Early Close',
+    '2026-01-01': '🎆 Market Closed',
+    '2026-01-03': '👷 Jobs Report',
+    '2026-01-10': '📈 CPI',
+    '2026-01-15': '📅 OpEx (Monthly)',
+    '2026-01-20': '🏛️ MLK Day Closed',
+    '2026-01-29': '🏛️ FOMC',
+    '2026-02-07': '👷 Jobs Report',
+    '2026-02-12': '📈 CPI',
+    '2026-02-21': '📅 OpEx (Monthly)',
+    '2026-03-07': '👷 Jobs Report',
+    '2026-03-12': '📈 CPI',
+    '2026-03-18': '🏛️ FOMC',
+    '2026-03-21': '📅 OpEx (Monthly)'
+};
+
+// Detect candle type
+function detectCandleType(open, high, low, close) {
+    const body = Math.abs(close - open);
+    const range = high - low;
+    const upperWick = high - Math.max(open, close);
+    const lowerWick = Math.min(open, close) - low;
+
+    if (range === 0) return { type: 'Doji', icon: '⚡', color: '#f59e0b' };
+
+    const bodyRatio = body / range;
+    const upperWickRatio = upperWick / range;
+    const lowerWickRatio = lowerWick / range;
+
+    // Doji - small body, long wicks
+    if (bodyRatio < 0.1) {
+        return { type: 'Doji', icon: '⚡', color: '#f59e0b' };
+    }
+
+    // Hammer - small body at top, long lower wick (bullish reversal)
+    if (lowerWickRatio > 0.6 && upperWickRatio < 0.1 && bodyRatio < 0.3) {
+        return { type: 'Hammer', icon: '🔨', color: '#22c55e' };
+    }
+
+    // Shooting Star - small body at bottom, long upper wick (bearish reversal)
+    if (upperWickRatio > 0.6 && lowerWickRatio < 0.1 && bodyRatio < 0.3) {
+        return { type: 'Star', icon: '⭐', color: '#ef4444' };
+    }
+
+    // Strong candles - big body, small wicks
+    if (bodyRatio > 0.7) {
+        if (close > open) {
+            return { type: 'Strong Bull', icon: '🟢', color: '#22c55e' };
+        } else {
+            return { type: 'Strong Bear', icon: '🔴', color: '#ef4444' };
+        }
+    }
+
+    // Regular candles
+    if (close > open) {
+        return { type: 'Bullish', icon: '🟢', color: '#22c55e' };
+    } else {
+        return { type: 'Bearish', icon: '🔴', color: '#ef4444' };
+    }
+}
+
+// Update Upcoming Events Widget
+function updateUpcomingEventsWidget() {
+    const widget = document.getElementById('upcomingEventsWidget');
+    if (!widget) return;
+
+    const today = new Date();
+    const next7Days = [];
+
+    for (let i = 0; i < 7; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() + i);
+        const dateStr = checkDate.toISOString().split('T')[0];
+        const dayName = checkDate.toLocaleDateString('en-US', { weekday: 'short' });
+        const dateDisplay = checkDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+        if (marketEvents[dateStr]) {
+            next7Days.push({
+                date: dateDisplay,
+                day: dayName,
+                event: marketEvents[dateStr],
+                daysAway: i
+            });
+        }
+    }
+
+    if (next7Days.length === 0) {
+        widget.innerHTML = '<div style="color: var(--muted); font-size: 11px;">No major events in next 7 days</div>';
+        return;
+    }
+
+    widget.innerHTML = next7Days.map(e => `
+        <div style="background: ${e.daysAway === 0 ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.5)'};
+                    border: 1px solid ${e.daysAway === 0 ? '#ef4444' : 'rgba(245,158,11,0.3)'};
+                    border-radius: 6px; padding: 8px 12px; text-align: center;">
+            <div style="font-size: 9px; color: var(--muted);">${e.day} ${e.date}</div>
+            <div style="font-size: 11px; font-weight: 600; ${e.daysAway === 0 ? 'color: #ef4444;' : ''}">${e.event}</div>
+            <div style="font-size: 9px; color: ${e.daysAway <= 1 ? '#f59e0b' : 'var(--muted)'};">
+                ${e.daysAway === 0 ? '⚠️ TODAY' : e.daysAway === 1 ? 'Tomorrow' : `In ${e.daysAway} days`}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Update Pattern Detection Summary
+function updatePatternDetectionSummary() {
+    if (!currentData || currentData.length < 14) return;
+
+    const summary = document.getElementById('patternDetectionSummary');
+    if (!summary) return;
+
+    const last14 = currentData.slice(-14);
+    let hammers = 0, shootingStars = 0, dojis = 0, strongBull = 0, strongBear = 0;
+    let hhhl = 0, lhll = 0;
+
+    // Count patterns and trends
+    for (let i = 1; i < last14.length; i++) {
+        const bar = last14[i];
+        const prevBar = last14[i - 1];
+        const open = parseFloat(bar.Open) || 0;
+        const high = parseFloat(bar.High) || 0;
+        const low = parseFloat(bar.Low) || 0;
+        const close = parseFloat(bar.Close) || 0;
+
+        const candle = detectCandleType(open, high, low, close);
+        if (candle.type === 'Hammer') hammers++;
+        if (candle.type === 'Star') shootingStars++;
+        if (candle.type === 'Doji') dojis++;
+        if (candle.type === 'Strong Bull') strongBull++;
+        if (candle.type === 'Strong Bear') strongBear++;
+
+        // Trend analysis
+        const prevHigh = parseFloat(prevBar.High) || 0;
+        const prevLow = parseFloat(prevBar.Low) || 0;
+        if (high > prevHigh && low > prevLow) hhhl++;
+        if (high < prevHigh && low < prevLow) lhll++;
+    }
+
+    // Volume trend analysis
+    const vol5 = last14.slice(-5).reduce((s, d) => s + (parseInt(d.Volume) || 0), 0) / 5;
+    const vol14 = last14.reduce((s, d) => s + (parseInt(d.Volume) || 0), 0) / 14;
+    const volTrend = vol5 > vol14 * 1.1 ? 'Increasing 📈' : vol5 < vol14 * 0.9 ? 'Declining 📉' : 'Stable ➡️';
+
+    // Determine overall trend
+    let trendStatus = '↔️ Consolidation';
+    let trendColor = '#f59e0b';
+    if (hhhl >= 5) { trendStatus = '📈 Uptrend (HH/HL)'; trendColor = '#22c55e'; }
+    else if (lhll >= 5) { trendStatus = '📉 Downtrend (LH/LL)'; trendColor = '#ef4444'; }
+
+    // Conclusion
+    let conclusion = '';
+    if (hhhl >= 5 && vol5 < vol14 * 0.9) {
+        conclusion = '⚠️ Uptrend intact but momentum weakening';
+    } else if (hhhl >= 5 && vol5 > vol14) {
+        conclusion = '✅ Strong uptrend with volume confirmation';
+    } else if (lhll >= 5 && vol5 < vol14 * 0.9) {
+        conclusion = '⚠️ Downtrend but selling pressure decreasing';
+    } else if (lhll >= 5) {
+        conclusion = '🔴 Downtrend with selling pressure';
+    } else {
+        conclusion = '↔️ No clear trend - wait for breakout';
+    }
+
+    summary.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div>
+                <div style="color: #22c55e; font-weight: 600; margin-bottom: 4px;">Bullish Patterns:</div>
+                <div style="color: var(--muted);">🔨 ${hammers} Hammers, 🟢 ${strongBull} Strong Bull</div>
+            </div>
+            <div>
+                <div style="color: #ef4444; font-weight: 600; margin-bottom: 4px;">Bearish Patterns:</div>
+                <div style="color: var(--muted);">⭐ ${shootingStars} Shooting Stars, 🔴 ${strongBear} Strong Bear</div>
+            </div>
+            <div>
+                <div style="color: #f59e0b; font-weight: 600; margin-bottom: 4px;">Neutral Patterns:</div>
+                <div style="color: var(--muted);">⚡ ${dojis} Dojis (Indecision)</div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 4px;">Volume Trend:</div>
+                <div style="color: var(--muted);">${volTrend}</div>
+            </div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div><strong>Current Trend:</strong> <span style="color: ${trendColor}; font-weight: 600;">${trendStatus}</span></div>
+                <div><strong>HH/HL Days:</strong> ${hhhl} | <strong>LH/LL Days:</strong> ${lhll}</div>
+            </div>
+            <div style="margin-top: 8px; padding: 8px; background: rgba(139,92,246,0.1); border-radius: 6px;">
+                <strong>📊 Conclusion:</strong> ${conclusion}
+            </div>
+        </div>
+    `;
+}
+
+// Update Historical Data Table with all new columns
 function updateHistoricalDataTable() {
     if (!currentData || currentData.length < 10) return;
 
     const tbody = document.getElementById('historicalDataTable');
+    const summaryEl = document.getElementById('historicalSummary');
     if (!tbody) return;
+
+    // Calculate 20-day average volume
+    const avgVol20 = currentData.slice(-20).reduce((s, d) => s + (parseInt(d.Volume) || 0), 0) / 20;
 
     const last10 = currentData.slice(-10).reverse();
     let html = '';
 
+    // Summary counters
+    let gapUps = 0, gapDowns = 0, hhhlCount = 0, lhllCount = 0, highVolDays = 0, lowVolDays = 0;
+    let nextEventDays = null, nextEventName = '';
+
+    // Find next event
+    const today = new Date();
+    for (let i = 0; i < 14; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() + i);
+        const dateStr = checkDate.toISOString().split('T')[0];
+        if (marketEvents[dateStr]) {
+            nextEventDays = i;
+            nextEventName = marketEvents[dateStr];
+            break;
+        }
+    }
+
     last10.forEach((bar, index) => {
         const date = bar.Date || bar.date || '--';
+        const dateKey = new Date(date).toISOString().split('T')[0];
         const open = parseFloat(bar.Open) || 0;
         const high = parseFloat(bar.High) || 0;
         const low = parseFloat(bar.Low) || 0;
         const close = parseFloat(bar.Close) || 0;
         const volume = parseInt(bar.Volume) || 0;
-        const prevClose = index < last10.length - 1 ? parseFloat(last10[index + 1]?.Close) || close : close;
+
+        // Get previous bar data (remember: array is reversed)
+        const prevBar = last10[index + 1];
+        const prevClose = prevBar ? parseFloat(prevBar.Close) || close : close;
+        const prevHigh = prevBar ? parseFloat(prevBar.High) || high : high;
+        const prevLow = prevBar ? parseFloat(prevBar.Low) || low : low;
+
+        // Change calculation
         const change = close - prevClose;
         const changePct = prevClose > 0 ? ((change / prevClose) * 100).toFixed(2) : 0;
 
-        // O→H Signal: If Open is near Low → Bullish (buyers), if Open near High → Bearish (sellers)
+        // GAP calculation
+        const gap = open - prevClose;
+        const gapPct = prevClose > 0 ? ((gap / prevClose) * 100).toFixed(2) : 0;
+        let gapDisplay = '', gapColor = '';
+        if (Math.abs(parseFloat(gapPct)) >= 0.5) {
+            if (gap > 0) { gapDisplay = `🟢 +$${gap.toFixed(2)}`; gapColor = '#22c55e'; gapUps++; }
+            else { gapDisplay = `🔴 $${gap.toFixed(2)}`; gapColor = '#ef4444'; gapDowns++; }
+        } else {
+            gapDisplay = `➡️ $${gap.toFixed(2)}`; gapColor = 'var(--muted)';
+        }
+
+        // Candle Type
+        const candle = detectCandleType(open, high, low, close);
+
+        // Trend Signal (HH/HL or LH/LL)
+        let trendSignal = '', trendColor = '';
+        if (prevBar) {
+            const higherHigh = high > prevHigh;
+            const higherLow = low > prevLow;
+            const lowerHigh = high < prevHigh;
+            const lowerLow = low < prevLow;
+
+            if (higherHigh && higherLow) {
+                trendSignal = '📈 HH/HL'; trendColor = '#22c55e'; hhhlCount++;
+            } else if (lowerHigh && lowerLow) {
+                trendSignal = '📉 LH/LL'; trendColor = '#ef4444'; lhllCount++;
+            } else {
+                trendSignal = '↔️ Mixed'; trendColor = '#f59e0b';
+            }
+        } else {
+            trendSignal = '--'; trendColor = 'var(--muted)';
+        }
+
+        // Close Position (where did price close in day's range)
+        const range = high - low;
+        const closePos = range > 0 ? ((close - low) / range * 100).toFixed(0) : 50;
+        let closePosDisplay = '', closePosColor = '';
+        if (parseInt(closePos) >= 75) {
+            closePosDisplay = '🟢 Upper'; closePosColor = '#22c55e';
+        } else if (parseInt(closePos) <= 25) {
+            closePosDisplay = '🔴 Lower'; closePosColor = '#ef4444';
+        } else {
+            closePosDisplay = '➡️ Mid'; closePosColor = 'var(--muted)';
+        }
+
+        // Volume Signal
+        const volRatio = avgVol20 > 0 ? ((volume / avgVol20) * 100).toFixed(0) : 100;
+        let volDisplay = '', volColor = '';
+        if (parseInt(volRatio) >= 150) {
+            volDisplay = `🔺 +${volRatio - 100}%`; volColor = '#22c55e'; highVolDays++;
+        } else if (parseInt(volRatio) <= 70) {
+            volDisplay = `🔻 ${volRatio - 100}%`; volColor = '#ef4444'; lowVolDays++;
+        } else {
+            volDisplay = '➡️ Norm'; volColor = 'var(--muted)';
+        }
+
+        // O→H Signal
         const openToLow = open - low;
         const openToHigh = high - open;
-        const ohSignal = openToLow < openToHigh ? '🟢 Bullish' : '🔴 Bearish';
+        const ohSignal = openToLow < openToHigh ? '🟢' : '🔴';
         const ohColor = openToLow < openToHigh ? '#22c55e' : '#ef4444';
 
+        // Events
+        const event = marketEvents[dateKey] || '-';
+
+        // Row background color
+        let rowBg = '';
+        if (event !== '-') rowBg = 'background: rgba(245,158,11,0.1);';
+        else if (parseInt(volRatio) >= 150) rowBg = 'background: rgba(59,130,246,0.1);';
+        else if (candle.type === 'Hammer' || candle.type === 'Star') rowBg = 'background: rgba(249,115,22,0.1);';
+
+        const dateFormatted = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         const changeColor = change >= 0 ? '#22c55e' : '#ef4444';
         const changeSign = change >= 0 ? '+' : '';
 
-        const dateFormatted = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
         html += `
-            <tr>
-                <td>${dateFormatted}</td>
-                <td>$${open.toFixed(2)}</td>
-                <td style="color: #22c55e;">$${high.toFixed(2)}</td>
-                <td style="color: #ef4444;">$${low.toFixed(2)}</td>
-                <td style="font-weight: 600;">$${close.toFixed(2)}</td>
-                <td style="color: ${changeColor};">${changeSign}${change.toFixed(2)} (${changeSign}${changePct}%)</td>
-                <td>${(volume / 1000000).toFixed(1)}M</td>
-                <td style="color: ${ohColor}; font-weight: 600;">${ohSignal}</td>
+            <tr style="${rowBg}">
+                <td style="font-weight: 600;">${dateFormatted}</td>
+                <td style="font-size: 9px;">$${open.toFixed(0)}/${high.toFixed(0)}/${low.toFixed(0)}/<span style="font-weight:600;">$${close.toFixed(2)}</span></td>
+                <td style="color: ${changeColor}; font-weight: 600;">${changeSign}${changePct}%</td>
+                <td style="color: ${gapColor};">${gapDisplay}</td>
+                <td style="color: ${candle.color};">${candle.icon} ${candle.type}</td>
+                <td style="color: ${trendColor};">${trendSignal}</td>
+                <td style="color: ${closePosColor};">${closePosDisplay}</td>
+                <td style="color: ${volColor};">${volDisplay}</td>
+                <td style="color: ${ohColor};">${ohSignal}</td>
+                <td style="font-size: 9px;">${event}</td>
             </tr>
         `;
     });
 
     tbody.innerHTML = html;
+
+    // Update summary row
+    if (summaryEl) {
+        const trendDesc = hhhlCount > lhllCount + 2 ? '📈 Uptrend Confirmed' :
+                          lhllCount > hhhlCount + 2 ? '📉 Downtrend Confirmed' : '↔️ Consolidation';
+        const volDesc = highVolDays > 3 ? '🔺 High Volume' :
+                        lowVolDays > 5 ? '🔻 Low Volume (⚠️ Weak)' : '➡️ Normal Volume';
+
+        let nextEventHtml = '';
+        if (nextEventDays !== null) {
+            nextEventHtml = `<div><strong>Next Event:</strong> ${nextEventName} in ${nextEventDays} day${nextEventDays !== 1 ? 's' : ''}</div>`;
+        }
+
+        summaryEl.innerHTML = `
+            <div><strong>Gaps:</strong> ${gapUps} Up, ${gapDowns} Down</div>
+            <div><strong>Trend:</strong> ${hhhlCount} HH/HL, ${lhllCount} LH/LL → ${trendDesc}</div>
+            <div><strong>Volume:</strong> ${volDesc}</div>
+            ${nextEventHtml}
+        `;
+    }
+
+    // Also update related widgets
+    updateUpcomingEventsWidget();
+    updatePatternDetectionSummary();
 }
 
 // Update Overview Reference Data
