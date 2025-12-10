@@ -1535,6 +1535,73 @@
             </div>
         </div>
 
+        <!-- OPPORTUNITIES TAB -->
+        <div id="opportunities" class="tab-content">
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Trading Opportunities - All Symbols</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Total Opportunities</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="opp-total">12</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Ready Now</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="opp-ready">2</div>
+                    </div>
+                    <div style="background: rgba(234,179,8,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Coming Soon</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #eab308;" id="opp-soon">4</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Calls / Puts</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="opp-ratio">7 / 5</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <button onclick="filterOppTable('all')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">All</button>
+                    <button onclick="filterOppTable('calls')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Calls Only</button>
+                    <button onclick="filterOppTable('puts')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Puts Only</button>
+                    <button onclick="filterOppTable('ready')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer;">Ready Now</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f0f0f0;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">STATUS</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SYMBOL</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SECTOR</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PRICE</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">NEXT TURN</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">DAYS</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TURN DIR</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TRADE</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TARGET</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PATTERN</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TF</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">DETECTED</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SCORE</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="oppTableBody">
+                            <tr><td style="padding: 10px;">READY</td><td><strong>SPY</strong></td><td>Index</td><td>$594.82</td><td>Dec 10</td><td>0</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$612.50</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>72</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">READY</td><td><strong>QQQ</strong></td><td>Tech</td><td>$518.34</td><td>Dec 10</td><td>0</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$538.00</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>68</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">SOON</td><td><strong>IWM</strong></td><td>Small Cap</td><td>$238.91</td><td>Dec 12</td><td>2</td><td style="color: #ef4444; font-weight: 600;">DOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$228.00</td><td>Cycle High</td><td>Daily</td><td>Dec 09</td><td>65</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLF</strong></td><td>Financial</td><td>$48.23</td><td>Dec 13</td><td>3</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$51.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 07</td><td>71</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLE</strong></td><td>Energy</td><td>$87.56</td><td>Dec 14</td><td>4</td><td style="color: #ef4444; font-weight: 600;">DOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$82.00</td><td>Cycle High</td><td>Daily</td><td>Dec 09</td><td>58</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLK</strong></td><td>Technology</td><td>$234.78</td><td>Dec 11</td><td>1</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$245.00</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>74</td><td><button style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLV</strong></td><td>Healthcare</td><td>$146.32</td><td>Dec 18</td><td>8</td><td style="color: #ef4444; font-weight: 600;">DOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$140.00</td><td>Cycle High</td><td>Weekly</td><td>Dec 05</td><td>52</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLI</strong></td><td>Industrial</td><td>$139.87</td><td>Dec 20</td><td>10</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$148.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 04</td><td>48</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLB</strong></td><td>Materials</td><td>$89.45</td><td>Dec 22</td><td>12</td><td style="color: #ef4444; font-weight: 600;">DOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$84.00</td><td>Cycle High</td><td>Daily</td><td>Dec 06</td><td>45</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLU</strong></td><td>Utilities</td><td>$77.89</td><td>Dec 25</td><td>15</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$82.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 03</td><td>41</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLP</strong></td><td>Consumer Staples</td><td>$81.23</td><td>Dec 28</td><td>18</td><td style="color: #ef4444; font-weight: 600;">DOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$76.50</td><td>Cycle High</td><td>Daily</td><td>Dec 02</td><td>38</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLY</strong></td><td>Consumer Disc</td><td>$225.67</td><td>Dec 30</td><td>20</td><td style="color: #22c55e; font-weight: 600;">UP</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$240.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 01</td><td>35</td><td><button style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- HEALTH MONITOR TAB -->
         <div id="health" class="tab-content">
             <!-- System Status Banner -->
