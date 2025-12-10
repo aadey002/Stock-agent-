@@ -4149,23 +4149,41 @@ function parseCSV(text) {
 async function loadAllData() {
     document.getElementById('loadingOverlay').classList.add('active');
     try {
-        // Try to fetch the selected symbol's data
-        let r = await fetch(`${currentSymbol}.csv?t=${Date.now()}`).catch(() => null);
+        // Try multiple paths for the CSV file
+        let r = null;
         let loadedSymbol = currentSymbol;
+
+        // Try data/ folder first, then root
+        const paths = [
+            `data/${currentSymbol}.csv?t=${Date.now()}`,
+            `${currentSymbol}.csv?t=${Date.now()}`
+        ];
+
+        for (const path of paths) {
+            r = await fetch(path).catch(() => null);
+            if (r?.ok) {
+                console.log(`✅ Found data at: ${path}`);
+                break;
+            }
+        }
         
         // If the selected symbol's CSV doesn't exist, fall back to SPY
         if (!r?.ok) {
             console.warn(`${currentSymbol}.csv not found, falling back to SPY`);
-            r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
+            // Try SPY in both locations
+            r = await fetch('data/SPY.csv?t=' + Date.now()).catch(() => null);
+            if (!r?.ok) {
+                r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
+            }
             loadedSymbol = 'SPY';
-            
+
             // Update the symbol selector back to SPY if data not available
             const select = document.getElementById('symbolSelect');
             if (select) select.value = 'SPY';
             currentSymbol = 'SPY';
-            
+
             // Show notification
-            showDataNotification(`${currentSymbol} data not available, showing SPY`);
+            showDataNotification(`Data loaded for SPY`);
         }
         
         if (r?.ok) {
