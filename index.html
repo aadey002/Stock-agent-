@@ -1247,39 +1247,110 @@
                 <div class="metric"><div class="metric-label">ATR</div><div class="metric-value" id="atrDisplay">--</div><div class="metric-sub">Volatility</div></div>
             </div>
 
-            <div class="dual-signal-container">
-                <div class="signal-panel intraday">
-                    <div class="signal-panel-title intraday">⚡ INTRADAY (0-1 DTE)</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="intradaySignal">CALL</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="intradayEntry">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="intradayStop">--</span></div>
-                        </div>
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="intradayT1">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="intradayT2">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="intradayStrike">--</span></div>
-                        </div>
+            <!-- Fibonacci Zone Display -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(168,85,247,0.05)); border: 1px solid rgba(139,92,246,0.2);">
+                <div class="card-title" style="color: #8b5cf6;">📊 Fibonacci Price Zones</div>
+                <div id="fibZoneDisplay" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 10px; background: var(--bg); border-radius: 8px; font-size: 11px;">
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(239,68,68,0.1); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">S3 (61.8%)</div>
+                        <div id="fibS3" style="font-weight: 600; color: #22c55e;">$--</div>
+                    </div>
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(239,68,68,0.08); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">S2 (50%)</div>
+                        <div id="fibS2" style="font-weight: 600; color: #22c55e;">$--</div>
+                    </div>
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(239,68,68,0.05); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">S1 (38.2%)</div>
+                        <div id="fibS1" style="font-weight: 600; color: #22c55e;">$--</div>
+                    </div>
+                    <div id="currentPriceZone" class="fib-level" style="text-align: center; padding: 8px 12px; background: linear-gradient(135deg, rgba(212,160,23,0.3), rgba(212,160,23,0.1)); border: 2px solid #d4a017; border-radius: 6px;">
+                        <div style="color: #d4a017; font-size: 9px; font-weight: 600;">📍 CURRENT</div>
+                        <div id="fibCurrentPrice" style="font-weight: 700; color: #d4a017; font-size: 14px;">$--</div>
+                    </div>
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(34,197,94,0.05); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">R1 (100%)</div>
+                        <div id="fibR1" style="font-weight: 600; color: #ef4444;">$--</div>
+                    </div>
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(34,197,94,0.08); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">R2 (127.2%)</div>
+                        <div id="fibR2" style="font-weight: 600; color: #ef4444;">$--</div>
+                    </div>
+                    <div class="fib-level" style="text-align: center; padding: 6px 10px; background: rgba(34,197,94,0.1); border-radius: 4px;">
+                        <div style="color: var(--muted); font-size: 9px;">R3 (161.8%)</div>
+                        <div id="fibR3" style="font-weight: 600; color: #ef4444;">$--</div>
                     </div>
                 </div>
-                <div class="signal-panel swing">
-                    <div class="signal-panel-title swing">🌊 SWING (3-5 DTE)</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Signal</span><span class="badge badge-success" id="swingSignal">CALL</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Entry</span><span class="ref-value" id="swingEntry">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Stop</span><span class="ref-value negative" id="swingStop">--</span></div>
-                        </div>
-                        <div>
-                            <div class="ref-data-row"><span class="ref-label">Target 1</span><span class="ref-value positive" id="swingT1">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Target 2</span><span class="ref-value positive" id="swingT2">--</span></div>
-                            <div class="ref-data-row"><span class="ref-label">Strike</span><span class="ref-value" id="swingStrike">--</span></div>
-                        </div>
+                <div id="fibZoneStatus" style="margin-top: 10px; padding: 8px 12px; background: rgba(34,197,94,0.1); border-radius: 6px; font-size: 11px; text-align: center;">
+                    <span style="color: var(--muted);">Current Zone:</span>
+                    <span id="fibZoneLabel" style="font-weight: 600; color: #22c55e; margin-left: 5px;">Between S1 and R1</span>
+                </div>
+            </div>
+
+            <!-- Multi-Timeframe Trend Display -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(16,185,129,0.05)); border: 1px solid rgba(59,130,246,0.2);">
+                <div class="card-title" style="color: #3b82f6;">📈 Multi-Timeframe Trend</div>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+                    <div style="text-align: center; padding: 12px 20px; background: var(--bg); border-radius: 8px; min-width: 120px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">⚡ INTRADAY</div>
+                        <div id="trendIntraday" style="font-size: 16px; font-weight: 700; color: #22c55e;">BULLISH</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px 20px; background: var(--bg); border-radius: 8px; min-width: 120px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">📈 SWING</div>
+                        <div id="trendSwing" style="font-size: 16px; font-weight: 700; color: #22c55e;">BULLISH</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px 20px; background: var(--bg); border-radius: 8px; min-width: 120px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">🎯 POSITION</div>
+                        <div id="trendPosition" style="font-size: 16px; font-weight: 700; color: #22c55e;">BULLISH</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Gann Quick View Summary Table -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(184,134,11,0.05)); border: 1px solid rgba(212,160,23,0.3);">
+                <div class="card-title" style="color: #d4a017;">🔮 Gann Quick View</div>
+                <div class="table-wrap">
+                    <table style="font-size: 11px;">
+                        <thead>
+                            <tr style="background: rgba(212,160,23,0.1);">
+                                <th style="color: #d4a017;">Trend</th>
+                                <th style="color: #d4a017;">Vol vs Avg</th>
+                                <th style="color: #d4a017;">Bars in Trend</th>
+                                <th style="color: #d4a017;">Cycle Phase</th>
+                                <th style="color: #d4a017;">Next Cycle Turn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="gannQvTrend" style="font-weight: 600;">--</td>
+                                <td id="gannQvVolume">--</td>
+                                <td id="gannQvBars">--</td>
+                                <td id="gannQvCyclePhase">--</td>
+                                <td id="gannQvNextTurn">--</td>
+                            </tr>
+                        </tbody>
+                        <thead>
+                            <tr style="background: rgba(212,160,23,0.1);">
+                                <th style="color: #d4a017;">Gann Score</th>
+                                <th style="color: #d4a017;">Agent Consensus</th>
+                                <th style="color: #d4a017;">Reversal Risk</th>
+                                <th style="color: #d4a017;">MTF Alignment</th>
+                                <th style="color: #d4a017;">Entry Window</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="gannQvScore" style="font-weight: 600;">--</td>
+                                <td id="gannQvConsensus">--</td>
+                                <td id="gannQvReversal">--</td>
+                                <td id="gannQvMtf">--</td>
+                                <td id="gannQvEntry">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reference Data -->
             <div class="card">
                 <div class="card-title">📋 Reference Data</div>
                 <div class="grid grid-4">
@@ -1296,9 +1367,70 @@
                         <div class="ref-data-row"><span class="ref-label">Vol vs Avg</span><span class="ref-value" id="volumeVsAvg">--</span></div>
                     </div>
                     <div style="background:var(--bg);border-radius:6px;padding:10px;">
-                        <div class="ref-data-row"><span class="ref-label">Fibonacci Zone</span><span class="badge badge-info" id="fibZone">--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">Trend</span><span class="badge" id="trendBadge">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Open</span><span class="ref-value" id="todayOpen">--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">Prev Close</span><span class="ref-value" id="prevClose">--</span></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Trade Statistics Section -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(6,182,212,0.05)); border: 1px solid rgba(16,185,129,0.2);">
+                <div class="card-title" style="color: #10b981;">📊 <span id="statsSymbol">SPY</span> Trade Statistics (Last 30 Days)</div>
+                <div class="grid grid-4" style="gap: 10px;">
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Win Rate</div>
+                        <div id="statsWinRate" style="font-size: 20px; font-weight: 700; color: #22c55e;">--%</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Avg Win</div>
+                        <div id="statsAvgWin" style="font-size: 20px; font-weight: 700; color: #22c55e;">$--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Avg Loss</div>
+                        <div id="statsAvgLoss" style="font-size: 20px; font-weight: 700; color: #ef4444;">$--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Total Trades</div>
+                        <div id="statsTotalTrades" style="font-size: 20px; font-weight: 700; color: var(--text);">--</div>
+                    </div>
+                </div>
+                <div class="grid grid-3" style="gap: 10px; margin-top: 10px;">
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Best Day</div>
+                        <div id="statsBestDay" style="font-size: 14px; font-weight: 600; color: #22c55e;">+$--</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Worst Day</div>
+                        <div id="statsWorstDay" style="font-size: 14px; font-weight: 600; color: #ef4444;">-$--</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Current Streak</div>
+                        <div id="statsStreak" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">-- days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historical Data Table -->
+            <div class="card">
+                <div class="card-title">📅 Historical Data (Last 10 Days)</div>
+                <div class="table-wrap" style="max-height: 350px; overflow-y: auto;">
+                    <table style="font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Close</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                                <th>O→H Signal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historicalDataTable">
+                            <!-- Generated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -4033,6 +4165,7 @@ async function loadAllData() {
                 updatePriceChart();
                 updateOverviewAiAnalysis();
                 updateDataPatternDetection();
+                updateOverviewTab();
 
                 // Update Daily Analysis if that tab is active
                 const analysisTab = document.getElementById('daily-analysis');
@@ -8136,6 +8269,336 @@ function updateGannDates() {
             <span style="font-weight:600;${d.isNear ? 'color:#f59e0b;' : ''}">${d.dateStr}</span>
         </div>
     `).join('');
+}
+
+// ============================================
+// OVERVIEW TAB UPDATE FUNCTIONS
+// ============================================
+
+// Update Fibonacci Zone Display
+function updateFibonacciZoneDisplay() {
+    if (!currentData || currentData.length < 20) return;
+
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close) || 0;
+
+    // Calculate 52-week high/low for Fibonacci levels
+    const lookback = Math.min(252, currentData.length);
+    const yearData = currentData.slice(-lookback);
+    let high52 = 0, low52 = Infinity;
+    yearData.forEach(bar => {
+        const h = parseFloat(bar.High) || 0;
+        const l = parseFloat(bar.Low) || Infinity;
+        if (h > high52) high52 = h;
+        if (l < low52) low52 = l;
+    });
+
+    const range = high52 - low52;
+    const s1 = low52 + range * 0.382;
+    const s2 = low52 + range * 0.5;
+    const s3 = low52 + range * 0.618;
+    const r1 = high52; // 100%
+    const r2 = high52 + range * 0.272;
+    const r3 = high52 + range * 0.618;
+
+    // Update prices
+    document.getElementById('fibS3').textContent = '$' + s3.toFixed(2);
+    document.getElementById('fibS2').textContent = '$' + s2.toFixed(2);
+    document.getElementById('fibS1').textContent = '$' + s1.toFixed(2);
+    document.getElementById('fibCurrentPrice').textContent = '$' + price.toFixed(2);
+    document.getElementById('fibR1').textContent = '$' + r1.toFixed(2);
+    document.getElementById('fibR2').textContent = '$' + r2.toFixed(2);
+    document.getElementById('fibR3').textContent = '$' + r3.toFixed(2);
+
+    // Determine zone
+    let zoneLabel = '';
+    let zoneColor = '#22c55e';
+    if (price < s3) {
+        zoneLabel = '🔴 Below S3 - Oversold Zone';
+        zoneColor = '#ef4444';
+    } else if (price < s2) {
+        zoneLabel = '🟡 Between S3 and S2 - Support Zone';
+        zoneColor = '#eab308';
+    } else if (price < s1) {
+        zoneLabel = '🟢 Between S2 and S1 - Recovery Zone';
+        zoneColor = '#22c55e';
+    } else if (price < r1) {
+        zoneLabel = '🟢 Between S1 and R1 - Neutral Zone';
+        zoneColor = '#22c55e';
+    } else if (price < r2) {
+        zoneLabel = '🟡 Between R1 and R2 - Resistance Zone';
+        zoneColor = '#eab308';
+    } else if (price < r3) {
+        zoneLabel = '🟠 Between R2 and R3 - Extended Zone';
+        zoneColor = '#f97316';
+    } else {
+        zoneLabel = '🔴 Above R3 - Overbought Zone';
+        zoneColor = '#ef4444';
+    }
+
+    const zoneLabelEl = document.getElementById('fibZoneLabel');
+    if (zoneLabelEl) {
+        zoneLabelEl.textContent = zoneLabel;
+        zoneLabelEl.style.color = zoneColor;
+    }
+}
+
+// Update Multi-Timeframe Trends
+function updateMultiTimeframeTrends() {
+    if (!currentData || currentData.length < 20) return;
+
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close) || 0;
+
+    // Calculate SMAs for different timeframes
+    const sma5 = currentData.slice(-5).reduce((sum, d) => sum + parseFloat(d.Close || 0), 0) / 5;
+    const sma10 = currentData.slice(-10).reduce((sum, d) => sum + parseFloat(d.Close || 0), 0) / 10;
+    const sma20 = currentData.slice(-20).reduce((sum, d) => sum + parseFloat(d.Close || 0), 0) / 20;
+
+    // Intraday trend (price vs 5 SMA)
+    const intradayTrend = price > sma5 ? 'BULLISH' : 'BEARISH';
+    const intradayColor = price > sma5 ? '#22c55e' : '#ef4444';
+
+    // Swing trend (price vs 10 SMA and 5 vs 10)
+    const swingBullish = price > sma10 && sma5 > sma10;
+    const swingTrend = swingBullish ? 'BULLISH' : 'BEARISH';
+    const swingColor = swingBullish ? '#22c55e' : '#ef4444';
+
+    // Position trend (price vs 20 SMA)
+    const positionTrend = price > sma20 ? 'BULLISH' : 'BEARISH';
+    const positionColor = price > sma20 ? '#22c55e' : '#ef4444';
+
+    document.getElementById('trendIntraday').textContent = intradayTrend;
+    document.getElementById('trendIntraday').style.color = intradayColor;
+    document.getElementById('trendSwing').textContent = swingTrend;
+    document.getElementById('trendSwing').style.color = swingColor;
+    document.getElementById('trendPosition').textContent = positionTrend;
+    document.getElementById('trendPosition').style.color = positionColor;
+}
+
+// Update Gann Quick View
+function updateGannQuickView() {
+    if (!currentData || currentData.length < 10) return;
+
+    const lastBar = currentData[currentData.length - 1];
+    const price = parseFloat(lastBar.Close) || 0;
+    const bias = lastBar.Bias || 'NEUTRAL';
+
+    // Trend
+    const trendEl = document.getElementById('gannQvTrend');
+    if (trendEl) {
+        trendEl.textContent = bias;
+        trendEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444' : '#d4a017';
+    }
+
+    // Volume vs Average
+    const avgVol = currentData.slice(-20).reduce((sum, d) => sum + (parseInt(d.Volume) || 0), 0) / 20;
+    const todayVol = parseInt(lastBar.Volume) || 0;
+    const volRatio = avgVol > 0 ? ((todayVol / avgVol) * 100).toFixed(0) : 100;
+    const volEl = document.getElementById('gannQvVolume');
+    if (volEl) {
+        volEl.textContent = volRatio + '%';
+        volEl.style.color = parseInt(volRatio) > 120 ? '#22c55e' : parseInt(volRatio) < 80 ? '#ef4444' : 'var(--text)';
+    }
+
+    // Bars in current trend
+    let barsInTrend = 0;
+    const currentDirection = parseFloat(currentData[currentData.length - 1].Close) > parseFloat(currentData[currentData.length - 2].Close) ? 'up' : 'down';
+    for (let i = currentData.length - 1; i > 0; i--) {
+        const prevDir = parseFloat(currentData[i].Close) > parseFloat(currentData[i - 1].Close) ? 'up' : 'down';
+        if (prevDir === currentDirection) {
+            barsInTrend++;
+        } else {
+            break;
+        }
+    }
+    const barsEl = document.getElementById('gannQvBars');
+    if (barsEl) {
+        barsEl.textContent = barsInTrend + ' bars';
+        barsEl.style.color = barsInTrend > 5 ? '#f59e0b' : 'var(--text)';
+    }
+
+    // Cycle Phase
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const cycleDay = dayOfYear % 30;
+    const cyclePhaseEl = document.getElementById('gannQvCyclePhase');
+    if (cyclePhaseEl) {
+        cyclePhaseEl.textContent = 'Day ' + cycleDay + ' of 30';
+    }
+
+    // Next Cycle Turn
+    const daysToTurn = 30 - cycleDay;
+    const nextTurnEl = document.getElementById('gannQvNextTurn');
+    if (nextTurnEl) {
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + daysToTurn);
+        nextTurnEl.textContent = nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        nextTurnEl.style.color = daysToTurn <= 3 ? '#f59e0b' : 'var(--text)';
+    }
+
+    // Gann Score
+    const scoreEl = document.getElementById('gannQvScore');
+    if (scoreEl) {
+        let score = 50;
+        if (bias === 'BULLISH') score += 15;
+        if (parseInt(volRatio) > 100) score += 10;
+        if (barsInTrend >= 3) score += 10;
+        score = Math.min(100, score);
+        scoreEl.textContent = score + '/100';
+        scoreEl.style.color = score >= 75 ? '#22c55e' : score >= 50 ? '#d4a017' : '#ef4444';
+    }
+
+    // Agent Consensus
+    const consensusEl = document.getElementById('gannQvConsensus');
+    if (consensusEl) {
+        consensusEl.textContent = bias === 'BULLISH' ? 'BUY' : bias === 'BEARISH' ? 'SELL' : 'HOLD';
+        consensusEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444' : '#d4a017';
+    }
+
+    // Reversal Risk
+    const reversalEl = document.getElementById('gannQvReversal');
+    if (reversalEl) {
+        const risk = barsInTrend > 7 ? 'HIGH' : barsInTrend > 4 ? 'MEDIUM' : 'LOW';
+        reversalEl.textContent = risk;
+        reversalEl.style.color = risk === 'HIGH' ? '#ef4444' : risk === 'MEDIUM' ? '#f59e0b' : '#22c55e';
+    }
+
+    // MTF Alignment
+    const mtfEl = document.getElementById('gannQvMtf');
+    if (mtfEl) {
+        const sma5 = currentData.slice(-5).reduce((sum, d) => sum + parseFloat(d.Close || 0), 0) / 5;
+        const sma20 = currentData.slice(-20).reduce((sum, d) => sum + parseFloat(d.Close || 0), 0) / 20;
+        const aligned = (price > sma5 && sma5 > sma20) || (price < sma5 && sma5 < sma20);
+        mtfEl.textContent = aligned ? 'ALIGNED' : 'MIXED';
+        mtfEl.style.color = aligned ? '#22c55e' : '#f59e0b';
+    }
+
+    // Entry Window
+    const entryEl = document.getElementById('gannQvEntry');
+    if (entryEl) {
+        const entryScore = (barsInTrend < 5 && parseInt(volRatio) > 90) ? 'OPEN' : 'WAIT';
+        entryEl.textContent = entryScore;
+        entryEl.style.color = entryScore === 'OPEN' ? '#22c55e' : '#f59e0b';
+    }
+}
+
+// Update Trade Statistics
+function updateTradeStatistics() {
+    if (!currentData || currentData.length < 30) return;
+
+    const last30 = currentData.slice(-30);
+    let wins = 0, losses = 0;
+    let totalWin = 0, totalLoss = 0;
+    let bestDay = 0, worstDay = 0;
+    let streak = 0, currentStreakDir = null;
+
+    for (let i = 1; i < last30.length; i++) {
+        const change = parseFloat(last30[i].Close) - parseFloat(last30[i - 1].Close);
+        const changeDollar = change;
+
+        if (change > 0) {
+            wins++;
+            totalWin += changeDollar;
+            if (changeDollar > bestDay) bestDay = changeDollar;
+            if (currentStreakDir === 'win') streak++;
+            else { streak = 1; currentStreakDir = 'win'; }
+        } else if (change < 0) {
+            losses++;
+            totalLoss += Math.abs(changeDollar);
+            if (changeDollar < worstDay) worstDay = changeDollar;
+            if (currentStreakDir === 'loss') streak++;
+            else { streak = 1; currentStreakDir = 'loss'; }
+        }
+    }
+
+    const totalTrades = wins + losses;
+    const winRate = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(0) : 0;
+    const avgWin = wins > 0 ? (totalWin / wins).toFixed(2) : 0;
+    const avgLoss = losses > 0 ? (totalLoss / losses).toFixed(2) : 0;
+
+    document.getElementById('statsSymbol').textContent = currentSymbol;
+    document.getElementById('statsWinRate').textContent = winRate + '%';
+    document.getElementById('statsAvgWin').textContent = '$' + avgWin;
+    document.getElementById('statsAvgLoss').textContent = '$' + avgLoss;
+    document.getElementById('statsTotalTrades').textContent = totalTrades;
+    document.getElementById('statsBestDay').textContent = '+$' + bestDay.toFixed(2);
+    document.getElementById('statsWorstDay').textContent = '$' + worstDay.toFixed(2);
+    document.getElementById('statsStreak').textContent = streak + ' ' + (currentStreakDir === 'win' ? '🟢' : '🔴');
+}
+
+// Update Historical Data Table with O→H Signal
+function updateHistoricalDataTable() {
+    if (!currentData || currentData.length < 10) return;
+
+    const tbody = document.getElementById('historicalDataTable');
+    if (!tbody) return;
+
+    const last10 = currentData.slice(-10).reverse();
+    let html = '';
+
+    last10.forEach((bar, index) => {
+        const date = bar.Date || bar.date || '--';
+        const open = parseFloat(bar.Open) || 0;
+        const high = parseFloat(bar.High) || 0;
+        const low = parseFloat(bar.Low) || 0;
+        const close = parseFloat(bar.Close) || 0;
+        const volume = parseInt(bar.Volume) || 0;
+        const prevClose = index < last10.length - 1 ? parseFloat(last10[index + 1]?.Close) || close : close;
+        const change = close - prevClose;
+        const changePct = prevClose > 0 ? ((change / prevClose) * 100).toFixed(2) : 0;
+
+        // O→H Signal: If Open is near Low → Bullish (buyers), if Open near High → Bearish (sellers)
+        const openToLow = open - low;
+        const openToHigh = high - open;
+        const ohSignal = openToLow < openToHigh ? '🟢 Bullish' : '🔴 Bearish';
+        const ohColor = openToLow < openToHigh ? '#22c55e' : '#ef4444';
+
+        const changeColor = change >= 0 ? '#22c55e' : '#ef4444';
+        const changeSign = change >= 0 ? '+' : '';
+
+        const dateFormatted = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+        html += `
+            <tr>
+                <td>${dateFormatted}</td>
+                <td>$${open.toFixed(2)}</td>
+                <td style="color: #22c55e;">$${high.toFixed(2)}</td>
+                <td style="color: #ef4444;">$${low.toFixed(2)}</td>
+                <td style="font-weight: 600;">$${close.toFixed(2)}</td>
+                <td style="color: ${changeColor};">${changeSign}${change.toFixed(2)} (${changeSign}${changePct}%)</td>
+                <td>${(volume / 1000000).toFixed(1)}M</td>
+                <td style="color: ${ohColor}; font-weight: 600;">${ohSignal}</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+}
+
+// Update Overview Reference Data
+function updateOverviewReferenceData() {
+    if (!currentData || currentData.length < 2) return;
+
+    const lastBar = currentData[currentData.length - 1];
+    const prevBar = currentData[currentData.length - 2];
+
+    // Today Open
+    const openEl = document.getElementById('todayOpen');
+    if (openEl) openEl.textContent = '$' + (parseFloat(lastBar.Open) || 0).toFixed(2);
+
+    // Prev Close
+    const prevCloseEl = document.getElementById('prevClose');
+    if (prevCloseEl) prevCloseEl.textContent = '$' + (parseFloat(prevBar.Close) || 0).toFixed(2);
+}
+
+// Master Overview Update Function
+function updateOverviewTab() {
+    updateFibonacciZoneDisplay();
+    updateMultiTimeframeTrends();
+    updateGannQuickView();
+    updateTradeStatistics();
+    updateHistoricalDataTable();
+    updateOverviewReferenceData();
 }
 
 function generateDailyReport() {
