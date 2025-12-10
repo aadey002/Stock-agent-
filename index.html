@@ -1169,6 +1169,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Data Pattern Detection Card -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(34,197,94,0.05)); border: 1px solid rgba(16,185,129,0.2);">
+                <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span>📊 Data Pattern Detection</span>
+                    <button onclick="updateDataPatternDetection()" style="background:linear-gradient(135deg,#10b981,#22c55e);color:white;border:none;padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer;">🔄 Scan</button>
+                </div>
+                <div id="dataPatternDetection" style="font-size:12px;line-height:1.6;color:var(--text);">
+                    <div style="text-align:center;padding:20px;color:var(--muted);">
+                        <div style="font-size:24px;margin-bottom:8px;">📈</div>
+                        Loading pattern detection...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- CHARTS TAB -->
@@ -3615,7 +3629,8 @@ async function loadAllData() {
                 updateReversalStats();
                 updatePriceChart();
                 updateOverviewAiAnalysis();
-                
+                updateDataPatternDetection();
+
                 // Update Daily Analysis if that tab is active
                 const analysisTab = document.getElementById('daily-analysis');
                 if (analysisTab && analysisTab.classList.contains('active')) {
@@ -6902,6 +6917,184 @@ function updateOverviewAiAnalysis() {
     `;
 }
 
+// Data Pattern Detection with Dates
+function updateDataPatternDetection() {
+    const detectionEl = document.getElementById('dataPatternDetection');
+    if (!detectionEl) return;
+
+    if (!currentData || currentData.length < 10) {
+        detectionEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);"><div style="font-size:24px;margin-bottom:8px;">&#9888;</div>Insufficient data for pattern detection</div>';
+        return;
+    }
+
+    // Format date as "Mon DD" (e.g., "Dec 2", "Nov 27")
+    function formatDateShort(dateStr) {
+        const date = new Date(dateStr);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return months[date.getMonth()] + ' ' + date.getDate();
+    }
+
+    // Get last 30 days of data for analysis
+    const recentData = currentData.slice(-30);
+    const analysisResults = [];
+
+    // 1. UPTREND DETECTION - Check last 5 days for consecutive higher closes
+    const last5Days = recentData.slice(-5);
+    let uptrendDays = 0;
+    for (let i = 1; i < last5Days.length; i++) {
+        if (parseFloat(last5Days[i].Close) > parseFloat(last5Days[i-1].Close)) {
+            uptrendDays++;
+        }
+    }
+
+    let downtrendDays = 0;
+    for (let i = 1; i < last5Days.length; i++) {
+        if (parseFloat(last5Days[i].Close) < parseFloat(last5Days[i-1].Close)) {
+            downtrendDays++;
+        }
+    }
+
+    if (uptrendDays >= 3) {
+        const startDate = formatDateShort(last5Days[0].Date || last5Days[0].date);
+        const endDate = formatDateShort(last5Days[last5Days.length - 1].Date || last5Days[last5Days.length - 1].date);
+        analysisResults.push({
+            type: 'uptrend',
+            icon: '📈',
+            text: `<strong style="color:#22c55e;">UPTREND</strong> detected in last 5 days (${startDate} - ${endDate})`,
+            detail: `${uptrendDays} of 4 days with higher closes`
+        });
+    } else if (downtrendDays >= 3) {
+        const startDate = formatDateShort(last5Days[0].Date || last5Days[0].date);
+        const endDate = formatDateShort(last5Days[last5Days.length - 1].Date || last5Days[last5Days.length - 1].date);
+        analysisResults.push({
+            type: 'downtrend',
+            icon: '📉',
+            text: `<strong style="color:#ef4444;">DOWNTREND</strong> detected in last 5 days (${startDate} - ${endDate})`,
+            detail: `${downtrendDays} of 4 days with lower closes`
+        });
+    }
+
+    // 2. HIGH VOLUME DAYS - Find days with >150% of 20-day average volume
+    const avgVolume = recentData.slice(-20).reduce((sum, d) => sum + (parseInt(d.Volume) || 0), 0) / 20;
+    const highVolumeDays = [];
+
+    recentData.forEach(bar => {
+        const vol = parseInt(bar.Volume) || 0;
+        if (vol > avgVolume * 1.5) {
+            highVolumeDays.push({
+                date: formatDateShort(bar.Date || bar.date),
+                volume: vol,
+                ratio: ((vol / avgVolume) * 100).toFixed(0)
+            });
+        }
+    });
+
+    if (highVolumeDays.length > 0) {
+        // Sort by most recent (reverse chronological)
+        highVolumeDays.reverse();
+        const displayDates = highVolumeDays.slice(0, 5).map(d => d.date);
+        const moreCount = highVolumeDays.length > 5 ? ` (+${highVolumeDays.length - 5} more)` : '';
+        analysisResults.push({
+            type: 'highVolume',
+            icon: '🔊',
+            text: `<strong style="color:#8b5cf6;">${highVolumeDays.length} HIGH VOLUME</strong> days (&gt;150% of average)`,
+            detail: displayDates.join(', ') + moreCount
+        });
+    }
+
+    // 3. GAP UPs - Find days where Open > Previous Close
+    const gapUps = [];
+    for (let i = 1; i < recentData.length; i++) {
+        const prevClose = parseFloat(recentData[i-1].Close) || 0;
+        const currOpen = parseFloat(recentData[i].Open) || 0;
+        const gapSize = currOpen - prevClose;
+
+        if (gapSize > 0 && gapSize >= prevClose * 0.002) { // At least 0.2% gap
+            gapUps.push({
+                date: formatDateShort(recentData[i].Date || recentData[i].date),
+                gap: gapSize,
+                pct: ((gapSize / prevClose) * 100).toFixed(2)
+            });
+        }
+    }
+
+    if (gapUps.length > 0) {
+        // Sort by gap size (largest first)
+        gapUps.sort((a, b) => b.gap - a.gap);
+        const top3 = gapUps.slice(0, 3);
+        const detailLines = top3.map(g => `${g.date}: +$${g.gap.toFixed(2)} gap`);
+        const moreCount = gapUps.length > 3 ? `<br><span style="color:var(--muted);font-size:10px;">(showing top 3 by size, +${gapUps.length - 3} more)</span>` : '';
+        analysisResults.push({
+            type: 'gapUp',
+            icon: '⬆️',
+            text: `<strong style="color:#22c55e;">${gapUps.length} GAP UP(s)</strong> detected`,
+            detail: detailLines.join('<br>') + moreCount
+        });
+    }
+
+    // 4. GAP DOWNs - Find days where Open < Previous Close
+    const gapDowns = [];
+    for (let i = 1; i < recentData.length; i++) {
+        const prevClose = parseFloat(recentData[i-1].Close) || 0;
+        const currOpen = parseFloat(recentData[i].Open) || 0;
+        const gapSize = prevClose - currOpen;
+
+        if (gapSize > 0 && gapSize >= prevClose * 0.002) { // At least 0.2% gap
+            gapDowns.push({
+                date: formatDateShort(recentData[i].Date || recentData[i].date),
+                gap: gapSize,
+                pct: ((gapSize / prevClose) * 100).toFixed(2)
+            });
+        }
+    }
+
+    if (gapDowns.length > 0) {
+        // Sort by gap size (largest first)
+        gapDowns.sort((a, b) => b.gap - a.gap);
+        const top3 = gapDowns.slice(0, 3);
+        const detailLines = top3.map(g => `${g.date}: -$${g.gap.toFixed(2)} gap`);
+        const moreCount = gapDowns.length > 3 ? `<br><span style="color:var(--muted);font-size:10px;">(showing top 3 by size, +${gapDowns.length - 3} more)</span>` : '';
+        analysisResults.push({
+            type: 'gapDown',
+            icon: '⬇️',
+            text: `<strong style="color:#ef4444;">${gapDowns.length} GAP DOWN(s)</strong> detected`,
+            detail: detailLines.join('<br>') + moreCount
+        });
+    }
+
+    // Build HTML output
+    if (analysisResults.length === 0) {
+        detectionEl.innerHTML = `
+            <div style="text-align:center;padding:15px;color:var(--muted);">
+                <div style="font-size:20px;margin-bottom:8px;">✓</div>
+                No significant patterns detected in last 30 days
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+    analysisResults.forEach(result => {
+        const bgColor = result.type === 'uptrend' ? 'rgba(34,197,94,0.1)' :
+                        result.type === 'downtrend' ? 'rgba(239,68,68,0.1)' :
+                        result.type === 'highVolume' ? 'rgba(139,92,246,0.1)' :
+                        result.type === 'gapUp' ? 'rgba(34,197,94,0.08)' :
+                        'rgba(239,68,68,0.08)';
+        html += `
+            <div style="background:${bgColor};padding:10px 12px;border-radius:8px;">
+                <div style="font-size:12px;margin-bottom:4px;">
+                    ${result.icon} ${result.text}
+                </div>
+                <div style="font-size:11px;color:var(--muted);padding-left:20px;">
+                    ${result.detail}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+
+    detectionEl.innerHTML = html;
+}
 
 function generateDailyReport() {
     console.log('Generating daily report...', currentAnalysisMode);
