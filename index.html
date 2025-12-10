@@ -1054,6 +1054,24 @@
             <div style="font-size:11px;">📅 <span id="dataDate">--</span> 🕐 <span id="dataTime">--</span></div>
         </div>
 
+        <!-- Market Stats Row -->
+        <div id="marketStatsRow" style="display: flex; gap: 20px; justify-content: center; align-items: center; padding: 8px 15px; background: var(--card); border-radius: 8px; margin-bottom: 12px; font-size: 12px; border: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--muted);">Today:</span>
+                <span style="color: #ef4444;" id="statTodayLow">L: $--</span>
+                <span style="color: var(--muted);">|</span>
+                <span style="color: #22c55e;" id="statTodayHigh">H: $--</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--muted);">52W:</span>
+                <span id="stat52WRange" style="color: var(--text);">$-- - $--</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--muted);">Vol:</span>
+                <span id="statVolumeVsAvg" style="color: var(--text);">-- vs Avg</span>
+            </div>
+        </div>
+
         <div class="tabs">
             <button class="tab-btn active" data-tab="overview">📊 Overview</button>
             <button class="tab-btn" data-tab="charts">📈 Charts</button>
@@ -3260,6 +3278,111 @@ if (oppTab) {
     });
 }
 
+// Load market stats (Today range, 52W range, Volume vs Avg)
+async function loadMarketStats(symbol) {
+    if (!symbol) symbol = currentSymbol || 'SPY';
+
+    try {
+        const response = await fetch('data/' + symbol + '.csv');
+        if (!response.ok) {
+            console.log('Market stats: No data for ' + symbol);
+            return;
+        }
+
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+
+        if (lines.length < 2) return;
+
+        // Parse all rows to calculate 52W high/low and volume average
+        let high52W = -Infinity;
+        let low52W = Infinity;
+        let volumeSum = 0;
+        let volumeCount = 0;
+
+        // Get last 252 trading days (approximately 1 year) for 52W calculations
+        const startIdx = Math.max(1, lines.length - 252);
+
+        for (let i = startIdx; i < lines.length; i++) {
+            const cols = lines[i].split(',');
+            const high = parseFloat(cols[2]);
+            const low = parseFloat(cols[3]);
+            const volume = parseFloat(cols[5]);
+
+            if (!isNaN(high) && high > high52W) high52W = high;
+            if (!isNaN(low) && low < low52W) low52W = low;
+
+            // Calculate 20-day volume average
+            if (i >= lines.length - 20 && !isNaN(volume)) {
+                volumeSum += volume;
+                volumeCount++;
+            }
+        }
+
+        const avgVolume = volumeCount > 0 ? volumeSum / volumeCount : 0;
+
+        // Get today's data (last row)
+        const lastLine = lines[lines.length - 1];
+        const cols = lastLine.split(',');
+
+        const todayHigh = parseFloat(cols[2]);
+        const todayLow = parseFloat(cols[3]);
+        const todayClose = parseFloat(cols[4]);
+        const todayVolume = parseFloat(cols[5]);
+
+        // Update Today Low/High
+        if (!isNaN(todayLow)) {
+            document.getElementById('statTodayLow').textContent = 'L: $' + todayLow.toFixed(2);
+        }
+        if (!isNaN(todayHigh)) {
+            document.getElementById('statTodayHigh').textContent = 'H: $' + todayHigh.toFixed(2);
+        }
+
+        // Update 52W Range with color coding
+        const stat52W = document.getElementById('stat52WRange');
+        if (stat52W && !isNaN(high52W) && !isNaN(low52W)) {
+            stat52W.textContent = '$' + low52W.toFixed(2) + ' - $' + high52W.toFixed(2);
+
+            // Color based on where current price is in 52W range
+            const range = high52W - low52W;
+            const position = (todayClose - low52W) / range;
+
+            if (position > 0.8) {
+                stat52W.style.color = '#22c55e'; // Near 52W high - green
+            } else if (position < 0.2) {
+                stat52W.style.color = '#ef4444'; // Near 52W low - red
+            } else {
+                stat52W.style.color = 'var(--text)'; // Neutral
+            }
+        }
+
+        // Update Volume vs Avg
+        const statVolume = document.getElementById('statVolumeVsAvg');
+        if (statVolume && avgVolume > 0 && !isNaN(todayVolume)) {
+            const volPct = ((todayVolume - avgVolume) / avgVolume) * 100;
+            const volSign = volPct >= 0 ? '+' : '';
+            statVolume.textContent = volSign + volPct.toFixed(0) + '% vs Avg';
+
+            // Color based on volume
+            if (volPct > 20) {
+                statVolume.style.color = '#22c55e'; // High volume - green
+            } else if (volPct < -30) {
+                statVolume.style.color = '#ef4444'; // Low volume - red
+            } else {
+                statVolume.style.color = 'var(--text)'; // Normal
+            }
+        }
+
+    } catch (error) {
+        console.log('Error loading market stats:', error);
+    }
+}
+
+// Call market stats on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadMarketStats();
+});
+
 function setTradingMode(mode) {
     tradingMode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
@@ -3295,7 +3418,10 @@ async function changeSymbol() {
     
     // Load the new symbol's data and update everything
     await loadAllData();
-    
+
+    // Update market stats for new symbol
+    loadMarketStats(currentSymbol);
+
     // Update Options Calculator with new symbol
     updateOptionsCalcForSymbol();
 }
@@ -3365,6 +3491,10 @@ async function loadAllData() {
                 document.getElementById('tickerSymbol').textContent = currentSymbol;
                 document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
                 document.getElementById('confluenceSymbol').textContent = currentSymbol + ' Analysis';
+
+                // Update market stats in header
+                loadMarketStats(currentSymbol);
+
 // Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
             }
         }
