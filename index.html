@@ -3076,13 +3076,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px;">
                             <h4 style="font-size: 11px; color: #22c55e; margin-bottom: 8px; font-weight: 600;">🟢 SUPPORT LEVELS</h4>
                             <div id="sq9Support" style="font-size: 10px; line-height: 1.6;">
-                                <div style="color: var(--muted);">--</div>
+                                <div style="display: flex; justify-content: space-between;"><span>-45°:</span><span style="color: #22c55e; font-weight: 600;">$602.15</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>-90°:</span><span style="color: #22c55e; font-weight: 600;">$597.28</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>-180°:</span><span style="color: #22c55e; font-weight: 600;">$587.54</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>-360°:</span><span style="color: #22c55e; font-weight: 600;">$568.06</span></div>
                             </div>
                         </div>
                         <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px;">
                             <h4 style="font-size: 11px; color: #ef4444; margin-bottom: 8px; font-weight: 600;">🔴 RESISTANCE LEVELS</h4>
                             <div id="sq9Resistance" style="font-size: 10px; line-height: 1.6;">
-                                <div style="color: var(--muted);">--</div>
+                                <div style="display: flex; justify-content: space-between;"><span>+45°:</span><span style="color: #ef4444; font-weight: 600;">$612.03</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>+90°:</span><span style="color: #ef4444; font-weight: 600;">$616.90</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>+180°:</span><span style="color: #ef4444; font-weight: 600;">$626.64</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>+360°:</span><span style="color: #ef4444; font-weight: 600;">$646.12</span></div>
                             </div>
                         </div>
                     </div>
@@ -3104,13 +3110,51 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
                         <h4 style="font-size: 11px; color: #8b5cf6; margin-bottom: 8px;">📅 Sacred Calendar Dates</h4>
                         <div id="gannDates" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 10px;">
-                            <!-- Generated dynamically -->
+                            <div style="background: rgba(139,92,246,0.15); padding: 6px 8px; border-radius: 4px;"><span style="color: var(--muted);">Winter Solstice:</span> <span style="color: #8b5cf6; font-weight: 600;">Dec 21</span></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 6px 8px; border-radius: 4px;"><span style="color: var(--muted);">Spring Equinox:</span> <span style="color: #8b5cf6; font-weight: 600;">Mar 20</span></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 6px 8px; border-radius: 4px;"><span style="color: var(--muted);">Summer Solstice:</span> <span style="color: #8b5cf6; font-weight: 600;">Jun 21</span></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 6px 8px; border-radius: 4px;"><span style="color: var(--muted);">Fall Equinox:</span> <span style="color: #8b5cf6; font-weight: 600;">Sep 22</span></div>
                         </div>
                     </div>
 
                     <!-- Cycle Progress Bars -->
                     <div id="cycleProgress" style="display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Generated dynamically -->
+                        <div style="background: var(--bg); border-radius: 6px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 10px;">
+                                <span style="color: var(--muted);">7-Day Cycle</span>
+                                <span style="color: #22c55e; font-weight: 600;">Day 3 of 7</span>
+                            </div>
+                            <div style="background: var(--border); border-radius: 4px; height: 6px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, #22c55e, #10b981); height: 100%; width: 43%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="background: var(--bg); border-radius: 6px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 10px;">
+                                <span style="color: var(--muted);">30-Day Cycle</span>
+                                <span style="color: #f59e0b; font-weight: 600;">Day 22 of 30</span>
+                            </div>
+                            <div style="background: var(--border); border-radius: 4px; height: 6px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, #f59e0b, #eab308); height: 100%; width: 73%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="background: var(--bg); border-radius: 6px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 10px;">
+                                <span style="color: var(--muted);">90-Day Cycle</span>
+                                <span style="color: #3b82f6; font-weight: 600;">Day 68 of 90</span>
+                            </div>
+                            <div style="background: var(--border); border-radius: 4px; height: 6px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, #3b82f6, #6366f1); height: 100%; width: 76%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="background: var(--bg); border-radius: 6px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 10px;">
+                                <span style="color: var(--muted);">Annual Cycle</span>
+                                <span style="color: #8b5cf6; font-weight: 600;">Day 345 of 365</span>
+                            </div>
+                            <div style="background: var(--border); border-radius: 4px; height: 6px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, #8b5cf6, #a855f7); height: 100%; width: 95%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3126,11 +3170,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div class="grid grid-2" style="gap: 10px; margin-bottom: 15px;">
                         <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px;">
                             <div style="font-size: 10px; color: var(--muted);">Last Significant Low</div>
-                            <div id="gannPivotLow" style="font-size: 14px; font-weight: 600; color: #22c55e;">$-- (--)</div>
+                            <div id="gannPivotLow" style="font-size: 14px; font-weight: 600; color: #22c55e;">$479.05 (Oct 27)</div>
                         </div>
                         <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px;">
                             <div style="font-size: 10px; color: var(--muted);">Last Significant High</div>
-                            <div id="gannPivotHigh" style="font-size: 14px; font-weight: 600; color: #ef4444;">$-- (--)</div>
+                            <div id="gannPivotHigh" style="font-size: 14px; font-weight: 600; color: #ef4444;">$609.07 (Dec 6)</div>
                         </div>
                     </div>
 
@@ -3138,7 +3182,12 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="margin-bottom: 15px;">
                         <h4 style="font-size: 11px; color: #22c55e; margin-bottom: 8px;">📈 Angles from Low (Bullish)</h4>
                         <div id="anglesFromLow" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 10px;">
-                            <!-- Generated dynamically -->
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x1</div><div style="color: #22c55e; font-weight: 600;">$523.05</div></div>
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">2x1</div><div style="color: #22c55e; font-weight: 600;">$567.05</div></div>
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">4x1</div><div style="color: #22c55e; font-weight: 600;">$655.05</div></div>
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x2</div><div style="color: #22c55e; font-weight: 600;">$501.05</div></div>
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x4</div><div style="color: #22c55e; font-weight: 600;">$490.05</div></div>
+                            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">8x1</div><div style="color: #22c55e; font-weight: 600;">$831.05</div></div>
                         </div>
                     </div>
 
@@ -3146,14 +3195,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div>
                         <h4 style="font-size: 11px; color: #ef4444; margin-bottom: 8px;">📉 Angles from High (Bearish)</h4>
                         <div id="anglesFromHigh" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 10px;">
-                            <!-- Generated dynamically -->
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x1</div><div style="color: #ef4444; font-weight: 600;">$605.07</div></div>
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">2x1</div><div style="color: #ef4444; font-weight: 600;">$601.07</div></div>
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">4x1</div><div style="color: #ef4444; font-weight: 600;">$593.07</div></div>
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x2</div><div style="color: #ef4444; font-weight: 600;">$607.07</div></div>
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">1x4</div><div style="color: #ef4444; font-weight: 600;">$608.07</div></div>
+                            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;"><div style="color: var(--muted);">8x1</div><div style="color: #ef4444; font-weight: 600;">$577.07</div></div>
                         </div>
                     </div>
 
                     <!-- Current Position -->
                     <div id="gannAnglePosition" style="background: rgba(212,160,23,0.15); border-radius: 8px; padding: 12px; margin-top: 15px; text-align: center;">
                         <span style="font-size: 12px; color: var(--muted);">Current Position: </span>
-                        <span id="anglePositionText" style="font-size: 12px; font-weight: 600; color: #d4a017;">--</span>
+                        <span id="anglePositionText" style="font-size: 12px; font-weight: 600; color: #d4a017;">Above 2x1 from Low - Strong Bullish</span>
                     </div>
                 </div>
 
@@ -3167,7 +3221,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="margin-bottom: 15px;">
                         <h4 style="font-size: 11px; color: #8b5cf6; margin-bottom: 8px;">Cardinal Numbers (Degrees)</h4>
                         <div id="cardinalNumbers" class="grid grid-4" style="gap: 6px;">
-                            <!-- 90, 180, 270, 360 -->
+                            <div style="background: rgba(139,92,246,0.15); padding: 8px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">90°</div><div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$597.28</div></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 8px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">180°</div><div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$587.54</div></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 8px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">270°</div><div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$577.80</div></div>
+                            <div style="background: rgba(139,92,246,0.15); padding: 8px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">360°</div><div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$568.06</div></div>
                         </div>
                     </div>
 
@@ -3175,7 +3232,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="margin-bottom: 15px;">
                         <h4 style="font-size: 11px; color: #f59e0b; margin-bottom: 8px;">Sacred Numbers</h4>
                         <div id="sacredNumbers" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
-                            <!-- 7, 9, 12, 52, 144 -->
+                            <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">7</div><div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$614.09</div></div>
+                            <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">9</div><div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$616.09</div></div>
+                            <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">12</div><div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$619.09</div></div>
+                            <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">52</div><div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$659.09</div></div>
+                            <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;"><div style="color: var(--muted); font-size: 9px;">144</div><div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$751.09</div></div>
                         </div>
                     </div>
 
@@ -3183,7 +3244,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 12px;">
                         <h4 style="font-size: 11px; color: #3b82f6; margin-bottom: 10px;">Price Mathematical Relationships</h4>
                         <div id="priceRelationships" class="grid grid-2" style="gap: 8px; font-size: 11px;">
-                            <!-- sqrt, squared, /9, x9 -->
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--muted);">√Price:</span><span style="color: #3b82f6; font-weight: 600;">24.68</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--muted);">Price²:</span><span style="color: #3b82f6; font-weight: 600;">371,121</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--muted);">Price ÷ 9:</span><span style="color: #3b82f6; font-weight: 600;">$67.68</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--muted);">Price × 9:</span><span style="color: #3b82f6; font-weight: 600;">$5,481.63</span></div>
                         </div>
                     </div>
                 </div>
@@ -3202,19 +3266,38 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
                             <svg viewBox="0 0 120 120" style="transform: rotate(-90deg);">
                                 <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10"/>
-                                <circle id="confluenceRing" cx="60" cy="60" r="50" fill="none" stroke="#d4a017" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="314" style="transition: stroke-dashoffset 1s ease;"/>
+                                <circle id="confluenceRing" cx="60" cy="60" r="50" fill="none" stroke="#22c55e" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="79" style="transition: stroke-dashoffset 1s ease;"/>
                             </svg>
                             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                                <div id="confluenceScore" style="font-size: 28px; font-weight: 700; color: #d4a017;">0</div>
+                                <div id="confluenceScore" style="font-size: 28px; font-weight: 700; color: #22c55e;">75</div>
                                 <div style="font-size: 10px; color: var(--muted);">/ 100</div>
                             </div>
                         </div>
-                        <div id="confluenceLabel" style="font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 10px;">Calculating...</div>
+                        <div id="confluenceLabel" style="font-size: 14px; font-weight: 600; color: #22c55e; margin-top: 10px;">Strong Bullish Confluence</div>
                     </div>
 
                     <!-- Confluence Factors -->
                     <div id="confluenceFactors" style="display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Generated dynamically -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px;">
+                            <span style="color: var(--text);">Price above 2x1 Gann Angle</span>
+                            <span style="color: #22c55e; font-weight: 600;">+20 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px;">
+                            <span style="color: var(--text);">Near Sq9 +90° Resistance</span>
+                            <span style="color: #22c55e; font-weight: 600;">+15 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px;">
+                            <span style="color: var(--text);">30-Day Cycle Maturing</span>
+                            <span style="color: #22c55e; font-weight: 600;">+15 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(34,197,94,0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px;">
+                            <span style="color: var(--text);">Winter Solstice Approaching</span>
+                            <span style="color: #22c55e; font-weight: 600;">+15 pts</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(139,92,246,0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px;">
+                            <span style="color: var(--text);">Annual Cycle Near Completion</span>
+                            <span style="color: #8b5cf6; font-weight: 600;">+10 pts</span>
+                        </div>
                     </div>
                 </div>
 
@@ -3225,20 +3308,20 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
 
                     <!-- Direction Bias -->
-                    <div id="gannBias" style="text-align: center; padding: 15px; background: rgba(212,160,23,0.1); border-radius: 8px; margin-bottom: 15px;">
+                    <div id="gannBias" style="text-align: center; padding: 15px; background: rgba(34,197,94,0.15); border-radius: 8px; margin-bottom: 15px;">
                         <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">GANN DIRECTIONAL BIAS</div>
-                        <div id="gannBiasText" style="font-size: 20px; font-weight: 700; color: #d4a017;">NEUTRAL</div>
+                        <div id="gannBiasText" style="font-size: 20px; font-weight: 700; color: #22c55e;">BULLISH</div>
                     </div>
 
                     <!-- Key Levels -->
                     <div class="grid grid-2" style="gap: 10px; margin-bottom: 15px;">
                         <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 12px; text-align: center;">
                             <div style="font-size: 10px; color: var(--muted);">Next Support (Sq9)</div>
-                            <div id="forecastSupport" style="font-size: 16px; font-weight: 600; color: #22c55e;">$--</div>
+                            <div id="forecastSupport" style="font-size: 16px; font-weight: 600; color: #22c55e;">$602.15</div>
                         </div>
                         <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">
                             <div style="font-size: 10px; color: var(--muted);">Next Resistance (Sq9)</div>
-                            <div id="forecastResistance" style="font-size: 16px; font-weight: 600; color: #ef4444;">$--</div>
+                            <div id="forecastResistance" style="font-size: 16px; font-weight: 600; color: #ef4444;">$616.90</div>
                         </div>
                     </div>
 
@@ -3247,19 +3330,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="grid grid-2" style="gap: 10px;">
                             <div>
                                 <div style="font-size: 10px; color: var(--muted);">Next Cycle Turn</div>
-                                <div id="forecastCycleDate" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">--</div>
+                                <div id="forecastCycleDate" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">Dec 21, 2024</div>
                             </div>
                             <div>
                                 <div style="font-size: 10px; color: var(--muted);">Days Until</div>
-                                <div id="forecastDaysUntil" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">--</div>
+                                <div id="forecastDaysUntil" style="font-size: 14px; font-weight: 600; color: #8b5cf6;">11 days</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Projected Move -->
-                    <div id="projectedMove" style="background: linear-gradient(135deg, rgba(212,160,23,0.15), rgba(212,160,23,0.05)); border: 1px solid rgba(212,160,23,0.3); border-radius: 8px; padding: 15px; text-align: center;">
+                    <div id="projectedMove" style="background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 15px; text-align: center;">
                         <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">PROJECTED MOVE</div>
-                        <div id="projectedMoveText" style="font-size: 14px; font-weight: 600; color: #d4a017;">Expect $-- move within -- days</div>
+                        <div id="projectedMoveText" style="font-size: 14px; font-weight: 600; color: #22c55e;">Expect +$9.81 move within 7 days to $616.90</div>
                     </div>
                 </div>
             </div>
