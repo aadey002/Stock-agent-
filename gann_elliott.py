@@ -297,20 +297,100 @@ class GannElliottAgent:
             logger.error(f"Error generating Gann-Elliott signal: {e}")
             return {'signal': 'HOLD', 'confidence': 0.5}
 
+# All ETFs to analyze
+SYMBOLS = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY']
+
+
+def run_gann_elliott_all_symbols(agent=None):
+    """Run Gann-Elliott agent for all ETFs and return signals."""
+    import yfinance as yf
+    import os
+
+    if agent is None:
+        agent = GannElliottAgent()
+
+    all_signals = []
+
+    print("=" * 60)
+    print("GANN-ELLIOTT MULTI-SYMBOL ANALYSIS")
+    print("=" * 60)
+
+    for symbol in SYMBOLS:
+        try:
+            # Try to load from local CSV first
+            csv_path = f"data/{symbol}.csv"
+            if os.path.exists(csv_path):
+                df = pd.read_csv(csv_path, parse_dates=['Date'], index_col='Date')
+            else:
+                # Fallback to yfinance
+                ticker = yf.Ticker(symbol)
+                df = ticker.history(period='3mo')
+
+            if df is not None and not df.empty:
+                # Standardize column names
+                df.columns = [c.title() if c.islower() else c for c in df.columns]
+
+                signal = agent.get_signal(df)
+                signal['symbol'] = symbol
+                signal['price'] = round(df['Close'].iloc[-1], 2)
+                all_signals.append(signal)
+
+                emoji = "🟢" if signal['signal'] == 'BUY' else "🔴" if signal['signal'] == 'SELL' else "⚪"
+                print(f"{emoji} {symbol:4} | {signal['signal']:4} | Conf: {signal['confidence']:.0%} | "
+                      f"Price: ${signal['price']:.2f} | Wave: {signal.get('elliott_wave', 'N/A')}")
+            else:
+                print(f"⚠️ {symbol}: No data available")
+
+        except Exception as e:
+            print(f"❌ {symbol}: Error - {e}")
+
+    print("=" * 60)
+    print(f"Total signals generated: {len(all_signals)}")
+
+    # Summary statistics
+    buy_signals = [s for s in all_signals if s['signal'] == 'BUY']
+    sell_signals = [s for s in all_signals if s['signal'] == 'SELL']
+    print(f"BUY signals: {len(buy_signals)} | SELL signals: {len(sell_signals)}")
+
+    return all_signals
+
+
+def save_signals_to_csv(signals, filepath="reports/gann_elliott_signals.csv"):
+    """Save generated signals to CSV."""
+    import os
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    if not signals:
+        print("No signals to save")
+        return
+
+    df = pd.DataFrame(signals)
+    df.to_csv(filepath, index=False)
+    print(f"Saved {len(signals)} signals to {filepath}")
+
+
 # Test function
 if __name__ == "__main__":
     # Test the agent with sample data
     import yfinance as yf
-    
+
     print("Testing Gann-Elliott Agent...")
     agent = GannElliottAgent()
-    
-    # Fetch sample data
+
+    # Run for all symbols
+    signals = run_gann_elliott_all_symbols(agent)
+
+    # Save signals
+    if signals:
+        save_signals_to_csv(signals)
+
+    print("\nIndividual SPY Test:")
+    # Fetch sample data for SPY
     ticker = yf.Ticker('SPY')
     df = ticker.history(period='3mo')
-    
+
     if not df.empty:
         signal = agent.get_signal(df)
-        print(f"Test Signal: {signal}")
+        print(f"SPY Signal: {signal}")
     else:
         print("Failed to fetch test data")

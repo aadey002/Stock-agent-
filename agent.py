@@ -17,7 +17,8 @@ except ImportError:
     os.system("pip install yfinance")
     import yfinance as yf
 
-SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA']
+# All ETFs to analyze (12 symbols)
+SYMBOLS = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY']
 
 def fetch_symbol_data(symbol, days=1095):
     """Fetch historical data using yfinance with intraday support"""
