@@ -966,74 +966,119 @@
         .troubleshoot-content a { color: var(--primary); }
 
         /* ============================================ */
-        /* STICKY HEADER AND TABS                       */
+        /* STICKY TOP SECTION                          */
         /* ============================================ */
 
         /* Main Header - Fixed at top */
-        header, .main-header, #mainHeader, .header {
+        header, .main-header, .header {
             position: sticky !important;
             top: 0 !important;
-            z-index: 1000 !important;
+            z-index: 1050 !important;
             background: linear-gradient(135deg, #1e1b4b, #312e81) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
         }
 
-        /* Mode Toggle (INTRADAY/SWING) - Sticky below header */
-        .mode-toggle-container, .mode-toggle, #modeToggle {
+        /* Mode Toggle */
+        .mode-toggle-container {
             position: sticky !important;
             top: 52px !important;
-            z-index: 999 !important;
-            background: var(--bg, #f8fafc) !important;
-            padding: 10px 0 !important;
-            margin: 0 !important;
+            z-index: 1040 !important;
+            background: #f8fafc !important;
+            padding: 8px 0 !important;
         }
 
-        /* Symbol Banner - Sticky below mode toggle */
+        /* Symbol Banner */
         .symbol-banner, #symbolBanner {
             position: sticky !important;
             top: 100px !important;
-            z-index: 998 !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            z-index: 1030 !important;
         }
 
-        /* Tab Navigation - Sticky below symbol banner */
-        .tabs, .tab-navigation, #tabNavigation {
+        /* Market Stats Row */
+        #marketStatsRow {
             position: sticky !important;
-            top: 152px !important;
-            z-index: 996 !important;
-            background: var(--bg, #f8fafc) !important;
-            padding: 4px !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-            border-bottom: 1px solid var(--border, #e5e7eb) !important;
+            top: 138px !important;
+            z-index: 1020 !important;
+            background: white !important;
         }
 
-        /* Ensure tab buttons scroll horizontally if needed */
+        /* Tab Navigation - TWO ROWS */
         .tabs {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-            overflow-x: auto !important;
-            scrollbar-width: thin !important;
-            -webkit-overflow-scrolling: touch !important;
-            gap: 3px !important;
+            position: sticky !important;
+            top: 178px !important;
+            z-index: 1010 !important;
+            background: #f8fafc !important;
+            padding: 10px 15px !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+
+            /* TWO ROW LAYOUT - Grid */
+            display: grid !important;
+            grid-template-columns: repeat(8, auto) !important;
+            grid-template-rows: auto auto !important;
+            justify-content: center !important;
+            gap: 6px 8px !important;
+            overflow-x: visible !important;
+            max-width: 100% !important;
         }
 
-        /* Hide scrollbar but keep functionality */
+        /* Tab Buttons - Smaller to fit two rows */
+        .tabs .tab-btn,
+        .tabs button {
+            padding: 6px 12px !important;
+            font-size: 11px !important;
+            border-radius: 6px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Active tab highlight */
+        .tabs .tab-btn.active,
+        .tabs button.active {
+            transform: scale(1.02) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Remove horizontal scrollbar */
         .tabs::-webkit-scrollbar {
-            height: 4px !important;
+            display: none !important;
         }
 
-        .tabs::-webkit-scrollbar-track {
-            background: transparent !important;
+        .tabs {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
         }
 
-        .tabs::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2) !important;
-            border-radius: 4px !important;
+        /* Responsive: More columns on larger screens */
+        @media (min-width: 1400px) {
+            .tabs {
+                grid-template-columns: repeat(10, auto) !important;
+            }
         }
+
+        @media (max-width: 1000px) {
+            .tabs {
+                grid-template-columns: repeat(6, auto) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                grid-template-columns: repeat(4, auto) !important;
+                top: 160px !important;
+            }
+            .tabs .tab-btn {
+                padding: 5px 8px !important;
+                font-size: 10px !important;
+            }
+        }
+
+        /* ============================================ */
+        /* CONTENT AREA ADJUSTMENT                     */
+        /* ============================================ */
 
         /* Add padding to main content so it's not hidden behind sticky elements */
         .tab-content, .main-content, #mainContent {
-            padding-top: 15px !important;
+            padding-top: 20px !important;
         }
 
         /* Smooth scroll behavior */
@@ -1044,14 +1089,6 @@
         /* Container adjustment for sticky elements */
         .container {
             padding-top: 10px !important;
-        }
-
-        /* Sticky wrapper for combined elements */
-        .sticky-wrapper {
-            position: sticky !important;
-            top: 0 !important;
-            z-index: 995 !important;
-            background: var(--bg, #f8fafc) !important;
         }
     </style>
 </head>
