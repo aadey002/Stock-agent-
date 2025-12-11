@@ -3379,7 +3379,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <option value="XLRE">XLRE</option>
                             <option value="XLC">XLC</option>
                         </select>
-                        <button onclick="refreshAllCharts()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
+                        <button onclick="updateMultiCharts(document.getElementById('multiChartSymbol')?.value || currentSymbol)" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
                     </div>
                 </div>
             </div>
@@ -7633,6 +7633,235 @@ function refreshAllCharts() {
     updateAllMultiCharts();
 }
 
+// ============================================
+// MULTI-CHARTS DATA LOADING & SYMBOL UPDATES
+// ============================================
+
+// Cache for loaded symbol data
+const marketData = {};
+
+// Load individual symbol data from CSV
+async function loadSymbolData(symbol) {
+    try {
+        // Try data/ folder first, then root
+        let response = await fetch(`data/${symbol}.csv`).catch(() => null);
+        if (!response?.ok) {
+            response = await fetch(`${symbol}.csv`).catch(() => null);
+        }
+
+        if (!response?.ok) {
+            console.log('Could not load data for ' + symbol);
+            return null;
+        }
+
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+
+        if (lines.length < 2) return null;
+
+        const header = lines[0].split(',');
+        const getIdx = (name) => header.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+
+        // Get last row
+        const lastLine = lines[lines.length - 1];
+        const cols = lastLine.split(',');
+        const prevLine = lines.length > 2 ? lines[lines.length - 2] : lastLine;
+        const prevCols = prevLine.split(',');
+
+        const closeIdx = getIdx('close') !== -1 ? getIdx('close') : 4;
+        const openIdx = getIdx('open') !== -1 ? getIdx('open') : 1;
+        const highIdx = getIdx('high') !== -1 ? getIdx('high') : 2;
+        const lowIdx = getIdx('low') !== -1 ? getIdx('low') : 3;
+
+        const close = parseFloat(cols[closeIdx]) || 0;
+        const open = parseFloat(cols[openIdx]) || 0;
+        const high = parseFloat(cols[highIdx]) || 0;
+        const low = parseFloat(cols[lowIdx]) || 0;
+        const prevClose = parseFloat(prevCols[closeIdx]) || close;
+
+        // Calculate 20-bar high/low for Fibonacci
+        let high20 = high, low20 = low;
+        for (let i = Math.max(1, lines.length - 20); i < lines.length; i++) {
+            const rowCols = lines[i].split(',');
+            const h = parseFloat(rowCols[highIdx]) || 0;
+            const l = parseFloat(rowCols[lowIdx]) || 0;
+            if (h > high20) high20 = h;
+            if (l > 0 && l < low20) low20 = l;
+        }
+
+        marketData[symbol] = {
+            price: close,
+            open: open,
+            high: high,
+            low: low,
+            close: close,
+            prevClose: prevClose,
+            change: close - prevClose,
+            changePct: ((close - prevClose) / prevClose * 100),
+            high20: high20,
+            low20: low20,
+            lastUpdate: new Date().toLocaleTimeString()
+        };
+
+        console.log('Loaded ' + symbol + ' data: $' + close.toFixed(2));
+        return marketData[symbol];
+
+    } catch (error) {
+        console.log('Error loading ' + symbol + ':', error);
+        return null;
+    }
+}
+
+// Update Multi-Charts with new symbol data
+async function updateMultiCharts(symbol) {
+    console.log('Updating Multi-Charts for ' + symbol);
+
+    // Get data for the symbol
+    let symbolData = marketData[symbol];
+
+    if (!symbolData) {
+        // Try to load data if not in cache
+        symbolData = await loadSymbolData(symbol);
+    }
+
+    if (!symbolData) {
+        console.log('No data available for ' + symbol);
+        // Still update the UI with the symbol name
+    }
+
+    // Update all symbol labels in Multi-Charts
+    document.querySelectorAll('#multi-charts .symbol-label').forEach(el => {
+        el.textContent = symbol;
+    });
+
+    // Update panel symbol displays
+    ['intraday', 'swing', 'position'].forEach(panel => {
+        const symbolEl = document.getElementById(`${panel}Symbol`);
+        if (symbolEl) symbolEl.textContent = symbol;
+    });
+
+    // Update chart titles
+    document.querySelectorAll('#multi-charts .chart-title, #multi-charts h4').forEach(el => {
+        el.innerHTML = el.innerHTML.replace(/SPY|QQQ|IWM|DIA|XL[A-Z]+/g, symbol);
+    });
+
+    if (symbolData) {
+        // Update price displays
+        document.querySelectorAll('#multi-charts .price-display').forEach(el => {
+            el.textContent = '$' + symbolData.price.toFixed(2);
+        });
+
+        // Update Fibonacci levels based on new symbol's data
+        updateMultiChartFibLevels(symbol, symbolData);
+
+        // Update bias indicators
+        updateMultiChartBias(symbol, symbolData);
+
+        console.log('Multi-Charts updated for ' + symbol + ' at $' + symbolData.price.toFixed(2));
+    }
+
+    // Refresh all chart panels with new data
+    await updateAllMultiCharts();
+}
+
+// Update Fibonacci levels in Multi-Charts
+function updateMultiChartFibLevels(symbol, data) {
+    if (!data || !data.high20 || !data.low20) return;
+
+    const range = data.high20 - data.low20;
+    const r1 = data.high20;
+    const r382 = data.low20 + (range * 0.382);
+    const r500 = data.low20 + (range * 0.5);
+    const r618 = data.low20 + (range * 0.618);
+    const s1 = data.low20;
+
+    // Update Fib level displays in charts
+    const fibElements = document.querySelectorAll('#multi-charts .fib-level, #multi-charts [class*="fib"]');
+    fibElements.forEach(el => {
+        const text = el.textContent;
+        if (text.includes('R:') || text.includes('100%')) {
+            el.textContent = 'R: $' + r1.toFixed(2);
+        } else if (text.includes('61.8%')) {
+            el.textContent = '61.8%: $' + r618.toFixed(2);
+        } else if (text.includes('50%')) {
+            el.textContent = '50%: $' + r500.toFixed(2);
+        } else if (text.includes('38.2%')) {
+            el.textContent = '38.2%: $' + r382.toFixed(2);
+        } else if (text.includes('S:') || text.includes('0%')) {
+            el.textContent = 'S: $' + s1.toFixed(2);
+        }
+    });
+
+    console.log('Fib levels updated for ' + symbol + ': R=$' + r1.toFixed(2) + ', S=$' + s1.toFixed(2));
+}
+
+// Update bias indicators in Multi-Charts
+function updateMultiChartBias(symbol, data) {
+    if (!data) return;
+
+    // Determine bias based on price change
+    const bias = data.change >= 0 ? 'BULLISH' : 'BEARISH';
+    const biasColor = data.change >= 0 ? '#22c55e' : '#ef4444';
+
+    // Update bias displays
+    document.querySelectorAll('#multi-charts .bias-label').forEach(el => {
+        el.textContent = bias;
+        el.style.color = biasColor;
+    });
+
+    // Update MTF bias summary if visible
+    const mtfBiasElements = document.querySelectorAll('.mtf-summary .bias, .mtf-summary-item .bias');
+    mtfBiasElements.forEach(el => {
+        el.textContent = bias;
+        el.style.color = biasColor;
+    });
+}
+
+// Initialize Multi-Charts symbol change handlers
+function initMultiChartsSymbolChange() {
+    const multiChartSymbol = document.getElementById('multiChartSymbol');
+
+    if (multiChartSymbol) {
+        // Remove existing onchange to avoid duplicates
+        multiChartSymbol.removeAttribute('onchange');
+
+        multiChartSymbol.addEventListener('change', async function() {
+            const symbol = this.value;
+            console.log('Multi-Charts: Symbol changed to ' + symbol);
+
+            // Sync with header symbol dropdown
+            const mainSelect = document.getElementById('symbolSelect');
+            if (mainSelect && mainSelect.value !== symbol) {
+                mainSelect.value = symbol;
+            }
+
+            // Update global currentSymbol
+            currentSymbol = symbol;
+
+            // Update Multi-Charts with new symbol
+            await updateMultiCharts(symbol);
+
+            // Also trigger full symbol change to update other tabs
+            await changeSymbol();
+        });
+    }
+
+    // Also listen for header symbol changes to update Multi-Charts
+    const headerSymbol = document.getElementById('symbolSelect');
+    if (headerSymbol) {
+        headerSymbol.addEventListener('change', function() {
+            const symbol = this.value;
+            // Update Multi-Charts dropdown to match
+            if (multiChartSymbol && multiChartSymbol.value !== symbol) {
+                multiChartSymbol.value = symbol;
+            }
+            // updateMultiCharts will be called via changeSymbol()
+        });
+    }
+
+    console.log('Multi-Charts symbol change handlers initialized');
+}
+
 async function updateChart(panelType) {
     const symbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
     const timeframe = document.getElementById(`${panelType}Timeframe`)?.value;
@@ -8235,6 +8464,9 @@ function renderMultiCandlestickChart(panelType, data, chartType, canvas) {
 
 // Initialize multi-charts when tab is clicked
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize symbol change handlers
+    initMultiChartsSymbolChange();
+
     const multiChartsTab = document.querySelector('[data-tab="multi-charts"]');
     if (multiChartsTab) {
         multiChartsTab.addEventListener('click', function() {
