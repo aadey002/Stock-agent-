@@ -1169,10 +1169,17 @@
                                 <option value="DIA">DIA</option>
                             </optgroup>
                             <optgroup label="Sectors">
-                                <option value="XLK">XLK</option>
-                                <option value="XLF">XLF</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLE">XLE</option>
+                                <option value="XLF">XLF - Financials</option>
+                                <option value="XLE">XLE - Energy</option>
+                                <option value="XLK">XLK - Technology</option>
+                                <option value="XLV">XLV - Healthcare</option>
+                                <option value="XLI">XLI - Industrials</option>
+                                <option value="XLB">XLB - Materials</option>
+                                <option value="XLU">XLU - Utilities</option>
+                                <option value="XLP">XLP - Staples</option>
+                                <option value="XLY">XLY - Discretionary</option>
+                                <option value="XLRE">XLRE - Real Estate</option>
+                                <option value="XLC">XLC - Comm Services</option>
                             </optgroup>
                         </select>
                     </div>
@@ -2015,10 +2022,17 @@
                                 <option value="QQQ">QQQ</option>
                                 <option value="IWM">IWM</option>
                                 <option value="DIA">DIA</option>
-                                <option value="XLK">XLK</option>
                                 <option value="XLF">XLF</option>
-                                <option value="XLV">XLV</option>
                                 <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                                <option value="XLRE">XLRE</option>
+                                <option value="XLC">XLC</option>
                             </select>
                         </div>
                         <div class="form-group-trade">
@@ -2102,6 +2116,17 @@
                             <option value="QQQ">QQQ</option>
                             <option value="IWM">IWM</option>
                             <option value="DIA">DIA</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
+                            <option value="XLRE">XLRE</option>
+                            <option value="XLC">XLC</option>
                         </select>
                         <select id="filterDirection" onchange="filterTrades()" style="padding:5px;border:1px solid var(--border);border-radius:4px;font-size:11px;">
                             <option value="ALL">All Directions</option>
@@ -3139,6 +3164,17 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <option value="QQQ">QQQ</option>
                             <option value="IWM">IWM</option>
                             <option value="DIA">DIA</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
+                            <option value="XLRE">XLRE</option>
+                            <option value="XLC">XLC</option>
                         </select>
                         <button onclick="refreshAllCharts()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
                     </div>
@@ -3633,10 +3669,12 @@ let allSymbolsData = {};
 let priceChart;
 let conversationHistory = [];
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLK', 'XLF', 'XLV', 'XLE'];
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
-    'XLK': 'Technology', 'XLF': 'Financials', 'XLV': 'Healthcare', 'XLE': 'Energy'
+    'XLF': 'Financials', 'XLE': 'Energy', 'XLK': 'Technology', 'XLV': 'Healthcare',
+    'XLI': 'Industrials', 'XLB': 'Materials', 'XLU': 'Utilities', 'XLP': 'Consumer Staples',
+    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services'
 };
 
 const TRADING_PARAMS = {
