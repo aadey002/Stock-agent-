@@ -3957,6 +3957,8 @@ async function loadOpportunitiesPrices() {
 document.addEventListener('DOMContentLoaded', function() {
     loadOpportunitiesPrices();
     loadOverviewData();
+    // Sort all tables to show newest first after data loads
+    setTimeout(sortAllTablesNewestFirst, 1000);
 });
 
 // Also call when Opportunities tab is clicked
@@ -3980,6 +3982,70 @@ const barcountTab = document.querySelector('[data-tab="barcount"]');
 if (barcountTab) {
     barcountTab.addEventListener('click', function() {
         setTimeout(updateHistoricalAverages, 100);
+    });
+}
+
+// ============================================
+// TABLE SORTING UTILITIES - NEWEST FIRST
+// ============================================
+
+// Auto-sort all date-based tables to show most recent first
+function sortAllTablesNewestFirst() {
+    const dateTables = [
+        { id: 'barCountTable', dateCol: 1, isDate: true },
+        { id: 'historicalDataTable', dateCol: 0, isDate: true },
+        { id: 'tradeTableBody', dateCol: 1, isDate: true },
+        { id: 'reversalStatsTable', dateCol: 0, isDate: false, sortByRisk: true }
+    ];
+
+    dateTables.forEach(config => {
+        const tbody = document.getElementById(config.id);
+        if (!tbody) return;
+
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        if (rows.length === 0) return;
+
+        rows.sort((a, b) => {
+            if (config.sortByRisk) {
+                // Sort by risk level (HIGH > MEDIUM > LOW)
+                const riskOrder = { 'HIGH': 1, 'MEDIUM': 2, 'MED': 2, 'LOW': 3 };
+                const aRisk = a.querySelector('.badge')?.textContent.trim() || 'LOW';
+                const bRisk = b.querySelector('.badge')?.textContent.trim() || 'LOW';
+                return (riskOrder[aRisk] || 3) - (riskOrder[bRisk] || 3);
+            }
+
+            let aVal = a.cells[config.dateCol]?.textContent.trim() || '';
+            let bVal = b.cells[config.dateCol]?.textContent.trim() || '';
+
+            if (config.isDate) {
+                // Parse dates and sort descending (newest first)
+                const aDate = new Date(aVal);
+                const bDate = new Date(bVal);
+                return bDate - aDate;
+            } else {
+                // For non-date columns, reverse alphabetically
+                return bVal.localeCompare(aVal);
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+
+        // Update row numbers after sorting
+        updateRowNumbers(config.id);
+    });
+}
+
+// Update row numbers dynamically after sorting
+function updateRowNumbers(tableId) {
+    const tbody = document.getElementById(tableId);
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const firstCell = row.cells[0];
+        if (firstCell && !isNaN(parseInt(firstCell.textContent))) {
+            firstCell.textContent = index + 1;
+        }
     });
 }
 
@@ -4522,30 +4588,31 @@ function updateFibonacci() {
     window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, swingHigh, swingLow };
 }
 
-// FIXED: Bar Count now uses currentSymbol
+// FIXED: Bar Count now uses currentSymbol - NEWEST FIRST
 function updateBarCountAnalysis() {
     const barCount = parseInt(document.getElementById('barCountSelect')?.value || 20);
-    
+
     // Use current symbol's data
     const symbolData = currentData;
     if (!symbolData || symbolData.length < 1) return;
     const actualBars = Math.min(barCount, symbolData.length);
-    
+
     const data = symbolData.slice(-actualBars);
     const table = document.getElementById('barCountTable');
     if (!table) return;
-    
+
     // Update the symbol display
     document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
-    
-    let html = '';
+
+    // Build rows array (oldest to newest for correct bar count calculation)
+    let rows = [];
     let baseCount = 0, gannCount = 0, dqnCount = 0, waveCount = 0;
-    
+
     data.forEach((d, i) => {
         const o = parseFloat(d.Open) || 0;
         const c = parseFloat(d.Close) || 0;
         const isBullish = c >= o;
-        
+
         if (isBullish) {
             baseCount = baseCount >= 0 ? baseCount + 1 : 1;
             gannCount = gannCount >= 0 ? gannCount + 1 : 1;
@@ -4557,23 +4624,33 @@ function updateBarCountAnalysis() {
             dqnCount = dqnCount <= 0 ? dqnCount - 1 : -1;
             waveCount = waveCount <= 0 ? waveCount - 1 : -1;
         }
-        
+
         const avg = (baseCount + gannCount + dqnCount + waveCount) / 4;
         const date = (d.Date || '').split('T')[0].slice(5);
-        
+
+        rows.push({
+            date, o, high: parseFloat(d.High)||0, low: parseFloat(d.Low)||0, c,
+            isBullish, baseCount, gannCount, dqnCount, waveCount, avg
+        });
+    });
+
+    // Reverse to show newest first, then build HTML with correct row numbers
+    rows.reverse();
+    let html = '';
+    rows.forEach((r, i) => {
         html += `<tr>
-            <td>${data.length - i}</td>
-            <td>${date}</td>
-            <td style="font-size:10px;">${o.toFixed(0)}/${(parseFloat(d.High)||0).toFixed(0)}/${(parseFloat(d.Low)||0).toFixed(0)}/${c.toFixed(0)}</td>
-            <td>${isBullish ? '📈' : '📉'}</td>
-            <td class="${baseCount > 0 ? 'positive' : 'negative'}">${baseCount > 0 ? '+' : ''}${baseCount}</td>
-            <td class="${gannCount > 0 ? 'positive' : 'negative'}">${gannCount > 0 ? '+' : ''}${gannCount}</td>
-            <td class="${dqnCount > 0 ? 'positive' : 'negative'}">${dqnCount > 0 ? '+' : ''}${dqnCount}</td>
-            <td class="${waveCount > 0 ? 'positive' : 'negative'}">${waveCount > 0 ? '+' : ''}${waveCount}</td>
-            <td><span class="badge badge-${avg > 2 ? 'success' : (avg < -2 ? 'danger' : 'warning')}">${avg.toFixed(1)}</span></td>
+            <td>${i + 1}</td>
+            <td>${r.date}</td>
+            <td style="font-size:10px;">${r.o.toFixed(0)}/${r.high.toFixed(0)}/${r.low.toFixed(0)}/${r.c.toFixed(0)}</td>
+            <td>${r.isBullish ? '📈' : '📉'}</td>
+            <td class="${r.baseCount > 0 ? 'positive' : 'negative'}">${r.baseCount > 0 ? '+' : ''}${r.baseCount}</td>
+            <td class="${r.gannCount > 0 ? 'positive' : 'negative'}">${r.gannCount > 0 ? '+' : ''}${r.gannCount}</td>
+            <td class="${r.dqnCount > 0 ? 'positive' : 'negative'}">${r.dqnCount > 0 ? '+' : ''}${r.dqnCount}</td>
+            <td class="${r.waveCount > 0 ? 'positive' : 'negative'}">${r.waveCount > 0 ? '+' : ''}${r.waveCount}</td>
+            <td><span class="badge badge-${r.avg > 2 ? 'success' : (r.avg < -2 ? 'danger' : 'warning')}">${r.avg.toFixed(1)}</span></td>
         </tr>`;
     });
-    
+
     table.innerHTML = html;
     
     document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
@@ -4900,8 +4977,7 @@ function updateReversalStats() {
     const table = document.getElementById('reversalStatsTable');
     if (!table) return;
 
-    let html = '';
-    let hasData = false;
+    let rows = [];
 
     // First, always show current symbol
     const symbolsToShow = [currentSymbol];
@@ -4916,7 +4992,6 @@ function updateReversalStats() {
         const data = symbol === currentSymbol ? currentData : allSymbolsData[symbol];
         if (!data || data.length < 10) continue;
 
-        hasData = true;
         let bullishRuns = [], bearishRuns = [], currentRun = 0, lastDir = null;
 
         for (const d of data) {
@@ -4941,26 +5016,36 @@ function updateReversalStats() {
         const avgForDir = lastDir ? parseFloat(avgBullish) : parseFloat(avgBearish);
         const pctOfAvg = avgForDir ? ((currentRun / avgForDir) * 100).toFixed(0) : 'N/A';
 
-        let risk = 'LOW', riskClass = 'success';
+        let risk = 'LOW', riskClass = 'success', riskOrder = 3;
         if (pctOfAvg !== 'N/A') {
             const pct = parseInt(pctOfAvg);
-            if (pct > 150) { risk = 'HIGH'; riskClass = 'danger'; }
-            else if (pct > 100) { risk = 'MEDIUM'; riskClass = 'warning'; }
+            if (pct > 150) { risk = 'HIGH'; riskClass = 'danger'; riskOrder = 1; }
+            else if (pct > 100) { risk = 'MEDIUM'; riskClass = 'warning'; riskOrder = 2; }
         }
 
-        const isCurrentSymbol = symbol === currentSymbol;
-        html += `<tr ${isCurrentSymbol ? 'style="background:rgba(59,130,246,0.1);font-weight:600;"' : ''}>
-            <td>${isCurrentSymbol ? '➤ ' : ''}${symbol}</td>
-            <td>${avgBullish} bars</td>
-            <td>${avgBearish} bars</td>
-            <td>${currentRun} (${currentDir})</td>
-            <td>${pctOfAvg}%</td>
-            <td><span class="badge badge-${riskClass}">${risk}</span></td>
-        </tr>`;
+        rows.push({
+            symbol, avgBullish, avgBearish, currentRun, currentDir, pctOfAvg,
+            risk, riskClass, riskOrder, isCurrentSymbol: symbol === currentSymbol
+        });
     }
 
-    if (!hasData) {
+    // Sort by risk (HIGH first, then MEDIUM, then LOW)
+    rows.sort((a, b) => a.riskOrder - b.riskOrder);
+
+    let html = '';
+    if (rows.length === 0) {
         html = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Loading data... Select a symbol and wait for data to load.</td></tr>';
+    } else {
+        rows.forEach(r => {
+            html += `<tr ${r.isCurrentSymbol ? 'style="background:rgba(59,130,246,0.1);font-weight:600;"' : ''}>
+                <td>${r.isCurrentSymbol ? '➤ ' : ''}${r.symbol}</td>
+                <td>${r.avgBullish} bars</td>
+                <td>${r.avgBearish} bars</td>
+                <td>${r.currentRun} (${r.currentDir})</td>
+                <td>${r.pctOfAvg}%</td>
+                <td><span class="badge badge-${r.riskClass}">${r.risk}</span></td>
+            </tr>`;
+        });
     }
 
     table.innerHTML = html;
@@ -6249,25 +6334,28 @@ function toggleExitField() {
 function renderTrades() {
     const tbody = document.getElementById('tradeTableBody');
     if (!tbody) return;
-    
+
     const filterSymbol = document.getElementById('filterSymbol')?.value || 'ALL';
     const filterDirection = document.getElementById('filterDirection')?.value || 'ALL';
     const filterStatus = document.getElementById('filterStatus')?.value || 'ALL';
-    
+
     let filteredTrades = trades.filter(t => {
         if (filterSymbol !== 'ALL' && t.symbol !== filterSymbol) return false;
         if (filterDirection !== 'ALL' && t.direction !== filterDirection) return false;
         if (filterStatus !== 'ALL' && t.status !== filterStatus) return false;
         return true;
     });
-    
+
+    // Sort by date descending (newest first)
+    filteredTrades.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     document.getElementById('tradeCount').textContent = `(${filteredTrades.length} trades)`;
-    
+
     if (filteredTrades.length === 0) {
         tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:30px;">No trades match your filters.</td></tr>';
         return;
     }
-    
+
     let html = '';
     filteredTrades.forEach((trade, index) => {
         const pnlClass = trade.pnl > 0 ? 'pnl-positive' : (trade.pnl < 0 ? 'pnl-negative' : '');
@@ -6275,9 +6363,9 @@ function renderTrades() {
         const statusClass = trade.status.toLowerCase();
         const directionEmoji = trade.direction === 'CALL' ? '📈' : '📉';
         const typeEmoji = trade.type === 'INTRADAY' ? '⚡' : '🌊';
-        
+
         html += `<tr>
-            <td>${filteredTrades.length - index}</td>
+            <td>${index + 1}</td>
             <td>${trade.date}</td>
             <td><strong>${trade.symbol}</strong></td>
             <td>${directionEmoji} ${trade.direction} ${typeEmoji}</td>
@@ -6295,7 +6383,7 @@ function renderTrades() {
             </td>
         </tr>`;
     });
-    
+
     tbody.innerHTML = html;
 }
 
