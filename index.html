@@ -1241,6 +1241,9 @@
             <button class="tab-btn gann-tab" data-tab="gann-analysis" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white;">🔮 Gann Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
+            <button class="tab-btn" data-tab="mtf-bias" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">📊 MTF Bias</button>
+            <button class="tab-btn" data-tab="trade-journal" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">📓 Trade Journal</button>
+            <button class="tab-btn" data-tab="gann-rules" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📜 Gann Rules</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -3342,6 +3345,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <span style="font-size: 12px; color: var(--muted);">Analyzing:</span>
                         <span id="gannCurrentSymbol" style="font-size: 16px; font-weight: 700; color: #d4a017;">SPY</span>
+                        <span id="gannSectorName" style="font-size: 11px; color: var(--muted);">(S&P 500 Index)</span>
                         <span id="gannCurrentPrice" style="font-size: 16px; font-weight: 600; color: var(--text);">$---</span>
                         <button onclick="updateGannAnalysis()" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">🔄 Recalculate</button>
                     </div>
@@ -3865,9 +3869,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <span class="icon intraday">⚡</span>
                             <span>Intraday</span>
                             <span class="signal-badge-mtf call" id="intradaySignal">CALL</span>
+                            <div id="intradayTfIndicator" style="font-size: 10px; color: #f59e0b; margin-left: 10px;">Showing: 15 Minute data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="intradayTimeframe" class="chart-select" onchange="updateChart('intraday')">
+                            <select id="intradayTimeframe" class="chart-select" onchange="updateChartTimeframe('intraday', this.value); updateChart('intraday')">
                                 <option value="1m">1 Min</option>
                                 <option value="5m">5 Min</option>
                                 <option value="15m" selected>15 Min</option>
@@ -3915,9 +3920,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <span class="icon swing">📈</span>
                             <span>Swing</span>
                             <span class="signal-badge-mtf call" id="swingSignal">CALL</span>
+                            <div id="swingTfIndicator" style="font-size: 10px; color: #3b82f6; margin-left: 10px;">Showing: Daily data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="swingTimeframe" class="chart-select" onchange="updateChart('swing')">
+                            <select id="swingTimeframe" class="chart-select" onchange="updateChartTimeframe('swing', this.value); updateChart('swing')">
                                 <option value="1h">1 Hour</option>
                                 <option value="4h">4 Hour</option>
                                 <option value="1d" selected>Daily</option>
@@ -3964,9 +3970,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <span class="icon position">🎯</span>
                             <span>Position</span>
                             <span class="signal-badge-mtf put" id="positionSignal">PUT</span>
+                            <div id="positionTfIndicator" style="font-size: 10px; color: #8b5cf6; margin-left: 10px;">Showing: Monthly data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="positionTimeframe" class="chart-select" onchange="updateChart('position')">
+                            <select id="positionTimeframe" class="chart-select" onchange="updateChartTimeframe('position', this.value); updateChart('position')">
                                 <option value="1d">Daily</option>
                                 <option value="1w">Weekly</option>
                                 <option value="1M" selected>Monthly</option>
@@ -4181,6 +4188,246 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <tr><td><strong>Vega</strong></td><td>Price change per 1% change in IV</td></tr>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MTF BIAS TAB -->
+        <div id="mtf-bias" class="tab-content" style="display: none;">
+            <div class="card" style="margin-bottom: 20px;">
+                <h2 style="margin-bottom: 20px;">📊 Multi-Timeframe Bias Log</h2>
+
+                <!-- Current MTF Summary -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(245,158,11,0.1); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: #666;">⚡ INTRADAY</div>
+                        <div style="font-size: 11px; color: #666;">15 Min / 1 Hour</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfIntradayBias">BULLISH</div>
+                        <div style="font-size: 11px; color: #666;">Updated: 11:30 AM</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: #666;">📈 SWING</div>
+                        <div style="font-size: 11px; color: #666;">Daily / 4 Hour</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfSwingBias">BULLISH</div>
+                        <div style="font-size: 11px; color: #666;">Updated: Dec 10</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: #666;">🏦 POSITION</div>
+                        <div style="font-size: 11px; color: #666;">Weekly / Monthly</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfPositionBias">BULLISH</div>
+                        <div style="font-size: 11px; color: #666;">Updated: Dec 6</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 12px; color: #666;">🎯 CONFLUENCE</div>
+                        <div style="font-size: 11px; color: #666;">All Timeframes</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfConfluence">3/3</div>
+                        <div style="font-size: 11px; color: #22c55e;">ALIGNED BULLISH</div>
+                    </div>
+                </div>
+
+                <!-- Bias History -->
+                <h3 style="margin-bottom: 15px;">📋 Bias Change History</h3>
+                <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left;">DATE</th>
+                            <th style="padding: 10px; text-align: center;">TIME</th>
+                            <th style="padding: 10px; text-align: center;">TIMEFRAME</th>
+                            <th style="padding: 10px; text-align: center;">PREV BIAS</th>
+                            <th style="padding: 10px; text-align: center;">NEW BIAS</th>
+                            <th style="padding: 10px; text-align: left;">TRIGGER</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mtfHistoryBody">
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 10</td>
+                            <td style="padding: 10px; text-align: center;">9:45 AM</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px;">Intraday</span></td>
+                            <td style="padding: 10px; text-align: center; color: #eab308;">NEUTRAL</td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">BULLISH</td>
+                            <td style="padding: 10px;">9 EMA crossed above 21 EMA on 15-min</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 9</td>
+                            <td style="padding: 10px; text-align: center;">4:00 PM</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px;">Swing</span></td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e;">BULLISH</td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">BULLISH</td>
+                            <td style="padding: 10px;">Confirmed - Daily close above 20 SMA</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 6</td>
+                            <td style="padding: 10px; text-align: center;">4:00 PM</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: #8b5cf6; color: white; padding: 2px 8px; border-radius: 4px;">Position</span></td>
+                            <td style="padding: 10px; text-align: center; color: #eab308;">NEUTRAL</td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">BULLISH</td>
+                            <td style="padding: 10px;">Weekly close above 50 SMA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TRADE JOURNAL TAB -->
+        <div id="trade-journal" class="tab-content" style="display: none;">
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">📓 Trade Journal</h2>
+                    <button style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">+ New Trade</button>
+                </div>
+
+                <!-- Stats -->
+                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Total Trades</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="journalTotalTrades">47</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Win Rate</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="journalWinRate">68%</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Avg Win</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;">+$342</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Avg Loss</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #ef4444;">-$185</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Profit Factor</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">1.85</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Total P&L</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="journalTotalPnl">+$4,280</div>
+                    </div>
+                </div>
+
+                <!-- Trade Log -->
+                <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left;">DATE</th>
+                            <th style="padding: 10px; text-align: center;">SYMBOL</th>
+                            <th style="padding: 10px; text-align: center;">TYPE</th>
+                            <th style="padding: 10px; text-align: center;">ENTRY</th>
+                            <th style="padding: 10px; text-align: center;">EXIT</th>
+                            <th style="padding: 10px; text-align: center;">P&L</th>
+                            <th style="padding: 10px; text-align: center;">RESULT</th>
+                            <th style="padding: 10px; text-align: left;">NOTES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journalTableBody">
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 10</td>
+                            <td style="padding: 10px; text-align: center;">SPY</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 2px 8px; border-radius: 4px;">CALL</span></td>
+                            <td style="padding: 10px; text-align: center;">$2.45</td>
+                            <td style="padding: 10px; text-align: center;">$3.20</td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">+$375</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">WIN</span></td>
+                            <td style="padding: 10px;">3/4 agent consensus, hit T1</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 9</td>
+                            <td style="padding: 10px; text-align: center;">IWM</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 2px 8px; border-radius: 4px;">PUT</span></td>
+                            <td style="padding: 10px; text-align: center;">$1.85</td>
+                            <td style="padding: 10px; text-align: center;">$2.60</td>
+                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">+$225</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">WIN</span></td>
+                            <td style="padding: 10px;">Gann resistance rejection</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; font-weight: 600;">Dec 6</td>
+                            <td style="padding: 10px; text-align: center;">QQQ</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 2px 8px; border-radius: 4px;">CALL</span></td>
+                            <td style="padding: 10px; text-align: center;">$3.10</td>
+                            <td style="padding: 10px; text-align: center;">$2.40</td>
+                            <td style="padding: 10px; text-align: center; color: #ef4444; font-weight: 700;">-$210</td>
+                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">LOSS</span></td>
+                            <td style="padding: 10px;">Stopped out on gap down</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GANN RULES TAB -->
+        <div id="gann-rules" class="tab-content" style="display: none;">
+            <div class="card" style="margin-bottom: 20px;">
+                <h2 style="margin-bottom: 20px;">📜 W.D. Gann Trading Rules</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                    <div style="background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 20px;">
+                        <h3 style="color: #8b5cf6; margin-bottom: 15px;">⏰ Time Rules</h3>
+                        <ol style="font-size: 12px; line-height: 2; padding-left: 20px;">
+                            <li><strong>Time is more important than price</strong> - Wait for cycle dates</li>
+                            <li><strong>Markets change trend every 30, 60, 90 days</strong></li>
+                            <li><strong>Watch for turns at anniversaries</strong> of major highs/lows</li>
+                            <li><strong>Seasonal changes</strong> - Equinoxes and Solstices matter</li>
+                            <li><strong>7-day and 52-week cycles</strong> are critical</li>
+                        </ol>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px;">
+                        <h3 style="color: #f59e0b; margin-bottom: 15px;">💰 Price Rules</h3>
+                        <ol style="font-size: 12px; line-height: 2; padding-left: 20px;">
+                            <li><strong>Price moves in squares</strong> - Use Square of 9</li>
+                            <li><strong>Support/Resistance at 45 degree angles</strong> from pivot</li>
+                            <li><strong>Divide range by 8ths</strong> - Key retracement levels</li>
+                            <li><strong>Watch 50% retracement</strong> - Critical support/resistance</li>
+                            <li><strong>Price crosses its own square</strong> = major reversal</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div style="background: rgba(34,197,94,0.05); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="color: #22c55e; margin-bottom: 15px;">📋 Gann's 28 Trading Rules</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 11px;">
+                        <div>1. Never risk more than 10% of capital on single trade</div>
+                        <div>2. Always use stop-loss orders</div>
+                        <div>3. Never overtrade</div>
+                        <div>4. Never let profit turn into loss</div>
+                        <div>5. Don't enter if unsure - wait for clear signal</div>
+                        <div>6. Trade with the trend</div>
+                        <div>7. When in doubt, get out</div>
+                        <div>8. Trade active markets only</div>
+                        <div>9. Never average a losing position</div>
+                        <div>10. Never get out without a good reason</div>
+                        <div>11. Bank surplus profits in reserve</div>
+                        <div>12. Never buy/sell just for a scalp</div>
+                        <div>13. Never move stop loss against you</div>
+                        <div>14. Don't get out prematurely</div>
+                        <div>15. Avoid small trades, go for big moves</div>
+                        <div>16. Don't close trades without reason</div>
+                        <div>17. Add to position only when trend confirmed</div>
+                        <div>18. Never hedge a losing position</div>
+                        <div>19. Never change position without reason</div>
+                        <div>20. Avoid increasing bets after wins</div>
+                        <div>21. Don't guess tops or bottoms</div>
+                        <div>22. Never follow blind tips</div>
+                        <div>23. Reduce trading after first loss</div>
+                        <div>24. Avoid wrong entries and exits</div>
+                        <div>25. Take equal sized profits</div>
+                        <div>26. Never cancel a stop loss</div>
+                        <div>27. Avoid frequent entries/exits</div>
+                        <div>28. Be willing to make money both ways</div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 20px;">
+                    <h3 style="color: #3b82f6; margin-bottom: 15px;">🔢 Square of 9 Quick Reference</h3>
+                    <div style="font-size: 12px; line-height: 1.8;">
+                        <p><strong>How to calculate:</strong></p>
+                        <ul style="padding-left: 20px;">
+                            <li>Find square root of current price: sqrt(687) = 26.21</li>
+                            <li>Add/subtract degrees: 45deg = 0.25, 90deg = 0.5, 180deg = 1.0, 360deg = 2.0</li>
+                            <li>Square the result for next level</li>
+                            <li><strong>Example:</strong> 26.21 + 0.25 = 26.46 squared = $700.13 (45deg up)</li>
+                            <li><strong>Example:</strong> 26.21 - 0.25 = 25.96 squared = $673.92 (45deg down)</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -4532,6 +4779,7 @@ function initTabs() {
             // Trigger Gann Analysis update when tab is clicked
             if (btn.dataset.tab === 'gann-analysis') {
                 updateGannAnalysis();
+                updateGannAnalysisForSymbol(currentSymbol);
             }
         };
     });
@@ -5034,6 +5282,9 @@ async function changeSymbol() {
     if (gannTab && gannTab.classList.contains('active')) {
         updateGannAnalysis();
     }
+
+    // Also update the symbol-specific Gann data
+    updateGannAnalysisForSymbol(currentSymbol);
 }
 
 function parseCSV(text) {
@@ -8057,6 +8308,35 @@ function getMTFSettings(panel) {
     };
 }
 
+// Chart timeframe update function
+function updateChartTimeframe(chartType, timeframe) {
+    console.log('Updating ' + chartType + ' to ' + timeframe);
+
+    const timeframeLabels = {
+        '1m': '1 Minute', '5m': '5 Minute', '15m': '15 Minute', '30m': '30 Minute',
+        '1h': '1 Hour', '4h': '4 Hour', '1d': 'Daily', '1w': 'Weekly',
+        '1M': 'Monthly', '3M': 'Quarterly'
+    };
+
+    // Update the timeframe indicator
+    const indicatorId = chartType + 'TfIndicator';
+    const indicator = document.getElementById(indicatorId);
+    if (indicator) {
+        indicator.textContent = 'Showing: ' + (timeframeLabels[timeframe] || timeframe) + ' data';
+    }
+
+    // Show notification
+    const notification = document.createElement('div');
+    notification.style.cssText = 'position: fixed; top: 70px; right: 20px; background: #3b82f6; color: white; padding: 10px 20px; border-radius: 8px; font-size: 12px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+    notification.innerHTML = '<strong>' + chartType.charAt(0).toUpperCase() + chartType.slice(1) + '</strong> chart switched to ' + timeframeLabels[timeframe];
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s';
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
 function initMultiCharts() {
     console.log('Initializing enhanced multi-charts...');
     updateAllMultiCharts();
@@ -9318,6 +9598,282 @@ const gannQuotes = [
     '"Never trade without stop losses." - W.D. Gann',
     '"Buy and sell on definite rules, not on hope or fear." - W.D. Gann'
 ];
+
+// Symbol-specific Gann data for all 12 ETFs
+const symbolGannData = {
+    SPY: {
+        price: 607.50, low52: 475.80, high52: 609.45, pivotLow: 559.23, pivotHigh: 607.80,
+        pivotLowDate: '2024-10-27', pivotHighDate: '2024-12-06', daysSincePivotLow: 45, daysSincePivotHigh: 5,
+        sector: 'S&P 500 Index', sacredLevels: [576, 600, 625, 650]
+    },
+    QQQ: {
+        price: 528.90, low52: 406.18, high52: 530.14, pivotLow: 485.17, pivotHigh: 529.80,
+        pivotLowDate: '2024-10-28', pivotHighDate: '2024-12-05', daysSincePivotLow: 44, daysSincePivotHigh: 6,
+        sector: 'Tech/Nasdaq 100', sacredLevels: [500, 525, 550, 576]
+    },
+    IWM: {
+        price: 240.12, low52: 190.62, high52: 244.98, pivotLow: 207.89, pivotHigh: 244.50,
+        pivotLowDate: '2024-10-31', pivotHighDate: '2024-11-25', daysSincePivotLow: 41, daysSincePivotHigh: 16,
+        sector: 'Small Cap Russell 2000', sacredLevels: [225, 236, 250, 265]
+    },
+    XLE: {
+        price: 87.45, low52: 78.12, high52: 99.76, pivotLow: 81.24, pivotHigh: 95.20,
+        pivotLowDate: '2024-09-10', pivotHighDate: '2024-10-07', daysSincePivotLow: 92, daysSincePivotHigh: 65,
+        sector: 'Energy Sector', sacredLevels: [81, 90, 100, 111]
+    },
+    XLF: {
+        price: 50.78, low52: 38.85, high52: 51.45, pivotLow: 42.50, pivotHigh: 51.20,
+        pivotLowDate: '2024-08-05', pivotHighDate: '2024-12-02', daysSincePivotLow: 128, daysSincePivotHigh: 9,
+        sector: 'Financials Sector', sacredLevels: [45, 49, 54, 59]
+    },
+    XLK: {
+        price: 236.80, low52: 188.90, high52: 238.62, pivotLow: 205.45, pivotHigh: 237.90,
+        pivotLowDate: '2024-08-08', pivotHighDate: '2024-12-04', daysSincePivotLow: 125, daysSincePivotHigh: 7,
+        sector: 'Technology Sector', sacredLevels: [216, 225, 240, 256]
+    },
+    XLV: {
+        price: 147.25, low52: 131.41, high52: 151.42, pivotLow: 135.80, pivotHigh: 150.90,
+        pivotLowDate: '2024-06-17', pivotHighDate: '2024-11-11', daysSincePivotLow: 177, daysSincePivotHigh: 30,
+        sector: 'Healthcare Sector', sacredLevels: [136, 144, 152, 161]
+    },
+    XLI: {
+        price: 139.40, low52: 112.18, high52: 141.24, pivotLow: 119.50, pivotHigh: 140.80,
+        pivotLowDate: '2024-08-05', pivotHighDate: '2024-11-25', daysSincePivotLow: 128, daysSincePivotHigh: 16,
+        sector: 'Industrials Sector', sacredLevels: [125, 133, 141, 150]
+    },
+    XLB: {
+        price: 89.60, low52: 79.60, high52: 95.72, pivotLow: 82.30, pivotHigh: 94.85,
+        pivotLowDate: '2024-08-05', pivotHighDate: '2024-10-18', daysSincePivotLow: 128, daysSincePivotHigh: 54,
+        sector: 'Materials Sector', sacredLevels: [81, 90, 100, 110]
+    },
+    XLU: {
+        price: 79.85, low52: 61.38, high52: 82.13, pivotLow: 68.45, pivotHigh: 81.95,
+        pivotLowDate: '2024-06-04', pivotHighDate: '2024-11-08', daysSincePivotLow: 190, daysSincePivotHigh: 33,
+        sector: 'Utilities Sector', sacredLevels: [72, 79, 87, 96]
+    },
+    XLP: {
+        price: 81.40, low52: 70.31, high52: 83.63, pivotLow: 72.90, pivotHigh: 83.40,
+        pivotLowDate: '2024-06-04', pivotHighDate: '2024-11-08', daysSincePivotLow: 190, daysSincePivotHigh: 33,
+        sector: 'Consumer Staples', sacredLevels: [74, 81, 89, 98]
+    },
+    XLY: {
+        price: 228.75, low52: 166.76, high52: 232.11, pivotLow: 176.50, pivotHigh: 231.50,
+        pivotLowDate: '2024-08-05', pivotHighDate: '2024-12-02', daysSincePivotLow: 128, daysSincePivotHigh: 9,
+        sector: 'Consumer Discretionary', sacredLevels: [196, 216, 238, 262]
+    }
+};
+
+// Calculate Sacred Numbers (Gann's key numbers)
+function calculateSacredNumbers(price) {
+    if (!price || price <= 0) return [];
+
+    const sacredNumbers = [7, 9, 12, 36, 52, 90, 144, 180, 270, 360];
+    const results = [];
+
+    sacredNumbers.forEach(num => {
+        // Calculate multiples of sacred numbers near current price
+        const multiple = Math.round(price / num);
+        const nearestSacred = multiple * num;
+        const diff = nearestSacred - price;
+        const diffPct = (diff / price) * 100;
+
+        results.push({
+            number: num,
+            nearestLevel: nearestSacred,
+            diff: diff.toFixed(2),
+            diffPct: diffPct.toFixed(2),
+            isNear: Math.abs(diffPct) < 2
+        });
+    });
+
+    return results;
+}
+
+// Get symbol-specific Gann analysis data
+function getSymbolGannData(symbol) {
+    return symbolGannData[symbol] || symbolGannData['SPY'];
+}
+
+// Update Gann Analysis for specific symbol
+function updateGannAnalysisForSymbol(symbol) {
+    const data = getSymbolGannData(symbol);
+    const price = data.price;
+
+    // Update header with symbol info
+    const symbolEl = document.getElementById('gannCurrentSymbol');
+    const priceEl = document.getElementById('gannCurrentPrice');
+    const sectorEl = document.getElementById('gannSectorName');
+    const turnSymbolEl = document.getElementById('gannTurnSymbol');
+
+    if (symbolEl) symbolEl.textContent = symbol;
+    if (priceEl) priceEl.textContent = '$' + price.toFixed(2);
+    if (sectorEl) sectorEl.textContent = '(' + data.sector + ')';
+    if (turnSymbolEl) turnSymbolEl.textContent = symbol;
+
+    // Calculate and update Square of 9
+    const sq9Levels = calculateSquareOf9(price);
+    updateSquareOf9Display(sq9Levels, symbol);
+
+    // Calculate Gann Angles from pivots
+    const anglesFromLow = calculateGannAnglesFromPivot(data.pivotLow, data.daysSincePivotLow, price);
+    const anglesFromHigh = calculateGannAnglesFromPivot(data.pivotHigh, data.daysSincePivotHigh, price);
+    updateGannAnglesDisplay(anglesFromLow, anglesFromHigh, symbol);
+
+    // Calculate Sacred Numbers
+    const sacredNums = calculateSacredNumbers(price);
+    updateSacredNumbersDisplay(sacredNums, symbol);
+
+    // Update pivot info
+    updatePivotInfo(data, symbol);
+
+    // Recalculate confluence score
+    const cycles = calculateGannCycles();
+    const allAngles = [...anglesFromLow, ...anglesFromHigh];
+    const confluence = calculateGannConfluence(sq9Levels, cycles, allAngles, price);
+    updateConfluenceDisplay(confluence);
+
+    console.log(`Gann Analysis updated for ${symbol} at $${price}`);
+}
+
+// Calculate Gann angles from a pivot point
+function calculateGannAnglesFromPivot(pivotPrice, daysSincePivot, currentPrice) {
+    if (!pivotPrice || daysSincePivot < 1) return [];
+
+    const angleRatios = [
+        { name: '1x8', ratio: 0.125, degrees: 7.5 },
+        { name: '1x4', ratio: 0.25, degrees: 15 },
+        { name: '1x3', ratio: 0.333, degrees: 18.75 },
+        { name: '1x2', ratio: 0.5, degrees: 26.25 },
+        { name: '1x1', ratio: 1, degrees: 45 },
+        { name: '2x1', ratio: 2, degrees: 63.75 },
+        { name: '3x1', ratio: 3, degrees: 71.25 },
+        { name: '4x1', ratio: 4, degrees: 75 },
+        { name: '8x1', ratio: 8, degrees: 82.5 }
+    ];
+
+    const scaleFactor = pivotPrice * 0.001;
+
+    return angleRatios.map(angle => {
+        const priceAtAngle = pivotPrice + (angle.ratio * scaleFactor * daysSincePivot);
+        const diffFromCurrent = currentPrice - priceAtAngle;
+        const isAbove = currentPrice > priceAtAngle;
+
+        return {
+            ...angle,
+            price: priceAtAngle,
+            diff: diffFromCurrent,
+            isAbove,
+            isNear: Math.abs(diffFromCurrent / currentPrice) < 0.005
+        };
+    });
+}
+
+// Update Square of 9 display for symbol
+function updateSquareOf9Display(levels, symbol) {
+    const supportEl = document.getElementById('sq9Support');
+    const resistanceEl = document.getElementById('sq9Resistance');
+    if (!levels) return;
+
+    // Update support levels
+    if (supportEl && levels.support) {
+        supportEl.innerHTML = levels.support.slice(0, 4).map(level => `
+            <div style="display: flex; justify-content: space-between;">
+                <span>-${level.angle}°:</span>
+                <span style="color: #22c55e; font-weight: 600;">$${level.price.toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+
+    // Update resistance levels
+    if (resistanceEl && levels.resistance) {
+        resistanceEl.innerHTML = levels.resistance.slice(0, 4).map(level => `
+            <div style="display: flex; justify-content: space-between;">
+                <span>+${level.angle}°:</span>
+                <span style="color: #ef4444; font-weight: 600;">$${level.price.toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// Update Gann Angles display
+function updateGannAnglesDisplay(anglesFromLow, anglesFromHigh, symbol) {
+    const lowEl = document.getElementById('anglesFromLow');
+    const highEl = document.getElementById('anglesFromHigh');
+    const positionEl = document.getElementById('anglePositionText');
+
+    // Update angles from low (bullish)
+    if (lowEl && anglesFromLow.length > 0) {
+        const keyAngles = anglesFromLow.filter(a => ['1x1', '2x1', '4x1', '1x2', '1x4', '8x1'].includes(a.name));
+        lowEl.innerHTML = keyAngles.slice(0, 6).map(angle => `
+            <div style="background: rgba(34,197,94,0.15); padding: 6px; border-radius: 4px; text-align: center;">
+                <div style="color: var(--muted);">${angle.name}</div>
+                <div style="color: #22c55e; font-weight: 600;">$${angle.price.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+
+    // Update angles from high (bearish)
+    if (highEl && anglesFromHigh.length > 0) {
+        const keyAngles = anglesFromHigh.filter(a => ['1x1', '2x1', '4x1', '1x2', '1x4', '8x1'].includes(a.name));
+        highEl.innerHTML = keyAngles.slice(0, 6).map(angle => `
+            <div style="background: rgba(239,68,68,0.15); padding: 6px; border-radius: 4px; text-align: center;">
+                <div style="color: var(--muted);">${angle.name}</div>
+                <div style="color: #ef4444; font-weight: 600;">$${angle.price.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+
+    // Update position text
+    if (positionEl) {
+        const nearAngles = [...anglesFromLow, ...anglesFromHigh].filter(a => a.isNear);
+        if (nearAngles.length > 0) {
+            const nearest = nearAngles[0];
+            positionEl.textContent = `On ${nearest.name} angle - Key Level`;
+        } else {
+            const aboveLow = anglesFromLow.filter(a => a.isAbove);
+            if (aboveLow.length > 0) {
+                positionEl.textContent = `Above ${aboveLow[aboveLow.length - 1].name} from Low - Bullish`;
+            } else {
+                positionEl.textContent = `Below key angles - Cautious`;
+            }
+        }
+    }
+}
+
+// Update Sacred Numbers display
+function updateSacredNumbersDisplay(sacredNums, symbol) {
+    const container = document.getElementById('sacredNumbers');
+    if (!container) return;
+
+    // Filter to the most relevant sacred numbers (7, 9, 12, 52, 144)
+    const keyNumbers = sacredNums.filter(n => [7, 9, 12, 52, 144].includes(n.number));
+
+    container.innerHTML = keyNumbers.slice(0, 5).map(num => `
+        <div style="background: rgba(245,158,11,0.15); padding: 6px 4px; border-radius: 4px; text-align: center;">
+            <div style="color: var(--muted); font-size: 9px;">${num.number}</div>
+            <div style="color: #f59e0b; font-weight: 600; font-size: 11px;">$${num.nearestLevel.toFixed(2)}</div>
+        </div>
+    `).join('');
+}
+
+// Update Pivot Info display
+function updatePivotInfo(data, symbol) {
+    const pivotLowEl = document.getElementById('gannPivotLow');
+    const pivotHighEl = document.getElementById('gannPivotHigh');
+
+    // Format date nicely
+    const formatDate = (dateStr) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    };
+
+    if (pivotLowEl) {
+        pivotLowEl.textContent = '$' + data.pivotLow.toFixed(2) + ' (' + formatDate(data.pivotLowDate) + ')';
+    }
+    if (pivotHighEl) {
+        pivotHighEl.textContent = '$' + data.pivotHigh.toFixed(2) + ' (' + formatDate(data.pivotHighDate) + ')';
+    }
+}
 
 // Calculate Square of 9 levels
 function calculateSquareOf9(price) {
