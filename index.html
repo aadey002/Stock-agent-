@@ -243,7 +243,13 @@
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         
         .symbol-select select { padding: 5px 8px; border: none; border-radius: 5px; font-size: 11px; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600; }
-        .refresh-btn { padding: 5px 12px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .refresh-btn { padding: 5px 12px; background: #22c55e; color: white; border: none; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .refresh-btn:hover { background: #16a34a; transform: scale(1.02); }
+        .refresh-btn:active { transform: scale(0.98); }
+        .refresh-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        #refreshIcon { display: inline-block; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
         .container { max-width: 1600px; margin: 0 auto; padding: 12px; }
         
@@ -1183,7 +1189,7 @@
                             </optgroup>
                         </select>
                     </div>
-                    <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+                    <button id="refreshBtn" class="refresh-btn" onclick="refreshAllData()" style="display: flex; align-items: center; gap: 5px;"><span id="refreshIcon">🔄</span> Refresh</button>
                     <div class="user-info">
                         <div class="user-avatar">👤</div>
                         <span id="loggedInUser">User</span>
@@ -4967,6 +4973,427 @@ document.addEventListener('DOMContentLoaded', function() {
         handleGlobalSymbolChange(initialSymbol);
     }, 500);
 });
+
+// ============================================
+// MASTER REFRESH FUNCTION
+// ============================================
+
+// Master refresh function - updates ALL data for selected symbol
+async function refreshAllData() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const refreshIcon = document.getElementById('refreshIcon');
+
+    // Get current symbol from dropdown
+    const symbolDropdown = document.getElementById('symbolSelect');
+    if (symbolDropdown) {
+        currentSymbol = symbolDropdown.value;
+    }
+
+    console.log('🔄 Refreshing all data for: ' + currentSymbol);
+
+    // Show loading state
+    if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.style.opacity = '0.7';
+    }
+    if (refreshIcon) {
+        refreshIcon.style.animation = 'spin 1s linear infinite';
+    }
+
+    // Show notification
+    showRefreshNotification('Refreshing data for ' + currentSymbol + '...', 'info');
+
+    try {
+        // 1. Update Header Display
+        updateHeaderForSymbol(currentSymbol);
+
+        // 2. Fetch fresh price data
+        await fetchLatestPrice(currentSymbol);
+
+        // 3. Update ALL sections for current symbol
+        if (typeof updateGannAnalysisForSymbol === 'function') {
+            updateGannAnalysisForSymbol(currentSymbol);
+        }
+        if (typeof updateGannForecast === 'function') {
+            updateGannForecast(currentSymbol);
+        }
+        updateOverviewForSymbol(currentSymbol);
+        updateMultiChartsForSymbol(currentSymbol);
+        updateOpportunitiesForSymbol(currentSymbol);
+        updateDailyAnalysisForSymbol(currentSymbol);
+        updateSignalsForSymbol(currentSymbol);
+        updatePatternsForSymbol(currentSymbol);
+        updateTradeSetupForSymbol(currentSymbol);
+        updateMTFTrendForSymbol(currentSymbol);
+
+        // 4. Update timestamp
+        updateLastRefreshTime();
+
+        showRefreshNotification('✅ Data refreshed for ' + currentSymbol, 'success');
+        console.log('✅ Refresh complete for ' + currentSymbol);
+
+    } catch (error) {
+        console.error('Refresh error:', error);
+        showRefreshNotification('❌ Refresh failed: ' + error.message, 'error');
+    } finally {
+        // Reset button state
+        if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.style.opacity = '1';
+        }
+        if (refreshIcon) {
+            refreshIcon.style.animation = 'none';
+        }
+    }
+}
+
+// Fetch latest price (uses cached data as Yahoo Finance has CORS issues)
+async function fetchLatestPrice(symbol) {
+    try {
+        // Try to load from CSV first
+        const response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
+        if (response.ok) {
+            const text = await response.text();
+            const lines = text.trim().split('\n');
+            if (lines.length >= 2) {
+                const lastLine = lines[lines.length - 1];
+                const columns = lastLine.split(',');
+                const price = parseFloat(columns[4]); // Close price
+
+                if (!isNaN(price) && symbolGannData[symbol]) {
+                    const oldPrice = symbolGannData[symbol].price;
+                    symbolGannData[symbol].price = price;
+                    const change = price - oldPrice;
+                    const changePct = (change / oldPrice) * 100;
+                    updatePriceDisplay(symbol, price, change, changePct);
+                    console.log(symbol + ': $' + price.toFixed(2) + ' (from CSV)');
+                    return { price, change, changePct };
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('CSV fetch failed, using cached data:', error);
+    }
+    return null;
+}
+
+// Update header price display
+function updatePriceDisplay(symbol, price, change, changePct) {
+    const priceEl = document.getElementById('headerPrice');
+    const changeEl = document.getElementById('headerChange');
+
+    if (priceEl) {
+        priceEl.textContent = '$' + price.toFixed(2);
+    }
+
+    if (changeEl) {
+        const sign = change >= 0 ? '+' : '';
+        changeEl.textContent = sign + change.toFixed(2) + ' (' + sign + changePct.toFixed(2) + '%)';
+        changeEl.style.color = change >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // Also update the symbol banner
+    const symbolBannerPrice = document.querySelector('#symbolBanner .price, .symbol-banner-price');
+    if (symbolBannerPrice) {
+        symbolBannerPrice.textContent = '$' + price.toFixed(2);
+    }
+}
+
+// Update header for selected symbol
+function updateHeaderForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Update current symbol display
+    const symbolDisplay = document.getElementById('currentSymbolDisplay');
+    if (symbolDisplay) {
+        symbolDisplay.textContent = symbol;
+    }
+
+    // Update symbol name
+    const symbolName = document.getElementById('currentSymbolName');
+    if (symbolName) {
+        symbolName.textContent = data.sector || symbol + ' ETF';
+    }
+
+    // Update Gann header
+    const gannSymbol = document.getElementById('gannCurrentSymbol');
+    if (gannSymbol) {
+        gannSymbol.textContent = symbol;
+    }
+
+    const gannPrice = document.getElementById('gannCurrentPrice');
+    if (gannPrice) {
+        gannPrice.textContent = '$' + data.price.toFixed(2);
+    }
+
+    const gannSector = document.getElementById('gannSectorName');
+    if (gannSector) {
+        gannSector.textContent = '(' + data.sector + ')';
+    }
+}
+
+// Update last refresh timestamp
+function updateLastRefreshTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    // Update data time displays
+    const dataTime = document.getElementById('dataTime');
+    if (dataTime) {
+        dataTime.textContent = timeStr;
+    }
+
+    const dataDate = document.getElementById('dataDate');
+    if (dataDate) {
+        dataDate.textContent = dateStr;
+    }
+
+    // Update all section timestamps
+    document.querySelectorAll('.section-timestamp').forEach(el => {
+        el.textContent = '⏱️ ' + timeStr;
+    });
+}
+
+// Show refresh notification toast
+function showRefreshNotification(message, type) {
+    // Remove existing notification
+    const existing = document.getElementById('refresh-notification-toast');
+    if (existing) existing.remove();
+
+    const colors = {
+        'info': '#3b82f6',
+        'success': '#22c55e',
+        'error': '#ef4444',
+        'warning': '#f59e0b'
+    };
+
+    const notification = document.createElement('div');
+    notification.id = 'refresh-notification-toast';
+    notification.style.cssText = 'position: fixed; top: 70px; right: 20px; background: ' + (colors[type] || colors.info) + '; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease;';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(function() {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s';
+        setTimeout(function() { notification.remove(); }, 300);
+    }, 3000);
+}
+
+// ============================================
+// SYMBOL-SPECIFIC UPDATE FUNCTIONS
+// ============================================
+
+// Update Overview section for symbol
+function updateOverviewForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Update overview price displays
+    const priceEl = document.getElementById('overviewPrice');
+    if (priceEl) priceEl.textContent = '$' + data.price.toFixed(2);
+
+    const highEl = document.getElementById('overview52High');
+    if (highEl) highEl.textContent = '$' + data.high.toFixed(2);
+
+    const lowEl = document.getElementById('overview52Low');
+    if (lowEl) lowEl.textContent = '$' + data.low.toFixed(2);
+
+    console.log('Overview updated for ' + symbol);
+}
+
+// Update Multi-Charts for symbol
+function updateMultiChartsForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Update chart symbol labels
+    document.querySelectorAll('.chart-symbol-label').forEach(function(el) {
+        el.textContent = symbol;
+    });
+
+    // Update chart price labels
+    document.querySelectorAll('.chart-price-label').forEach(function(el) {
+        el.textContent = '$' + data.price.toFixed(2);
+    });
+
+    // Sync multi-chart symbol dropdown
+    const multiChartSymbol = document.getElementById('multiChartSymbol');
+    if (multiChartSymbol) {
+        multiChartSymbol.value = symbol;
+    }
+
+    console.log('Multi-Charts updated for ' + symbol);
+}
+
+// Update Opportunities for symbol - highlight matching rows
+function updateOpportunitiesForSymbol(symbol) {
+    const tbody = document.getElementById('oppTableBody');
+    if (!tbody) return;
+
+    tbody.querySelectorAll('tr').forEach(function(row) {
+        const symbolCell = row.cells[1];
+        if (symbolCell) {
+            const rowSymbol = symbolCell.textContent.trim();
+            if (rowSymbol === symbol) {
+                row.style.background = 'rgba(59,130,246,0.15)';
+                row.style.fontWeight = '600';
+            } else {
+                row.style.background = '';
+                row.style.fontWeight = '';
+            }
+        }
+    });
+
+    console.log('Opportunities updated for ' + symbol);
+}
+
+// Update Daily Analysis for symbol
+function updateDailyAnalysisForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Update Morning Plan symbol reference
+    const morningSymbolEl = document.getElementById('morningPlanSymbol');
+    if (morningSymbolEl) morningSymbolEl.textContent = symbol;
+
+    // Update confluence symbol
+    const confluenceSymbol = document.getElementById('confluenceSymbol');
+    if (confluenceSymbol) confluenceSymbol.textContent = symbol + ' Analysis';
+
+    // Calculate Square of 9 for entry/stop/targets
+    const sq9 = calculateSquareOf9(data.price);
+    if (sq9) {
+        const support45 = sq9.support && sq9.support[0] ? sq9.support[0].price : data.price * 0.98;
+        const resistance45 = sq9.resistance && sq9.resistance[0] ? sq9.resistance[0].price : data.price * 1.02;
+        const resistance90 = sq9.resistance && sq9.resistance[1] ? sq9.resistance[1].price : data.price * 1.04;
+
+        const entryEl = document.getElementById('morningPlanEntry');
+        if (entryEl) entryEl.textContent = '$' + data.price.toFixed(2);
+
+        const stopEl = document.getElementById('morningPlanStop');
+        if (stopEl) stopEl.textContent = '$' + support45.toFixed(2);
+
+        const t1El = document.getElementById('morningPlanT1');
+        if (t1El) t1El.textContent = '$' + resistance45.toFixed(2);
+
+        const t2El = document.getElementById('morningPlanT2');
+        if (t2El) t2El.textContent = '$' + resistance90.toFixed(2);
+    }
+
+    console.log('Daily Analysis updated for ' + symbol);
+}
+
+// Update Signals for symbol - highlight matching rows
+function updateSignalsForSymbol(symbol) {
+    document.querySelectorAll('.signals-table tr, #signalsTable tr, #agentSignalsBody tr').forEach(function(row) {
+        const symbolCell = row.querySelector('td:first-child');
+        if (symbolCell && symbolCell.textContent.trim() === symbol) {
+            row.style.background = 'rgba(59,130,246,0.1)';
+        } else if (symbolCell) {
+            row.style.background = '';
+        }
+    });
+
+    console.log('Signals updated for ' + symbol);
+}
+
+// Update Patterns for symbol
+function updatePatternsForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Highlight pattern rows for current symbol
+    document.querySelectorAll('#patternTableBody tr').forEach(function(row) {
+        const symbolCell = row.querySelector('td:first-child');
+        if (symbolCell && symbolCell.textContent.trim() === symbol) {
+            row.style.background = 'rgba(59,130,246,0.1)';
+        } else if (symbolCell) {
+            row.style.background = '';
+        }
+    });
+
+    console.log('Patterns updated for ' + symbol);
+}
+
+// Update Trade Setup for symbol
+function updateTradeSetupForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    const sq9 = calculateSquareOf9(data.price);
+    const isBullish = data.price > (data.high + data.low) / 2;
+
+    if (sq9) {
+        const support45 = sq9.support && sq9.support[0] ? sq9.support[0].price : data.price * 0.98;
+        const resistance45 = sq9.resistance && sq9.resistance[0] ? sq9.resistance[0].price : data.price * 1.02;
+        const resistance90 = sq9.resistance && sq9.resistance[1] ? sq9.resistance[1].price : data.price * 1.04;
+        const support90 = sq9.support && sq9.support[1] ? sq9.support[1].price : data.price * 0.96;
+
+        // Update trade setup elements if they exist
+        const entryLowEl = document.getElementById('tradeEntryLow');
+        if (entryLowEl) entryLowEl.textContent = '$' + (data.price * 0.995).toFixed(2);
+
+        const entryHighEl = document.getElementById('tradeEntryHigh');
+        if (entryHighEl) entryHighEl.textContent = '$' + (data.price * 1.005).toFixed(2);
+
+        const stopEl = document.getElementById('tradeStop');
+        if (stopEl) stopEl.textContent = '$' + (isBullish ? support45 : resistance45).toFixed(2);
+
+        const target1El = document.getElementById('tradeTarget1');
+        if (target1El) target1El.textContent = '$' + (isBullish ? resistance45 : support45).toFixed(2);
+
+        const target2El = document.getElementById('tradeTarget2');
+        if (target2El) target2El.textContent = '$' + (isBullish ? resistance90 : support90).toFixed(2);
+    }
+
+    console.log('Trade Setup updated for ' + symbol);
+}
+
+// Update MTF Trend for symbol
+function updateMTFTrendForSymbol(symbol) {
+    const data = symbolGannData[symbol];
+    if (!data) return;
+
+    // Determine bias based on price position
+    const upperThird = data.low + (data.high - data.low) * 0.66;
+    const lowerThird = data.low + (data.high - data.low) * 0.33;
+
+    let intradayBias = 'NEUTRAL';
+    let swingBias = 'NEUTRAL';
+    let positionBias = 'NEUTRAL';
+
+    if (data.price > upperThird) {
+        intradayBias = 'BULLISH';
+        swingBias = 'BULLISH';
+        positionBias = 'BULLISH';
+    } else if (data.price < lowerThird) {
+        intradayBias = 'BEARISH';
+        swingBias = 'BEARISH';
+        positionBias = 'BEARISH';
+    } else {
+        intradayBias = 'NEUTRAL';
+        swingBias = 'BULLISH';
+        positionBias = 'BULLISH';
+    }
+
+    // Update displays
+    const updateBiasDisplay = function(id, bias) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = bias;
+            el.style.color = bias === 'BULLISH' ? '#22c55e' : (bias === 'BEARISH' ? '#ef4444' : '#eab308');
+        }
+    };
+
+    updateBiasDisplay('mtfIntradayBias', intradayBias);
+    updateBiasDisplay('mtfSwingBias', swingBias);
+    updateBiasDisplay('mtfPositionBias', positionBias);
+
+    console.log('MTF Trend updated for ' + symbol);
+}
 
 // Also call when Opportunities tab is clicked
 const oppTab = document.querySelector('[data-tab="opportunities"]');
