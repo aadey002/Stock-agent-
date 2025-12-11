@@ -1569,6 +1569,125 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Historical Averages Section -->
+            <div class="card" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px;">📊 Historical Averages (Last 20 Days)</h3>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Use these to set realistic daily targets. Don't expect more than the average move.</p>
+                <div class="table-wrap">
+                    <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--bg);">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--border);">SYMBOL</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">AVG O→H</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">MAX O→H</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">AVG O→L</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">MAX O→L</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">AVG O→C</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">AVG RANGE</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">CALL TARGET</th>
+                                <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border);">PUT TARGET</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historicalAvgBody">
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">SPY</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="spyAvgOH">+$4.25</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="spyMaxOH">+$8.50</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="spyAvgOL">-$3.80</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="spyMaxOL">-$7.20</td>
+                                <td style="padding: 10px; text-align: center;" id="spyAvgOC">+$1.20</td>
+                                <td style="padding: 10px; text-align: center;" id="spyAvgRange">$8.05</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="spyCallTarget">+$3.50</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="spyPutTarget">-$3.00</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">QQQ</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="qqqAvgOH">+$5.10</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="qqqMaxOH">+$10.20</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="qqqAvgOL">-$4.50</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="qqqMaxOL">-$9.80</td>
+                                <td style="padding: 10px; text-align: center;" id="qqqAvgOC">+$0.85</td>
+                                <td style="padding: 10px; text-align: center;" id="qqqAvgRange">$9.60</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="qqqCallTarget">+$4.25</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="qqqPutTarget">-$3.75</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">IWM</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="iwmAvgOH">+$2.40</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="iwmMaxOH">+$5.10</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="iwmAvgOL">-$2.20</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="iwmMaxOL">-$4.80</td>
+                                <td style="padding: 10px; text-align: center;" id="iwmAvgOC">+$0.45</td>
+                                <td style="padding: 10px; text-align: center;" id="iwmAvgRange">$4.60</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="iwmCallTarget">+$2.00</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="iwmPutTarget">-$1.80</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">XLF</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xlfAvgOH">+$0.45</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xlfMaxOH">+$0.95</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xlfAvgOL">-$0.40</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xlfMaxOL">-$0.85</td>
+                                <td style="padding: 10px; text-align: center;" id="xlfAvgOC">+$0.12</td>
+                                <td style="padding: 10px; text-align: center;" id="xlfAvgRange">$0.85</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="xlfCallTarget">+$0.38</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="xlfPutTarget">-$0.33</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">XLE</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xleAvgOH">+$0.85</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xleMaxOH">+$1.80</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xleAvgOL">-$0.75</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xleMaxOL">-$1.65</td>
+                                <td style="padding: 10px; text-align: center;" id="xleAvgOC">+$0.08</td>
+                                <td style="padding: 10px; text-align: center;" id="xleAvgRange">$1.60</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="xleCallTarget">+$0.70</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="xlePutTarget">-$0.62</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 600;">XLK</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xlkAvgOH">+$2.80</td>
+                                <td style="padding: 10px; text-align: center; color: #22c55e;" id="xlkMaxOH">+$5.60</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xlkAvgOL">-$2.50</td>
+                                <td style="padding: 10px; text-align: center; color: #ef4444;" id="xlkMaxOL">-$5.20</td>
+                                <td style="padding: 10px; text-align: center;" id="xlkAvgOC">+$0.65</td>
+                                <td style="padding: 10px; text-align: center;" id="xlkAvgRange">$5.30</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(34,197,94,0.1); color: #22c55e; font-weight: 600;" id="xlkCallTarget">+$2.30</td>
+                                <td style="padding: 10px; text-align: center; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600;" id="xlkPutTarget">-$2.05</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(59,130,246,0.1); border-radius: 8px; font-size: 11px;">
+                    <strong>💡 How to use:</strong> CALL TARGET = 85% of AVG O→H (realistic profit). PUT TARGET = 85% of AVG O→L. Don't chase moves beyond MAX values - those are rare outliers.
+                </div>
+            </div>
+
+            <!-- Today vs Average Section -->
+            <div class="card" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px;">📈 Today vs Average</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div style="border-radius: 8px; padding: 15px; text-align: center; background: rgba(234,179,8,0.1);" id="todayOHvsAvgBox">
+                        <div style="font-size: 11px; color: var(--muted);">Today O→H vs Avg</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="todayOHpct">89%</div>
+                        <div style="font-size: 11px; color: var(--muted);" id="todayOHdetail">$3.80 of $4.25 avg</div>
+                        <div style="font-size: 11px; color: #eab308; margin-top: 5px;" id="todayOHstatus">Nearing avg - consider taking profits</div>
+                    </div>
+                    <div style="border-radius: 8px; padding: 15px; text-align: center; background: rgba(239,68,68,0.1);" id="todayOLvsAvgBox">
+                        <div style="font-size: 11px; color: var(--muted);">Today O→L vs Avg</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="todayOLpct">110%</div>
+                        <div style="font-size: 11px; color: var(--muted);" id="todayOLdetail">$4.20 of $3.80 avg</div>
+                        <div style="font-size: 11px; color: #ef4444; margin-top: 5px;" id="todayOLstatus">Exceeded avg - strong selling pressure</div>
+                    </div>
+                    <div style="border-radius: 8px; padding: 15px; text-align: center; background: rgba(34,197,94,0.1);" id="todayRangevsAvgBox">
+                        <div style="font-size: 11px; color: var(--muted);">Today Range vs Avg</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="todayRangePct">99%</div>
+                        <div style="font-size: 11px; color: var(--muted);" id="todayRangeDetail">$8.00 of $8.05 avg</div>
+                        <div style="font-size: 11px; color: #22c55e; margin-top: 5px;" id="todayRangeStatus">Normal volatility day</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- SIGNALS TAB -->
@@ -3837,6 +3956,7 @@ async function loadOpportunitiesPrices() {
 // Call on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadOpportunitiesPrices();
+    loadOverviewData();
 });
 
 // Also call when Opportunities tab is clicked
@@ -3844,6 +3964,22 @@ const oppTab = document.querySelector('[data-tab="opportunities"]');
 if (oppTab) {
     oppTab.addEventListener('click', function() {
         setTimeout(loadOpportunitiesPrices, 100);
+    });
+}
+
+// Call loadOverviewData when Overview tab is clicked
+const overviewTab = document.querySelector('[data-tab="overview"]');
+if (overviewTab) {
+    overviewTab.addEventListener('click', function() {
+        setTimeout(loadOverviewData, 100);
+    });
+}
+
+// Call updateHistoricalAverages when Bar Count tab is clicked
+const barcountTab = document.querySelector('[data-tab="barcount"]');
+if (barcountTab) {
+    barcountTab.addEventListener('click', function() {
+        setTimeout(updateHistoricalAverages, 100);
     });
 }
 
@@ -4120,6 +4256,9 @@ async function changeSymbol() {
     
     // Load the new symbol's data and update everything
     await loadAllData();
+
+    // Update Overview tab with CSV data
+    loadOverviewData();
 
     // Update market stats for new symbol
     loadMarketStats(currentSymbol);
@@ -4445,6 +4584,217 @@ function updateBarCountAnalysis() {
     document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
     document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
     document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
+
+    // Also update historical averages when bar count analysis updates
+    updateHistoricalAverages();
+}
+
+// Calculate and update Historical Averages for all symbols
+async function updateHistoricalAverages() {
+    const symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK'];
+
+    for (const symbol of symbols) {
+        try {
+            // Try to get data from allSymbolsData or fetch it
+            let data = allSymbolsData[symbol];
+
+            if (!data || data.length < 20) {
+                // Try to fetch the CSV
+                let response = await fetch('data/' + symbol + '.csv').catch(() => null);
+                if (!response?.ok) {
+                    response = await fetch(symbol + '.csv').catch(() => null);
+                }
+                if (response?.ok) {
+                    const text = await response.text();
+                    data = parseCSV(text);
+                }
+            }
+
+            if (!data || data.length < 20) continue;
+
+            // Get last 20 bars
+            const last20 = data.slice(-20);
+
+            // Calculate O→H, O→L, O→C, Range for each bar
+            let sumOH = 0, sumOL = 0, sumOC = 0, sumRange = 0;
+            let maxOH = 0, maxOL = 0;
+
+            last20.forEach(bar => {
+                const open = parseFloat(bar.Open) || 0;
+                const high = parseFloat(bar.High) || 0;
+                const low = parseFloat(bar.Low) || 0;
+                const close = parseFloat(bar.Close) || 0;
+
+                const oh = high - open;  // Open to High (always positive)
+                const ol = open - low;   // Open to Low (always positive)
+                const oc = close - open; // Open to Close (can be negative)
+                const range = high - low;
+
+                sumOH += oh;
+                sumOL += ol;
+                sumOC += oc;
+                sumRange += range;
+
+                if (oh > maxOH) maxOH = oh;
+                if (ol > maxOL) maxOL = ol;
+            });
+
+            const avgOH = sumOH / 20;
+            const avgOL = sumOL / 20;
+            const avgOC = sumOC / 20;
+            const avgRange = sumRange / 20;
+            const callTarget = avgOH * 0.85;
+            const putTarget = avgOL * 0.85;
+
+            // Update table cells
+            const symLower = symbol.toLowerCase();
+            const updateEl = (id, value, prefix = '') => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = prefix + '$' + value.toFixed(2);
+            };
+
+            updateEl(symLower + 'AvgOH', avgOH, '+');
+            updateEl(symLower + 'MaxOH', maxOH, '+');
+            updateEl(symLower + 'AvgOL', avgOL, '-');
+            updateEl(symLower + 'MaxOL', maxOL, '-');
+            updateEl(symLower + 'AvgOC', Math.abs(avgOC), avgOC >= 0 ? '+' : '-');
+            updateEl(symLower + 'AvgRange', avgRange);
+            updateEl(symLower + 'CallTarget', callTarget, '+');
+            updateEl(symLower + 'PutTarget', putTarget, '-');
+
+        } catch (e) {
+            console.log('Error calculating averages for ' + symbol + ':', e);
+        }
+    }
+
+    // Update Today vs Average section for current symbol
+    updateTodayVsAverage();
+}
+
+// Update Today vs Average comparison for current symbol
+function updateTodayVsAverage() {
+    if (!currentData || currentData.length < 21) return;
+
+    const last20 = currentData.slice(-21, -1); // Previous 20 bars (not including today)
+    const today = currentData[currentData.length - 1];
+
+    // Calculate averages from previous 20 bars
+    let sumOH = 0, sumOL = 0, sumRange = 0;
+
+    last20.forEach(bar => {
+        const open = parseFloat(bar.Open) || 0;
+        const high = parseFloat(bar.High) || 0;
+        const low = parseFloat(bar.Low) || 0;
+
+        sumOH += (high - open);
+        sumOL += (open - low);
+        sumRange += (high - low);
+    });
+
+    const avgOH = sumOH / 20;
+    const avgOL = sumOL / 20;
+    const avgRange = sumRange / 20;
+
+    // Today's values
+    const todayOpen = parseFloat(today.Open) || 0;
+    const todayHigh = parseFloat(today.High) || 0;
+    const todayLow = parseFloat(today.Low) || 0;
+
+    const todayOH = todayHigh - todayOpen;
+    const todayOL = todayOpen - todayLow;
+    const todayRange = todayHigh - todayLow;
+
+    // Calculate percentages
+    const ohPct = avgOH > 0 ? (todayOH / avgOH) * 100 : 0;
+    const olPct = avgOL > 0 ? (todayOL / avgOL) * 100 : 0;
+    const rangePct = avgRange > 0 ? (todayRange / avgRange) * 100 : 0;
+
+    // Update O→H box
+    const ohPctEl = document.getElementById('todayOHpct');
+    const ohDetailEl = document.getElementById('todayOHdetail');
+    const ohStatusEl = document.getElementById('todayOHstatus');
+    const ohBoxEl = document.getElementById('todayOHvsAvgBox');
+
+    if (ohPctEl) ohPctEl.textContent = ohPct.toFixed(0) + '%';
+    if (ohDetailEl) ohDetailEl.textContent = '$' + todayOH.toFixed(2) + ' of $' + avgOH.toFixed(2) + ' avg';
+
+    if (ohStatusEl && ohBoxEl) {
+        if (ohPct < 50) {
+            ohBoxEl.style.background = 'rgba(34,197,94,0.1)';
+            ohStatusEl.style.color = '#22c55e';
+            ohStatusEl.textContent = 'Room to run - upside potential';
+        } else if (ohPct < 85) {
+            ohBoxEl.style.background = 'rgba(234,179,8,0.1)';
+            ohStatusEl.style.color = '#eab308';
+            ohStatusEl.textContent = 'Approaching avg - watch closely';
+        } else if (ohPct < 100) {
+            ohBoxEl.style.background = 'rgba(249,115,22,0.1)';
+            ohStatusEl.style.color = '#f97316';
+            ohStatusEl.textContent = 'Nearing avg - consider taking profits';
+        } else {
+            ohBoxEl.style.background = 'rgba(239,68,68,0.1)';
+            ohStatusEl.style.color = '#ef4444';
+            ohStatusEl.textContent = 'Exceeded avg - extended move';
+        }
+    }
+
+    // Update O→L box
+    const olPctEl = document.getElementById('todayOLpct');
+    const olDetailEl = document.getElementById('todayOLdetail');
+    const olStatusEl = document.getElementById('todayOLstatus');
+    const olBoxEl = document.getElementById('todayOLvsAvgBox');
+
+    if (olPctEl) olPctEl.textContent = olPct.toFixed(0) + '%';
+    if (olDetailEl) olDetailEl.textContent = '$' + todayOL.toFixed(2) + ' of $' + avgOL.toFixed(2) + ' avg';
+
+    if (olStatusEl && olBoxEl) {
+        if (olPct < 50) {
+            olBoxEl.style.background = 'rgba(34,197,94,0.1)';
+            olStatusEl.style.color = '#22c55e';
+            olStatusEl.textContent = 'Room to fall - downside potential';
+        } else if (olPct < 85) {
+            olBoxEl.style.background = 'rgba(234,179,8,0.1)';
+            olStatusEl.style.color = '#eab308';
+            olStatusEl.textContent = 'Approaching avg - watch closely';
+        } else if (olPct < 100) {
+            olBoxEl.style.background = 'rgba(249,115,22,0.1)';
+            olStatusEl.style.color = '#f97316';
+            olStatusEl.textContent = 'Nearing avg - consider covering puts';
+        } else {
+            olBoxEl.style.background = 'rgba(239,68,68,0.1)';
+            olStatusEl.style.color = '#ef4444';
+            olStatusEl.textContent = 'Exceeded avg - strong selling pressure';
+        }
+    }
+
+    // Update Range box
+    const rangePctEl = document.getElementById('todayRangePct');
+    const rangeDetailEl = document.getElementById('todayRangeDetail');
+    const rangeStatusEl = document.getElementById('todayRangeStatus');
+    const rangeBoxEl = document.getElementById('todayRangevsAvgBox');
+
+    if (rangePctEl) rangePctEl.textContent = rangePct.toFixed(0) + '%';
+    if (rangeDetailEl) rangeDetailEl.textContent = '$' + todayRange.toFixed(2) + ' of $' + avgRange.toFixed(2) + ' avg';
+
+    if (rangeStatusEl && rangeBoxEl) {
+        if (rangePct < 50) {
+            rangeBoxEl.style.background = 'rgba(59,130,246,0.1)';
+            rangeStatusEl.style.color = '#3b82f6';
+            rangeStatusEl.textContent = 'Low volatility - quiet day';
+        } else if (rangePct < 85) {
+            rangeBoxEl.style.background = 'rgba(34,197,94,0.1)';
+            rangeStatusEl.style.color = '#22c55e';
+            rangeStatusEl.textContent = 'Normal volatility day';
+        } else if (rangePct < 120) {
+            rangeBoxEl.style.background = 'rgba(234,179,8,0.1)';
+            rangeStatusEl.style.color = '#eab308';
+            rangeStatusEl.textContent = 'Above average volatility';
+        } else {
+            rangeBoxEl.style.background = 'rgba(239,68,68,0.1)';
+            rangeStatusEl.style.color = '#ef4444';
+            rangeStatusEl.textContent = 'High volatility - be cautious';
+        }
+    }
 }
 
 // Update Signals Tab Fibonacci Table with dynamic data
@@ -9262,6 +9612,170 @@ function updateOverviewTab() {
     updateTradeStatistics();
     updateHistoricalDataTable();
     updateOverviewReferenceData();
+}
+
+// Load Overview data directly from CSV
+async function loadOverviewData() {
+    const symbol = document.querySelector('#symbolSelect')?.value || 'SPY';
+
+    try {
+        // Try data folder first, then root
+        let response = await fetch('data/' + symbol + '.csv').catch(() => null);
+        if (!response?.ok) {
+            response = await fetch(symbol + '.csv').catch(() => null);
+        }
+
+        if (!response?.ok) {
+            console.log('Could not load ' + symbol + '.csv');
+            return;
+        }
+
+        const text = await response.text();
+        const lines = text.trim().split('\n');
+
+        if (lines.length < 2) return;
+
+        // Parse header to get column indices
+        const header = lines[0].split(',');
+        const getIndex = (name) => header.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+
+        // Get last row (most recent data)
+        const lastLine = lines[lines.length - 1];
+        const cols = lastLine.split(',');
+
+        // Get previous row for change calculation
+        const prevLine = lines.length > 2 ? lines[lines.length - 2] : lastLine;
+        const prevCols = prevLine.split(',');
+
+        // Extract values using header or fallback positions
+        const close = parseFloat(cols[getIndex('close')] || cols[4]) || 0;
+        const open = parseFloat(cols[getIndex('open')] || cols[1]) || 0;
+        const high = parseFloat(cols[getIndex('high')] || cols[2]) || 0;
+        const low = parseFloat(cols[getIndex('low')] || cols[3]) || 0;
+        const volume = parseFloat(cols[getIndex('volume')] || cols[5]) || 0;
+        const atr = parseFloat(cols[getIndex('atr')] || cols[6]) || 0;
+        const prevClose = parseFloat(prevCols[getIndex('close')] || prevCols[4]) || close;
+
+        // Calculate change
+        const change = close - prevClose;
+        const changePct = prevClose ? ((change / prevClose) * 100) : 0;
+
+        // Update Price metric
+        const priceEl = document.getElementById('currentPrice');
+        if (priceEl) priceEl.textContent = '$' + close.toFixed(2);
+
+        // Update Change
+        const changeEl = document.getElementById('dailyChange');
+        if (changeEl) {
+            changeEl.textContent = (change >= 0 ? '+' : '') + '$' + Math.abs(change).toFixed(2);
+            changeEl.className = 'metric-value ' + (change >= 0 ? 'positive' : 'negative');
+        }
+
+        const changePctEl = document.getElementById('changePct');
+        if (changePctEl) changePctEl.textContent = (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%';
+
+        // Update Volume
+        const volEl = document.getElementById('volumeDisplay');
+        if (volEl) volEl.textContent = (volume / 1000000).toFixed(1) + 'M';
+
+        // Update ATR
+        const atrEl = document.getElementById('atrDisplay');
+        if (atrEl) atrEl.textContent = '$' + atr.toFixed(2);
+
+        // Calculate Fibonacci levels based on recent high/low
+        let recentHigh = high;
+        let recentLow = low;
+
+        // Get high/low from last 20 bars
+        for (let i = Math.max(1, lines.length - 20); i < lines.length; i++) {
+            const rowCols = lines[i].split(',');
+            const h = parseFloat(rowCols[getIndex('high')] || rowCols[2]) || 0;
+            const l = parseFloat(rowCols[getIndex('low')] || rowCols[3]) || 0;
+            if (h > recentHigh) recentHigh = h;
+            if (l < recentLow || recentLow === 0) recentLow = l;
+        }
+
+        const range = recentHigh - recentLow;
+
+        // Fibonacci levels
+        const fib382 = recentHigh - (range * 0.382);
+        const fib500 = recentHigh - (range * 0.500);
+        const fib618 = recentHigh - (range * 0.618);
+        const fib100 = recentHigh;
+        const fib1272 = recentLow + (range * 1.272);
+        const fib1618 = recentLow + (range * 1.618);
+
+        // Update Fibonacci Price Zones
+        const fibS1 = document.getElementById('fibS1');
+        const fibS2 = document.getElementById('fibS2');
+        const fibS3 = document.getElementById('fibS3');
+        const fibR1 = document.getElementById('fibR1');
+        const fibR2 = document.getElementById('fibR2');
+        const fibR3 = document.getElementById('fibR3');
+        const fibCurrentPrice = document.getElementById('fibCurrentPrice');
+
+        if (fibS1) fibS1.textContent = '$' + fib382.toFixed(2);
+        if (fibS2) fibS2.textContent = '$' + fib500.toFixed(2);
+        if (fibS3) fibS3.textContent = '$' + fib618.toFixed(2);
+        if (fibR1) fibR1.textContent = '$' + fib100.toFixed(2);
+        if (fibR2) fibR2.textContent = '$' + fib1272.toFixed(2);
+        if (fibR3) fibR3.textContent = '$' + fib1618.toFixed(2);
+        if (fibCurrentPrice) fibCurrentPrice.textContent = '$' + close.toFixed(2);
+
+        // Calculate 52-week high/low from all data (up to 252 bars)
+        let high52w = 0;
+        let low52w = Infinity;
+        const barsFor52w = Math.min(lines.length - 1, 252);
+
+        for (let i = lines.length - barsFor52w; i < lines.length; i++) {
+            if (i < 1) continue;
+            const rowCols = lines[i].split(',');
+            const h = parseFloat(rowCols[getIndex('high')] || rowCols[2]) || 0;
+            const l = parseFloat(rowCols[getIndex('low')] || rowCols[3]) || 0;
+            if (h > high52w) high52w = h;
+            if (l < low52w && l > 0) low52w = l;
+        }
+
+        if (low52w === Infinity) low52w = low;
+
+        // Update Reference Data
+        const week52HighEl = document.getElementById('week52High');
+        const week52LowEl = document.getElementById('week52Low');
+        const todayHighEl = document.getElementById('todayHigh');
+        const todayLowEl = document.getElementById('todayLow');
+        const todayOpenEl = document.getElementById('todayOpen');
+        const prevCloseEl = document.getElementById('prevClose');
+
+        if (week52HighEl) week52HighEl.textContent = '$' + high52w.toFixed(2);
+        if (week52LowEl) week52LowEl.textContent = '$' + low52w.toFixed(2);
+        if (todayHighEl) todayHighEl.textContent = '$' + high.toFixed(2);
+        if (todayLowEl) todayLowEl.textContent = '$' + low.toFixed(2);
+        if (todayOpenEl) todayOpenEl.textContent = '$' + open.toFixed(2);
+        if (prevCloseEl) prevCloseEl.textContent = '$' + prevClose.toFixed(2);
+
+        // Calculate average volume (last 20 bars)
+        let totalVolume = 0;
+        const volBars = Math.min(lines.length - 1, 20);
+        for (let i = lines.length - volBars; i < lines.length; i++) {
+            if (i < 1) continue;
+            const rowCols = lines[i].split(',');
+            totalVolume += parseFloat(rowCols[getIndex('volume')] || rowCols[5]) || 0;
+        }
+        const avgVol = totalVolume / volBars;
+
+        const avgVolEl = document.getElementById('avgVolume20');
+        const volVsAvgEl = document.getElementById('volumeVsAvg');
+        const volVsAvgSmallEl = document.getElementById('volumeVsAvgSmall');
+
+        if (avgVolEl) avgVolEl.textContent = (avgVol / 1e6).toFixed(1) + 'M';
+        if (volVsAvgEl) volVsAvgEl.textContent = ((volume / avgVol - 1) * 100).toFixed(0) + '%';
+        if (volVsAvgSmallEl) volVsAvgSmallEl.textContent = ((volume / avgVol - 1) * 100).toFixed(0) + '% vs avg';
+
+        console.log('Overview data loaded for ' + symbol);
+
+    } catch (error) {
+        console.log('Error loading overview data:', error);
+    }
 }
 
 function generateDailyReport() {
