@@ -1090,6 +1090,73 @@
         .container {
             padding-top: 10px !important;
         }
+
+        /* ============================================ */
+        /* STICKY TOP SECTION - ENTIRE HEADER AREA     */
+        /* ============================================ */
+
+        .sticky-top-section {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1000 !important;
+            background: var(--bg, #f8fafc) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+
+        /* Ensure header has background */
+        .sticky-top-section header, .sticky-top-section .header {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+        }
+
+        /* Ensure mode toggle has background */
+        .sticky-top-section .mode-toggle-container {
+            background: var(--bg, #f8fafc) !important;
+        }
+
+        /* Ensure symbol banner has background - already has orange/green gradient */
+
+        /* Ensure market stats has background */
+        .sticky-top-section #marketStatsRow {
+            background: var(--card, white) !important;
+        }
+
+        /* Ensure tabs have background */
+        .sticky-top-section .tabs {
+            background: var(--bg, #f8fafc) !important;
+            padding-bottom: 10px !important;
+            border-bottom: 2px solid var(--border, #e5e7eb) !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Add padding to content below sticky section */
+        .tab-content {
+            padding-top: 15px !important;
+        }
+
+        /* Horizontal scroll for tabs */
+        .sticky-top-section .tabs {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            gap: 5px !important;
+            scrollbar-width: thin !important;
+        }
+
+        .sticky-top-section .tabs::-webkit-scrollbar {
+            height: 6px !important;
+        }
+
+        .sticky-top-section .tabs::-webkit-scrollbar-thumb {
+            background: #cbd5e1 !important;
+            border-radius: 3px !important;
+        }
+
+        /* Container inside sticky section */
+        .sticky-top-section .container {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
     </style>
 </head>
 <body>
@@ -1138,6 +1205,8 @@
             <div>Loading data...</div>
         </div>
 
+        <!-- STICKY TOP SECTION - Header, Banner, and Tabs -->
+        <div class="sticky-top-section">
         <header class="header">
             <div class="header-content">
                 <div class="logo">
@@ -1236,7 +1305,10 @@
               <button class="tab-btn charts-tab" data-tab="multi-charts">Multi-Charts</button>
               <button class="tab-btn" data-tab="options-calc">Options Calc</button>
             </div>
+        </div><!-- End container inside sticky -->
+        </div><!-- End sticky-top-section -->
 
+        <div class="container">
         <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
             <div class="grid grid-5">
