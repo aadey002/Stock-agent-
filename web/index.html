@@ -964,6 +964,95 @@
         .troubleshoot-content ol { margin-left: 20px; }
         .troubleshoot-content li { margin-bottom: 6px; }
         .troubleshoot-content a { color: var(--primary); }
+
+        /* ============================================ */
+        /* STICKY HEADER AND TABS                       */
+        /* ============================================ */
+
+        /* Main Header - Fixed at top */
+        header, .main-header, #mainHeader, .header {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1000 !important;
+            background: linear-gradient(135deg, #1e1b4b, #312e81) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+        }
+
+        /* Mode Toggle (INTRADAY/SWING) - Sticky below header */
+        .mode-toggle-container, .mode-toggle, #modeToggle {
+            position: sticky !important;
+            top: 52px !important;
+            z-index: 999 !important;
+            background: var(--bg, #f8fafc) !important;
+            padding: 10px 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Symbol Banner - Sticky below mode toggle */
+        .symbol-banner, #symbolBanner {
+            position: sticky !important;
+            top: 100px !important;
+            z-index: 998 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }
+
+        /* Tab Navigation - Sticky below symbol banner */
+        .tabs, .tab-navigation, #tabNavigation {
+            position: sticky !important;
+            top: 152px !important;
+            z-index: 996 !important;
+            background: var(--bg, #f8fafc) !important;
+            padding: 4px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            border-bottom: 1px solid var(--border, #e5e7eb) !important;
+        }
+
+        /* Ensure tab buttons scroll horizontally if needed */
+        .tabs {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            scrollbar-width: thin !important;
+            -webkit-overflow-scrolling: touch !important;
+            gap: 3px !important;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .tabs::-webkit-scrollbar {
+            height: 4px !important;
+        }
+
+        .tabs::-webkit-scrollbar-track {
+            background: transparent !important;
+        }
+
+        .tabs::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2) !important;
+            border-radius: 4px !important;
+        }
+
+        /* Add padding to main content so it's not hidden behind sticky elements */
+        .tab-content, .main-content, #mainContent {
+            padding-top: 15px !important;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth !important;
+        }
+
+        /* Container adjustment for sticky elements */
+        .container {
+            padding-top: 10px !important;
+        }
+
+        /* Sticky wrapper for combined elements */
+        .sticky-wrapper {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 995 !important;
+            background: var(--bg, #f8fafc) !important;
+        }
     </style>
 </head>
 <body>
