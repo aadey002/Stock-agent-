@@ -6877,46 +6877,78 @@ async function changeSymbol() {
     const newSymbol = document.getElementById('symbolSelect').value;
     console.log(`🔄 Changing symbol from ${currentSymbol} to ${newSymbol}`);
     currentSymbol = newSymbol;
-    
+
     // Update ALL symbol displays immediately
-    document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
-    document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
-    document.getElementById('tickerSymbol').textContent = currentSymbol;
-    document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
-    document.getElementById('aiContextSymbol').textContent = currentSymbol;
-    
-    // Update Bar Count tab symbol display
-    const barCountSymbol = document.getElementById('barCountCurrentSymbol');
-    if (barCountSymbol) barCountSymbol.textContent = currentSymbol;
-    
+    const symbolDisplays = ['currentSymbolDisplay', 'tickerSymbol', 'aiContextSymbol', 'barCountCurrentSymbol', 'gannCurrentSymbol'];
+    symbolDisplays.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = currentSymbol;
+    });
+
+    const nameDisplays = ['currentSymbolName', 'tickerName'];
+    nameDisplays.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+    });
+
     // Update Multi-Charts symbol selector to match
     const multiChartSymbol = document.getElementById('multiChartSymbol');
     if (multiChartSymbol) multiChartSymbol.value = currentSymbol;
-    
+
     // Update Daily Analysis symbol display
     const confluenceSymbol = document.getElementById('confluenceSymbol');
     if (confluenceSymbol) confluenceSymbol.textContent = currentSymbol + ' Analysis';
-    
-    // Load the new symbol's data and update everything
+
+    // Show loading notification
+    showNotification('Loading ' + currentSymbol + ' data...', 'info');
+
+    // Load the new symbol's CSV data and update everything
     await loadAllData();
 
     // Update Overview tab with CSV data
-    loadOverviewData();
+    if (typeof loadOverviewData === 'function') loadOverviewData();
 
     // Update market stats for new symbol
-    loadMarketStats(currentSymbol);
+    if (typeof loadMarketStats === 'function') loadMarketStats(currentSymbol);
 
     // Update Options Calculator with new symbol
-    updateOptionsCalcForSymbol();
+    if (typeof updateOptionsCalcForSymbol === 'function') updateOptionsCalcForSymbol();
 
-    // Update Gann Analysis if that tab is active
+    // === UPDATE ALL GANN SECTIONS ===
+    if (typeof updateGannAnalysisForSymbol === 'function') updateGannAnalysisForSymbol(currentSymbol);
+    if (typeof updateGannForecast === 'function') updateGannForecast(currentSymbol);
+    if (typeof updateSquareOf9 === 'function') updateSquareOf9(currentSymbol);
+    if (typeof updateMasterConfluence === 'function') updateMasterConfluence(currentSymbol);
+    if (typeof updatePriceMathRelationships === 'function') updatePriceMathRelationships(currentSymbol);
+    if (typeof updateFibonacciLevelsSafe === 'function') updateFibonacciLevelsSafe(currentSymbol);
+    if (typeof updateSacredNumbers === 'function') updateSacredNumbers(currentSymbol);
+    if (typeof updateGannAngles === 'function') updateGannAngles(currentSymbol);
+    if (typeof updateGannTimeCycles === 'function') updateGannTimeCycles(currentSymbol);
+
+    // === UPDATE PATTERN & HISTORICAL SECTIONS ===
+    if (typeof updateDataPatternDetection === 'function') updateDataPatternDetection();
+    if (typeof updatePatternDetection === 'function') updatePatternDetection(currentSymbol);
+    if (typeof updateHistoricalData === 'function') updateHistoricalData(currentSymbol);
+    if (typeof updateTradeStatisticsSafe === 'function') updateTradeStatisticsSafe(currentSymbol);
+
+    // === UPDATE BAR COUNT SECTIONS ===
+    if (typeof updateBarCountAnalysis === 'function') updateBarCountAnalysis();
+    if (typeof updateBarCount === 'function') updateBarCount(currentSymbol);
+
+    // === UPDATE OTHER SECTIONS ===
+    if (typeof updateOverviewForSymbol === 'function') updateOverviewForSymbol(currentSymbol);
+    if (typeof updateSignalsForSymbol === 'function') updateSignalsForSymbol(currentSymbol);
+    if (typeof updateDailyAnalysisForSymbol === 'function') updateDailyAnalysisForSymbol(currentSymbol);
+    if (typeof updateHeaderForSymbol === 'function') updateHeaderForSymbol(currentSymbol);
+
+    // Update Gann Analysis tab if active
     const gannTab = document.getElementById('gann-analysis');
     if (gannTab && gannTab.classList.contains('active')) {
-        updateGannAnalysis();
+        if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
     }
 
-    // Also update the symbol-specific Gann data
-    updateGannAnalysisForSymbol(currentSymbol);
+    console.log('✅ All sections updated for ' + currentSymbol);
+    showNotification(currentSymbol + ' loaded!', 'success');
 }
 
 function parseCSV(text) {
