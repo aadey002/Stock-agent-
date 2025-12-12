@@ -6894,9 +6894,6 @@ async function loadAllData() {
             console.warn(`${currentSymbol}.csv not found, falling back to SPY`);
             // Try SPY in both locations
             r = await fetch('data/SPY.csv?t=' + Date.now()).catch(() => null);
-            if (!r?.ok) {
-                r = await fetch('SPY.csv?t=' + Date.now()).catch(() => null);
-            }
             loadedSymbol = 'SPY';
 
             // Update the symbol selector back to SPY if data not available
@@ -6968,7 +6965,7 @@ function showDataNotification(message) {
 async function loadAllSymbolsData() {
     for (const symbol of SYMBOLS) {
         try {
-            const r = await fetch(`${symbol}.csv?t=${Date.now()}`).catch(() => null);
+            const r = await fetch(`data/${symbol}.csv?t=${Date.now()}`).catch(() => null);
             if (r?.ok) {
                 allSymbolsData[symbol] = parseCSV(await r.text());
             }
@@ -7196,9 +7193,6 @@ async function updateHistoricalAverages() {
             if (!data || data.length < 20) {
                 // Try to fetch the CSV
                 let response = await fetch('data/' + symbol + '.csv').catch(() => null);
-                if (!response?.ok) {
-                    response = await fetch(symbol + '.csv').catch(() => null);
-                }
                 if (response?.ok) {
                     const text = await response.text();
                     data = parseCSV(text);
@@ -9951,9 +9945,6 @@ async function loadSymbolData(symbol) {
     try {
         // Try data/ folder first, then root
         let response = await fetch(`data/${symbol}.csv`).catch(() => null);
-        if (!response?.ok) {
-            response = await fetch(`${symbol}.csv`).catch(() => null);
-        }
 
         if (!response?.ok) {
             console.log('Could not load data for ' + symbol);
@@ -13280,9 +13271,6 @@ async function loadOverviewData() {
     try {
         // Try data folder first, then root
         let response = await fetch('data/' + symbol + '.csv').catch(() => null);
-        if (!response?.ok) {
-            response = await fetch(symbol + '.csv').catch(() => null);
-        }
 
         if (!response?.ok) {
             console.log('Could not load ' + symbol + '.csv');
