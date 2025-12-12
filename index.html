@@ -11826,8 +11826,10 @@ function calculateGannConfluence(sq9Levels, cycles, angles, price) {
     // Factor 1: Price near Square of 9 level (+25)
     let nearSq9 = false;
     if (sq9Levels) {
-        const allLevels = [...sq9Levels.support, ...sq9Levels.resistance];
-        nearSq9 = allLevels.some(level => Math.abs(level.diffPct) < 1.5);
+        const supportVals = Object.values(sq9Levels.support || {});
+        const resistVals = Object.values(sq9Levels.resistance || {});
+        const allLevels = [...supportVals, ...resistVals];
+        nearSq9 = allLevels.some(level => typeof level === 'object' ? Math.abs(level.diffPct) < 1.5 : false);
     }
     if (nearSq9) {
         score += 25;
@@ -12686,11 +12688,13 @@ function generateGannForecast(sq9Levels, cycles, pivots, confluence, price) {
     const resistEl = document.getElementById('forecastResistance');
 
     if (sq9Levels && supportEl && resistEl) {
-        const nextSupport = sq9Levels.support[0]; // 45° down
-        const nextResist = sq9Levels.resistance[0]; // 45° up
+        const supportVals = Object.values(sq9Levels.support || {});
+        const resistVals = Object.values(sq9Levels.resistance || {});
+        const nextSupport = supportVals[0]; // First support level
+        const nextResist = resistVals[0]; // First resistance level
 
-        supportEl.textContent = nextSupport ? '$' + nextSupport.price.toFixed(2) : '--';
-        resistEl.textContent = nextResist ? '$' + nextResist.price.toFixed(2) : '--';
+        supportEl.textContent = nextSupport ? '$' + (typeof nextSupport === 'object' ? nextSupport.price : nextSupport).toFixed(2) : '--';
+        resistEl.textContent = nextResist ? '$' + (typeof nextResist === 'object' ? nextResist.price : nextResist).toFixed(2) : '--';
     }
 
     // Next cycle turn
