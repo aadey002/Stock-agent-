@@ -28,6 +28,7 @@ jobs:
     
     - name: Send health notification
       if: always()
+      env:
         DISCORD_ENABLED: ${{ secrets.DISCORD_ENABLED }}
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       run: |
