@@ -11567,24 +11567,28 @@ function updateSquareOf9Display(levels, symbol) {
     const resistanceEl = document.getElementById('sq9Resistance');
     if (!levels) return;
 
-    // Update support levels
+    // Update support levels - handle both object and array formats
     if (supportEl && levels.support) {
-        supportEl.innerHTML = levels.support.slice(0, 4).map(level => `
-            <div style="display: flex; justify-content: space-between;">
-                <span>-${level.angle}°:</span>
-                <span style="color: #22c55e; font-weight: 600;">$${level.price.toFixed(2)}</span>
-            </div>
-        `).join('');
+        var supportArr = Array.isArray(levels.support) ? levels.support : Object.entries(levels.support).map(function([key, val]) {
+            var angle = key.replace('deg', '');
+            var price = typeof val === 'object' ? val.price : val;
+            return { angle: angle, price: price };
+        });
+        supportEl.innerHTML = supportArr.slice(0, 4).map(function(level) {
+            return '<div style="display: flex; justify-content: space-between;"><span>-' + level.angle + '°:</span><span style="color: #22c55e; font-weight: 600;">$' + (typeof level.price === 'number' ? level.price.toFixed(2) : level.price) + '</span></div>';
+        }).join('');
     }
 
-    // Update resistance levels
+    // Update resistance levels - handle both object and array formats
     if (resistanceEl && levels.resistance) {
-        resistanceEl.innerHTML = levels.resistance.slice(0, 4).map(level => `
-            <div style="display: flex; justify-content: space-between;">
-                <span>+${level.angle}°:</span>
-                <span style="color: #ef4444; font-weight: 600;">$${level.price.toFixed(2)}</span>
-            </div>
-        `).join('');
+        var resistArr = Array.isArray(levels.resistance) ? levels.resistance : Object.entries(levels.resistance).map(function([key, val]) {
+            var angle = key.replace('deg', '');
+            var price = typeof val === 'object' ? val.price : val;
+            return { angle: angle, price: price };
+        });
+        resistanceEl.innerHTML = resistArr.slice(0, 4).map(function(level) {
+            return '<div style="display: flex; justify-content: space-between;"><span>+' + level.angle + '°:</span><span style="color: #ef4444; font-weight: 600;">$' + (typeof level.price === 'number' ? level.price.toFixed(2) : level.price) + '</span></div>';
+        }).join('');
     }
 }
 
