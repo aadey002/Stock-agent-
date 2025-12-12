@@ -5531,79 +5531,59 @@ async function refreshAllData() {
     showNotification('Refreshing ' + symbol + '...', 'info');
 
     try {
-        // Validate symbol data exists
-        const data = symbolGannData[symbol];
-        if (!data) {
-            throw new Error('No data found for ' + symbol);
-        }
+        // Overview sections
+        if (typeof updateOverviewForSymbol === 'function') updateOverviewForSymbol(symbol);
+        if (typeof updateTradeStatistics === 'function') updateTradeStatistics(symbol);
+        if (typeof updatePatternDetection === 'function') updatePatternDetection(symbol);
+        if (typeof populatePatternTable === 'function') populatePatternTable(symbol);
+        if (typeof updateHistoricalData === 'function') updateHistoricalData(symbol);
+        if (typeof populateHistoricalTable === 'function') populateHistoricalTable(symbol);
+        if (typeof updateFibonacciLevels === 'function') updateFibonacciLevels(symbol);
+        if (typeof populateFibonacciTable === 'function') populateFibonacciTable(symbol);
 
-        // Validate price
-        if (!data.price || data.price <= 0) {
-            throw new Error('Invalid price for ' + symbol);
-        }
+        // Gann sections
+        if (typeof updateGannAnalysisForSymbol === 'function') updateGannAnalysisForSymbol(symbol);
+        if (typeof updateGannForecast === 'function') updateGannForecast(symbol);
+        if (typeof updateSquareOf9 === 'function') updateSquareOf9(symbol);
+        if (typeof updateSq9Calculator === 'function') updateSq9Calculator(symbol);
+        if (typeof updateGannTimeCycles === 'function') updateGannTimeCycles(symbol);
+        if (typeof updateSacredNumbers === 'function') updateSacredNumbers(symbol);
+        if (typeof updateMasterConfluence === 'function') updateMasterConfluence(symbol);
+        if (typeof updateGannAngles === 'function') updateGannAngles(symbol);
 
-        console.log('Data for ' + symbol + ':', data);
+        // Bar Count
+        if (typeof updateBarCount === 'function') updateBarCount(symbol);
+        if (typeof updateBarCountHistory === 'function') updateBarCountHistory(symbol);
+        if (typeof populateBarCountTable === 'function') populateBarCountTable(symbol);
 
-        // 1. Update header
-        updateHeaderForSymbol(symbol);
+        // Signals & Patterns
+        if (typeof updateSignalsForSymbol === 'function') updateSignalsForSymbol(symbol);
+        if (typeof updatePatternsForSymbol === 'function') updatePatternsForSymbol(symbol);
+        if (typeof updateTechnicalPatterns === 'function') updateTechnicalPatterns(symbol);
 
-        // 2. Calculate Gann levels (with validation)
-        const sq9 = calculateSquareOf9Levels(data.price);
-        console.log('Sq9 calculated:', sq9);
+        // Today stats
+        if (typeof updateTodayStats === 'function') updateTodayStats(symbol);
+        if (typeof updateTodayVsAverage === 'function') updateTodayVsAverage(symbol);
+        if (typeof updateMarketStats === 'function') updateMarketStats(symbol);
 
-        // 3. Update all sections with safe function calls
-        if (typeof updateGannAnalysisForSymbol === 'function') {
-            updateGannAnalysisForSymbol(symbol);
-        }
+        // Other sections
+        if (typeof updateOpportunitiesForSymbol === 'function') updateOpportunitiesForSymbol(symbol);
+        if (typeof updateDailyAnalysisForSymbol === 'function') updateDailyAnalysisForSymbol(symbol);
+        if (typeof updateMultiChartsForSymbol === 'function') updateMultiChartsForSymbol(symbol);
+        if (typeof updateMTFBiasSummary === 'function') updateMTFBiasSummary(symbol);
+        if (typeof updateTopTradeRecommendation === 'function') updateTopTradeRecommendation(symbol);
+        if (typeof updateHeaderForSymbol === 'function') updateHeaderForSymbol(symbol);
+        if (typeof updateTradeSetupForSymbol === 'function') updateTradeSetupForSymbol(symbol);
+        if (typeof updateMTFTrendForSymbol === 'function') updateMTFTrendForSymbol(symbol);
 
-        if (typeof updateGannForecast === 'function') {
-            updateGannForecast(symbol);
-        }
+        // Reload data if function exists
+        if (typeof loadAllData === 'function') loadAllData();
+        if (typeof loadSymbolData === 'function') loadSymbolData(symbol);
 
-        if (typeof updateTopTradeRecommendation === 'function') {
-            updateTopTradeRecommendation(symbol);
-        }
+        // Update timestamp
+        if (typeof updateLastRefreshTime === 'function') updateLastRefreshTime();
 
-        if (typeof updateMultiChartsForSymbol === 'function') {
-            updateMultiChartsForSymbol(symbol);
-        }
-
-        if (typeof updateMTFBiasSummary === 'function') {
-            updateMTFBiasSummary(symbol);
-        }
-
-        if (typeof updateOverviewForSymbol === 'function') {
-            updateOverviewForSymbol(symbol);
-        }
-
-        if (typeof updateOpportunitiesForSymbol === 'function') {
-            updateOpportunitiesForSymbol(symbol);
-        }
-
-        if (typeof updateDailyAnalysisForSymbol === 'function') {
-            updateDailyAnalysisForSymbol(symbol);
-        }
-
-        if (typeof updateSignalsForSymbol === 'function') {
-            updateSignalsForSymbol(symbol);
-        }
-
-        if (typeof updatePatternsForSymbol === 'function') {
-            updatePatternsForSymbol(symbol);
-        }
-
-        if (typeof updateTradeSetupForSymbol === 'function') {
-            updateTradeSetupForSymbol(symbol);
-        }
-
-        if (typeof updateMTFTrendForSymbol === 'function') {
-            updateMTFTrendForSymbol(symbol);
-        }
-
-        // 4. Update timestamp
-        updateLastRefreshTime();
-
-        showNotification('✅ ' + symbol + ' data refreshed!', 'success');
+        showNotification('✅ ' + symbol + ' fully refreshed!', 'success');
         console.log('✅ Refresh complete for ' + symbol);
 
     } catch (error) {
