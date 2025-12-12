@@ -13071,94 +13071,12 @@ function updateUpcomingEventsWidget() {
     `).join('');
 }
 
-// Update Pattern Detection Summary
+// Update Pattern Detection Summary - Now uses table format
 function updatePatternDetectionSummary() {
-    if (!currentData || currentData.length < 14) return;
-
-    const summary = document.getElementById('patternDetectionSummary');
-    if (!summary) return;
-
-    const last14 = currentData.slice(-14);
-    let hammers = 0, shootingStars = 0, dojis = 0, strongBull = 0, strongBear = 0;
-    let hhhl = 0, lhll = 0;
-
-    // Count patterns and trends
-    for (let i = 1; i < last14.length; i++) {
-        const bar = last14[i];
-        const prevBar = last14[i - 1];
-        const open = parseFloat(bar.Open) || 0;
-        const high = parseFloat(bar.High) || 0;
-        const low = parseFloat(bar.Low) || 0;
-        const close = parseFloat(bar.Close) || 0;
-
-        const candle = detectCandleType(open, high, low, close);
-        if (candle.type === 'Hammer') hammers++;
-        if (candle.type === 'Star') shootingStars++;
-        if (candle.type === 'Doji') dojis++;
-        if (candle.type === 'Strong Bull') strongBull++;
-        if (candle.type === 'Strong Bear') strongBear++;
-
-        // Trend analysis
-        const prevHigh = parseFloat(prevBar.High) || 0;
-        const prevLow = parseFloat(prevBar.Low) || 0;
-        if (high > prevHigh && low > prevLow) hhhl++;
-        if (high < prevHigh && low < prevLow) lhll++;
+    // Redirect to table-based pattern detection
+    if (typeof updatePatternTableFromCSV === 'function') {
+        updatePatternTableFromCSV();
     }
-
-    // Volume trend analysis
-    const vol5 = last14.slice(-5).reduce((s, d) => s + (parseInt(d.Volume) || 0), 0) / 5;
-    const vol14 = last14.reduce((s, d) => s + (parseInt(d.Volume) || 0), 0) / 14;
-    const volTrend = vol5 > vol14 * 1.1 ? 'Increasing 📈' : vol5 < vol14 * 0.9 ? 'Declining 📉' : 'Stable ➡️';
-
-    // Determine overall trend
-    let trendStatus = '↔️ Consolidation';
-    let trendColor = '#f59e0b';
-    if (hhhl >= 5) { trendStatus = '📈 Uptrend (HH/HL)'; trendColor = '#22c55e'; }
-    else if (lhll >= 5) { trendStatus = '📉 Downtrend (LH/LL)'; trendColor = '#ef4444'; }
-
-    // Conclusion
-    let conclusion = '';
-    if (hhhl >= 5 && vol5 < vol14 * 0.9) {
-        conclusion = '⚠️ Uptrend intact but momentum weakening';
-    } else if (hhhl >= 5 && vol5 > vol14) {
-        conclusion = '✅ Strong uptrend with volume confirmation';
-    } else if (lhll >= 5 && vol5 < vol14 * 0.9) {
-        conclusion = '⚠️ Downtrend but selling pressure decreasing';
-    } else if (lhll >= 5) {
-        conclusion = '🔴 Downtrend with selling pressure';
-    } else {
-        conclusion = '↔️ No clear trend - wait for breakout';
-    }
-
-    summary.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div>
-                <div style="color: #22c55e; font-weight: 600; margin-bottom: 4px;">Bullish Patterns:</div>
-                <div style="color: var(--muted);">🔨 ${hammers} Hammers, 🟢 ${strongBull} Strong Bull</div>
-            </div>
-            <div>
-                <div style="color: #ef4444; font-weight: 600; margin-bottom: 4px;">Bearish Patterns:</div>
-                <div style="color: var(--muted);">⭐ ${shootingStars} Shooting Stars, 🔴 ${strongBear} Strong Bear</div>
-            </div>
-            <div>
-                <div style="color: #f59e0b; font-weight: 600; margin-bottom: 4px;">Neutral Patterns:</div>
-                <div style="color: var(--muted);">⚡ ${dojis} Dojis (Indecision)</div>
-            </div>
-            <div>
-                <div style="font-weight: 600; margin-bottom: 4px;">Volume Trend:</div>
-                <div style="color: var(--muted);">${volTrend}</div>
-            </div>
-        </div>
-        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                <div><strong>Current Trend:</strong> <span style="color: ${trendColor}; font-weight: 600;">${trendStatus}</span></div>
-                <div><strong>HH/HL Days:</strong> ${hhhl} | <strong>LH/LL Days:</strong> ${lhll}</div>
-            </div>
-            <div style="margin-top: 8px; padding: 8px; background: rgba(139,92,246,0.1); border-radius: 6px;">
-                <strong>📊 Conclusion:</strong> ${conclusion}
-            </div>
-        </div>
-    `;
 }
 
 // Update Historical Data Table with all new columns
