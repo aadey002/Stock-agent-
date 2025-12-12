@@ -1263,6 +1263,162 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
 
         <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
+
+            <!-- ============================================ -->
+            <!-- TODAY'S TOP TRADE - SIMPLE ACTION BOX -->
+            <!-- ============================================ -->
+
+            <div class="card" style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; margin-bottom: 20px; border: 3px solid #ffd700;">
+                <div class="card-header" style="background: transparent; border-bottom: 2px solid rgba(255,215,0,0.3);">
+                    <h3 style="color: #ffd700; font-size: 24px; margin: 0;">
+                        🎯 TODAY'S TOP TRADE
+                    </h3>
+                    <span id="topTradeTime" style="color: #aaa; font-size: 12px;">Updated: --</span>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+
+                    <!-- Main Signal -->
+                    <div style="text-align: center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">THE TRADE</div>
+                        <div id="topTradeSignal" style="font-size: 36px; font-weight: bold; color: #4ade80;">
+                            BUY SPY CALL
+                        </div>
+                        <div id="topTradeConfidence" style="font-size: 18px; color: #ffd700; margin-top: 10px;">
+                            ⭐⭐⭐⭐ 78% Confidence
+                        </div>
+                    </div>
+
+                    <!-- Simple Instructions Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+
+                        <!-- What to Buy -->
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">📋 WHAT TO BUY</div>
+                            <div id="topTradeWhat" style="font-size: 20px; font-weight: bold;">SPY $690 CALL</div>
+                            <div id="topTradeExpiry" style="font-size: 14px; color: #60a5fa;">Expires: Dec 13 (2 days)</div>
+                        </div>
+
+                        <!-- When to Buy -->
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">⏰ WHEN TO BUY</div>
+                            <div id="topTradeWhen" style="font-size: 20px; font-weight: bold;">NOW - Before 10:30 AM</div>
+                            <div id="topTradeEntry" style="font-size: 14px; color: #60a5fa;">Entry: $1.50 - $2.00</div>
+                        </div>
+
+                        <!-- Take Profit -->
+                        <div style="background: rgba(74,222,128,0.2); padding: 15px; border-radius: 8px; border: 1px solid #4ade80;">
+                            <div style="color: #4ade80; font-size: 12px; margin-bottom: 5px;">💰 TAKE PROFIT</div>
+                            <div id="topTradeProfit" style="font-size: 20px; font-weight: bold; color: #4ade80;">+50% ($3.00)</div>
+                            <div id="topTradePriceTarget" style="font-size: 14px; color: #86efac;">When SPY hits $695.00</div>
+                        </div>
+
+                        <!-- Stop Loss -->
+                        <div style="background: rgba(239,68,68,0.2); padding: 15px; border-radius: 8px; border: 1px solid #ef4444;">
+                            <div style="color: #ef4444; font-size: 12px; margin-bottom: 5px;">🛑 STOP LOSS</div>
+                            <div id="topTradeStop" style="font-size: 20px; font-weight: bold; color: #ef4444;">-40% ($0.90)</div>
+                            <div id="topTradeStopPrice" style="font-size: 14px; color: #fca5a5;">If SPY drops to $685.00</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Risk/Reward Summary -->
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,215,0,0.1); border-radius: 8px; border: 1px solid rgba(255,215,0,0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span style="color: #aaa;">Risk/Reward:</span>
+                                <span id="topTradeRR" style="font-weight: bold; color: #ffd700; margin-left: 10px;">1:1.25</span>
+                            </div>
+                            <div>
+                                <span style="color: #aaa;">Max Risk:</span>
+                                <span id="topTradeMaxRisk" style="font-weight: bold; color: #ef4444; margin-left: 10px;">$60 per contract</span>
+                            </div>
+                            <div>
+                                <span style="color: #aaa;">Potential Gain:</span>
+                                <span id="topTradeMaxGain" style="font-weight: bold; color: #4ade80; margin-left: 10px;">$75 per contract</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- SIMPLE ACTION CHECKLIST -->
+            <!-- ============================================ -->
+
+            <div class="card" style="margin-bottom: 20px; border: 2px solid #3b82f6;">
+                <div class="card-header" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    <h3 style="color: white; font-size: 20px; margin: 0;">
+                        ✅ SIMPLE ACTION CHECKLIST
+                    </h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+
+                    <div id="actionChecklist" style="font-size: 16px;">
+
+                        <!-- Step 1 -->
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 15px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <div style="background: #3b82f6; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">1</div>
+                            <div>
+                                <div style="font-weight: bold; color: #1e40af;">CHECK THE MARKET</div>
+                                <div id="step1Detail" style="color: #64748b;">SPY is at $689.12 and trending UP ✅</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 15px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
+                            <div style="background: #22c55e; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">2</div>
+                            <div>
+                                <div style="font-weight: bold; color: #166534;">OPEN YOUR BROKER</div>
+                                <div id="step2Detail" style="color: #64748b;">Search for: SPY Dec 13 $690 Call</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 15px; background: #fefce8; border-radius: 8px; border-left: 4px solid #eab308;">
+                            <div style="background: #eab308; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">3</div>
+                            <div>
+                                <div style="font-weight: bold; color: #854d0e;">SET YOUR ORDER</div>
+                                <div id="step3Detail" style="color: #64748b;">Buy 1 contract at $1.50 - $2.00 limit price</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding: 15px; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
+                            <div style="background: #ef4444; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">4</div>
+                            <div>
+                                <div style="font-weight: bold; color: #991b1b;">SET STOP LOSS</div>
+                                <div id="step4Detail" style="color: #64748b;">Sell if option drops to $0.90 (40% loss)</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div style="display: flex; align-items: flex-start; padding: 15px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
+                            <div style="background: #22c55e; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; flex-shrink: 0;">5</div>
+                            <div>
+                                <div style="font-weight: bold; color: #166534;">TAKE PROFIT</div>
+                                <div id="step5Detail" style="color: #64748b;">Sell when option hits $3.00 (50% gain) OR when SPY hits $695</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Quick Reference -->
+                    <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                        <div style="font-weight: bold; color: #334155; margin-bottom: 10px;">📖 QUICK REFERENCE</div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 14px;">
+                            <div><span style="color: #64748b;">Symbol:</span> <strong id="refSymbol">SPY</strong></div>
+                            <div><span style="color: #64748b;">Direction:</span> <strong id="refDirection" style="color: #22c55e;">BULLISH</strong></div>
+                            <div><span style="color: #64748b;">Timeframe:</span> <strong id="refTimeframe">2 Days</strong></div>
+                            <div><span style="color: #64748b;">Strike:</span> <strong id="refStrike">$690</strong></div>
+                            <div><span style="color: #64748b;">Entry:</span> <strong id="refEntry">$1.50-$2.00</strong></div>
+                            <div><span style="color: #64748b;">Expiry:</span> <strong id="refExpiry">Dec 13</strong></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <div class="grid grid-5">
                 <div class="metric"><div class="metric-label">Price</div><div class="metric-value" id="currentPrice">--</div><div class="metric-sub" id="priceSource">Loading...</div></div>
                 <div class="metric"><div class="metric-label">Change</div><div class="metric-value" id="dailyChange">--</div><div class="metric-sub" id="changePct">--</div></div>
@@ -15616,6 +15772,152 @@ window.refreshAllData = function() {
     updateAllSectionsForSymbol(symbol);
     showNotification(symbol + ' fully refreshed!', 'success');
 };
+
+
+
+// ============================================
+// TODAY'S TOP TRADE CALCULATOR
+// ============================================
+
+function updateTopTrade(symbol) {
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) return;
+
+    var price = parseFloat(data.price);
+    var atr = parseFloat(data.atr) || price * 0.01;
+
+    // Determine direction from Gann analysis
+    var sqrt = Math.sqrt(price);
+    var resistance90 = Math.pow(sqrt + 0.5, 2);
+    var support90 = Math.pow(sqrt - 0.5, 2);
+
+    var isBullish = price > (resistance90 + support90) / 2;
+    var direction = isBullish ? 'CALL' : 'PUT';
+    var directionWord = isBullish ? 'BULLISH' : 'BEARISH';
+    var directionColor = isBullish ? '#4ade80' : '#ef4444';
+
+    // Calculate strike (round to nearest 5)
+    var strike = Math.round(price / 5) * 5;
+
+    // Calculate expiry (next Friday or 2-3 days out)
+    var today = new Date();
+    var daysToFriday = (5 - today.getDay() + 7) % 7;
+    if (daysToFriday === 0) daysToFriday = 7;
+    if (daysToFriday < 2) daysToFriday += 7;
+    var expiry = new Date(today.getTime() + daysToFriday * 24 * 60 * 60 * 1000);
+    var expiryStr = expiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    // Calculate entry price (estimate based on ATR)
+    var entryLow = (atr * 0.15).toFixed(2);
+    var entryHigh = (atr * 0.3).toFixed(2);
+    var entryMid = ((parseFloat(entryLow) + parseFloat(entryHigh)) / 2).toFixed(2);
+
+    // Calculate targets
+    var profitTarget = (parseFloat(entryMid) * 1.5).toFixed(2);  // 50% gain
+    var stopLoss = (parseFloat(entryMid) * 0.6).toFixed(2);      // 40% loss
+
+    var priceTarget = isBullish ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
+    var stopPrice = isBullish ? (price - atr).toFixed(2) : (price + atr).toFixed(2);
+
+    // Calculate confidence based on multiple factors
+    var confidence = 65;
+    if (Math.abs(price - resistance90) / price < 0.02) confidence += 10;
+    if (Math.abs(price - support90) / price < 0.02) confidence += 10;
+    var stars = confidence >= 80 ? '⭐⭐⭐⭐⭐' : confidence >= 70 ? '⭐⭐⭐⭐' : confidence >= 60 ? '⭐⭐⭐' : '⭐⭐';
+
+    // Risk/Reward calculation
+    var risk = parseFloat(entryMid) - parseFloat(stopLoss);
+    var reward = parseFloat(profitTarget) - parseFloat(entryMid);
+    var rrRatio = (reward / risk).toFixed(2);
+
+    // Update Top Trade Box
+    updateElementSafe('topTradeSignal', 'BUY ' + symbol + ' ' + direction, { color: directionColor });
+    updateElementSafe('topTradeConfidence', stars + ' ' + confidence + '% Confidence');
+    updateElementSafe('topTradeWhat', symbol + ' 
+ + strike + ' ' + direction);
+    updateElementSafe('topTradeExpiry', 'Expires: ' + expiryStr + ' (' + daysToFriday + ' days)');
+    updateElementSafe('topTradeWhen', 'NOW - Before 10:30 AM');
+    updateElementSafe('topTradeEntry', 'Entry: 
+ + entryLow + ' - 
+ + entryHigh);
+    updateElementSafe('topTradeProfit', '+50% (
+ + profitTarget + ')', { color: '#4ade80' });
+    updateElementSafe('topTradePriceTarget', 'When ' + symbol + ' hits 
+ + priceTarget);
+    updateElementSafe('topTradeStop', '-40% (
+ + stopLoss + ')', { color: '#ef4444' });
+    updateElementSafe('topTradeStopPrice', 'If ' + symbol + ' drops to 
+ + stopPrice);
+    updateElementSafe('topTradeRR', '1:' + rrRatio);
+    updateElementSafe('topTradeMaxRisk', '
+ + (parseFloat(entryMid) * 100 * 0.4).toFixed(0) + ' per contract');
+    updateElementSafe('topTradeMaxGain', '
+ + (parseFloat(entryMid) * 100 * 0.5).toFixed(0) + ' per contract');
+    updateElementSafe('topTradeTime', 'Updated: ' + new Date().toLocaleTimeString());
+
+    // Update Action Checklist
+    updateElementSafe('step1Detail', symbol + ' is at 
+ + price.toFixed(2) + ' and trending ' + (isBullish ? 'UP ✅' : 'DOWN ⬇️'));
+    updateElementSafe('step2Detail', 'Search for: ' + symbol + ' ' + expiryStr + ' 
+ + strike + ' ' + direction);
+    updateElementSafe('step3Detail', 'Buy 1 contract at 
+ + entryLow + ' - 
+ + entryHigh + ' limit price');
+    updateElementSafe('step4Detail', 'Sell if option drops to 
+ + stopLoss + ' (40% loss)');
+    updateElementSafe('step5Detail', 'Sell when option hits 
+ + profitTarget + ' (50% gain) OR when ' + symbol + ' hits 
+ + priceTarget);
+
+    // Update Quick Reference
+    updateElementSafe('refSymbol', symbol);
+    updateElementSafe('refDirection', directionWord, { color: directionColor });
+    updateElementSafe('refTimeframe', daysToFriday + ' Days');
+    updateElementSafe('refStrike', '
+ + strike);
+    updateElementSafe('refEntry', '
+ + entryLow + '-
+ + entryHigh);
+    updateElementSafe('refExpiry', expiryStr);
+
+    console.log('Top Trade updated for ' + symbol);
+}
+
+function updateElementSafe(id, text, styles) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.textContent = text;
+        if (styles) {
+            Object.keys(styles).forEach(function(key) {
+                el.style[key] = styles[key];
+            });
+        }
+    }
+}
+
+// Hook updateTopTrade into symbol change
+(function() {
+    var origUpdateAll = window.updateAllSectionsForSymbol;
+    if (typeof origUpdateAll === 'function') {
+        window.updateAllSectionsForSymbol = function(symbol) {
+            origUpdateAll(symbol);
+            if (typeof updateTopTrade === 'function') {
+                updateTopTrade(symbol);
+            }
+        };
+    }
+
+    // Also call on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        var dropdown = document.getElementById('symbolSelect');
+        var symbol = dropdown ? dropdown.value : 'SPY';
+        setTimeout(function() {
+            if (typeof updateTopTrade === 'function') {
+                updateTopTrade(symbol);
+            }
+        }, 2000);
+    });
+})();
 
 </script>
 </body>
