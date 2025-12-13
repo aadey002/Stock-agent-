@@ -4911,12 +4911,12 @@ const OLLAMA_CONFIG = {
     enabled: true,
     endpoint: 'https://api.groq.com/openai/v1',
     model: 'llama-3.1-70b-versatile',
-    apiKey: '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'
+    apiKey: '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'
 };
 
 const GLM4_CONFIG = {
     apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
-    apiKey: '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',
+    apiKey: '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',
     model: 'llama-3.1-70b-versatile'
 };
 // CORE CALCULATION FUNCTIONS - MUST BE DEFINED FIRST
@@ -7667,7 +7667,7 @@ async function generateAiResponse(userMessage) {
     if (OLLAMA_CONFIG.enabled) {
         try {
             console.log("Calling Groq Cloud API...");
-            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/chat/completions`, {
+            const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(OLLAMA_CONFIG.endpoint + '/chat/completions')}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
