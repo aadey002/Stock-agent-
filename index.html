@@ -4903,6 +4903,22 @@ const TRADING_PARAMS = {
 };
 
 // =====================================================
+// =====================================================
+// GROQ CLOUD AI CONFIGURATION
+// =====================================================
+
+const OLLAMA_CONFIG = {
+    enabled: true,
+    endpoint: 'https://api.groq.com/openai/v1',
+    model: 'llama-3.1-70b-versatile',
+    apiKey: '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'
+};
+
+const GLM4_CONFIG = {
+    apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
+    apiKey: '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',
+    model: 'llama-3.1-70b-versatile'
+};
 // CORE CALCULATION FUNCTIONS - MUST BE DEFINED FIRST
 // =====================================================
 
@@ -7642,15 +7658,60 @@ function escapeHtml(text) {
 
 async function generateAiResponse(userMessage) {
     const lowerMsg = userMessage.toLowerCase();
-    
+
     // Build context from dashboard data
     const dashboardContext = buildDashboardContext();
-    
-    // Use local AI responses (API not available in browser due to CORS)
+    const systemPrompt = buildSystemPrompt(dashboardContext);
+
+    // Try Groq Cloud API first
+    if (OLLAMA_CONFIG.enabled) {
+        try {
+            console.log("Calling Groq Cloud API...");
+            const response = await fetch(`${OLLAMA_CONFIG.endpoint}/chat/completions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OLLAMA_CONFIG.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: OLLAMA_CONFIG.model,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        ...conversationHistory.slice(-6),
+                        { role: 'user', content: userMessage }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1024
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+
+                // Update conversation history
+                conversationHistory.push({ role: 'user', content: userMessage });
+                conversationHistory.push({ role: 'assistant', content: aiResponse });
+
+                // Keep only last 10 messages
+                if (conversationHistory.length > 10) {
+                    conversationHistory = conversationHistory.slice(-10);
+                }
+
+                console.log("Groq API response received successfully");
+                return aiResponse;
+            } else {
+                console.warn("Groq API error:", response.status, await response.text());
+            }
+        } catch (e) {
+            console.warn("Groq API call failed:", e.message);
+        }
+    }
+
+    // Fallback to local AI responses
     try {
-        console.log("AI Query:", userMessage);
+        console.log("Using local AI response generator...");
         const response = generateLocalResponse(userMessage, dashboardContext);
-        console.log("AI Response generated successfully");
         return response;
     } catch (e) {
         console.error("AI Response error:", e);
