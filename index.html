@@ -3130,7 +3130,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                                 <span style="font-size: 18px; font-weight: 700;" id="topTradeSymbol">SPY</span>
                                 <span style="background: #8b5cf6; color: white; padding: 3px 10px; border-radius: 4px; font-size: 11px;" id="topTradeTimeframe">Daily Timeframe</span>
-                                <span class="signal-badge" id="topTradeSignal" style="padding: 5px 15px; border-radius: 6px; font-weight: 700; background: #22c55e; color: white;">CALL</span>
+                                <span class="signal-badge" id="topTradeSignalBadge" style="padding: 5px 15px; border-radius: 6px; font-weight: 700; background: #22c55e; color: white;">CALL</span>
                             </div>
                             <!-- Agent Consensus -->
                             <div id="agentConsensus" style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #22c55e;">
@@ -6414,9 +6414,9 @@ function updateTopTradeRecommendation(symbol) {
     if (symbolEl) symbolEl.textContent = symbol;
 
     // Signal badge - MUST MATCH CONSENSUS
-    const signalBadge = document.querySelector('#topTradeSignal, .top-trade-signal, .signal-badge');
+    const signalBadge = document.getElementById('topTradeSignalBadge');
     if (signalBadge) {
-        signalBadge.textContent = consensusSignal;
+        signalBadge.textContent = 'BUY ' + symbol + ' ' + consensusSignal;
         signalBadge.className = 'signal-badge';
         if (consensusSignal === 'CALL') {
             signalBadge.style.background = '#22c55e';
@@ -15728,7 +15728,7 @@ function updateTopTrade(symbol) {
     var priceTarget = isBullish ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
     var stopPrice = isBullish ? (price - atr).toFixed(2) : (price + atr).toFixed(2);
 
-    var confidence = 65 + Math.floor(Math.random() * 20);
+    var rangePos = (price - low) / (high - low); var confidence = Math.round(60 + Math.abs(rangePos - 0.5) * 50);
     var stars = confidence >= 85 ? '⭐⭐⭐⭐⭐' : confidence >= 75 ? '⭐⭐⭐⭐' : confidence >= 65 ? '⭐⭐⭐' : '⭐⭐';
 
     var risk = entryMid - parseFloat(stopLoss);
