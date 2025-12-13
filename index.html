@@ -5579,29 +5579,41 @@ function updateFibonacciForSymbol(symbol) {
 function updateCardinalNumbers(symbol) {
     console.log('Updating Cardinal Numbers for: ' + symbol);
 
-    const data = symbolGannData[symbol] || symbolGannData['SPY'];
-    const price = data.currentPrice || 607.09;
-    const sqrtPrice = Math.sqrt(price);
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) {
+        console.log('No data for Cardinal Numbers: ' + symbol);
+        return;
+    }
 
-    // Calculate cardinal cross prices (90, 180, 270, 360 degrees)
-    const degrees = [90, 180, 270, 360];
-    const cardinalPrices = degrees.map(deg => {
-        const adjustment = (deg / 360) * 2;
-        return Math.pow(sqrtPrice - adjustment, 2);
-    });
+    var price = parseFloat(data.price);
+    var sqrt = Math.sqrt(price);
+
+    // Cardinal Cross from Square of 9
+    // These are resistance levels at 90 degree intervals above current price
+    var cardinal = {
+        deg90: Math.pow(sqrt + 0.25, 2),
+        deg180: Math.pow(sqrt + 0.5, 2),
+        deg270: Math.pow(sqrt + 0.75, 2),
+        deg360: Math.pow(sqrt + 1.0, 2)
+    };
 
     // Update the cardinalNumbers element
-    const cardinalDiv = document.getElementById('cardinalNumbers');
+    var cardinalDiv = document.getElementById('cardinalNumbers');
     if (cardinalDiv) {
-        let html = '';
-        for (let i = 0; i < degrees.length; i++) {
+        var html = '';
+        var degrees = [90, 180, 270, 360];
+        var values = [cardinal.deg90, cardinal.deg180, cardinal.deg270, cardinal.deg360];
+
+        for (var i = 0; i < degrees.length; i++) {
             html += '<div style="background: rgba(139,92,246,0.15); padding: 8px; border-radius: 4px; text-align: center;">';
             html += '<div style="color: var(--muted); font-size: 9px;">' + degrees[i] + '°</div>';
-            html += '<div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$' + cardinalPrices[i].toFixed(2) + '</div>';
+            html += '<div style="color: #8b5cf6; font-weight: 600; font-size: 12px;">$' + values[i].toFixed(2) + '</div>';
             html += '</div>';
         }
         cardinalDiv.innerHTML = html;
     }
+
+    console.log('Cardinal Numbers updated for ' + symbol + ': 90°=$' + cardinal.deg90.toFixed(2));
 }
 
 // Update Master Confluence for selected symbol
