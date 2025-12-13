@@ -5514,21 +5514,21 @@ function updateFibonacciForSymbol(symbol) {
     if (sigFibSymbol) sigFibSymbol.textContent = symbol;
 
     // Get symbol data
-    const data = symbolGannData[symbol] || symbolGannData['SPY'];
-    const price = data.currentPrice || 607.09;
+    var data = symbolGannData[symbol]; if (!data || !data.price) { console.log('No Fib data: ' + symbol); return; }
+    var price = parseFloat(data.price);
 
     // Calculate Fibonacci levels from a recent swing
-    const swingHigh = price * 1.05;
-    const swingLow = price * 0.95;
-    const range = swingHigh - swingLow;
+    var swingHigh = parseFloat(data.high) || price * 1.05;
+    var swingLow = parseFloat(data.low) || price * 0.95;
+    var range = swingHigh - swingLow;
 
     // Fibonacci levels
-    const fib382 = swingLow + (range * 0.382);
-    const fib500 = swingLow + (range * 0.5);
-    const fib618 = swingLow + (range * 0.618);
-    const fib100 = swingHigh;
-    const fib1272 = swingLow + (range * 1.272);
-    const fib1618 = swingLow + (range * 1.618);
+    var fib382 = swingLow + (range * 0.382);
+    var fib500 = swingLow + (range * 0.5);
+    var fib618 = swingLow + (range * 0.618);
+    var fib100 = swingHigh;
+    var fib1272 = swingLow + (range * 1.272);
+    var fib1618 = swingLow + (range * 1.618);
 
     // Find nearest level
     const levels = [
@@ -7519,9 +7519,9 @@ function updateFibonacci() {
     const fib382 = swingHigh - (range * 0.382);
     const fib500 = swingHigh - (range * 0.500);
     const fib618 = swingHigh - (range * 0.618);
-    const fib100 = swingHigh;
-    const fib1272 = swingLow + (range * 1.272);
-    const fib1618 = swingLow + (range * 1.618);
+    var fib100 = swingHigh;
+    var fib1272 = swingLow + (range * 1.272);
+    var fib1618 = swingLow + (range * 1.618);
     
     var el=document.getElementById('fibR1');if(el)el.textContent = '$' + fib100.toFixed(2);
     var el=document.getElementById('fibR2');if(el)el.textContent = '$' + fib1272.toFixed(2);
