@@ -15234,33 +15234,6 @@ function updateTradeStatisticsSafe(symbol) {
     console.log('Trade statistics updated for ' + symbol);
 }
 
-function updateMasterConfluence(symbol) {
-    var data = symbolGannData[symbol];
-    if (!data || !data.price || isNaN(data.price)) return;
-    var price = data.price;
-
-    var sq9 = calculateSquareOf9Levels(price);
-    var score = 0;
-
-    if (sq9 && sq9.support && sq9.resistance) {
-        var supportVals = Object.values(sq9.support);
-        var resistVals = Object.values(sq9.resistance);
-
-        var nearSupport = supportVals.some(function(level) {
-            return Math.abs(price - level) / price < 0.01;
-        });
-        var nearResistance = resistVals.some(function(level) {
-            return Math.abs(price - level) / price < 0.01;
-        });
-        if (nearSupport || nearResistance) score += 25;
-    }
-
-    var scoreEl = document.getElementById('confluenceScore');
-    if (scoreEl) scoreEl.textContent = score + '/100';
-
-    console.log('Master confluence updated for ' + symbol + ': ' + score);
-}
-
 function updatePriceMathRelationships(symbol) {
     var data = symbolGannData[symbol];
     if (!data || !data.price || isNaN(data.price)) return;
