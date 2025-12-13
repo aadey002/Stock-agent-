@@ -6990,6 +6990,7 @@ async function loadAllSymbolsData() {
 }
 
 function updateDashboard() {
+    if (!currentData || !currentData.length) { console.warn("updateDashboard: No data"); return; }
     const lat = currentData[currentData.length - 1];
     const prev = currentData[currentData.length - 2] || lat;
     const price = parseFloat(lat.Close) || 0;
