@@ -1307,6 +1307,34 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                             <div><span style="color: #64748b;">Max Risk:</span> <span id="topTradeMaxRisk" style="font-weight: bold; color: #ef4444;">$60/contract</span></div>
                             <div><span style="color: #64748b;">Max Gain:</span> <span id="topTradeMaxGain" style="font-weight: bold; color: #4ade80;">$75/contract</span></div>
                         </div>
+                        <div style="margin-top: 15px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <div style="font-weight: bold; color: #1e293b; margin-bottom: 10px;">💵 PROFIT CALCULATOR</div>
+                            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                <div>
+                                    <label style="font-size: 12px; color: #64748b;">I want to make:</label>
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="font-size: 18px;">$</span>
+                                        <input type="number" id="desiredProfit" value="100" min="10" step="10" style="width: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                                    </div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 12px; color: #64748b;">You need to buy:</div>
+                                    <div id="contractsNeeded" style="font-size: 28px; font-weight: bold; color: #3b82f6;">2</div>
+                                    <div style="font-size: 12px; color: #64748b;">contracts</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 12px; color: #64748b;">Total Cost:</div>
+                                    <div id="totalCost" style="font-size: 18px; font-weight: bold; color: #1e293b;">$72</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 12px; color: #64748b;">Max Loss:</div>
+                                    <div id="maxLossCalc" style="font-size: 18px; font-weight: bold; color: #ef4444;">$29</div>
+                                </div>
+                            </div>
+                            <div id="profitCalcNote" style="margin-top: 10px; font-size: 11px; color: #64748b; font-style: italic;">
+                                Based on entry at $0.36, target at $0.54 (+50%), stop at $0.22 (-40%)
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -15727,13 +15755,13 @@ function updateTopTrade(symbol) {
     if (el) el.textContent = '+50% ($' + profitTarget + ')';
 
     el = document.getElementById('topTradePriceTarget');
-    if (el) el.textContent = 'When ' + symbol + ' hits $' + priceTarget;
+    if (el) el.textContent = 'When ' + symbol + (isBullish ? ' hits $' : ' falls to $') + priceTarget;
 
     el = document.getElementById('topTradeStop');
     if (el) el.textContent = '-40% ($' + stopLoss + ')';
 
     el = document.getElementById('topTradeStopPrice');
-    if (el) el.textContent = 'If ' + symbol + ' drops to $' + stopPrice;
+    if (el) el.textContent = 'If ' + symbol + (isBullish ? ' drops to $' : ' rises to $') + stopPrice;
 
     el = document.getElementById('topTradeRR');
     if (el) el.textContent = '1:' + rr;
@@ -15748,7 +15776,78 @@ function updateTopTrade(symbol) {
     if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
 
     console.log('Top Trade updated for ' + symbol);
+
+    // Update profit calculator
+    if (typeof updateProfitCalculator === "function") updateProfitCalculator();
 }
+
+
+
+// Update profit calculator based on current trade
+function updateProfitCalculator() {
+    var desiredProfitEl = document.getElementById('desiredProfit');
+    var contractsEl = document.getElementById('contractsNeeded');
+    var totalCostEl = document.getElementById('totalCost');
+    var maxLossEl = document.getElementById('maxLossCalc');
+    var noteEl = document.getElementById('profitCalcNote');
+
+    if (!desiredProfitEl || !contractsEl) return;
+
+    var desiredProfit = parseFloat(desiredProfitEl.value) || 100;
+
+    // Get current trade values from the Top Trade display
+    var entryText = document.getElementById('topTradeEntry') ? document.getElementById('topTradeEntry').textContent : 'Entry: $0.50 - $1.00';
+    var profitText = document.getElementById('topTradeProfit') ? document.getElementById('topTradeProfit').textContent : '+50% ($0.75)';
+    var stopText = document.getElementById('topTradeStop') ? document.getElementById('topTradeStop').textContent : '-40% ($0.30)';
+
+    // Parse entry price (use midpoint)
+    var entryMatch = entryText.match(/\$(\d+\.?\d*)\s*-\s*\$(\d+\.?\d*)/);
+    var entryLow = entryMatch ? parseFloat(entryMatch[1]) : 0.50;
+    var entryHigh = entryMatch ? parseFloat(entryMatch[2]) : 1.00;
+    var entryMid = (entryLow + entryHigh) / 2;
+
+    // Parse target price
+    var targetMatch = profitText.match(/\$(\d+\.?\d*)\)/);
+    var targetPrice = targetMatch ? parseFloat(targetMatch[1]) : entryMid * 1.5;
+
+    // Parse stop price
+    var stopMatch = stopText.match(/\$(\d+\.?\d*)\)/);
+    var stopPrice = stopMatch ? parseFloat(stopMatch[1]) : entryMid * 0.6;
+
+    // Calculate profit per contract (options are 100 shares)
+    var profitPerContract = (targetPrice - entryMid) * 100;
+    var lossPerContract = (entryMid - stopPrice) * 100;
+    var costPerContract = entryMid * 100;
+
+    // Calculate contracts needed
+    var contractsNeeded = Math.ceil(desiredProfit / profitPerContract);
+    if (contractsNeeded < 1) contractsNeeded = 1;
+    if (isNaN(contractsNeeded) || !isFinite(contractsNeeded)) contractsNeeded = 1;
+
+    var totalCost = (costPerContract * contractsNeeded).toFixed(0);
+    var maxLoss = (lossPerContract * contractsNeeded).toFixed(0);
+    var actualProfit = (profitPerContract * contractsNeeded).toFixed(0);
+
+    // Update display
+    contractsEl.textContent = contractsNeeded;
+    if (totalCostEl) totalCostEl.textContent = '$' + totalCost;
+    if (maxLossEl) maxLossEl.textContent = '$' + maxLoss;
+
+    if (noteEl) {
+        noteEl.textContent = 'Buy ' + contractsNeeded + ' contracts at $' + entryMid.toFixed(2) + ' each. If target hit, profit = $' + actualProfit + '. If stopped out, loss = $' + maxLoss + '.';
+    }
+
+    console.log('Profit calculator updated: ' + contractsNeeded + ' contracts for $' + desiredProfit + ' profit');
+}
+
+// Add event listener for profit calculator input
+document.addEventListener('DOMContentLoaded', function() {
+    var profitInput = document.getElementById('desiredProfit');
+    if (profitInput) {
+        profitInput.addEventListener('input', updateProfitCalculator);
+        profitInput.addEventListener('change', updateProfitCalculator);
+    }
+});
 
 </script>
 </body>
