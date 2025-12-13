@@ -4866,7 +4866,7 @@ function showLoginScreen() {
 function showMainApp(username) {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.add('visible');
-    document.getElementById('loggedInUser').textContent = username;
+    var el=document.getElementById('loggedInUser');if(el)el.textContent = username;
     
     // Initialize the app
     initializeApp();
@@ -6597,10 +6597,10 @@ async function loadMarketStats(symbol) {
 
         // Update Today Low/High
         if (!isNaN(todayLow)) {
-            document.getElementById('statTodayLow').textContent = 'L: $' + todayLow.toFixed(2);
+            var el=document.getElementById('statTodayLow');if(el)el.textContent = 'L: $' + todayLow.toFixed(2);
         }
         if (!isNaN(todayHigh)) {
-            document.getElementById('statTodayHigh').textContent = 'H: $' + todayHigh.toFixed(2);
+            var el=document.getElementById('statTodayHigh');if(el)el.textContent = 'H: $' + todayHigh.toFixed(2);
         }
 
         // Update 52W Range with color coding
@@ -6785,9 +6785,9 @@ function setTradingMode(mode) {
     tradingMode = mode;
     document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.mode-btn.${mode}`).classList.add('active');
-    document.getElementById('symbolBanner').className = `symbol-banner ${mode}-mode`;
-    document.getElementById('currentModeDisplay').textContent = mode.toUpperCase();
-    document.getElementById('aiContextMode').textContent = mode.toUpperCase();
+    var el=document.getElementById('symbolBanner');if(el)el.className = `symbol-banner ${mode}-mode`;
+    var el=document.getElementById('currentModeDisplay');if(el)el.textContent = mode.toUpperCase();
+    var el=document.getElementById('aiContextMode');if(el)el.textContent = mode.toUpperCase();
 }
 
 async function changeSymbol() {
@@ -6885,7 +6885,7 @@ function parseCSV(text) {
 }
 
 async function loadAllData() {
-    document.getElementById('loadingOverlay').classList.add('active');
+    var el=document.getElementById('loadingOverlay');if(el)el.classList.add('active');
     try {
         // Try multiple paths for the CSV file
         let r = null;
@@ -6950,11 +6950,11 @@ async function loadAllData() {
                 }
                 
                 // Update symbol displays
-                document.getElementById('currentSymbolDisplay').textContent = currentSymbol;
-                document.getElementById('currentSymbolName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
-                document.getElementById('tickerSymbol').textContent = currentSymbol;
-                document.getElementById('tickerName').textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
-                document.getElementById('confluenceSymbol').textContent = currentSymbol + ' Analysis';
+                var el=document.getElementById('currentSymbolDisplay');if(el)el.textContent = currentSymbol;
+                var el=document.getElementById('currentSymbolName');if(el)el.textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+                var el=document.getElementById('tickerSymbol');if(el)el.textContent = currentSymbol;
+                var el=document.getElementById('tickerName');if(el)el.textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
+                var el=document.getElementById('confluenceSymbol');if(el)el.textContent = currentSymbol + ' Analysis';
 
                 // Update market stats in header
                 loadMarketStats(currentSymbol);
@@ -6966,7 +6966,7 @@ async function loadAllData() {
             }
         }
     } catch (e) { console.error('Error:', e); }
-    document.getElementById('loadingOverlay').classList.remove('active');
+    var el=document.getElementById('loadingOverlay');if(el)el.classList.remove('active');
 }
 
 function showDataNotification(message) {
@@ -7000,52 +7000,52 @@ function updateDashboard() {
     const bias = (lat.Bias || '').toUpperCase();
 
     // Header ticker
-    document.getElementById('tickerPrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('tickerChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
-    document.getElementById('tickerChange').className = 'ticker-change ' + (chg >= 0 ? 'positive' : 'negative');
-    document.getElementById('tickerPct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    var el=document.getElementById('tickerPrice');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('tickerChange');if(el)el.textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    el=document.getElementById('tickerChange');if(el)el.className = 'ticker-change ' + (chg >= 0 ? 'positive' : 'negative');
+    var el=document.getElementById('tickerPct');if(el)el.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
 
     // Metrics
-    document.getElementById('currentPrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('priceSource').textContent = `${currentData.length} bars`;
-    document.getElementById('dailyChange').textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
-    document.getElementById('dailyChange').className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
-    document.getElementById('changePct').textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
-    document.getElementById('volumeDisplay').textContent = ((parseFloat(lat.Volume) || 0) / 1e6).toFixed(1) + 'M';
-    document.getElementById('signalStatus').textContent = bias || 'HOLD';
-    document.getElementById('signalConf').textContent = `${lat.PriceConfluence || 0}/4`;
-    document.getElementById('atrDisplay').textContent = '$' + atr.toFixed(2);
+    var el=document.getElementById('currentPrice');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('priceSource');if(el)el.textContent = `${currentData.length} bars`;
+    var el=document.getElementById('dailyChange');if(el)el.textContent = (chg >= 0 ? '+' : '') + '$' + Math.abs(chg).toFixed(2);
+    el=document.getElementById('dailyChange');if(el)el.className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
+    var el=document.getElementById('changePct');if(el)el.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    var el=document.getElementById('volumeDisplay');if(el)el.textContent = ((parseFloat(lat.Volume) || 0) / 1e6).toFixed(1) + 'M';
+    var el=document.getElementById('signalStatus');if(el)el.textContent = bias || 'HOLD';
+    var el=document.getElementById('signalConf');if(el)el.textContent = `${lat.PriceConfluence || 0}/4`;
+    var el=document.getElementById('atrDisplay');if(el)el.textContent = '$' + atr.toFixed(2);
 
     // Date/Time
     const dateStr = lat.Date || '';
     const [datePart, timePart] = dateStr.includes('T') ? dateStr.split('T') : [dateStr, 'EOD'];
-    document.getElementById('dataDate').textContent = datePart;
-    document.getElementById('dataTime').textContent = timePart.replace('Z', '');
+    var el=document.getElementById('dataDate');if(el)el.textContent = datePart;
+    var el=document.getElementById('dataTime');if(el)el.textContent = timePart.replace('Z', '');
 
     // AI Context
-    document.getElementById('aiContextPrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('aiContextSignal').textContent = bias || 'HOLD';
-    document.getElementById('aiContextConsensus').textContent = `${lat.PriceConfluence || 0}/4`;
+    var el=document.getElementById('aiContextPrice');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('aiContextSignal');if(el)el.textContent = bias || 'HOLD';
+    var el=document.getElementById('aiContextConsensus');if(el)el.textContent = `${lat.PriceConfluence || 0}/4`;
 
     // Signals
     const ip = TRADING_PARAMS.intraday;
     const sp = TRADING_PARAMS.swing;
     
-    document.getElementById('intradaySignal').textContent = bias || 'HOLD';
-    document.getElementById('intradaySignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
-    document.getElementById('intradayEntry').textContent = '$' + price.toFixed(2);
-    document.getElementById('intradayStop').textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
-    document.getElementById('intradayT1').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
-    document.getElementById('intradayT2').textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
-    document.getElementById('intradayStrike').textContent = '$' + Math.round(price) + ' ' + (bias || 'CALL');
+    var el=document.getElementById('intradaySignal');if(el)el.textContent = bias || 'HOLD';
+    el=document.getElementById('intradaySignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    var el=document.getElementById('intradayEntry');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('intradayStop');if(el)el.textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
+    var el=document.getElementById('intradayT1');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
+    var el=document.getElementById('intradayT2');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
+    var el=document.getElementById('intradayStrike');if(el)el.textContent = '$' + Math.round(price) + ' ' + (bias || 'CALL');
     
-    document.getElementById('swingSignal').textContent = bias || 'HOLD';
-    document.getElementById('swingSignal').className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
-    document.getElementById('swingEntry').textContent = '$' + (price - 2).toFixed(0) + '-' + (price + 2).toFixed(0);
-    document.getElementById('swingStop').textContent = '$' + (bias === 'PUT' ? (price + atr * sp.stopATR) : (price - atr * sp.stopATR)).toFixed(2);
-    document.getElementById('swingT1').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target1ATR) : (price + atr * sp.target1ATR)).toFixed(2);
-    document.getElementById('swingT2').textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target2ATR) : (price + atr * sp.target2ATR)).toFixed(2);
-    document.getElementById('swingStrike').textContent = '$' + (Math.round(price/5)*5) + ' ' + (bias || 'CALL');
+    var el=document.getElementById('swingSignal');if(el)el.textContent = bias || 'HOLD';
+    el=document.getElementById('swingSignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
+    var el=document.getElementById('swingEntry');if(el)el.textContent = '$' + (price - 2).toFixed(0) + '-' + (price + 2).toFixed(0);
+    var el=document.getElementById('swingStop');if(el)el.textContent = '$' + (bias === 'PUT' ? (price + atr * sp.stopATR) : (price - atr * sp.stopATR)).toFixed(2);
+    var el=document.getElementById('swingT1');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target1ATR) : (price + atr * sp.target1ATR)).toFixed(2);
+    var el=document.getElementById('swingT2');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * sp.target2ATR) : (price + atr * sp.target2ATR)).toFixed(2);
+    var el=document.getElementById('swingStrike');if(el)el.textContent = '$' + (Math.round(price/5)*5) + ' ' + (bias || 'CALL');
 
     updateReferenceData();
     updateFibonacci();
@@ -7059,18 +7059,18 @@ function updateReferenceData() {
     const highs = yearData.map(d => parseFloat(d.High) || 0);
     const lows = yearData.map(d => parseFloat(d.Low) || 0);
     
-    document.getElementById('week52High').textContent = '$' + Math.max(...highs).toFixed(2);
-    document.getElementById('week52Low').textContent = '$' + Math.min(...lows).toFixed(2);
-    document.getElementById('todayHigh').textContent = '$' + (parseFloat(lat.High) || 0).toFixed(2);
-    document.getElementById('todayLow').textContent = '$' + (parseFloat(lat.Low) || 0).toFixed(2);
+    var el=document.getElementById('week52High');if(el)el.textContent = '$' + Math.max(...highs).toFixed(2);
+    var el=document.getElementById('week52Low');if(el)el.textContent = '$' + Math.min(...lows).toFixed(2);
+    var el=document.getElementById('todayHigh');if(el)el.textContent = '$' + (parseFloat(lat.High) || 0).toFixed(2);
+    var el=document.getElementById('todayLow');if(el)el.textContent = '$' + (parseFloat(lat.Low) || 0).toFixed(2);
     
     const todayVol = parseFloat(lat.Volume) || 0;
     const volumes20 = currentData.slice(-20).map(d => parseFloat(d.Volume) || 0);
     const avgVol = volumes20.reduce((a, b) => a + b, 0) / 20;
     
-    document.getElementById('avgVolume20').textContent = (avgVol / 1e6).toFixed(1) + 'M';
-    document.getElementById('volumeVsAvg').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '%';
-    document.getElementById('volumeVsAvgSmall').textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '% vs avg';
+    var el=document.getElementById('avgVolume20');if(el)el.textContent = (avgVol / 1e6).toFixed(1) + 'M';
+    var el=document.getElementById('volumeVsAvg');if(el)el.textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '%';
+    var el=document.getElementById('volumeVsAvgSmall');if(el)el.textContent = ((todayVol/avgVol - 1) * 100).toFixed(0) + '% vs avg';
 }
 
 function updateFibonacci() {
@@ -7089,32 +7089,32 @@ function updateFibonacci() {
     const fib1272 = swingLow + (range * 1.272);
     const fib1618 = swingLow + (range * 1.618);
     
-    document.getElementById('fibR1').textContent = '$' + fib100.toFixed(2);
-    document.getElementById('fibR2').textContent = '$' + fib1272.toFixed(2);
-    document.getElementById('fibR3').textContent = '$' + fib1618.toFixed(2);
-    document.getElementById('fibS1').textContent = '$' + fib382.toFixed(2);
-    document.getElementById('fibS2').textContent = '$' + fib500.toFixed(2);
-    document.getElementById('fibS3').textContent = '$' + fib618.toFixed(2);
+    var el=document.getElementById('fibR1');if(el)el.textContent = '$' + fib100.toFixed(2);
+    var el=document.getElementById('fibR2');if(el)el.textContent = '$' + fib1272.toFixed(2);
+    var el=document.getElementById('fibR3');if(el)el.textContent = '$' + fib1618.toFixed(2);
+    var el=document.getElementById('fibS1');if(el)el.textContent = '$' + fib382.toFixed(2);
+    var el=document.getElementById('fibS2');if(el)el.textContent = '$' + fib500.toFixed(2);
+    var el=document.getElementById('fibS3');if(el)el.textContent = '$' + fib618.toFixed(2);
     
-    document.getElementById('chartR1').textContent = '$' + fib100.toFixed(2);
-    document.getElementById('chartR2').textContent = '$' + fib1272.toFixed(2);
-    document.getElementById('chartR3').textContent = '$' + fib1618.toFixed(2);
-    document.getElementById('chartS1').textContent = '$' + fib382.toFixed(2);
-    document.getElementById('chartS2').textContent = '$' + fib500.toFixed(2);
-    document.getElementById('chartS3').textContent = '$' + fib618.toFixed(2);
+    var el=document.getElementById('chartR1');if(el)el.textContent = '$' + fib100.toFixed(2);
+    var el=document.getElementById('chartR2');if(el)el.textContent = '$' + fib1272.toFixed(2);
+    var el=document.getElementById('chartR3');if(el)el.textContent = '$' + fib1618.toFixed(2);
+    var el=document.getElementById('chartS1');if(el)el.textContent = '$' + fib382.toFixed(2);
+    var el=document.getElementById('chartS2');if(el)el.textContent = '$' + fib500.toFixed(2);
+    var el=document.getElementById('chartS3');if(el)el.textContent = '$' + fib618.toFixed(2);
     
     let zone = 'NEUTRAL';
     if (price > fib100) zone = 'BREAKOUT';
     else if (price > fib382) zone = 'STRONG';
     else if (price > fib500) zone = 'PULLBACK';
     else zone = 'DEEP';
-    document.getElementById('fibZone').textContent = zone;
+    var el=document.getElementById('fibZone');if(el)el.textContent = zone;
     
     const fastSMA = parseFloat(currentData[currentData.length-1].FastSMA) || price;
     const slowSMA = parseFloat(currentData[currentData.length-1].SlowSMA) || price;
     const trend = fastSMA > slowSMA ? 'BULLISH' : 'BEARISH';
-    document.getElementById('trendBadge').textContent = trend;
-    document.getElementById('trendBadge').className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
+    var el=document.getElementById('trendBadge');if(el)el.textContent = trend;
+    el=document.getElementById('trendBadge');if(el)el.className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
     
     window.fibLevels = { fib100, fib1272, fib1618, fib382, fib500, fib618, swingHigh, swingLow };
 }
@@ -7133,7 +7133,7 @@ function updateBarCountAnalysis() {
     if (!table) return;
 
     // Update the symbol display
-    document.getElementById('barCountCurrentSymbol').textContent = currentSymbol;
+    var el=document.getElementById('barCountCurrentSymbol');if(el)el.textContent = currentSymbol;
 
     // Build rows array (oldest to newest for correct bar count calculation)
     let rows = [];
@@ -7184,13 +7184,13 @@ function updateBarCountAnalysis() {
 
     table.innerHTML = html;
     
-    document.getElementById('baseBarCount').textContent = (baseCount > 0 ? '+' : '') + baseCount;
+    var el=document.getElementById('baseBarCount');if(el)el.textContent = (baseCount > 0 ? '+' : '') + baseCount;
     document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('gannBarCount').textContent = (gannCount > 0 ? '+' : '') + gannCount;
+    var el=document.getElementById('gannBarCount');if(el)el.textContent = (gannCount > 0 ? '+' : '') + gannCount;
     document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('dqnBarCount').textContent = (dqnCount > 0 ? '+' : '') + dqnCount;
+    var el=document.getElementById('dqnBarCount');if(el)el.textContent = (dqnCount > 0 ? '+' : '') + dqnCount;
     document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
-    document.getElementById('waveBarCount').textContent = (waveCount > 0 ? '+' : '') + waveCount;
+    var el=document.getElementById('waveBarCount');if(el)el.textContent = (waveCount > 0 ? '+' : '') + waveCount;
     document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
 
     // Also update historical averages when bar count analysis updates
@@ -8922,7 +8922,7 @@ function renderTrades() {
     // Sort by date descending (newest first)
     filteredTrades.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    document.getElementById('tradeCount').textContent = `(${filteredTrades.length} trades)`;
+    var el=document.getElementById('tradeCount');if(el)el.textContent = `(${filteredTrades.length} trades)`;
 
     if (filteredTrades.length === 0) {
         tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:30px;">No trades match your filters.</td></tr>';
@@ -9013,39 +9013,39 @@ function updateTradeStats() {
     const losses = closedTrades.filter(t => t.pnl <= 0);
     
     // Basic stats
-    document.getElementById('statTotalTrades').textContent = trades.length;
+    var el=document.getElementById('statTotalTrades');if(el)el.textContent = trades.length;
     
     // Win rate
     const winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length * 100).toFixed(1) : 0;
-    document.getElementById('statWinRate').textContent = winRate + '%';
-    document.getElementById('statWinRate').className = `metric-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}`;
-    document.getElementById('statWinLoss').textContent = `${wins.length}W / ${losses.length}L`;
+    var el=document.getElementById('statWinRate');if(el)el.textContent = winRate + '%';
+    el=document.getElementById('statWinRate');if(el)el.className = `metric-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}`;
+    var el=document.getElementById('statWinLoss');if(el)el.textContent = `${wins.length}W / ${losses.length}L`;
     
     // Total P&L
     const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-    document.getElementById('statTotalPnL').textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}`;
-    document.getElementById('statTotalPnL').className = `metric-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
+    var el=document.getElementById('statTotalPnL');if(el)el.textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}`;
+    el=document.getElementById('statTotalPnL');if(el)el.className = `metric-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
     
     // Average trade
     const avgTrade = closedTrades.length > 0 ? totalPnL / closedTrades.length : 0;
-    document.getElementById('statAvgTrade').textContent = `Avg: ${avgTrade >= 0 ? '+' : ''}$${avgTrade.toFixed(2)}`;
+    var el=document.getElementById('statAvgTrade');if(el)el.textContent = `Avg: ${avgTrade >= 0 ? '+' : ''}$${avgTrade.toFixed(2)}`;
     
     // Best/Worst trade
     if (closedTrades.length > 0) {
         const best = closedTrades.reduce((max, t) => t.pnl > max.pnl ? t : max);
         const worst = closedTrades.reduce((min, t) => t.pnl < min.pnl ? t : min);
         
-        document.getElementById('statBestTrade').textContent = `+$${best.pnl.toFixed(2)}`;
-        document.getElementById('statBestSymbol').textContent = `${best.symbol} ${best.direction}`;
-        document.getElementById('statWorstTrade').textContent = `$${worst.pnl.toFixed(2)}`;
-        document.getElementById('statWorstSymbol').textContent = `${worst.symbol} ${worst.direction}`;
+        var el=document.getElementById('statBestTrade');if(el)el.textContent = `+$${best.pnl.toFixed(2)}`;
+        var el=document.getElementById('statBestSymbol');if(el)el.textContent = `${best.symbol} ${best.direction}`;
+        var el=document.getElementById('statWorstTrade');if(el)el.textContent = `$${worst.pnl.toFixed(2)}`;
+        var el=document.getElementById('statWorstSymbol');if(el)el.textContent = `${worst.symbol} ${worst.direction}`;
     }
     
     // Trades this week
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     const weekTrades = trades.filter(t => new Date(t.date) >= oneWeekAgo);
-    document.getElementById('statTradesThisWeek').textContent = `${weekTrades.length} this week`;
+    var el=document.getElementById('statTradesThisWeek');if(el)el.textContent = `${weekTrades.length} this week`;
     
     // Update analytics
     updateSymbolPerformance();
@@ -9282,7 +9282,7 @@ function runHealthCheck() {
     updateOverallHealth();
 
     // Update last check time
-    document.getElementById('lastHealthCheck').textContent = new Date().toLocaleString();
+    var el=document.getElementById('lastHealthCheck');if(el)el.textContent = new Date().toLocaleString();
 
     // Update health timestamp
     updateSectionTimestamp('health');
@@ -9547,31 +9547,31 @@ function checkConnections() {
     if (symbolEl) symbolEl.textContent = currentSymbol;
 
     // GitHub Pages - if page loaded, it's working
-    document.getElementById('connGitHubStatus').textContent = 'Connected';
-    document.getElementById('connGitHubLight').textContent = '🟢';
+    var el=document.getElementById('connGitHubStatus');if(el)el.textContent = 'Connected';
+    var el=document.getElementById('connGitHubLight');if(el)el.textContent = '🟢';
 
     // Data feed - based on whether data loaded
     if (currentData && currentData.length > 0) {
-        document.getElementById('connDataStatus').textContent = 'Loaded (' + currentData.length + ' bars)';
-        document.getElementById('connDataLight').textContent = '🟢';
+        var el=document.getElementById('connDataStatus');if(el)el.textContent = 'Loaded (' + currentData.length + ' bars)';
+        var el=document.getElementById('connDataLight');if(el)el.textContent = '🟢';
     } else {
-        document.getElementById('connDataStatus').textContent = 'Failed';
-        document.getElementById('connDataLight').textContent = '🔴';
+        var el=document.getElementById('connDataStatus');if(el)el.textContent = 'Failed';
+        var el=document.getElementById('connDataLight');if(el)el.textContent = '🔴';
     }
 
     // Portfolio feed
-    document.getElementById('connPortfolioStatus').textContent = 'Active';
-    document.getElementById('connPortfolioLight').textContent = '🟢';
+    var el=document.getElementById('connPortfolioStatus');if(el)el.textContent = 'Active';
+    var el=document.getElementById('connPortfolioLight');if(el)el.textContent = '🟢';
 
     // Local Storage
     try {
         localStorage.setItem('health_test', 'test');
         localStorage.removeItem('health_test');
-        document.getElementById('connLocalStorageStatus').textContent = 'Available';
-        document.getElementById('connLocalStorageLight').textContent = '🟢';
+        var el=document.getElementById('connLocalStorageStatus');if(el)el.textContent = 'Available';
+        var el=document.getElementById('connLocalStorageLight');if(el)el.textContent = '🟢';
     } catch (e) {
-        document.getElementById('connLocalStorageStatus').textContent = 'Blocked';
-        document.getElementById('connLocalStorageLight').textContent = '🔴';
+        var el=document.getElementById('connLocalStorageStatus');if(el)el.textContent = 'Blocked';
+        var el=document.getElementById('connLocalStorageLight');if(el)el.textContent = '🔴';
         healthStatus.alerts.push({ type: 'warning', message: 'Local storage unavailable - trade log may not persist' });
     }
 }
@@ -9592,21 +9592,21 @@ function updateOverallHealth() {
         workflowStatus.className = 'health-metric-status ok';
         workflowEl.className = 'health-metric healthy';
         healthStatus.workflowStatus = 'healthy';
-        document.getElementById('workflowStatusLight').textContent = '🟢';
+        var el=document.getElementById('workflowStatusLight');if(el)el.textContent = '🟢';
     } else if (healthStatus.dataFreshness === 'warning') {
         workflowValue.textContent = 'Delayed';
         workflowStatus.textContent = 'CHECK';
         workflowStatus.className = 'health-metric-status warn';
         workflowEl.className = 'health-metric warning';
         healthStatus.workflowStatus = 'warning';
-        document.getElementById('workflowStatusLight').textContent = '🟡';
+        var el=document.getElementById('workflowStatusLight');if(el)el.textContent = '🟡';
     } else {
         workflowValue.textContent = 'Stopped?';
         workflowStatus.textContent = 'ERROR';
         workflowStatus.className = 'health-metric-status error';
         workflowEl.className = 'health-metric critical';
         healthStatus.workflowStatus = 'critical';
-        document.getElementById('workflowStatusLight').textContent = '🔴';
+        var el=document.getElementById('workflowStatusLight');if(el)el.textContent = '🔴';
     }
 
     // Update traffic lights for data freshness
@@ -9647,9 +9647,9 @@ function updateOverallHealth() {
     const yellowCount = statuses.filter(s => s === 'warning').length;
     const redCount = statuses.filter(s => s === 'critical').length;
 
-    document.getElementById('trafficGreenCount').textContent = '🟢 ' + greenCount;
-    document.getElementById('trafficYellowCount').textContent = '🟡 ' + yellowCount;
-    document.getElementById('trafficRedCount').textContent = '🔴 ' + redCount;
+    var el=document.getElementById('trafficGreenCount');if(el)el.textContent = '🟢 ' + greenCount;
+    var el=document.getElementById('trafficYellowCount');if(el)el.textContent = '🟡 ' + yellowCount;
+    var el=document.getElementById('trafficRedCount');if(el)el.textContent = '🔴 ' + redCount;
 
     // Overall status
     if (redCount > 0) {
@@ -11958,8 +11958,8 @@ function updateGannAnalysis() {
     const price = parseFloat(lastBar.Close) || 0;
 
     // Update header
-    document.getElementById('gannCurrentSymbol').textContent = currentSymbol;
-    document.getElementById('gannCurrentPrice').textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('gannCurrentSymbol');if(el)el.textContent = currentSymbol;
+    var el=document.getElementById('gannCurrentPrice');if(el)el.textContent = '$' + price.toFixed(2);
 
     // Auto-fill and calculate Square of 9
     const sq9Input = document.getElementById('sq9Input');
@@ -12746,13 +12746,13 @@ function updateFibonacciZoneDisplay() {
     const r3 = high52 + range * 0.618;
 
     // Update prices
-    document.getElementById('fibS3').textContent = '$' + s3.toFixed(2);
-    document.getElementById('fibS2').textContent = '$' + s2.toFixed(2);
-    document.getElementById('fibS1').textContent = '$' + s1.toFixed(2);
-    document.getElementById('fibCurrentPrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('fibR1').textContent = '$' + r1.toFixed(2);
-    document.getElementById('fibR2').textContent = '$' + r2.toFixed(2);
-    document.getElementById('fibR3').textContent = '$' + r3.toFixed(2);
+    var el=document.getElementById('fibS3');if(el)el.textContent = '$' + s3.toFixed(2);
+    var el=document.getElementById('fibS2');if(el)el.textContent = '$' + s2.toFixed(2);
+    var el=document.getElementById('fibS1');if(el)el.textContent = '$' + s1.toFixed(2);
+    var el=document.getElementById('fibCurrentPrice');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('fibR1');if(el)el.textContent = '$' + r1.toFixed(2);
+    var el=document.getElementById('fibR2');if(el)el.textContent = '$' + r2.toFixed(2);
+    var el=document.getElementById('fibR3');if(el)el.textContent = '$' + r3.toFixed(2);
 
     // Determine zone
     let zoneLabel = '';
@@ -12812,11 +12812,11 @@ function updateMultiTimeframeTrends() {
     const positionTrend = price > sma20 ? 'BULLISH' : 'BEARISH';
     const positionColor = price > sma20 ? '#22c55e' : '#ef4444';
 
-    document.getElementById('trendIntraday').textContent = intradayTrend;
+    var el=document.getElementById('trendIntraday');if(el)el.textContent = intradayTrend;
     document.getElementById('trendIntraday').style.color = intradayColor;
-    document.getElementById('trendSwing').textContent = swingTrend;
+    var el=document.getElementById('trendSwing');if(el)el.textContent = swingTrend;
     document.getElementById('trendSwing').style.color = swingColor;
-    document.getElementById('trendPosition').textContent = positionTrend;
+    var el=document.getElementById('trendPosition');if(el)el.textContent = positionTrend;
     document.getElementById('trendPosition').style.color = positionColor;
 }
 
@@ -13001,13 +13001,13 @@ function updateTradeStatistics() {
         titleEl.textContent = `${currentSymbol} - ${symbolName} 📊 Trade Statistics (Last 30 Days)`;
     }
 
-    document.getElementById('statsWinRate').textContent = winRate + '%';
-    document.getElementById('statsAvgWin').textContent = '$' + avgWin;
-    document.getElementById('statsAvgLoss').textContent = '$' + avgLoss;
-    document.getElementById('statsTotalTrades').textContent = totalTrades;
-    document.getElementById('statsBestDay').textContent = '+$' + bestDay.toFixed(2);
-    document.getElementById('statsWorstDay').textContent = '$' + worstDay.toFixed(2);
-    document.getElementById('statsStreak').textContent = streak + ' ' + (currentStreakDir === 'win' ? '🟢' : '🔴');
+    var el=document.getElementById('statsWinRate');if(el)el.textContent = winRate + '%';
+    var el=document.getElementById('statsAvgWin');if(el)el.textContent = '$' + avgWin;
+    var el=document.getElementById('statsAvgLoss');if(el)el.textContent = '$' + avgLoss;
+    var el=document.getElementById('statsTotalTrades');if(el)el.textContent = totalTrades;
+    var el=document.getElementById('statsBestDay');if(el)el.textContent = '+$' + bestDay.toFixed(2);
+    var el=document.getElementById('statsWorstDay');if(el)el.textContent = '$' + worstDay.toFixed(2);
+    var el=document.getElementById('statsStreak');if(el)el.textContent = streak + ' ' + (currentStreakDir === 'win' ? '🟢' : '🔴');
 }
 
 // Market Events Calendar Data
@@ -14840,26 +14840,26 @@ function calculateOptions() {
     const maxLoss = totalCost;
     const maxProfit = isCall ? 'Unlimited' : ((K - price) * contracts * 100);
     
-    document.getElementById('calcOptionPrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('calcTotalCost').textContent = '$' + totalCost.toFixed(2);
-    document.getElementById('calcIntrinsic').textContent = '$' + intrinsic.toFixed(2);
-    document.getElementById('calcExtrinsic').textContent = '$' + extrinsic.toFixed(2);
+    var el=document.getElementById('calcOptionPrice');if(el)el.textContent = '$' + price.toFixed(2);
+    var el=document.getElementById('calcTotalCost');if(el)el.textContent = '$' + totalCost.toFixed(2);
+    var el=document.getElementById('calcIntrinsic');if(el)el.textContent = '$' + intrinsic.toFixed(2);
+    var el=document.getElementById('calcExtrinsic');if(el)el.textContent = '$' + extrinsic.toFixed(2);
     
-    document.getElementById('calcBreakeven').textContent = '$' + breakeven.toFixed(2);
-    document.getElementById('calcMaxLoss').textContent = '-$' + maxLoss.toFixed(2);
-    document.getElementById('calcMaxProfit').textContent = typeof maxProfit === 'string' ? maxProfit : '$' + maxProfit.toFixed(2);
+    var el=document.getElementById('calcBreakeven');if(el)el.textContent = '$' + breakeven.toFixed(2);
+    var el=document.getElementById('calcMaxLoss');if(el)el.textContent = '-$' + maxLoss.toFixed(2);
+    var el=document.getElementById('calcMaxProfit');if(el)el.textContent = typeof maxProfit === 'string' ? maxProfit : '$' + maxProfit.toFixed(2);
     
     if (!isCall && maxProfit > 0) {
         const rr = (maxProfit / maxLoss).toFixed(2);
-        document.getElementById('calcRiskReward').textContent = '1:' + rr;
+        var el=document.getElementById('calcRiskReward');if(el)el.textContent = '1:' + rr;
     } else {
-        document.getElementById('calcRiskReward').textContent = isCall ? 'Unlimited' : '--';
+        var el=document.getElementById('calcRiskReward');if(el)el.textContent = isCall ? 'Unlimited' : '--';
     }
     
-    document.getElementById('calcDelta').textContent = delta.toFixed(4);
-    document.getElementById('calcGamma').textContent = gamma.toFixed(4);
-    document.getElementById('calcTheta').textContent = theta.toFixed(4);
-    document.getElementById('calcVega').textContent = vega.toFixed(4);
+    var el=document.getElementById('calcDelta');if(el)el.textContent = delta.toFixed(4);
+    var el=document.getElementById('calcGamma');if(el)el.textContent = gamma.toFixed(4);
+    var el=document.getElementById('calcTheta');if(el)el.textContent = theta.toFixed(4);
+    var el=document.getElementById('calcVega');if(el)el.textContent = vega.toFixed(4);
     
     document.getElementById('calcDelta').style.color = delta > 0 ? 'var(--success)' : 'var(--danger)';
     document.getElementById('calcTheta').style.color = 'var(--danger)';
