@@ -6541,7 +6541,7 @@ function updateMTFBiasSummary(symbol) {
 function updateChartForTimeframe(chartType, timeframe) {
     console.log('Updating ' + chartType + ' chart to ' + timeframe);
 
-    const symbol = currentSymbol || 'SPY';
+    var symbol = currentSymbol || 'SPY';
     const data = symbolGannData[symbol];
     if (!data) return;
 
@@ -12609,21 +12609,28 @@ function updateGannTimeframe(timeframe) {
 
     // Get current price for calculations
     const symbol = currentSymbol || 'SPY';
-    let price = 607.09;
-    if (marketData[symbol]) {
-        price = marketData[symbol].price;
-    } else if (currentData && currentData.length > 0) {
-        price = parseFloat(currentData[currentData.length - 1].Close) || 607.09;
+    var price = 100; var high = 105; var low = 95;
+    if (symbolGannData && symbolGannData[symbol]) {
+        price = parseFloat(symbolGannData[symbol].price) || 100;
+        high = parseFloat(symbolGannData[symbol].high) || price * 1.05;
+        low = parseFloat(symbolGannData[symbol].low) || price * 0.95;
+    } else if (marketData && marketData[symbol]) {
+        price = marketData[symbol].price || 100;
+        high = price * 1.05;
+        low = price * 0.95;
     }
 
     // Update prediction based on timeframe
-    updateGannPrediction(timeframe, price);
+    updateGannPrediction(timeframe, price, symbol, high, low);
 
     console.log('Gann timeframe changed to:', timeframe);
 }
 
 // Update Gann Prediction based on timeframe
-function updateGannPrediction(timeframe, price) {
+function updateGannPrediction(timeframe, price, symbol, high, low) {
+    symbol = symbol || currentSymbol || 'SPY';
+    high = high || price * 1.05;
+    low = low || price * 0.95;
     const config = gannTimeframeConfig[timeframe];
 
     // Different prediction logic per timeframe
@@ -12658,7 +12665,7 @@ function updateGannPrediction(timeframe, price) {
         // Swing - medium moves, weekly cycles
         isBullish = false; // Current trend is up, expect pullback
         reasons = [
-            `Current trend: <strong>UP</strong> (rallied from $580 → $607)`,
+            `Current trend: <strong>UP</strong> (rallied from ${low.toFixed(2)} → ${price.toFixed(2)})`,
             `At Gann resistance: <strong>$${(price * 1.015).toFixed(2)}</strong> (90° level)`,
             `Cycle position: <strong>Day 22/30</strong> (approaching cycle HIGH)`,
             `Time symmetry: <strong>Winter Solstice Dec 21</strong> = major reversal`
