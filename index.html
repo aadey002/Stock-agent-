@@ -2328,14 +2328,14 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 <div class="card-title">📐 Fibonacci Levels</div>
                 <div class="grid grid-2">
                     <div>
-                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="patternFibR3" style="color: #22c55e;">$--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="patternFibR2" style="color: #22c55e;">$--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="patternFibR1" style="color: #22c55e;">$--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R3 (161.8%)</span><span class="ref-value" id="fibR3" style="color: #22c55e;">$612.40</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R2 (127.2%)</span><span class="ref-value" id="fibR2" style="color: #22c55e;">$605.20</span></div>
+                        <div class="ref-data-row"><span class="ref-label">R1 (100%)</span><span class="ref-value" id="fibR1" style="color: #22c55e;">$598.50</span></div>
                     </div>
                     <div>
-                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="patternFibS1" style="color: #ef4444;">$--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="patternFibS2" style="color: #ef4444;">$--</span></div>
-                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="patternFibS3" style="color: #ef4444;">$--</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S1 (38.2%)</span><span class="ref-value" id="fibS1" style="color: #ef4444;">$590.15</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S2 (50.0%)</span><span class="ref-value" id="fibS2" style="color: #ef4444;">$586.80</span></div>
+                        <div class="ref-data-row"><span class="ref-label">S3 (61.8%)</span><span class="ref-value" id="fibS3" style="color: #ef4444;">$582.50</span></div>
                     </div>
                 </div>
             </div>
@@ -3130,7 +3130,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                                 <span style="font-size: 18px; font-weight: 700;" id="topTradeSymbol">SPY</span>
                                 <span style="background: #8b5cf6; color: white; padding: 3px 10px; border-radius: 4px; font-size: 11px;" id="topTradeTimeframe">Daily Timeframe</span>
-                                <span class="signal-badge" id="topTradeSignalBadge" style="padding: 5px 15px; border-radius: 6px; font-weight: 700; background: #22c55e; color: white;">CALL</span>
+                                <span class="signal-badge" id="topTradeSignal" style="padding: 5px 15px; border-radius: 6px; font-weight: 700; background: #22c55e; color: white;">CALL</span>
                             </div>
                             <!-- Agent Consensus -->
                             <div id="agentConsensus" style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #22c55e;">
@@ -5477,12 +5477,6 @@ function handleGlobalSymbolChange(symbol) {
         updateFibonacciForSymbol(symbol);
     }
 
-    // Update ALL Fibonacci displays
-    if (typeof updateAllFibonacciLevels === 'function') {
-        updateAllFibonacciLevels(symbol);
-    }
-
-
     // Update Cardinal Numbers
     if (typeof updateCardinalNumbers === 'function') {
         updateCardinalNumbers(symbol);
@@ -5520,21 +5514,21 @@ function updateFibonacciForSymbol(symbol) {
     if (sigFibSymbol) sigFibSymbol.textContent = symbol;
 
     // Get symbol data
-    var data = symbolGannData[symbol]; if (!data || !data.price) { console.log('No Fib data: ' + symbol); return; }
-    var price = parseFloat(data.price);
+    const data = symbolGannData[symbol] || symbolGannData['SPY'];
+    const price = data.currentPrice || 607.09;
 
     // Calculate Fibonacci levels from a recent swing
-    var swingHigh = parseFloat(data.high) || price * 1.05;
-    var swingLow = parseFloat(data.low) || price * 0.95;
-    var range = swingHigh - swingLow;
+    const swingHigh = price * 1.05;
+    const swingLow = price * 0.95;
+    const range = swingHigh - swingLow;
 
     // Fibonacci levels
-    var fib382 = swingLow + (range * 0.382);
-    var fib500 = swingLow + (range * 0.5);
-    var fib618 = swingLow + (range * 0.618);
-    var fib100 = swingHigh;
-    var fib1272 = swingLow + (range * 1.272);
-    var fib1618 = swingLow + (range * 1.618);
+    const fib382 = swingLow + (range * 0.382);
+    const fib500 = swingLow + (range * 0.5);
+    const fib618 = swingLow + (range * 0.618);
+    const fib100 = swingHigh;
+    const fib1272 = swingLow + (range * 1.272);
+    const fib1618 = swingLow + (range * 1.618);
 
     // Find nearest level
     const levels = [
@@ -6420,9 +6414,9 @@ function updateTopTradeRecommendation(symbol) {
     if (symbolEl) symbolEl.textContent = symbol;
 
     // Signal badge - MUST MATCH CONSENSUS
-    const signalBadge = document.getElementById('topTradeSignalBadge');
+    const signalBadge = document.querySelector('#topTradeSignal, .top-trade-signal, .signal-badge');
     if (signalBadge) {
-        signalBadge.textContent = 'BUY ' + symbol + ' ' + consensusSignal;
+        signalBadge.textContent = consensusSignal;
         signalBadge.className = 'signal-badge';
         if (consensusSignal === 'CALL') {
             signalBadge.style.background = '#22c55e';
@@ -7525,9 +7519,9 @@ function updateFibonacci() {
     const fib382 = swingHigh - (range * 0.382);
     const fib500 = swingHigh - (range * 0.500);
     const fib618 = swingHigh - (range * 0.618);
-    var fib100 = swingHigh;
-    var fib1272 = swingLow + (range * 1.272);
-    var fib1618 = swingLow + (range * 1.618);
+    const fib100 = swingHigh;
+    const fib1272 = swingLow + (range * 1.272);
+    const fib1618 = swingLow + (range * 1.618);
     
     var el=document.getElementById('fibR1');if(el)el.textContent = '$' + fib100.toFixed(2);
     var el=document.getElementById('fibR2');if(el)el.textContent = '$' + fib1272.toFixed(2);
@@ -15734,7 +15728,7 @@ function updateTopTrade(symbol) {
     var priceTarget = isBullish ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
     var stopPrice = isBullish ? (price - atr).toFixed(2) : (price + atr).toFixed(2);
 
-    var rangePos = (price - low) / (high - low); var confidence = Math.round(60 + Math.abs(rangePos - 0.5) * 50);
+    var confidence = 65 + Math.floor(Math.random() * 20);
     var stars = confidence >= 85 ? '⭐⭐⭐⭐⭐' : confidence >= 75 ? '⭐⭐⭐⭐' : confidence >= 65 ? '⭐⭐⭐' : '⭐⭐';
 
     var risk = entryMid - parseFloat(stopLoss);
@@ -15854,128 +15848,6 @@ document.addEventListener('DOMContentLoaded', function() {
         profitInput.addEventListener('change', updateProfitCalculator);
     }
 });
-
-    // ============================================
-    // UNIFIED FIBONACCI LEVELS UPDATE
-    // ============================================
-    function updateAllFibonacciLevels(symbol) {
-        var data = symbolGannData[symbol];
-        if (!data || !data.price) {
-            console.log('No data for Fibonacci: ' + symbol);
-            return;
-        }
-
-        var price = parseFloat(data.price);
-        var high = parseFloat(data.high) || price * 1.05;
-        var low = parseFloat(data.low) || price * 0.95;
-        var range = high - low;
-
-        // Calculate Fibonacci extension and retracement levels
-        var fib = {
-            r3: (low + range * 1.618).toFixed(2),
-            r2: (low + range * 1.272).toFixed(2),
-            r1: high.toFixed(2),
-            s1: (high - range * 0.382).toFixed(2),
-            s2: (high - range * 0.5).toFixed(2),
-            s3: (high - range * 0.618).toFixed(2)
-        };
-
-        // Update Overview tab Fibonacci elements
-        var el;
-        el = document.getElementById('fibR3');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r3;
-        el = document.getElementById('fibR2');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r2;
-        el = document.getElementById('fibR1');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r1;
-        el = document.getElementById('fibS1');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s1;
-        el = document.getElementById('fibS2');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s2;
-        el = document.getElementById('fibS3');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s3;
-
-        // Update Patterns tab Fibonacci elements
-        el = document.getElementById('patternFibR3');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r3;
-        el = document.getElementById('patternFibR2');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r2;
-        el = document.getElementById('patternFibR1');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.r1;
-        el = document.getElementById('patternFibS1');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s1;
-        el = document.getElementById('patternFibS2');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s2;
-        el = document.getElementById('patternFibS3');
-        if (el) el.textContent = '
-</body>
-</html>
- + fib.s3;
-
-        // Update current price display
-        el = document.getElementById('fibCurrentPrice');
-        if (el) el.textContent = '
-</body>
-</html>
- + price.toFixed(2);
-
-        // Update zone status
-        var zoneLabel = document.getElementById('fibZoneLabel');
-        if (zoneLabel) {
-            var zone = '';
-            if (price >= parseFloat(fib.r1)) {
-                zone = 'Above R1 - Breakout Zone';
-            } else if (price >= parseFloat(fib.s1)) {
-                zone = 'Between S1 and R1';
-            } else if (price >= parseFloat(fib.s2)) {
-                zone = 'Between S2 and S1';
-            } else {
-                zone = 'Below S2 - Deep Support';
-            }
-            zoneLabel.textContent = zone;
-        }
-
-        console.log('All Fibonacci levels updated for ' + symbol + ': R1=
-</body>
-</html>
- + fib.r1 + ', S1=
-</body>
-</html>
- + fib.s1);
-    }
 
 </script>
 </body>
