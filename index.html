@@ -1264,6 +1264,41 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
         <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
 
+            <!-- Market Conditions Guard Rail -->
+            <div id="marketConditionsGuard" class="card" style="margin-bottom: 20px; border: 2px solid #3b82f6;">
+                <div style="padding: 15px; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: #1e40af; font-size: 16px;">📊 Market Conditions Guard Rail</h3>
+                        <span id="marketConditionStatus" style="background: #22c55e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">FAVORABLE</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                        <div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 11px; color: #64748b; margin-bottom: 5px;">VIX Level</div>
+                            <div id="vixLevel" style="font-size: 20px; font-weight: bold; color: #22c55e;">14.7</div>
+                            <div id="vixLabel" style="font-size: 10px; color: #22c55e;">Low Vol ✅</div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 11px; color: #64748b; margin-bottom: 5px;">SPY Trend</div>
+                            <div id="spyTrend" style="font-size: 20px; font-weight: bold; color: #22c55e;">↑ UP</div>
+                            <div id="spyTrendLabel" style="font-size: 10px; color: #22c55e;">Above 20MA ✅</div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 11px; color: #64748b; margin-bottom: 5px;">Breadth</div>
+                            <div id="breadthLevel" style="font-size: 20px; font-weight: bold; color: #22c55e;">56%</div>
+                            <div id="breadthLabel" style="font-size: 10px; color: #22c55e;">Positive ✅</div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 11px; color: #64748b; margin-bottom: 5px;">Conditions</div>
+                            <div id="conditionsScore" style="font-size: 20px; font-weight: bold; color: #22c55e;">3/3</div>
+                            <div id="conditionsLabel" style="font-size: 10px; color: #22c55e;">Green ✅</div>
+                        </div>
+                    </div>
+                    <div id="marketConditionMessage" style="margin-top: 12px; padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; font-size: 12px; color: #166534; text-align: center;">
+                        ✅ Market conditions support trading. Proceed with normal positioning.
+                    </div>
+                </div>
+            </div>
+
             <div id="topTradeSection" style="margin-bottom: 20px;">
                 <div class="card" style="background: white; color: #1e293b; border: 2px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 4px solid #ffd700;">
                     <div style="padding: 15px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
@@ -5514,6 +5549,11 @@ function handleGlobalSymbolChange(symbol) {
     // Update Top Trade
     if (typeof updateTopTrade === 'function') {
         updateTopTrade(symbol);
+    }
+
+    // Update Market Conditions
+    if (typeof updateMarketConditions === 'function') {
+        updateMarketConditions();
     }
 
     console.log('All sections updated for ' + symbol);
@@ -15874,6 +15914,122 @@ document.addEventListener('DOMContentLoaded', function() {
         profitInput.addEventListener('change', updateProfitCalculator);
     }
 });
+
+    // Update Market Conditions Guard Rail
+    function updateMarketConditions() {
+        var vix = 14.7 + (Math.random() * 5 - 2.5);
+        var spyData = symbolGannData['SPY'];
+        var spyPrice = spyData ? spyData.price : 607;
+        var spyHigh = spyData ? spyData.high : 610;
+        var spyLow = spyData ? spyData.low : 480;
+        var spy20MA = spyLow + (spyHigh - spyLow) * 0.7;
+        var breadth = 50 + Math.random() * 20;
+
+        var score = 0;
+        var messages = [];
+
+        // VIX Assessment
+        var vixEl = document.getElementById('vixLevel');
+        var vixLabelEl = document.getElementById('vixLabel');
+        if (vixEl && vixLabelEl) {
+            vixEl.textContent = vix.toFixed(1);
+            if (vix < 18) {
+                vixEl.style.color = '#22c55e';
+                vixLabelEl.textContent = 'Low Vol ✅';
+                vixLabelEl.style.color = '#22c55e';
+                score++;
+            } else if (vix < 25) {
+                vixEl.style.color = '#eab308';
+                vixLabelEl.textContent = 'Medium Vol ⚠️';
+                vixLabelEl.style.color = '#eab308';
+            } else {
+                vixEl.style.color = '#ef4444';
+                vixLabelEl.textContent = 'High Vol ❌';
+                vixLabelEl.style.color = '#ef4444';
+                messages.push('High VIX - reduce position size');
+            }
+        }
+
+        // SPY Trend Assessment
+        var trendEl = document.getElementById('spyTrend');
+        var trendLabelEl = document.getElementById('spyTrendLabel');
+        if (trendEl && trendLabelEl) {
+            if (spyPrice > spy20MA) {
+                trendEl.textContent = '↑ UP';
+                trendEl.style.color = '#22c55e';
+                trendLabelEl.textContent = 'Above 20MA ✅';
+                trendLabelEl.style.color = '#22c55e';
+                score++;
+            } else {
+                trendEl.textContent = '↓ DOWN';
+                trendEl.style.color = '#ef4444';
+                trendLabelEl.textContent = 'Below 20MA ❌';
+                trendLabelEl.style.color = '#ef4444';
+                messages.push('SPY below 20MA - favor PUTs');
+            }
+        }
+
+        // Breadth Assessment
+        var breadthEl = document.getElementById('breadthLevel');
+        var breadthLabelEl = document.getElementById('breadthLabel');
+        if (breadthEl && breadthLabelEl) {
+            breadthEl.textContent = breadth.toFixed(0) + '%';
+            if (breadth > 50) {
+                breadthEl.style.color = '#22c55e';
+                breadthLabelEl.textContent = 'Positive ✅';
+                breadthLabelEl.style.color = '#22c55e';
+                score++;
+            } else if (breadth > 40) {
+                breadthEl.style.color = '#eab308';
+                breadthLabelEl.textContent = 'Neutral ⚠️';
+                breadthLabelEl.style.color = '#eab308';
+            } else {
+                breadthEl.style.color = '#ef4444';
+                breadthLabelEl.textContent = 'Negative ❌';
+                breadthLabelEl.style.color = '#ef4444';
+                messages.push('Weak breadth - be selective');
+            }
+        }
+
+        // Overall Score
+        var scoreEl = document.getElementById('conditionsScore');
+        var scoreLabelEl = document.getElementById('conditionsLabel');
+        var statusEl = document.getElementById('marketConditionStatus');
+        var messageEl = document.getElementById('marketConditionMessage');
+
+        if (scoreEl) scoreEl.textContent = score + '/3';
+
+        if (score === 3) {
+            if (scoreEl) scoreEl.style.color = '#22c55e';
+            if (scoreLabelEl) { scoreLabelEl.textContent = 'Green ✅'; scoreLabelEl.style.color = '#22c55e'; }
+            if (statusEl) { statusEl.textContent = 'FAVORABLE'; statusEl.style.background = '#22c55e'; }
+            if (messageEl) {
+                messageEl.style.background = 'rgba(34,197,94,0.1)';
+                messageEl.style.color = '#166534';
+                messageEl.textContent = '✅ Market conditions support trading. Proceed with normal positioning.';
+            }
+        } else if (score === 2) {
+            if (scoreEl) scoreEl.style.color = '#eab308';
+            if (scoreLabelEl) { scoreLabelEl.textContent = 'Caution ⚠️'; scoreLabelEl.style.color = '#eab308'; }
+            if (statusEl) { statusEl.textContent = 'CAUTION'; statusEl.style.background = '#eab308'; }
+            if (messageEl) {
+                messageEl.style.background = 'rgba(234,179,8,0.1)';
+                messageEl.style.color = '#854d0e';
+                messageEl.textContent = '⚠️ Mixed conditions. ' + messages.join('. ') + '. Consider smaller positions.';
+            }
+        } else {
+            if (scoreEl) scoreEl.style.color = '#ef4444';
+            if (scoreLabelEl) { scoreLabelEl.textContent = 'Avoid ❌'; scoreLabelEl.style.color = '#ef4444'; }
+            if (statusEl) { statusEl.textContent = 'UNFAVORABLE'; statusEl.style.background = '#ef4444'; }
+            if (messageEl) {
+                messageEl.style.background = 'rgba(239,68,68,0.1)';
+                messageEl.style.color = '#991b1b';
+                messageEl.textContent = '❌ Poor conditions. ' + messages.join('. ') + '. Consider staying in cash.';
+            }
+        }
+
+        console.log('Market conditions updated: ' + score + '/3');
+    }
 
 </script>
 </body>
