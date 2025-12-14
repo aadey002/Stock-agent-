@@ -5573,8 +5573,12 @@ function updateFibonacciForSymbol(symbol) {
     if (sigFibSymbol) sigFibSymbol.textContent = symbol;
 
     // Get symbol data
-    const data = symbolGannData[symbol] || symbolGannData['SPY'];
-    const price = data.currentPrice || 607.09;
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) {
+        console.log('No pattern data for: ' + symbol);
+        return;
+    }
+    var price = parseFloat(data.price);
 
     // Calculate Fibonacci levels from a recent swing
     const swingHigh = price * 1.05;
@@ -5626,7 +5630,7 @@ function updateFibonacciForSymbol(symbol) {
             { level: 'S3 (61.8%)', price: fib618, dist: ((fib618 - price) / price * 100), color: '#ef4444', idx: 6 }
         ];
 
-        let html = '';
+        var html = '';
         for (const r of rows) {
             const bg = r.isCurrent ? 'background: rgba(59,130,246,0.1);' : (r.level.includes('R1') ? 'background: rgba(245,158,11,0.1);' : '');
             const nearTag = Math.abs(r.dist) < 1 && !r.isCurrent ? '<span style="color: #f59e0b;">⚠️ NEAR</span>' : (r.isCurrent ? '<span style="color: #3b82f6;">📍 HERE</span>' : '-');
@@ -5853,11 +5857,12 @@ function updateMasterConfluence(symbol) {
 function updateTechnicalPatterns(symbol) {
     console.log('Updating Technical Patterns for: ' + symbol);
 
-    const data = symbolGannData[symbol] || symbolGannData['SPY'];
-    const price = data.currentPrice || 607.09;
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) { console.log('No pattern data for: ' + symbol); return; }
+    var price = parseFloat(data.price);
 
     // Generate patterns based on symbol/price
-    const patterns = [
+    var patterns = [
         { name: 'Double Bottom', type: 'Bullish', typeColor: '#22c55e', date: 'Dec 8', timeframe: 'Daily', confidence: 72, target: (price * 1.03).toFixed(2), implication: 'Reversal confirmed at support', status: 'ACTIVE', statusColor: '#22c55e', statusBg: 'rgba(34,197,94,0.2)' },
         { name: 'Ascending Triangle', type: 'Bullish', typeColor: '#22c55e', date: 'Dec 6', timeframe: '4-Hour', confidence: 65, target: (price * 1.02).toFixed(2), implication: 'Breakout pending above $' + (price * 1.01).toFixed(0), status: 'ACTIVE', statusColor: '#22c55e', statusBg: 'rgba(34,197,94,0.2)' },
         { name: 'Bullish Engulfing', type: 'Bullish', typeColor: '#22c55e', date: 'Dec 10', timeframe: 'Daily', confidence: 78, target: (price * 1.018).toFixed(2), implication: 'Momentum shift confirmed', status: 'FORMING', statusColor: '#eab308', statusBg: 'rgba(234,179,8,0.2)' },
@@ -5866,10 +5871,10 @@ function updateTechnicalPatterns(symbol) {
     ];
 
     // Update the table
-    const tableBody = document.getElementById('technicalPatternsTable');
+    var tableBody = document.getElementById('technicalPatternsTable');
     if (tableBody) {
         let html = '';
-        for (const p of patterns) {
+        for (var i = 0; i < patterns.length; i++) { var p = patterns[i];
             html += '<tr>';
             html += '<td style="padding: 10px; font-weight: 600;">' + p.name + '</td>';
             html += '<td style="padding: 10px; text-align: center;"><span style="color: ' + p.typeColor + '; font-weight: 600;">' + p.type + '</span></td>';
@@ -5885,7 +5890,7 @@ function updateTechnicalPatterns(symbol) {
     }
 
     // Update the symbol display
-    const patternSymbol = document.getElementById('patternSymbol');
+    var patternSymbol = document.getElementById('patternSymbol');
     if (patternSymbol) patternSymbol.textContent = symbol;
 }
 
@@ -15481,11 +15486,7 @@ function updateTodayVsAverage(symbol) {
     console.log('Today vs average updated for ' + symbol);
 }
 
-function updateTechnicalPatterns(symbol) {
-    var data = symbolGannData[symbol];
-    if (!data) return;
-    console.log('Technical patterns updated for ' + symbol);
-}
+// updateTechnicalPatterns - using full implementation above
 
 function updateSacredNumbers(symbol) {
     var data = symbolGannData[symbol];
