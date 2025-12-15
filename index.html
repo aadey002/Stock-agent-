@@ -5499,6 +5499,10 @@ async function loadOpportunitiesPrices() {
 document.addEventListener('DOMContentLoaded', function() {
     loadOpportunitiesPrices();
     loadOverviewData();
+    // Initialize MTF Bias History
+    if (typeof updateMTFBiasHistory === 'function') {
+        setTimeout(function() { updateMTFBiasHistory(currentSymbol || 'SPY'); }, 500);
+    }
     // Sort all tables to show newest first after data loads
     setTimeout(sortAllTablesNewestFirst, 1000);
 });
@@ -5585,6 +5589,17 @@ function updateMTFBiasHistory(symbol) {
     tbody.innerHTML = rows;
     console.log('MTF Bias History updated for ' + symbol + ' (30 days)');
 }
+// Update MTF Bias History when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    var mtfBiasTab = document.querySelector('[data-tab="mtf-bias"]');
+    if (mtfBiasTab) {
+        mtfBiasTab.addEventListener('click', function() {
+            if (typeof updateMTFBiasHistory === 'function') {
+                updateMTFBiasHistory(currentSymbol || 'SPY');
+            }
+        });
+    }
+});
 
 function handleGlobalSymbolChange(symbol) {
     console.log('Global symbol change to: ' + symbol);
@@ -5680,6 +5695,11 @@ function handleGlobalSymbolChange(symbol) {
     // Update Market Conditions
     if (typeof updateMarketConditions === 'function') {
         updateMarketConditions();
+    }
+
+    // Update MTF Bias History
+    if (typeof updateMTFBiasHistory === 'function') {
+        updateMTFBiasHistory(symbol);
     }
 
     console.log('All sections updated for ' + symbol);
