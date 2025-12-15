@@ -11194,20 +11194,72 @@ function getMultiChartData(panelType, timeframe) {
     })).filter(bar => bar.close > 0);
     
     if (panelType === 'intraday') {
-        return simulateIntradayBars(data.slice(-5), parseInt(timeframe) || 15);
+        // Simulate intraday bars from daily data
+        var minutes = 15;
+        if (timeframe === '1m') minutes = 1;
+        else if (timeframe === '5m') minutes = 5;
+        else if (timeframe === '15m') minutes = 15;
+        else if (timeframe === '30m') minutes = 30;
+        else if (timeframe === '1h') minutes = 60;
+        return simulateIntradayBars(data.slice(-5), minutes);
     }
     
     if (panelType === 'swing') {
-        if (timeframe === 'W') return aggregateWeekly(data);
-        return data.slice(-60);
+        if (timeframe === '1w' || timeframe === 'W') return aggregateWeekly(data);
+        if (timeframe === '4h') return simulate4HourBars(data.slice(-15));
+        if (timeframe === '1h') return simulate1HourBars(data.slice(-10));
+        return data.slice(-60); // Daily
     }
     
     if (panelType === 'position') {
-        if (timeframe === 'Q') return aggregateQuarterly(data);
-        return aggregateMonthly(data);
+        if (timeframe === '3M' || timeframe === 'Q') return aggregateQuarterly(data);
+        if (timeframe === '1w' || timeframe === 'W') return aggregateWeekly(data);
+        if (timeframe === '1M') return aggregateMonthly(data);
+        return data.slice(-90); // Daily
     }
     
     return data;
+}
+
+
+function simulate4HourBars(dailyData) {
+    var bars = [];
+    dailyData.forEach(function(day) {
+        for (var i = 0; i < 6; i++) {
+            var range = day.high - day.low;
+            var variance = range / 6;
+            var basePrice = day.open + (day.close - day.open) * (i / 6);
+            bars.push({
+                date: day.date + ' ' + (9 + i * 4) + ':00',
+                open: basePrice + (Math.random() - 0.5) * variance,
+                high: basePrice + Math.random() * variance,
+                low: basePrice - Math.random() * variance,
+                close: basePrice + (Math.random() - 0.5) * variance,
+                volume: Math.floor(day.volume / 6)
+            });
+        }
+    });
+    return bars.slice(-60);
+}
+
+function simulate1HourBars(dailyData) {
+    var bars = [];
+    dailyData.forEach(function(day) {
+        for (var i = 0; i < 7; i++) {
+            var range = day.high - day.low;
+            var variance = range / 7;
+            var basePrice = day.open + (day.close - day.open) * (i / 7);
+            bars.push({
+                date: day.date + ' ' + (9 + i) + ':30',
+                open: basePrice + (Math.random() - 0.5) * variance,
+                high: basePrice + Math.random() * variance,
+                low: basePrice - Math.random() * variance,
+                close: basePrice + (Math.random() - 0.5) * variance,
+                volume: Math.floor(day.volume / 7)
+            });
+        }
+    });
+    return bars.slice(-60);
 }
 
 function simulateIntradayBars(dailyData, minutes) {
