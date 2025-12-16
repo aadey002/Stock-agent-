@@ -6178,6 +6178,14 @@ async function fetchLatestPrice(symbol) {
                     // Also update high/low from CSV data (columns: Date,Open,High,Low,Close,Volume)
                     if (columns[2]) symbolGannData[symbol].high = parseFloat(columns[2]);
                     if (columns[3]) symbolGannData[symbol].low = parseFloat(columns[3]);
+                    // Also update Gann Analysis price display if this is the current symbol
+                    if (symbol === currentSymbol) {
+                        var gannPriceEl = document.getElementById('gannCurrentPrice');
+                        if (gannPriceEl) {
+                            gannPriceEl.textContent = '$' + price.toFixed(2);
+                            console.log('Updated gannCurrentPrice for ' + symbol + ': $' + price.toFixed(2));
+                        }
+                    }
                     const change = price - oldPrice;
                     const changePct = (change / oldPrice) * 100;
                     updatePriceDisplay(symbol, price, change, changePct);
@@ -12857,8 +12865,16 @@ function updateGannAnalysis() {
         return;
     }
 
-    const lastBar = currentData[currentData.length - 1];
-    const price = parseFloat(lastBar.Close) || 0;
+    // Prefer symbolGannData price (updated from CSV) over currentData
+    var price = 0;
+    if (symbolGannData[currentSymbol] && symbolGannData[currentSymbol].price) {
+        price = parseFloat(symbolGannData[currentSymbol].price);
+        console.log('Using symbolGannData price: $' + price.toFixed(2));
+    } else {
+        const lastBar = currentData[currentData.length - 1];
+        price = parseFloat(lastBar.Close) || 0;
+        console.log('Using currentData price: $' + price.toFixed(2));
+    }
 
     // Update header
     var el=document.getElementById('gannCurrentSymbol');if(el)el.textContent = currentSymbol;
