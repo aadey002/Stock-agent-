@@ -6419,16 +6419,14 @@ function updateOpportunitiesPrices() {
         var price = parseFloat(priceText);
         if (isNaN(price) || price <= 0) return;
 
-        // Get direction from TURN DIR cell (index 9)
-        // ▲ means turning FROM up (bearish), ▼ means turning FROM down (bullish)
-        var turnDirCell = row.cells[9];
-        var turnDir = turnDirCell ? turnDirCell.textContent.trim() : '';
-        var isBullish = turnDir.includes('▼');  // Down arrow = turning bullish
+        // Get direction from TRADE cell (index 10) - CALL or PUT
+        var tradeCell = row.cells[10];
+        var isCall = tradeCell && tradeCell.textContent.includes('CALL');
 
-        // Calculate target as 3% move
-        var target = isBullish ? (price * 1.03).toFixed(2) : (price * 0.97).toFixed(2);
+        // Calculate target as 3% move: CALL = above price, PUT = below price
+        var target = isCall ? (price * 1.03).toFixed(2) : (price * 0.97).toFixed(2);
 
-        console.log(symbol + ': price=' + price + ', isBullish=' + isBullish + ', target=' + target);
+        console.log(symbol + ': price=' + price + ', isCall=' + isCall + ', target=' + target);
 
         // Update target cell (index 11)
         if (row.cells[11]) {
