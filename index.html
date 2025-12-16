@@ -6419,9 +6419,11 @@ function updateOpportunitiesPrices() {
         var price = parseFloat(priceText);
         if (isNaN(price) || price <= 0) return;
 
-        // Get direction from TURN DIR cell (index 9) - ▲ is bullish, ▼ is bearish
+        // Get direction from TURN DIR cell (index 9)
+        // ▲ means turning FROM up (bearish), ▼ means turning FROM down (bullish)
         var turnDirCell = row.cells[9];
-        var isBullish = turnDirCell && turnDirCell.textContent.includes('▲');
+        var turnDir = turnDirCell ? turnDirCell.textContent.trim() : '';
+        var isBullish = turnDir.includes('▼');  // Down arrow = turning bullish
 
         // Calculate target as 3% move
         var target = isBullish ? (price * 1.03).toFixed(2) : (price * 0.97).toFixed(2);
