@@ -6713,10 +6713,22 @@ document.addEventListener('DOMContentLoaded', function() {
             var high = parseFloat(data.high) || price * 1.05;
             var low = parseFloat(data.low) || price * 0.95;
 
-            // Determine direction
-            var midPoint = (high + low) / 2;
-            var isBullish = price > midPoint;
-            var direction = isBullish ? 'CALL' : 'PUT';
+            // Get direction from Gann Analysis for selected timeframe
+            var gannSignalId = timeframe + 'Signal'; // intradaySignal, swingSignal, or positionSignal
+            var gannSignalEl = document.getElementById(gannSignalId);
+            var direction = 'CALL'; // default
+            var isBullish = true;
+
+            if (gannSignalEl) {
+                var signalText = gannSignalEl.textContent.trim().toUpperCase();
+                if (signalText.includes('PUT') || signalText.includes('SELL') || signalText.includes('BEARISH')) {
+                    direction = 'PUT';
+                    isBullish = false;
+                } else {
+                    direction = 'CALL';
+                    isBullish = true;
+                }
+            }
 
             // Calculate strike
             var strikeInc = price > 100 ? 5 : price > 50 ? 1 : 0.5;
