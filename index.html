@@ -6755,18 +6755,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var price = parseFloat(data.price);
             var atr = parseFloat(data.atr) || price * 0.02;
+            var high = parseFloat(data.high) || price * 1.05;
+            var low = parseFloat(data.low) || price * 0.95;
 
-            // Timeframe colors
+            // Determine direction
+            var midPoint = (high + low) / 2;
+            var isBullish = price > midPoint;
+            var direction = isBullish ? 'CALL' : 'PUT';
+
+            // Calculate strike
+            var strikeInc = price > 100 ? 5 : price > 50 ? 1 : 0.5;
+            var strike = Math.round(price / strikeInc) * strikeInc;
+
+            // Timeframe colors and settings
             var colors = { intraday: '#f59e0b', swing: '#3b82f6', position: '#8b5cf6' };
             this.style.background = colors[timeframe] || '#3b82f6';
 
-            // Timeframe settings
             var settings = {
-                intraday: { daysOut: 1, stopMult: 0.5, targetMult: 0.75, entryLow: 0.15, entryHigh: 0.35 },
-                swing: { daysOut: 10, stopMult: 1.5, targetMult: 2, entryLow: 0.50, entryHigh: 1.00 },
-                position: { daysOut: 35, stopMult: 3, targetMult: 5, entryLow: 1.50, entryHigh: 3.00 }
+                intraday: { daysOut: 1, stopMult: 0.5, targetMult: 0.75, entryLow: 0.15, entryHigh: 0.35, confidence: 70 },
+                swing: { daysOut: 10, stopMult: 1.5, targetMult: 2, entryLow: 0.50, entryHigh: 1.00, confidence: 78 },
+                position: { daysOut: 35, stopMult: 3, targetMult: 5, entryLow: 1.50, entryHigh: 3.00, confidence: 82 }
             };
             var s = settings[timeframe] || settings.swing;
+
+            // Calculate prices
+            var stopPrice = isBullish ? (price - atr * s.stopMult).toFixed(2) : (price + atr * s.stopMult).toFixed(2);
+            var targetPrice = isBullish ? (price + atr * s.targetMult).toFixed(2) : (price - atr * s.targetMult).toFixed(2);
+            var entryMid = (s.entryLow + s.entryHigh) / 2;
+            var profitPrice = (entryMid * 1.5).toFixed(2);
+            var stopOptionPrice = (entryMid * 0.6).toFixed(2);
+            var maxRisk = (entryMid * 100).toFixed(0);
+            var maxGain = (entryMid * 0.5 * 100).toFixed(0);
+            var rr = (0.5 / 0.4).toFixed(2);
 
             // Calculate expiry
             var today = new Date();
@@ -6777,20 +6797,54 @@ document.addEventListener('DOMContentLoaded', function() {
             var expiryStr = expiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             var daysToExpiry = Math.ceil((expiry - today) / (24 * 60 * 60 * 1000));
 
-            // Update expiry display
-            var expiryEl = document.getElementById('topTradeExpiry');
-            if (expiryEl) expiryEl.textContent = 'Expires: ' + expiryStr + ' (' + daysToExpiry + ' days)';
+            // Update all elements
+            var el;
 
-            // Update entry price range
-            var entryEl = document.getElementById('topTradeEntry');
-            if (entryEl) entryEl.textContent = 'Entry: $' + s.entryLow.toFixed(2) + ' - $' + s.entryHigh.toFixed(2);
+            el = document.getElementById('topTradeSignal');
+            if (el) {
+                el.textContent = 'BUY ' + symbol + ' ' + direction;
+                el.style.color = isBullish ? '#4ade80' : '#ef4444';
+            }
 
-            // Update profit calculator
+            el = document.getElementById('topTradeConfidence');
+            if (el) el.textContent = '⭐'.repeat(Math.floor(s.confidence / 20)) + ' ' + s.confidence + '% Confidence';
+
+            el = document.getElementById('topTradeWhat');
+            if (el) el.textContent = symbol + ' $' + strike + ' ' + direction;
+
+            el = document.getElementById('topTradeExpiry');
+            if (el) el.textContent = 'Expires: ' + expiryStr + ' (' + daysToExpiry + ' days)';
+
+            el = document.getElementById('topTradeEntry');
+            if (el) el.textContent = 'Entry: $' + s.entryLow.toFixed(2) + ' - $' + s.entryHigh.toFixed(2);
+
+            el = document.getElementById('topTradeProfit');
+            if (el) el.textContent = '+50% ($' + profitPrice + ')';
+
+            el = document.getElementById('topTradePriceTarget');
+            if (el) el.textContent = 'When ' + symbol + ' hits $' + targetPrice;
+
+            el = document.getElementById('topTradeStop');
+            if (el) el.textContent = '-40% ($' + stopOptionPrice + ')';
+
+            el = document.getElementById('topTradeStopPrice');
+            if (el) el.textContent = (isBullish ? 'If ' + symbol + ' drops to $' : 'If ' + symbol + ' rises to $') + stopPrice;
+
+            el = document.getElementById('topTradeRR');
+            if (el) el.textContent = '1:' + rr;
+
+            el = document.getElementById('topTradeMaxRisk');
+            if (el) el.textContent = '$' + maxRisk + '/contract';
+
+            el = document.getElementById('topTradeMaxGain');
+            if (el) el.textContent = '$' + maxGain + '/contract';
+
+            // Update profit calculator if exists
             if (typeof updateProfitCalculator === 'function') {
                 updateProfitCalculator();
             }
 
-            console.log('Top Trade timeframe changed to: ' + timeframe);
+            console.log('Top Trade updated for ' + timeframe + ' timeframe');
         });
     }
 });
