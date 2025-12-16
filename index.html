@@ -1255,7 +1255,6 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
             <button class="tab-btn" data-tab="mtf-bias" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">📊 MTF Bias</button>
-            <button class="tab-btn" data-tab="trade-journal" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">📓 Trade Journal</button>
             <button class="tab-btn" data-tab="reports" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">📑 Reports</button>
             <button class="tab-btn" data-tab="gann-rules" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📜 Gann Rules</button>
             <button class="tab-btn" data-tab="options-calc-advanced" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">🧮 Options Pro</button>
@@ -2409,6 +2408,50 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <h3 style="font-size: 14px; font-weight: 600; color: var(--text); margin: 0;">📝 Trade Journal</h3>
                 <span id="tradesLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted);" title="Last updated">⏱️ --</span>
+            </div>
+            <!-- Filter Controls -->
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                <div>
+                    <label style="font-size: 10px; color: #64748b; display: block;">Symbol</label>
+                    <select id="filterSymbol" onchange="filterTradesTable()" style="padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px;">
+                        <option value="">All Symbols</option>
+                        <option value="SPY">SPY</option>
+                        <option value="QQQ">QQQ</option>
+                        <option value="IWM">IWM</option>
+                        <option value="XLF">XLF</option>
+                        <option value="XLE">XLE</option>
+                        <option value="XLK">XLK</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 10px; color: #64748b; display: block;">Type</label>
+                    <select id="filterType" onchange="filterTradesTable()" style="padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px;">
+                        <option value="">All Types</option>
+                        <option value="CALL">CALL</option>
+                        <option value="PUT">PUT</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 10px; color: #64748b; display: block;">Result</label>
+                    <select id="filterResult" onchange="filterTradesTable()" style="padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px;">
+                        <option value="">All Results</option>
+                        <option value="WIN">WIN</option>
+                        <option value="LOSS">LOSS</option>
+                        <option value="OPEN">OPEN</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 10px; color: #64748b; display: block;">Date Range</label>
+                    <select id="filterDate" onchange="filterTradesTable()" style="padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px;">
+                        <option value="">All Time</option>
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                    </select>
+                </div>
+                <div style="margin-left: auto; display: flex; align-items: flex-end;">
+                    <button onclick="exportTradesToCSV()" style="padding: 5px 15px; background: #22c55e; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">📥 Export CSV</button>
+                </div>
             </div>
             <!-- Trade Statistics Dashboard -->
             <div class="grid grid-5">
@@ -4324,92 +4367,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </thead>
                     <tbody id="mtfHistoryBody">
                         <!-- Populated by updateMTFBiasHistory() -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TRADE JOURNAL TAB -->
-        <div id="trade-journal" class="tab-content">
-            <div class="card" style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="margin: 0;">📓 Trade Journal</h2>
-                    <button style="background: #22c55e; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">+ New Trade</button>
-                </div>
-
-                <!-- Stats -->
-                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px;">
-                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Total Trades</div>
-                        <div style="font-size: 24px; font-weight: 700;" id="journalTotalTrades">47</div>
-                    </div>
-                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Win Rate</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="journalWinRate">68%</div>
-                    </div>
-                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Avg Win</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;">+$342</div>
-                    </div>
-                    <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Avg Loss</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #ef4444;">-$185</div>
-                    </div>
-                    <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Profit Factor</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">1.85</div>
-                    </div>
-                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Total P&L</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="journalTotalPnl">+$4,280</div>
-                    </div>
-                </div>
-
-                <!-- Trade Log -->
-                <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #f0f0f0;">
-                            <th style="padding: 10px; text-align: left;">DATE</th>
-                            <th style="padding: 10px; text-align: center;">SYMBOL</th>
-                            <th style="padding: 10px; text-align: center;">TYPE</th>
-                            <th style="padding: 10px; text-align: center;">ENTRY</th>
-                            <th style="padding: 10px; text-align: center;">EXIT</th>
-                            <th style="padding: 10px; text-align: center;">P&L</th>
-                            <th style="padding: 10px; text-align: center;">RESULT</th>
-                            <th style="padding: 10px; text-align: left;">NOTES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="journalTableBody">
-                        <tr>
-                            <td style="padding: 10px; font-weight: 600;">Dec 10</td>
-                            <td style="padding: 10px; text-align: center;">SPY</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 2px 8px; border-radius: 4px;">CALL</span></td>
-                            <td style="padding: 10px; text-align: center;">$2.45</td>
-                            <td style="padding: 10px; text-align: center;">$3.20</td>
-                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">+$375</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">WIN</span></td>
-                            <td style="padding: 10px;">3/4 agent consensus, hit T1</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; font-weight: 600;">Dec 9</td>
-                            <td style="padding: 10px; text-align: center;">IWM</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 2px 8px; border-radius: 4px;">PUT</span></td>
-                            <td style="padding: 10px; text-align: center;">$1.85</td>
-                            <td style="padding: 10px; text-align: center;">$2.60</td>
-                            <td style="padding: 10px; text-align: center; color: #22c55e; font-weight: 700;">+$225</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">WIN</span></td>
-                            <td style="padding: 10px;">Gann resistance rejection</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; font-weight: 600;">Dec 6</td>
-                            <td style="padding: 10px; text-align: center;">QQQ</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 2px 8px; border-radius: 4px;">CALL</span></td>
-                            <td style="padding: 10px; text-align: center;">$3.10</td>
-                            <td style="padding: 10px; text-align: center;">$2.40</td>
-                            <td style="padding: 10px; text-align: center; color: #ef4444; font-weight: 700;">-$210</td>
-                            <td style="padding: 10px; text-align: center;"><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">LOSS</span></td>
-                            <td style="padding: 10px;">Stopped out on gap down</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -9762,6 +9719,78 @@ function renderTrades() {
 
 function filterTrades() {
     renderTrades();
+}
+
+function filterTradesTable() {
+    var symbolFilter = document.getElementById('filterSymbol').value;
+    var typeFilter = document.getElementById('filterType').value;
+    var resultFilter = document.getElementById('filterResult').value;
+    var dateFilter = document.getElementById('filterDate').value;
+
+    var table = document.getElementById('tradesTable');
+    if (!table) return;
+
+    var rows = table.querySelectorAll('tbody tr');
+
+    rows.forEach(function(row) {
+        var show = true;
+        var cells = row.cells;
+        if (!cells || cells.length < 6) return;
+
+        var symbol = cells[1] ? cells[1].textContent.trim() : '';
+        var type = cells[2] ? cells[2].textContent.trim() : '';
+        var result = cells[5] ? cells[5].textContent.trim() : '';
+        var dateText = cells[0] ? cells[0].textContent.trim() : '';
+
+        if (symbolFilter && !symbol.includes(symbolFilter)) show = false;
+        if (typeFilter && !type.includes(typeFilter)) show = false;
+        if (resultFilter && !result.includes(resultFilter)) show = false;
+
+        if (dateFilter) {
+            var daysAgo = parseInt(dateFilter);
+            var tradeDate = new Date(dateText + ', 2024');
+            var cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - daysAgo);
+            if (tradeDate < cutoff) show = false;
+        }
+
+        row.style.display = show ? '' : 'none';
+    });
+
+    console.log('Trades filtered');
+}
+
+function exportTradesToCSV() {
+    var table = document.getElementById('tradesTable');
+    if (!table) {
+        alert('No trades table found');
+        return;
+    }
+
+    var csv = [];
+    var rows = table.querySelectorAll('tr');
+
+    rows.forEach(function(row) {
+        if (row.style.display === 'none') return;
+        var cols = row.querySelectorAll('td, th');
+        var rowData = [];
+        cols.forEach(function(col) {
+            var text = col.textContent.replace(/,/g, '').trim();
+            rowData.push('"' + text + '"');
+        });
+        csv.push(rowData.join(','));
+    });
+
+    var csvContent = csv.join('\n');
+    var blob = new Blob([csvContent], { type: 'text/csv' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'trades_export_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    console.log('Trades exported to CSV');
 }
 
 function editTrade(id) {
