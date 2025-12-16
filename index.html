@@ -6398,6 +6398,47 @@ function updateOpportunitiesForSymbol(symbol) {
     console.log('Opportunities updated for ' + symbol);
 }
 
+// Update ONLY price and target cells in Opportunities table
+function updateOpportunitiesPrices() {
+    var tbody = document.getElementById('oppTableBody');
+    if (!tbody) return;
+
+    var rows = tbody.querySelectorAll('tr');
+
+    rows.forEach(function(row) {
+        if (!row.cells || row.cells.length < 12) return;
+
+        var symbolCell = row.cells[1];
+        if (!symbolCell) return;
+
+        var symbol = symbolCell.textContent.trim();
+        var data = symbolGannData[symbol];
+
+        if (!data || !data.price) return;
+
+        var price = parseFloat(data.price);
+        var atr = parseFloat(data.atr) || price * 0.02;
+        var high = parseFloat(data.high) || price * 1.05;
+        var low = parseFloat(data.low) || price * 0.95;
+
+        var midPoint = (high + low) / 2;
+        var isBullish = price > midPoint;
+        var target = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
+
+        // Update price cell (index 3)
+        if (row.cells[3]) {
+            row.cells[3].textContent = '$' + price.toFixed(2);
+        }
+
+        // Update target cell (index 11)
+        if (row.cells[11]) {
+            row.cells[11].textContent = '$' + target;
+        }
+    });
+
+    console.log('Opportunities prices updated from symbolGannData');
+}
+
 // Update Daily Analysis for symbol
 function updateDailyAnalysisForSymbol(symbol) {
     const data = symbolGannData[symbol];
@@ -6836,6 +6877,15 @@ document.addEventListener('DOMContentLoaded', function() {
             updateChartForTimeframe('position', this.value);
         });
     }
+});
+
+// Call updateOpportunitiesPrices after data is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof updateOpportunitiesPrices === 'function') {
+            updateOpportunitiesPrices();
+        }
+    }, 3000);
 });
 
 // Also call when Opportunities tab is clicked
