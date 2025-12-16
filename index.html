@@ -6723,18 +6723,18 @@ document.addEventListener('DOMContentLoaded', function() {
             var high = parseFloat(data.high) || price * 1.05;
             var low = parseFloat(data.low) || price * 0.95;
 
-            // Get direction from Gann Analysis for selected timeframe
-            var gannSignalId = timeframe + 'Signal'; // intradaySignal, swingSignal, or positionSignal
-            var gannSignalEl = document.getElementById(gannSignalId);
+            // Read direction from gannTradeAction element (contains actual CALL/PUT)
+            var gannTradeEl = document.getElementById('gannTradeAction');
             var direction = 'CALL'; // default
             var isBullish = true;
 
-            if (gannSignalEl) {
-                var signalText = gannSignalEl.textContent.trim().toUpperCase();
-                if (signalText.includes('PUT') || signalText.includes('SELL') || signalText.includes('BEARISH')) {
+            if (gannTradeEl) {
+                var actionText = gannTradeEl.textContent.trim().toUpperCase();
+                console.log('Dropdown reading from gannTradeAction: ' + actionText);
+                if (actionText.includes('PUT')) {
                     direction = 'PUT';
                     isBullish = false;
-                } else {
+                } else if (actionText.includes('CALL')) {
                     direction = 'CALL';
                     isBullish = true;
                 }
@@ -16179,24 +16179,20 @@ function updateTopTrade(symbol) {
         }
     }
 
-    // Read direction from Gann Analysis signals (matching timeframe)
-    var gannSignalId = 'intradaySignal'; // Default to intraday
-    var topTradeSelect = document.getElementById('topTradeTimeframeSelect');
-    if (topTradeSelect) {
-        var tfVal = topTradeSelect.value;
-        if (tfVal === 'swing') gannSignalId = 'swingSignal';
-        else if (tfVal === 'position') gannSignalId = 'positionSignal';
-    }
-
-    var gannEl = document.getElementById(gannSignalId);
+    // Read direction from gannTradeAction element (contains actual CALL/PUT recommendation)
+    var gannTradeEl = document.getElementById('gannTradeAction');
     var direction = 'CALL';
     var isBullish = true;
 
-    if (gannEl) {
-        var gannText = gannEl.textContent.trim().toUpperCase();
-        if (gannText.includes('PUT') || gannText.includes('BEARISH') || gannText.includes('SELL')) {
+    if (gannTradeEl) {
+        var actionText = gannTradeEl.textContent.trim().toUpperCase();
+        console.log('Top Trade reading from gannTradeAction: ' + actionText);
+        if (actionText.includes('PUT')) {
             direction = 'PUT';
             isBullish = false;
+        } else if (actionText.includes('CALL')) {
+            direction = 'CALL';
+            isBullish = true;
         }
     }
     var dirColor = isBullish ? '#4ade80' : '#ef4444';
