@@ -6408,6 +6408,10 @@ function updateOpportunitiesPrices() {
     rows.forEach(function(row) {
         if (!row.cells || row.cells.length < 12) return;
 
+        // Get symbol from cells[1]
+        var symbolCell = row.cells[1];
+        var symbol = symbolCell ? symbolCell.textContent.trim() : 'Unknown';
+
         // Get price from the row's price cell
         var priceCell = row.cells[3];
         if (!priceCell) return;
@@ -6415,13 +6419,14 @@ function updateOpportunitiesPrices() {
         var price = parseFloat(priceText);
         if (isNaN(price) || price <= 0) return;
 
-        // Get direction from signal cell (index 2)
-        var signalCell = row.cells[2];
-        var signal = signalCell ? signalCell.textContent.toUpperCase() : '';
-        var isBullish = signal.indexOf('CALL') >= 0 || signal.indexOf('BULL') >= 0 || signal.indexOf('LONG') >= 0;
+        // Get direction from TURN DIR cell (index 9) - ▲ is bullish, ▼ is bearish
+        var turnDirCell = row.cells[9];
+        var isBullish = turnDirCell && turnDirCell.textContent.includes('▲');
 
         // Calculate target as 3% move
         var target = isBullish ? (price * 1.03).toFixed(2) : (price * 0.97).toFixed(2);
+
+        console.log(symbol + ': price=' + price + ', isBullish=' + isBullish + ', target=' + target);
 
         // Update target cell (index 11)
         if (row.cells[11]) {
