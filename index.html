@@ -5995,7 +5995,14 @@ function updateTechnicalPatterns(symbol) {
     // Update the symbol display
     var patternSymbol = document.getElementById('patternSymbol');
     if (patternSymbol) patternSymbol.textContent = symbol;
-// Update hardcoded pattern breakout/target values in HTML    var breakout1 = document.getElementById('patternBreakout1');    var breakout2 = document.getElementById('patternBreakout2');    var target1 = document.getElementById('patternTarget1');    if (breakout1) breakout1.textContent = '$' + (price * 1.01).toFixed(0);    if (breakout2) breakout2.textContent = '$' + (price * 0.99).toFixed(0);    if (target1) target1.textContent = '$' + (price * 1.02).toFixed(0);    console.log('Technical patterns updated for ' + symbol + ' at $' + price);
+    // Update hardcoded pattern breakout/target values in HTML
+    var breakout1 = document.getElementById('patternBreakout1');
+    var breakout2 = document.getElementById('patternBreakout2');
+    var target1 = document.getElementById('patternTarget1');
+    if (breakout1) breakout1.textContent = '$' + (price * 1.01).toFixed(0);
+    if (breakout2) breakout2.textContent = '$' + (price * 0.99).toFixed(0);
+    if (target1) target1.textContent = '$' + (price * 1.02).toFixed(0);
+    console.log('Technical patterns updated for ' + symbol + ' at $' + price);
 }
 
 
