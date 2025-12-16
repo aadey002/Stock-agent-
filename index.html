@@ -6168,6 +6168,9 @@ async function fetchLatestPrice(symbol) {
                 if (!isNaN(price) && symbolGannData[symbol]) {
                     const oldPrice = symbolGannData[symbol].price;
                     symbolGannData[symbol].price = price;
+                    // Also update high/low from CSV data (columns: Date,Open,High,Low,Close,Volume)
+                    if (columns[2]) symbolGannData[symbol].high = parseFloat(columns[2]);
+                    if (columns[3]) symbolGannData[symbol].low = parseFloat(columns[3]);
                     const change = price - oldPrice;
                     const changePct = (change / oldPrice) * 100;
                     updatePriceDisplay(symbol, price, change, changePct);
@@ -16169,8 +16172,26 @@ function updateTopTrade(symbol) {
         }
     }
 
-    var isBullish = price > (high + low) / 2;
-    var direction = isBullish ? 'CALL' : 'PUT';
+    // Read direction from Gann Analysis signals (matching timeframe)
+    var gannSignalId = 'intradaySignal'; // Default to intraday
+    var topTradeSelect = document.getElementById('topTradeTimeframeSelect');
+    if (topTradeSelect) {
+        var tfVal = topTradeSelect.value;
+        if (tfVal === 'swing') gannSignalId = 'swingSignal';
+        else if (tfVal === 'position') gannSignalId = 'positionSignal';
+    }
+
+    var gannEl = document.getElementById(gannSignalId);
+    var direction = 'CALL';
+    var isBullish = true;
+
+    if (gannEl) {
+        var gannText = gannEl.textContent.trim().toUpperCase();
+        if (gannText.includes('PUT') || gannText.includes('BEARISH') || gannText.includes('SELL')) {
+            direction = 'PUT';
+            isBullish = false;
+        }
+    }
     var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
     var strike = Math.round(price / 5) * 5;
