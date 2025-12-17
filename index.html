@@ -5023,6 +5023,13 @@ let allSymbolsData = {};
 let priceChart;
 let conversationHistory = [];
 
+// Store Gann predictions per timeframe
+var gannPredictions = {
+    INTRADAY: { direction: 'CALL', symbol: '' },
+    SWING: { direction: 'PUT', symbol: '' },
+    POSITION: { direction: 'CALL', symbol: '' }
+};
+
 const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
@@ -6766,7 +6773,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var colors = { intraday: '#f59e0b', swing: '#3b82f6', position: '#8b5cf6' };
             this.style.background = colors[timeframe] || '#3b82f6';
 
-            // Use setTimeout to let Gann update, then read result
+            // Use setTimeout to let Gann update, then read from stored predictions
             var dropdown = this;
             setTimeout(function() {
                 var data = symbolGannData[capturedSymbol];
@@ -6777,27 +6784,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 var high = parseFloat(data.high) || price * 1.05;
                 var low = parseFloat(data.low) || price * 0.95;
 
-                // Calculate direction using same logic as Gann Analysis (deterministic)
-                var direction = 'CALL';
-                var isBullish = true;
-
-                // Calculate based on price position in range (same as Gann logic)
-                var rangeSize = high - low;
-                var pricePosition = rangeSize > 0 ? (price - low) / rangeSize : 0.5;
-
-                if (timeframe === 'intraday') {
-                    // Intraday: below 40% = rally (CALL), above 60% = pullback (PUT)
-                    isBullish = pricePosition < 0.4;
-                } else if (timeframe === 'swing') {
-                    // Swing: below 35% = rally, above 65% = pullback
-                    isBullish = pricePosition < 0.35;
-                } else {
-                    // Position: below 30% = rally, above 70% = pullback
-                    isBullish = pricePosition < 0.3;
-                }
-
-                direction = isBullish ? 'CALL' : 'PUT';
-                console.log('Dropdown calculated for ' + capturedSymbol + ' ' + timeframe + ': ' + direction + ' (price position: ' + (pricePosition * 100).toFixed(1) + '%)');
+                // Read from stored Gann predictions
+                var prediction = gannPredictions[tfVal] || { direction: 'CALL', symbol: capturedSymbol };
+                var direction = prediction.direction;
+                var isBullish = direction === 'CALL';
+                console.log('Dropdown reading from gannPredictions[' + tfVal + ']: ' + direction + ' for ' + capturedSymbol);
 
                 // Calculate strike
                 var strikeInc = price > 100 ? 5 : price > 50 ? 1 : 0.5;
@@ -13255,6 +13246,10 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
             tradeActionEl.textContent = 'BUY CALL';
             tradeActionEl.style.color = '#22c55e';
         }
+        // Store prediction for this timeframe
+        var tfKey = timeframe.toUpperCase();
+        gannPredictions[tfKey] = { direction: 'CALL', symbol: symbol };
+        console.log('Stored gannPredictions[' + tfKey + '] = CALL for ' + symbol);
         if (whyTitleEl) whyTitleEl.textContent = 'WHY RALLY?';
         if (turnTargetEl) {
             const low = (price * (1 + movePercent.min / 100)).toFixed(2);
@@ -13281,6 +13276,10 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
             tradeActionEl.textContent = 'BUY PUT';
             tradeActionEl.style.color = '#ef4444';
         }
+        // Store prediction for this timeframe
+        var tfKey = timeframe.toUpperCase();
+        gannPredictions[tfKey] = { direction: 'PUT', symbol: symbol };
+        console.log('Stored gannPredictions[' + tfKey + '] = PUT for ' + symbol);
         if (whyTitleEl) whyTitleEl.textContent = 'WHY PULLBACK?';
         if (turnTargetEl) {
             const high = (price * (1 - movePercent.min / 100)).toFixed(2);
@@ -13368,6 +13367,12 @@ function updateGannTurnAnalysis(symbol, price) {
             tradeActionEl.textContent = 'BUY PUT';
             tradeActionEl.style.color = '#ef4444';
         }
+        // Store prediction - get timeframe from active button
+        var activeBtn = document.querySelector('.gann-tf-btn.active');
+        var tfText = activeBtn ? activeBtn.textContent : 'Swing';
+        var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING' : 'POSITION';
+        gannPredictions[tfKey] = { direction: 'PUT', symbol: symbol };
+        console.log('Stored gannPredictions[' + tfKey + '] = PUT for ' + symbol);
         if (whyTitleEl) whyTitleEl.textContent = 'WHY PULLBACK?';
         if (whyListEl) {
             whyListEl.innerHTML = `
@@ -13403,6 +13408,12 @@ function updateGannTurnAnalysis(symbol, price) {
             tradeActionEl.textContent = 'BUY CALL';
             tradeActionEl.style.color = '#22c55e';
         }
+        // Store prediction - get timeframe from active button
+        var activeBtn = document.querySelector('.gann-tf-btn.active');
+        var tfText = activeBtn ? activeBtn.textContent : 'Swing';
+        var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING' : 'POSITION';
+        gannPredictions[tfKey] = { direction: 'CALL', symbol: symbol };
+        console.log('Stored gannPredictions[' + tfKey + '] = CALL for ' + symbol);
         if (whyTitleEl) whyTitleEl.textContent = 'WHY RALLY?';
         if (whyListEl) {
             whyListEl.innerHTML = `
@@ -16255,31 +16266,15 @@ function updateTopTrade(symbol) {
         }
     }
 
-    // Calculate direction using same logic as Gann Analysis (deterministic)
-    var direction = 'CALL';
-    var isBullish = true;
-
-    // Get timeframe from dropdown
+    // Read direction from stored Gann predictions
     var topTradeSelect = document.getElementById('topTradeTimeframeSelect');
-    var tfVal = topTradeSelect ? topTradeSelect.value : 'swing';
+    var tfVal = topTradeSelect ? topTradeSelect.value.toUpperCase() : 'SWING';
 
-    // Calculate based on price position in range (same as Gann logic)
-    var rangeSize = high - low;
-    var pricePosition = rangeSize > 0 ? (price - low) / rangeSize : 0.5;
-
-    if (tfVal === 'intraday') {
-        // Intraday: below 40% = rally (CALL), above 60% = pullback (PUT)
-        isBullish = pricePosition < 0.4;
-    } else if (tfVal === 'swing') {
-        // Swing: below 35% = rally, above 65% = pullback
-        isBullish = pricePosition < 0.35;
-    } else {
-        // Position: below 30% = rally, above 70% = pullback
-        isBullish = pricePosition < 0.3;
-    }
-
-    direction = isBullish ? 'CALL' : 'PUT';
-    console.log('Top Trade calculated for ' + symbol + ' ' + tfVal + ': ' + direction + ' (price position: ' + (pricePosition * 100).toFixed(1) + '%)');
+    // Read from gannPredictions
+    var prediction = gannPredictions[tfVal] || { direction: 'CALL', symbol: symbol };
+    var direction = prediction.direction;
+    var isBullish = direction === 'CALL';
+    console.log('Top Trade reading from gannPredictions[' + tfVal + ']: ' + direction + ' for ' + symbol);
     var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
     var strike = Math.round(price / 5) * 5;
