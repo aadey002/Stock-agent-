@@ -6200,6 +6200,29 @@ async function fetchLatestPrice(symbol) {
     return null;
 }
 
+// Update ALL symbolGannData prices from CSV data (not just current symbol)
+function updateAllSymbolGannDataFromCSV() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    symbols.forEach(function(symbol) {
+        var data = allSymbolsData[symbol];
+        if (data && data.length > 0) {
+            var latestRow = data[data.length - 1];
+            var price = parseFloat(latestRow.Close);
+            var high = parseFloat(latestRow.High);
+            var low = parseFloat(latestRow.Low);
+
+            if (!isNaN(price) && symbolGannData[symbol]) {
+                symbolGannData[symbol].price = price;
+                if (!isNaN(high)) symbolGannData[symbol].high = high;
+                if (!isNaN(low)) symbolGannData[symbol].low = low;
+                console.log('Updated symbolGannData for ' + symbol + ': $' + price.toFixed(2));
+            }
+        }
+    });
+    console.log('All symbolGannData updated from CSV');
+}
+
 // Update header price display
 function updatePriceDisplay(symbol, price, change, changePct) {
     const priceEl = document.getElementById('headerPrice');
@@ -7749,6 +7772,7 @@ async function loadAllData() {
                 updateAllTimestamps();
 
 // Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
+                updateAllSymbolGannDataFromCSV();
             }
         }
     } catch (e) { console.error('Error:', e); }
@@ -10101,6 +10125,7 @@ async function initializeApp() {
     // Update Options Calculator with new symbol
     updateOptionsCalcForSymbol();
     await loadAllSymbolsData();
+    updateAllSymbolGannDataFromCSV();
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
     renderSystemLog(); // Render existing log entries
@@ -12215,7 +12240,7 @@ const symbolGannData = {
         sacredLevels: [125, 133, 141, 150]
     },
     XLB: {
-        price: 92.15,
+        price: 45.00,
         low: 78.40,
         high: 95.60,
         lowDate: 'Nov 10',
