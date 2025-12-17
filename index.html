@@ -13177,7 +13177,10 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
 
     if (timeframe === 'intraday') {
         // Intraday - smaller moves, faster cycles
-        isBullish = Math.random() > 0.5; // Would use real intraday data
+        // Deterministic: Use price position relative to day's range
+        var dayRange = data.high - data.low;
+        var pricePosition = (data.price - data.low) / dayRange;
+        isBullish = pricePosition < 0.4; // Below 40% of range = expect rally, above = expect pullback
         reasons = [
             `90-min cycle: <strong>${isBullish ? 'Rising' : 'Falling'}</strong> phase`,
             `Intraday VWAP: Price ${isBullish ? 'above' : 'below'} VWAP`,
@@ -16255,7 +16258,9 @@ function updateTopTrade(symbol) {
     var priceTarget = isBullish ? (price + atr * 1.5).toFixed(2) : (price - atr * 1.5).toFixed(2);
     var stopPrice = isBullish ? (price - atr).toFixed(2) : (price + atr).toFixed(2);
 
-    var confidence = 65 + Math.floor(Math.random() * 20);
+    // Deterministic confidence based on price position in range
+    var rangePosition = (price - low) / (high - low);
+    var confidence = Math.round(60 + Math.abs(0.5 - rangePosition) * 50);
     var stars = confidence >= 85 ? '⭐⭐⭐⭐⭐' : confidence >= 75 ? '⭐⭐⭐⭐' : confidence >= 65 ? '⭐⭐⭐' : '⭐⭐';
 
     var risk = entryMid - parseFloat(stopLoss);
