@@ -6774,19 +6774,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 var price = parseFloat(data.price);
                 var atr = parseFloat(data.atr) || price * 0.02;
+                var high = parseFloat(data.high) || price * 1.05;
+                var low = parseFloat(data.low) || price * 0.95;
 
-                var gannTradeEl = document.getElementById('gannTradeAction');
+                // Calculate direction using same logic as Gann Analysis (deterministic)
                 var direction = 'CALL';
                 var isBullish = true;
 
-                if (gannTradeEl) {
-                    var actionText = gannTradeEl.textContent.trim().toUpperCase();
-                    console.log('Reading gannTradeAction: ' + actionText);
-                    if (actionText.includes('PUT')) {
-                        direction = 'PUT';
-                        isBullish = false;
-                    }
+                // Calculate based on price position in range (same as Gann logic)
+                var rangeSize = high - low;
+                var pricePosition = rangeSize > 0 ? (price - low) / rangeSize : 0.5;
+
+                if (timeframe === 'intraday') {
+                    // Intraday: below 40% = rally (CALL), above 60% = pullback (PUT)
+                    isBullish = pricePosition < 0.4;
+                } else if (timeframe === 'swing') {
+                    // Swing: below 35% = rally, above 65% = pullback
+                    isBullish = pricePosition < 0.35;
+                } else {
+                    // Position: below 30% = rally, above 70% = pullback
+                    isBullish = pricePosition < 0.3;
                 }
+
+                direction = isBullish ? 'CALL' : 'PUT';
+                console.log('Dropdown calculated for ' + capturedSymbol + ' ' + timeframe + ': ' + direction + ' (price position: ' + (pricePosition * 100).toFixed(1) + '%)');
 
                 // Calculate strike
                 var strikeInc = price > 100 ? 5 : price > 50 ? 1 : 0.5;
@@ -16244,22 +16255,31 @@ function updateTopTrade(symbol) {
         }
     }
 
-    // Read direction from gannTradeAction element (contains actual CALL/PUT recommendation)
-    var gannTradeEl = document.getElementById('gannTradeAction');
+    // Calculate direction using same logic as Gann Analysis (deterministic)
     var direction = 'CALL';
     var isBullish = true;
 
-    if (gannTradeEl) {
-        var actionText = gannTradeEl.textContent.trim().toUpperCase();
-        console.log('Top Trade reading from gannTradeAction: ' + actionText);
-        if (actionText.includes('PUT')) {
-            direction = 'PUT';
-            isBullish = false;
-        } else if (actionText.includes('CALL')) {
-            direction = 'CALL';
-            isBullish = true;
-        }
+    // Get timeframe from dropdown
+    var topTradeSelect = document.getElementById('topTradeTimeframeSelect');
+    var tfVal = topTradeSelect ? topTradeSelect.value : 'swing';
+
+    // Calculate based on price position in range (same as Gann logic)
+    var rangeSize = high - low;
+    var pricePosition = rangeSize > 0 ? (price - low) / rangeSize : 0.5;
+
+    if (tfVal === 'intraday') {
+        // Intraday: below 40% = rally (CALL), above 60% = pullback (PUT)
+        isBullish = pricePosition < 0.4;
+    } else if (tfVal === 'swing') {
+        // Swing: below 35% = rally, above 65% = pullback
+        isBullish = pricePosition < 0.35;
+    } else {
+        // Position: below 30% = rally, above 70% = pullback
+        isBullish = pricePosition < 0.3;
     }
+
+    direction = isBullish ? 'CALL' : 'PUT';
+    console.log('Top Trade calculated for ' + symbol + ' ' + tfVal + ': ' + direction + ' (price position: ' + (pricePosition * 100).toFixed(1) + '%)');
     var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
     var strike = Math.round(price / 5) * 5;
