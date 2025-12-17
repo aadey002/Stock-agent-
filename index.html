@@ -7772,7 +7772,7 @@ async function loadAllData() {
                 updateAllTimestamps();
 
 // Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
-                updateAllSymbolGannDataFromCSV();
+                setTimeout(updateAllSymbolGannDataFromCSV, 500);
             }
         }
     } catch (e) { console.error('Error:', e); }
@@ -10125,7 +10125,7 @@ async function initializeApp() {
     // Update Options Calculator with new symbol
     updateOptionsCalcForSymbol();
     await loadAllSymbolsData();
-    updateAllSymbolGannDataFromCSV();
+    setTimeout(updateAllSymbolGannDataFromCSV, 500);
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
     renderSystemLog(); // Render existing log entries
