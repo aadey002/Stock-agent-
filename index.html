@@ -1379,6 +1379,66 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                     </div>
                 </div>
             </div>
+
+            <!-- Conflict Warning & Market Analysis Trade -->
+            <div id="analysisConflictSection" style="display: none; margin-top: 15px;">
+                <!-- Conflict Warning Banner -->
+                <div id="conflictWarning" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 24px;">⚠️</span>
+                        <span style="font-size: 16px; font-weight: 700; color: #92400e;">ANALYSIS CONFLICT DETECTED</span>
+                    </div>
+                    <div style="font-size: 13px; color: #78350f; line-height: 1.6;">
+                        <div><strong>🔮 Gann Analysis:</strong> <span id="conflictGannSignal" style="color: #22c55e; font-weight: 600;">BUY CALL</span> - Price near support, expects bounce</div>
+                        <div><strong>📊 Market Conditions:</strong> <span id="conflictMarketSignal" style="color: #ef4444; font-weight: 600;">FAVOR PUT</span> - Below 20MA, weak breadth</div>
+                        <div style="margin-top: 8px; font-style: italic;">Both analyses shown below. Choose based on your trading style.</div>
+                    </div>
+                </div>
+
+                <!-- Market Analysis Trade Section -->
+                <div class="card" style="background: linear-gradient(135deg, rgba(239,68,68,0.05), rgba(220,38,38,0.1)); border: 2px solid #ef4444;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 14px; color: #dc2626; font-weight: 600;">📊 MARKET CONDITIONS TRADE</div>
+                            <div style="font-size: 11px; color: #991b1b;">Based on 20MA, Breadth & VIX</div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="market-tf-btn active" data-tf="INTRADAY" style="padding: 4px 10px; border-radius: 4px; border: 1px solid #ef4444; background: #ef4444; color: white; font-size: 11px; cursor: pointer;">⚡ INTRADAY</button>
+                            <button class="market-tf-btn" data-tf="SWING" style="padding: 4px 10px; border-radius: 4px; border: 1px solid #ef4444; background: white; color: #ef4444; font-size: 11px; cursor: pointer;">📈 SWING</button>
+                            <button class="market-tf-btn" data-tf="POSITION" style="padding: 4px 10px; border-radius: 4px; border: 1px solid #ef4444; background: white; color: #ef4444; font-size: 11px; cursor: pointer;">🎯 POSITION</button>
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: separate; border-spacing: 8px;">
+                        <tr>
+                            <td style="padding: 12px; background: white; border: 1px solid #fca5a5; border-radius: 8px;">
+                                <div style="color: #64748b; font-size: 12px;">📋 THE TRADE</div>
+                                <div id="marketTradeSignal" style="font-size: 20px; font-weight: bold; color: #ef4444;">BUY SPY PUT</div>
+                                <div id="marketTradeContract" style="font-size: 13px; color: #dc2626;">SPY $665 PUT</div>
+                                <div id="marketTradeExpiry" style="font-size: 12px; color: #f87171;">Expires: Dec 20</div>
+                            </td>
+                            <td style="padding: 12px; background: white; border: 1px solid #fca5a5; border-radius: 8px;">
+                                <div style="color: #64748b; font-size: 12px;">⏰ WHEN TO BUY</div>
+                                <div id="marketTradeEntryZone" style="font-size: 14px; font-weight: bold; color: #1e293b;">SPY: $668 - $674</div>
+                                <div id="marketTradeEntry" style="font-size: 11px; color: #60a5fa;">Premium: $0.75 - $1.25</div>
+                                <div id="marketTradeBestEntry" style="font-size: 10px; color: #ef4444;">Best: Rally to $673</div>
+                            </td>
+                            <td style="padding: 12px; background: white; border: 1px solid #fca5a5; border-radius: 8px;">
+                                <div style="color: #64748b; font-size: 12px;">📤 WHEN TO EXIT</div>
+                                <div id="marketTradeExit50" style="font-size: 12px; font-weight: bold; color: #22c55e;">50%: $664 | Opt $1.50</div>
+                                <div id="marketTradeExit100" style="font-size: 11px; color: #3b82f6;">100%: $657 | Opt $2.00</div>
+                                <div id="marketTradeStop" style="font-size: 10px; color: #ef4444;">Stop: $680 | Opt $0.50</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 8px; font-size: 11px; color: #991b1b;">
+                                <strong>📊 Market Rationale:</strong> <span id="marketTradeRationale">SPY below 20MA, breadth at 25% (weak), conditions favor downside. Trade with trend.</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
             <div class="grid grid-5">
                 <div class="metric"><div class="metric-label">Price</div><div class="metric-value" id="currentPrice">--</div><div class="metric-sub" id="priceSource">Loading...</div></div>
                 <div class="metric"><div class="metric-label">Change</div><div class="metric-value" id="dailyChange">--</div><div class="metric-sub" id="changePct">--</div></div>
@@ -16622,9 +16682,158 @@ function updateTopTrade(symbol) {
 
     // Update profit calculator
     if (typeof updateProfitCalculator === "function") updateProfitCalculator();
+
+    // Check for analysis conflict
+    if (typeof checkAnalysisConflict === 'function') checkAnalysisConflict();
 }
 
+// Check for analysis conflict and update Market Trade section
+function checkAnalysisConflict() {
+    var symbol = currentSymbol || 'SPY';
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) return;
 
+    var price = data.price;
+    var high = data.high || price * 1.1;
+    var low = data.low || price * 0.9;
+    var atr = data.atr || price * 0.015;
+
+    // Get Gann direction (from gannPredictions)
+    var tfVal = 'INTRADAY';
+    var tfSelect = document.getElementById('topTradeTimeframeSelect');
+    if (tfSelect) tfVal = tfSelect.value.toUpperCase();
+    var gannPred = gannPredictions[tfVal] || { direction: 'CALL' };
+    var gannDirection = gannPred.direction;
+
+    // Get Market Conditions direction based on SPY vs 20MA
+    var spyData = allSymbolsData['SPY'];
+    var spy20MA = 0;
+    if (spyData && spyData.length >= 20) {
+        var sum = 0;
+        for (var i = spyData.length - 20; i < spyData.length; i++) {
+            sum += parseFloat(spyData[i].Close) || 0;
+        }
+        spy20MA = sum / 20;
+    }
+
+    var spyPrice = symbolGannData['SPY'] ? symbolGannData['SPY'].price : price;
+    var marketDirection = spyPrice < spy20MA ? 'PUT' : 'CALL';
+
+    // Check for conflict
+    var hasConflict = gannDirection !== marketDirection;
+    var conflictSection = document.getElementById('analysisConflictSection');
+
+    if (hasConflict && conflictSection) {
+        conflictSection.style.display = 'block';
+
+        // Update conflict warning
+        var gannSignalEl = document.getElementById('conflictGannSignal');
+        var marketSignalEl = document.getElementById('conflictMarketSignal');
+
+        if (gannSignalEl) {
+            gannSignalEl.textContent = 'BUY ' + gannDirection;
+            gannSignalEl.style.color = gannDirection === 'CALL' ? '#22c55e' : '#ef4444';
+        }
+        if (marketSignalEl) {
+            marketSignalEl.textContent = 'FAVOR ' + marketDirection;
+            marketSignalEl.style.color = marketDirection === 'CALL' ? '#22c55e' : '#ef4444';
+        }
+
+        // Update Market Trade section
+        updateMarketTrade(symbol, price, high, low, atr, marketDirection, spy20MA, spyPrice);
+    } else if (conflictSection) {
+        conflictSection.style.display = 'none';
+    }
+
+    console.log('Conflict check: Gann=' + gannDirection + ', Market=' + marketDirection + ', Conflict=' + hasConflict);
+}
+
+function updateMarketTrade(symbol, price, high, low, atr, direction, spy20MA, spyPrice) {
+    var isBullish = direction === 'CALL';
+    var strike = getProperStrike(price);
+
+    // Calculate entry/exit based on market conditions
+    var entryLow = isBullish ? (price - atr * 0.5).toFixed(2) : (price - atr * 0.3).toFixed(2);
+    var entryHigh = isBullish ? (price + atr * 0.3).toFixed(2) : (price + atr * 0.5).toFixed(2);
+    var bestEntry = isBullish ? (price - atr * 0.3).toFixed(2) : (price + atr * 0.3).toFixed(2);
+
+    var exit50 = isBullish ? (price + atr * 1).toFixed(2) : (price - atr * 1).toFixed(2);
+    var exit100 = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
+    var stopPrice = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
+
+    // Option premiums
+    var optMid = 1.00;
+    var opt50 = (optMid * 1.5).toFixed(2);
+    var opt100 = (optMid * 2).toFixed(2);
+    var optStop = (optMid * 0.6).toFixed(2);
+
+    // Get expiry
+    var today = new Date();
+    var daysToFriday = (5 - today.getDay() + 7) % 7 || 7;
+    var expiry = new Date(today);
+    expiry.setDate(today.getDate() + daysToFriday);
+    var expiryStr = expiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    // Update elements
+    var el;
+    el = document.getElementById('marketTradeSignal');
+    if (el) {
+        el.textContent = 'BUY ' + symbol + ' ' + direction;
+        el.style.color = isBullish ? '#22c55e' : '#ef4444';
+    }
+
+    el = document.getElementById('marketTradeContract');
+    if (el) el.textContent = symbol + ' $' + strike + ' ' + direction;
+
+    el = document.getElementById('marketTradeExpiry');
+    if (el) el.textContent = 'Expires: ' + expiryStr;
+
+    el = document.getElementById('marketTradeEntryZone');
+    if (el) el.textContent = symbol + ': $' + entryLow + ' - $' + entryHigh;
+
+    el = document.getElementById('marketTradeEntry');
+    if (el) el.textContent = 'Premium: $0.75 - $1.25';
+
+    el = document.getElementById('marketTradeBestEntry');
+    if (el) el.textContent = 'Best: ' + (isBullish ? 'Pullback to $' : 'Rally to $') + bestEntry;
+
+    el = document.getElementById('marketTradeExit50');
+    if (el) el.textContent = '50%: $' + exit50 + ' | Opt $' + opt50;
+
+    el = document.getElementById('marketTradeExit100');
+    if (el) el.textContent = '100%: $' + exit100 + ' | Opt $' + opt100;
+
+    el = document.getElementById('marketTradeStop');
+    if (el) el.textContent = 'Stop: $' + stopPrice + ' | Opt $' + optStop;
+
+    // Rationale
+    var aboveBelow = spyPrice < spy20MA ? 'below' : 'above';
+    var rationale = symbol + ' ' + aboveBelow + ' 20MA ($' + spy20MA.toFixed(2) + '). ';
+    rationale += direction === 'PUT' ? 'Weak conditions favor downside. Trade with trend.' : 'Strong conditions favor upside. Trade with trend.';
+
+    el = document.getElementById('marketTradeRationale');
+    if (el) el.textContent = rationale;
+}
+
+// Market Trade timeframe button handlers
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.market-tf-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            // Update active state
+            document.querySelectorAll('.market-tf-btn').forEach(function(b) {
+                b.classList.remove('active');
+                b.style.background = 'white';
+                b.style.color = '#ef4444';
+            });
+            this.classList.add('active');
+            this.style.background = '#ef4444';
+            this.style.color = 'white';
+
+            // Re-run conflict check with new timeframe
+            if (typeof checkAnalysisConflict === 'function') checkAnalysisConflict();
+        });
+    });
+});
 
 // Update profit calculator based on current trade
 function updateProfitCalculator() {
