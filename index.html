@@ -10369,15 +10369,36 @@ async function initializeApp() {
     setInterval(loadAllData, 60000);
     setInterval(runHealthCheck, 300000); // Health check every 5 minutes
 
-    // After data loads, trigger full recalculation for initial display
-    setTimeout(function() {
-        console.log('Running initial calculations after data load...');
-        if (typeof updateMarketConditions === 'function') updateMarketConditions();
-        if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
-        if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
-        if (typeof autoCalculateGannPredictions === 'function') autoCalculateGannPredictions(currentSymbol || 'SPY');
-        console.log('Initial calculations complete');
-    }, 2000);
+    // Wait for data to load, then run calculations
+    var initialCalcAttempts = 0;
+    function runInitialCalculationsWhenReady() {
+        var symbol = currentSymbol || 'SPY';
+        var data = symbolGannData[symbol];
+        var csvLoaded = allSymbolsData && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0;
+
+        if (csvLoaded && data && data.price > 0) {
+            console.log('Data ready for ' + symbol + ' at $' + data.price + ' - running calculations');
+            if (typeof updateAllSymbolGannDataFromCSV === 'function') updateAllSymbolGannDataFromCSV();
+            setTimeout(function() {
+                if (typeof autoCalculateGannPredictions === 'function') autoCalculateGannPredictions(symbol);
+                if (typeof updateMarketConditions === 'function') updateMarketConditions();
+                if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+                if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
+                console.log('Initial calculations complete');
+            }, 500);
+        } else {
+            initialCalcAttempts++;
+            if (initialCalcAttempts < 20) {
+                console.log('Waiting for data... attempt ' + initialCalcAttempts);
+                setTimeout(runInitialCalculationsWhenReady, 500);
+            } else {
+                console.warn('Data load timeout - running calculations anyway');
+                if (typeof updateMarketConditions === 'function') updateMarketConditions();
+                if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+            }
+        }
+    }
+    setTimeout(runInitialCalculationsWhenReady, 1000);
 }
 
 // ============================================
