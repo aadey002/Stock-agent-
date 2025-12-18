@@ -5078,6 +5078,21 @@ function updateVIXDisplay() {
     }
 }
 
+// Standardized strike price rounding based on price level
+function getProperStrike(price) {
+    var increment;
+    if (price < 20) {
+        increment = 0.5;
+    } else if (price < 50) {
+        increment = 1;
+    } else if (price < 200) {
+        increment = 5;
+    } else {
+        increment = 5;
+    }
+    return Math.round(price / increment) * increment;
+}
+
 // Store Gann predictions per timeframe
 var gannPredictions = {
     INTRADAY: { direction: 'CALL', symbol: '' },
@@ -6915,8 +6930,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Dropdown reading from gannPredictions[' + capturedTfVal + ']: ' + direction + ' for ' + capturedSymbol);
 
                 // Calculate strike
-                var strikeInc = price > 100 ? 5 : price > 50 ? 1 : 0.5;
-                var strike = Math.round(price / strikeInc) * strikeInc;
+                var strike = getProperStrike(price);
 
                 var settings = {
                     intraday: { daysOut: 1, stopMult: 0.5, targetMult: 0.75, entryLow: 0.15, entryHigh: 0.35, confidence: 70 },
@@ -7995,7 +8009,7 @@ function updateDashboard() {
     var el=document.getElementById('intradayStop');if(el)el.textContent = '$' + (bias === 'PUT' ? (price + atr * ip.stopATR) : (price - atr * ip.stopATR)).toFixed(2);
     var el=document.getElementById('intradayT1');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target1ATR) : (price + atr * ip.target1ATR)).toFixed(2);
     var el=document.getElementById('intradayT2');if(el)el.textContent = '$' + (bias === 'PUT' ? (price - atr * ip.target2ATR) : (price + atr * ip.target2ATR)).toFixed(2);
-    var el=document.getElementById('intradayStrike');if(el)el.textContent = '$' + Math.round(price) + ' ' + (bias || 'CALL');
+    var el=document.getElementById('intradayStrike');if(el)el.textContent = '$' + getProperStrike(price) + ' ' + (bias || 'CALL');
     
     var el=document.getElementById('swingSignal');if(el)el.textContent = bias || 'HOLD';
     el=document.getElementById('swingSignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
@@ -8777,7 +8791,7 @@ function generateLocalResponse(message, context) {
                 if (consensus >= 3) {
                     const price = parseFloat(lat.Close);
                     const atr = parseFloat(lat.ATR) || 5;
-                    trades.push({ symbol, signal: lat.Bias || 'HOLD', consensus, price: price.toFixed(2), strike: Math.round(price), target: (price + atr * 2).toFixed(2) });
+                    trades.push({ symbol, signal: lat.Bias || 'HOLD', consensus, price: price.toFixed(2), strike: getProperStrike(price), target: (price + atr * 2).toFixed(2) });
                 }
             }
         }
@@ -8922,12 +8936,12 @@ Signal: ${signal}
 ATR: $${atr.toFixed(2)}
 
 **INTRADAY (0DTE):**
-• ATM Strike: $${Math.round(price)} (Delta ~0.50)
+• ATM Strike: $${getProperStrike(price)} (Delta ~0.50)
 • Target: $${(signal === 'PUT' ? price - atr : price + atr).toFixed(2)}
 • Stop: $${(signal === 'PUT' ? price + atr * 0.5 : price - atr * 0.5).toFixed(2)}
 
 **SWING (3-5 DTE):**
-• Strike: $${Math.round(price/5)*5} (slightly OTM)
+• Strike: $${getProperStrike(price)} (slightly OTM)
 • Target: $${(signal === 'PUT' ? price - atr * 2.5 : price + atr * 2.5).toFixed(2)}
 • Stop: $${(signal === 'PUT' ? price + atr * 1.5 : price - atr * 1.5).toFixed(2)}
 
@@ -9021,7 +9035,7 @@ function generateOptionRecommendations(direction) {
                 recommendations.push({
                     symbol,
                     price: price.toFixed(2),
-                    strike: Math.round(price),
+                    strike: getProperStrike(price),
                     target: (direction === 'CALL' ? price + atr * 2 : price - atr * 2).toFixed(2),
                     stop: (direction === 'CALL' ? price - atr : price + atr).toFixed(2),
                     consensus: parseInt(lat.PriceConfluence) || 0,
@@ -16408,7 +16422,7 @@ function updateTopTrade(symbol) {
     console.log('Top Trade reading from gannPredictions[' + tfVal + ']: ' + direction + ' for ' + symbol);
     var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
-    var strike = Math.round(price / 5) * 5;
+    var strike = getProperStrike(price);
 
     var today = new Date();
     var daysToFriday = (5 - today.getDay() + 7) % 7;
