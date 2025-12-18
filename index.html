@@ -5030,6 +5030,57 @@ var gannPredictions = {
     POSITION: { direction: 'CALL', symbol: '' }
 };
 
+// Calculate Gann direction for a symbol/timeframe WITHOUT clicking buttons
+function calculateGannDirectionForSymbol(symbol, timeframe) {
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) return 'CALL';
+
+    var price = parseFloat(data.price);
+    var high = parseFloat(data.high) || price * 1.05;
+    var low = parseFloat(data.low) || price * 0.95;
+    var range = high - low;
+    if (range <= 0) return 'CALL';
+
+    var position = (price - low) / range;
+
+    // Timeframe-specific thresholds (same logic as Gann Analysis uses)
+    var threshold;
+    if (timeframe === 'INTRADAY') {
+        threshold = 0.4;
+    } else if (timeframe === 'SWING') {
+        threshold = 0.35;
+    } else {
+        threshold = 0.3;
+    }
+
+    // Below threshold = bearish (PUT), above = bullish (CALL)
+    var direction = position < threshold ? 'PUT' : 'CALL';
+
+    console.log('Auto-calc ' + symbol + ' ' + timeframe + ': position=' + (position*100).toFixed(1) + '%, direction=' + direction);
+
+    return direction;
+}
+
+// Calculate all 3 timeframes at once
+function autoCalculateGannPredictions(symbol) {
+    console.log('Auto-calculating Gann predictions for: ' + symbol);
+
+    gannPredictions.INTRADAY = {
+        direction: calculateGannDirectionForSymbol(symbol, 'INTRADAY'),
+        symbol: symbol
+    };
+    gannPredictions.SWING = {
+        direction: calculateGannDirectionForSymbol(symbol, 'SWING'),
+        symbol: symbol
+    };
+    gannPredictions.POSITION = {
+        direction: calculateGannDirectionForSymbol(symbol, 'POSITION'),
+        symbol: symbol
+    };
+
+    console.log('Auto-calc complete:', JSON.stringify(gannPredictions));
+}
+
 const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
@@ -5571,11 +5622,8 @@ function handleGlobalSymbolChange(symbol) {
     // Update current symbol variable
     currentSymbol = symbol;
 
-    // Reset gannPredictions for new symbol
-    gannPredictions.INTRADAY = { direction: 'CALL', symbol: currentSymbol };
-    gannPredictions.SWING = { direction: 'CALL', symbol: currentSymbol };
-    gannPredictions.POSITION = { direction: 'CALL', symbol: currentSymbol };
-    console.log('Reset gannPredictions for: ' + currentSymbol);
+    // Auto-calculate Gann predictions for new symbol
+    autoCalculateGannPredictions(currentSymbol);
 
     // Update header display
     if (typeof updateHeaderDisplay === 'function') {
@@ -6234,6 +6282,11 @@ function updateAllSymbolGannDataFromCSV() {
         }
     });
     console.log('All symbolGannData updated from CSV');
+
+    // Recalculate Gann predictions with fresh CSV data
+    if (currentSymbol) {
+        autoCalculateGannPredictions(currentSymbol);
+    }
 }
 
 // Update header price display
