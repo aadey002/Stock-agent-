@@ -1317,10 +1317,17 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                     <div id="topTradeWhat" style="font-size: 18px; font-weight: bold;">SPY $690 CALL</div>
                                     <div id="topTradeExpiry" style="font-size: 13px; color: #60a5fa;">Expires: Dec 20 (5 days)</div>
                                 </td>
-                                <td style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0 8px 0 0;">
+                                <td style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0;">
                                     <div style="color: #64748b; font-size: 12px;">⏰ WHEN TO BUY</div>
-                                    <div id="topTradeWhen" style="font-size: 18px; font-weight: bold;">Market Open</div>
-                                    <div id="topTradeEntry" style="font-size: 13px; color: #60a5fa;">Entry: $1.50 - $2.00</div>
+                                    <div id="topTradeEntryZone" style="font-size: 15px; font-weight: bold; color: #1e293b;">SPY: $670 - $675</div>
+                                    <div id="topTradeEntry" style="font-size: 12px; color: #60a5fa;">Premium: $0.50 - $1.00</div>
+                                    <div id="topTradeBestEntry" style="font-size: 11px; color: #22c55e;">Best Entry: Pullback to $670.50</div>
+                                </td>
+                                <td style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0 8px 0 0;">
+                                    <div style="color: #64748b; font-size: 12px;">📤 WHEN TO EXIT</div>
+                                    <div id="topTradeExit50" style="font-size: 13px; font-weight: bold; color: #22c55e;">50%: $678 (Opt: $1.12)</div>
+                                    <div id="topTradeExit100" style="font-size: 12px; color: #3b82f6;">100%: $685 (Opt: $1.50)</div>
+                                    <div id="topTradeStopPrice" style="font-size: 11px; color: #ef4444;">Stop: Below $665 (Opt: $0.45)</div>
                                 </td>
                             </tr>
                             <tr>
@@ -7018,8 +7025,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 el = document.getElementById('topTradeExpiry');
                 if (el) el.textContent = 'Expires: ' + expiryStr + ' (' + daysToExpiry + ' days)';
 
+                // Option premium entry range
                 el = document.getElementById('topTradeEntry');
-                if (el) el.textContent = 'Entry: $' + s.entryLow.toFixed(2) + ' - $' + s.entryHigh.toFixed(2);
+                if (el) el.textContent = 'Premium: $' + s.entryLow.toFixed(2) + ' - $' + s.entryHigh.toFixed(2);
+
+                // ETF Entry Zone (current price +/- 0.5 ATR)
+                var entryZoneLow = (price - atr * 0.5).toFixed(2);
+                var entryZoneHigh = (price + atr * 0.5).toFixed(2);
+                el = document.getElementById('topTradeEntryZone');
+                if (el) el.textContent = capturedSymbol + ': $' + entryZoneLow + ' - $' + entryZoneHigh;
+
+                // Best entry (pullback to support)
+                var bestEntryPrice = (price - atr * 0.3).toFixed(2);
+                el = document.getElementById('topTradeBestEntry');
+                if (el) el.textContent = 'Best Entry: Pullback to $' + bestEntryPrice;
+
+                // Exit targets with option values
+                var exit50Price = isBullish ? (price + atr * 1).toFixed(2) : (price - atr * 1).toFixed(2);
+                var exit100Price = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
+                var stopPriceETF = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
+
+                // Option value at each target (simplified: delta ~0.5 for ATM)
+                var option50Value = (entryMid * 1.5).toFixed(2);  // +50% profit
+                var option100Value = (entryMid * 2).toFixed(2);   // +100% profit
+                var optionStopValue = (entryMid * 0.6).toFixed(2); // -40% stop
+
+                el = document.getElementById('topTradeExit50');
+                if (el) el.textContent = '50%: $' + exit50Price + ' (Opt: $' + option50Value + ')';
+
+                el = document.getElementById('topTradeExit100');
+                if (el) el.textContent = '100%: $' + exit100Price + ' (Opt: $' + option100Value + ')';
+
+                el = document.getElementById('topTradeStopPrice');
+                if (el) el.textContent = 'Stop: Below $' + stopPriceETF + ' (Opt: $' + optionStopValue + ')';
 
                 el = document.getElementById('topTradeProfit');
                 if (el) el.textContent = '+50% ($' + profitPrice + ')';
@@ -7029,9 +7067,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 el = document.getElementById('topTradeStop');
                 if (el) el.textContent = '-40% ($' + stopOptionPrice + ')';
-
-                el = document.getElementById('topTradeStopPrice');
-                if (el) el.textContent = (isBullish ? 'If ' + capturedSymbol + ' drops to $' : 'If ' + capturedSymbol + ' rises to $') + stopPrice;
 
                 el = document.getElementById('topTradeRR');
                 if (el) el.textContent = '1:' + rr;
@@ -16493,8 +16528,39 @@ function updateTopTrade(symbol) {
     el = document.getElementById('topTradeExpiry');
     if (el) el.textContent = 'Expires: ' + expiryStr + ' (' + daysToFriday + ' days)';
 
+    // Option premium entry range
     el = document.getElementById('topTradeEntry');
-    if (el) el.textContent = 'Entry: $' + entryLow + ' - $' + entryHigh;
+    if (el) el.textContent = 'Premium: $' + entryLow + ' - $' + entryHigh;
+
+    // ETF Entry Zone (current price +/- 0.5 ATR)
+    var entryZoneLow = (price - atr * 0.5).toFixed(2);
+    var entryZoneHigh = (price + atr * 0.5).toFixed(2);
+    el = document.getElementById('topTradeEntryZone');
+    if (el) el.textContent = symbol + ': $' + entryZoneLow + ' - $' + entryZoneHigh;
+
+    // Best entry (pullback to support)
+    var bestEntryPrice = (price - atr * 0.3).toFixed(2);
+    el = document.getElementById('topTradeBestEntry');
+    if (el) el.textContent = 'Best Entry: Pullback to $' + bestEntryPrice;
+
+    // Exit targets with option values
+    var exit50Price = isBullish ? (price + atr * 1).toFixed(2) : (price - atr * 1).toFixed(2);
+    var exit100Price = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
+    var stopPriceETF = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
+
+    // Option value at each target
+    var option50Value = (entryMid * 1.5).toFixed(2);
+    var option100Value = (entryMid * 2).toFixed(2);
+    var optionStopValue = (entryMid * 0.6).toFixed(2);
+
+    el = document.getElementById('topTradeExit50');
+    if (el) el.textContent = '50%: $' + exit50Price + ' (Opt: $' + option50Value + ')';
+
+    el = document.getElementById('topTradeExit100');
+    if (el) el.textContent = '100%: $' + exit100Price + ' (Opt: $' + option100Value + ')';
+
+    el = document.getElementById('topTradeStopPrice');
+    if (el) el.textContent = 'Stop: Below $' + stopPriceETF + ' (Opt: $' + optionStopValue + ')';
 
     el = document.getElementById('topTradeProfit');
     if (el) el.textContent = '+50% ($' + profitTarget + ')';
@@ -16504,9 +16570,6 @@ function updateTopTrade(symbol) {
 
     el = document.getElementById('topTradeStop');
     if (el) el.textContent = '-40% ($' + stopLoss + ')';
-
-    el = document.getElementById('topTradeStopPrice');
-    if (el) el.textContent = 'If ' + symbol + (isBullish ? ' drops to $' : ' rises to $') + stopPrice;
 
     el = document.getElementById('topTradeRR');
     if (el) el.textContent = '1:' + rr;
