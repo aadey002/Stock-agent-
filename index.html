@@ -13210,8 +13210,8 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
     if (timeframe === 'intraday') {
         // Intraday - smaller moves, faster cycles
         // Deterministic: Use price position relative to day's range
-        var dayRange = data.high - data.low;
-        var pricePosition = (data.price - data.low) / dayRange;
+        var dayRange = high - low;
+        var pricePosition = dayRange > 0 ? (price - low) / dayRange : 0.5;
         isBullish = pricePosition < 0.4; // Below 40% of range = expect rally, above = expect pullback
         reasons = [
             `90-min cycle: <strong>${isBullish ? 'Rising' : 'Falling'}</strong> phase`,
