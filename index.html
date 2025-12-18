@@ -5023,6 +5023,61 @@ let allSymbolsData = {};
 let priceChart;
 let conversationHistory = [];
 
+// VIX data - updated from CSV
+var currentVIX = 14.9;
+
+// Fetch real VIX data from CSV
+async function fetchVIXData() {
+    try {
+        const response = await fetch('data/VIX.csv?t=' + Date.now()).catch(() => null);
+        if (response?.ok) {
+            const text = await response.text();
+            const lines = text.trim().split('\n');
+            const lastLine = lines[lines.length - 1];
+            const cols = lastLine.split(',');
+            const vixClose = parseFloat(cols[4]); // Close column
+            if (!isNaN(vixClose) && vixClose > 0) {
+                currentVIX = vixClose;
+                console.log('VIX updated from CSV: ' + currentVIX.toFixed(2));
+                updateVIXDisplay();
+                return currentVIX;
+            }
+        }
+    } catch (e) {
+        console.warn('VIX fetch error:', e);
+    }
+    return currentVIX;
+}
+
+// Update VIX display elements
+function updateVIXDisplay() {
+    var vixEl = document.getElementById('vixLevel');
+    if (vixEl) {
+        vixEl.textContent = currentVIX.toFixed(1);
+        if (currentVIX < 15) {
+            vixEl.style.color = '#22c55e';
+        } else if (currentVIX < 25) {
+            vixEl.style.color = '#f59e0b';
+        } else {
+            vixEl.style.color = '#ef4444';
+        }
+    }
+
+    var vixLabelEl = document.getElementById('vixLabel');
+    if (vixLabelEl) {
+        if (currentVIX < 15) {
+            vixLabelEl.textContent = 'Low Vol ✅';
+            vixLabelEl.style.color = '#22c55e';
+        } else if (currentVIX < 25) {
+            vixLabelEl.textContent = 'Normal ⚡';
+            vixLabelEl.style.color = '#f59e0b';
+        } else {
+            vixLabelEl.textContent = 'High Vol ⚠️';
+            vixLabelEl.style.color = '#ef4444';
+        }
+    }
+}
+
 // Store Gann predictions per timeframe
 var gannPredictions = {
     INTRADAY: { direction: 'CALL', symbol: '' },
@@ -10218,6 +10273,7 @@ async function initializeApp() {
     updateOptionsCalcForSymbol();
     await loadAllSymbolsData();
     setTimeout(updateAllSymbolGannDataFromCSV, 500);
+    fetchVIXData(); // Load real VIX data
     loadTrades(); // Load trade history
     runHealthCheck(); // Now run health check AFTER data is loaded
     renderSystemLog(); // Render existing log entries
@@ -16494,7 +16550,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update Market Conditions Guard Rail
     function updateMarketConditions() {
-        var vix = 14.7 + (Math.random() * 5 - 2.5);
+        var vix = currentVIX; // Use real VIX from CSV
         var spyData = symbolGannData['SPY'];
         var spyPrice = spyData ? spyData.price : 607;
         var spyHigh = spyData ? spyData.high : 610;
