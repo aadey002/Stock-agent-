@@ -1327,7 +1327,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                     <div style="color: #64748b; font-size: 12px;">📤 WHEN TO EXIT</div>
                                     <div id="topTradeExit50" style="font-size: 13px; font-weight: bold; color: #22c55e;">50%: $678 (Opt: $1.12)</div>
                                     <div id="topTradeExit100" style="font-size: 12px; color: #3b82f6;">100%: $685 (Opt: $1.50)</div>
-                                    <div id="topTradeStopPrice" style="font-size: 11px; color: #ef4444;">Stop: Below $665 (Opt: $0.45)</div>
+                                    <div id="topTradeExitStop" style="font-size: 11px; color: #ef4444;">Stop: Below $665 (Opt: $0.45)</div>
                                 </td>
                             </tr>
                             <tr>
@@ -1339,7 +1339,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <td style="padding: 12px; background: rgba(239,68,68,0.2); border: 1px solid #ef4444; border-radius: 0 0 8px 0;">
                                     <div style="color: #dc2626; font-size: 12px; font-weight: 600;">🛑 STOP LOSS</div>
                                     <div id="topTradeStop" style="font-size: 18px; font-weight: bold; color: #ef4444;">-40% ($0.90)</div>
-                                    <div id="topTradeStopPrice" style="font-size: 13px; color: #fca5a5;">If SPY drops to $685</div>
+                                    <div id="topTradeStopPrice" style="font-size: 13px; color: #fca5a5;">If SPY drops to $665</div>
                                 </td>
                             </tr>
                         </table>
@@ -7056,8 +7056,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 el = document.getElementById('topTradeExit100');
                 if (el) el.textContent = '100%: $' + exit100Price + ' (Opt: $' + option100Value + ')';
 
-                el = document.getElementById('topTradeStopPrice');
+                el = document.getElementById('topTradeExitStop');
                 if (el) el.textContent = 'Stop: Below $' + stopPriceETF + ' (Opt: $' + optionStopValue + ')';
+
+                // Old STOP LOSS section
+                el = document.getElementById('topTradeStopPrice');
+                if (el) el.textContent = 'If ' + capturedSymbol + (isBullish ? ' drops to $' : ' rises to $') + stopPriceETF;
 
                 el = document.getElementById('topTradeProfit');
                 if (el) el.textContent = '+50% ($' + profitPrice + ')';
@@ -10367,12 +10371,13 @@ async function initializeApp() {
 
     // After data loads, trigger full recalculation for initial display
     setTimeout(function() {
+        console.log('Running initial calculations after data load...');
         if (typeof updateMarketConditions === 'function') updateMarketConditions();
         if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
         if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
-        if (typeof autoCalculateGannPredictions === 'function') autoCalculateGannPredictions(currentSymbol);
-        console.log('Initial calculations complete for ' + currentSymbol);
-    }, 1000);
+        if (typeof autoCalculateGannPredictions === 'function') autoCalculateGannPredictions(currentSymbol || 'SPY');
+        console.log('Initial calculations complete');
+    }, 2000);
 }
 
 // ============================================
@@ -16568,8 +16573,12 @@ function updateTopTrade(symbol) {
     el = document.getElementById('topTradeExit100');
     if (el) el.textContent = '100%: $' + exit100Price + ' (Opt: $' + option100Value + ')';
 
-    el = document.getElementById('topTradeStopPrice');
+    el = document.getElementById('topTradeExitStop');
     if (el) el.textContent = 'Stop: Below $' + stopPriceETF + ' (Opt: $' + optionStopValue + ')';
+
+    // Old STOP LOSS section
+    el = document.getElementById('topTradeStopPrice');
+    if (el) el.textContent = 'If ' + symbol + (isBullish ? ' drops to $' : ' rises to $') + stopPriceETF;
 
     el = document.getElementById('topTradeProfit');
     if (el) el.textContent = '+50% ($' + profitTarget + ')';
