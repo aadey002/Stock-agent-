@@ -5571,6 +5571,12 @@ function handleGlobalSymbolChange(symbol) {
     // Update current symbol variable
     currentSymbol = symbol;
 
+    // Reset gannPredictions for new symbol
+    gannPredictions.INTRADAY = { direction: 'CALL', symbol: currentSymbol };
+    gannPredictions.SWING = { direction: 'CALL', symbol: currentSymbol };
+    gannPredictions.POSITION = { direction: 'CALL', symbol: currentSymbol };
+    console.log('Reset gannPredictions for: ' + currentSymbol);
+
     // Update header display
     if (typeof updateHeaderDisplay === 'function') {
         updateHeaderDisplay(symbol);
