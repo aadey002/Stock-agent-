@@ -10364,6 +10364,15 @@ async function initializeApp() {
     addSystemLogEntry('Data Updated (' + currentSymbol + ')', 'Success'); // Log data load
     setInterval(loadAllData, 60000);
     setInterval(runHealthCheck, 300000); // Health check every 5 minutes
+
+    // After data loads, trigger full recalculation for initial display
+    setTimeout(function() {
+        if (typeof updateMarketConditions === 'function') updateMarketConditions();
+        if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+        if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
+        if (typeof autoCalculateGannPredictions === 'function') autoCalculateGannPredictions(currentSymbol);
+        console.log('Initial calculations complete for ' + currentSymbol);
+    }, 1000);
 }
 
 // ============================================
