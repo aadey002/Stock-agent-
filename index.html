@@ -6197,12 +6197,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initial load - update for current symbol after a delay
-    setTimeout(function() {
-        const initialSymbol = mainDropdown?.value || currentSymbol || 'SPY';
-        handleGlobalSymbolChange(initialSymbol);
-        updateTopTrade(initialSymbol);
-    }, 500);
+    // Initial load handled by runInitialCalculationsWhenReady in initializeApp
+    // Removed duplicate 500ms setTimeout that was running before data loaded
 });
 
 // ============================================
