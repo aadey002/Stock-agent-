@@ -5053,15 +5053,14 @@ function calculateGannDirectionForSymbol(symbol, timeframe) {
         threshold = 0.3;
     }
 
-    // LOW position = near support = expect rally = CALL
-    // HIGH position = near resistance = expect pullback = PUT
+    // Match Gann Analysis thresholds exactly (binary, no middle zone)
     var direction;
-    if (position < 0.4) {
-        direction = 'CALL';  // Near support - expect rally
-    } else if (position > 0.6) {
-        direction = 'PUT';   // Near resistance - expect pullback
+    if (timeframe === 'INTRADAY') {
+        direction = position < 0.4 ? 'CALL' : 'PUT';
+    } else if (timeframe === 'SWING') {
+        direction = position < 0.35 ? 'CALL' : 'PUT';
     } else {
-        direction = 'CALL';  // Middle - default to CALL
+        direction = position < 0.3 ? 'CALL' : 'PUT';
     }
 
     console.log('Auto-calc ' + symbol + ' ' + timeframe + ': position=' + (position*100).toFixed(1) + '%, direction=' + direction);
