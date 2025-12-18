@@ -2775,12 +2775,12 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                         <div style="font-size: 24px; font-weight: 700;" id="opp-total">12</div>
                     </div>
                     <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Ready Now</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="opp-ready">2</div>
+                        <div style="font-size: 11px; color: #666;">✅ Aligned</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #22c55e;" id="opp-ready">0</div>
                     </div>
                     <div style="background: rgba(234,179,8,0.1); border-radius: 8px; padding: 15px; text-align: center;">
-                        <div style="font-size: 11px; color: #666;">Coming Soon</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #eab308;" id="opp-soon">4</div>
+                        <div style="font-size: 11px; color: #666;">⚠️ Conflict</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #eab308;" id="opp-soon">0</div>
                     </div>
                     <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 15px; text-align: center;">
                         <div style="font-size: 11px; color: #666;">Calls / Puts</div>
@@ -2789,46 +2789,33 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 </div>
                 <div style="margin-bottom: 15px;">
                     <button onclick="filterOppTable('all')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">All</button>
+                    <button onclick="filterOppTable('aligned')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">✅ Aligned Only</button>
                     <button onclick="filterOppTable('calls')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Calls Only</button>
                     <button onclick="filterOppTable('puts')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Puts Only</button>
-                    <button onclick="filterOppTable('ready')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer;">Ready Now</button>
+                    <button onclick="filterOppTable('lowrisk')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer;">Low Risk</button>
                 </div>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f0f0f0;">
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">STATUS</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SYMBOL</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SECTOR</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PRICE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">NEXT TURN</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">DAYS</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">STAGE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">% DONE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">RISK</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TURN DIR</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TRADE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TARGET</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PATTERN</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">TF</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">DETECTED</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">SCORE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">ACTION</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ALIGN</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">SYMBOL</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">PRICE</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">CHG</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(139,92,246,0.1);">REASON</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(239,68,68,0.1);">📊 MKT</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(239,68,68,0.1);">REASON</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ENTRY</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">TARGET</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">STOP</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">RISK</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">SCORE</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody id="oppTableBody">
-                            <tr><td style="padding: 10px;">READY</td><td><strong>SPY</strong></td><td>Index</td><td>$594.82</td><td>Dec 10</td><td>0</td><td><span style="background: rgba(249,115,22,0.2); color: #f97316; padding: 3px 8px; border-radius: 4px; font-weight: 600;">LATE</span></td><td style="color: #f97316; font-weight: 600;">78%</td><td><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">HIGH</span></td><td class="turn-rally">▲ RALLY</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$612.50</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>72</td><td><button onclick="viewChart('SPY')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">READY</td><td><strong>QQQ</strong></td><td>Tech</td><td>$518.34</td><td>Dec 10</td><td>0</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px; font-weight: 600;">MID</span></td><td style="color: #eab308; font-weight: 600;">55%</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px;">MED</span></td><td class="turn-rally">▲ RALLY</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$538.00</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>68</td><td><button onclick="viewChart('QQQ')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">SOON</td><td><strong>IWM</strong></td><td>Small Cap</td><td>$255.30</td><td>Dec 12</td><td>2</td><td><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px; font-weight: 600;">EXHAUSTED</span></td><td style="color: #ef4444; font-weight: 600;">92%</td><td><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">HIGH</span></td><td class="turn-breakdown">▼ BREAKDOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$245.00</td><td>Cycle High</td><td>Daily</td><td>Dec 09</td><td>65</td><td><button onclick="viewChart('IWM')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLF</strong></td><td>Financial</td><td>$54.40</td><td>Dec 13</td><td>3</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px; font-weight: 600;">EARLY</span></td><td style="color: #22c55e; font-weight: 600;">25%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-pullback">▲ PULLBACK</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$56.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 07</td><td>71</td><td><button onclick="viewChart('XLF')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLE</strong></td><td>Energy</td><td>$89.45</td><td>Dec 14</td><td>4</td><td><span style="background: rgba(249,115,22,0.2); color: #f97316; padding: 3px 8px; border-radius: 4px; font-weight: 600;">LATE</span></td><td style="color: #f97316; font-weight: 600;">85%</td><td><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">HIGH</span></td><td class="turn-breakdown">▼ BREAKDOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$84.00</td><td>Cycle High</td><td>Daily</td><td>Dec 09</td><td>58</td><td><button onclick="viewChart('XLE')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">SOON</td><td><strong>XLK</strong></td><td>Technology</td><td>$234.78</td><td>Dec 11</td><td>1</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px; font-weight: 600;">MID</span></td><td style="color: #eab308; font-weight: 600;">48%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-rally">▲ RALLY</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$245.00</td><td>Cycle Low</td><td>Daily</td><td>Dec 08</td><td>74</td><td><button onclick="viewChart('XLK')" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLV</strong></td><td>Healthcare</td><td>$146.32</td><td>Dec 18</td><td>8</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px; font-weight: 600;">EARLY</span></td><td style="color: #22c55e; font-weight: 600;">18%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-pullback">▲ PULLBACK</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$152.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 05</td><td>52</td><td><button onclick="viewChart('XLV')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLI</strong></td><td>Industrial</td><td>$139.87</td><td>Dec 20</td><td>10</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px; font-weight: 600;">MID</span></td><td style="color: #eab308; font-weight: 600;">62%</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px;">MED</span></td><td class="turn-rally">▲ RALLY</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$148.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 04</td><td>48</td><td><button onclick="viewChart('XLI')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLB</strong></td><td>Materials</td><td>$89.45</td><td>Dec 22</td><td>12</td><td><span style="background: rgba(249,115,22,0.2); color: #f97316; padding: 3px 8px; border-radius: 4px; font-weight: 600;">LATE</span></td><td style="color: #f97316; font-weight: 600;">88%</td><td><span style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 3px 8px; border-radius: 4px;">HIGH</span></td><td class="turn-breakdown">▼ BREAKDOWN</td><td style="color: #ef4444; font-weight: 600;">PUT</td><td>$84.00</td><td>Cycle High</td><td>Daily</td><td>Dec 06</td><td>45</td><td><button onclick="viewChart('XLB')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLU</strong></td><td>Utilities</td><td>$77.89</td><td>Dec 25</td><td>15</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px; font-weight: 600;">EARLY</span></td><td style="color: #22c55e; font-weight: 600;">12%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-reversal">⟳ REVERSAL</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$82.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 03</td><td>41</td><td><button onclick="viewChart('XLU')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLP</strong></td><td>Consumer Staples</td><td>$81.23</td><td>Dec 28</td><td>18</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px; font-weight: 600;">EARLY</span></td><td style="color: #22c55e; font-weight: 600;">22%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-pullback">▲ PULLBACK</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$85.00</td><td>Cycle Low</td><td>Daily</td><td>Dec 02</td><td>38</td><td><button onclick="viewChart('XLP')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
-                            <tr><td style="padding: 10px;">WAITING</td><td><strong>XLY</strong></td><td>Consumer Disc</td><td>$225.67</td><td>Dec 30</td><td>20</td><td><span style="background: rgba(234,179,8,0.2); color: #eab308; padding: 3px 8px; border-radius: 4px; font-weight: 600;">MID</span></td><td style="color: #eab308; font-weight: 600;">45%</td><td><span style="background: rgba(34,197,94,0.2); color: #22c55e; padding: 3px 8px; border-radius: 4px;">LOW</span></td><td class="turn-rally">▲ RALLY</td><td style="color: #22c55e; font-weight: 600;">CALL</td><td>$240.00</td><td>Cycle Low</td><td>Weekly</td><td>Dec 01</td><td>35</td><td><button onclick="viewChart('XLY')" style="padding: 4px 10px; background: #9ca3af; color: white; border: none; border-radius: 4px; cursor: pointer;">VIEW</button></td></tr>
+                            <tr><td colspan="14" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -5584,40 +5571,47 @@ function viewChart(symbol) {
 
 // Opportunities Tab Filter Function
 function filterOppTable(filter) {
-    const tbody = document.getElementById('oppTableBody');
+    var tbody = document.getElementById('oppTableBody');
     if (!tbody) return;
 
-    const rows = tbody.querySelectorAll('tr');
+    var rows = tbody.querySelectorAll('tr');
+    rows.forEach(function(row) {
+        var show = true;
+        var cells = row.querySelectorAll('td');
+        if (cells.length < 5) return;
 
-    rows.forEach(row => {
-        const status = row.cells[0]?.textContent?.trim().toUpperCase() || '';
-        const trade = row.cells[10]?.textContent?.trim().toUpperCase() || '';
+        var alignCell = cells[0].textContent.trim();
+        var gannCell = cells[4].textContent.trim();
+        var riskCell = cells[11] ? cells[11].textContent.trim() : '';
 
-        let show = true;
-
-        if (filter === 'calls') {
-            show = trade.includes('CALL');
+        if (filter === 'aligned') {
+            show = alignCell.includes('✅');
+        } else if (filter === 'calls') {
+            show = gannCell === 'CALL';
         } else if (filter === 'puts') {
-            show = trade.includes('PUT');
-        } else if (filter === 'ready') {
-            show = status.includes('READY');
+            show = gannCell === 'PUT';
+        } else if (filter === 'lowrisk') {
+            show = riskCell === 'LOW';
         }
 
         row.style.display = show ? '' : 'none';
     });
 
     // Update button styles
-    const filterDiv = document.querySelector('#opportunities .card');
+    var filterDiv = document.querySelector('#opportunities .card');
     if (filterDiv) {
-        const buttons = filterDiv.querySelectorAll('button');
-        buttons.forEach(btn => {
-            const btnText = btn.textContent.toLowerCase();
+        var buttons = filterDiv.querySelectorAll('button');
+        buttons.forEach(function(btn) {
+            var btnText = btn.textContent.toLowerCase();
             if (btnText.includes('view')) return;
 
-            if ((filter === 'all' && btnText === 'all') ||
+            var isActive = (filter === 'all' && btnText === 'all') ||
+                (filter === 'aligned' && btnText.includes('aligned')) ||
                 (filter === 'calls' && btnText.includes('calls')) ||
                 (filter === 'puts' && btnText.includes('puts')) ||
-                (filter === 'ready' && btnText.includes('ready'))) {
+                (filter === 'lowrisk' && btnText.includes('low risk'));
+
+            if (isActive) {
                 btn.style.background = '#3b82f6';
                 btn.style.color = 'white';
             } else {
@@ -5626,26 +5620,6 @@ function filterOppTable(filter) {
             }
         });
     }
-
-    // Update summary counts based on visible rows
-    let total = 0, ready = 0, lowRisk = 0, calls = 0, puts = 0;
-    rows.forEach(row => {
-        if (row.style.display !== 'none') {
-            total++;
-            const st = row.cells[0]?.textContent?.trim().toUpperCase() || '';
-            const risk = row.cells[8]?.textContent?.trim().toUpperCase() || '';
-            const tr = row.cells[10]?.textContent?.trim().toUpperCase() || '';
-            if (st.includes('READY')) ready++;
-            if (risk.includes('LOW')) lowRisk++;
-            if (tr.includes('CALL')) calls++;
-            if (tr.includes('PUT')) puts++;
-        }
-    });
-
-    if (document.getElementById('opp-total')) document.getElementById('opp-total').textContent = total;
-    if (document.getElementById('opp-ready')) document.getElementById('opp-ready').textContent = ready;
-    if (document.getElementById('opp-soon')) document.getElementById('opp-soon').textContent = lowRisk;
-    if (document.getElementById('opp-ratio')) document.getElementById('opp-ratio').textContent = calls + ' / ' + puts;
 }
 
 // Load live prices from CSV data files
@@ -6637,43 +6611,159 @@ function updateOpportunitiesForSymbol(symbol) {
     console.log('Opportunities updated for ' + symbol);
 }
 
-// Update ONLY price and target cells in Opportunities table
-function updateOpportunitiesPrices() {
+// Dynamically generate Opportunities table from real data
+function generateDynamicOpportunities() {
     var tbody = document.getElementById('oppTableBody');
     if (!tbody) return;
 
-    var rows = tbody.querySelectorAll('tr');
+    var symbols = [
+        { sym: 'SPY', sector: 'Index' },
+        { sym: 'QQQ', sector: 'Tech' },
+        { sym: 'IWM', sector: 'Small Cap' },
+        { sym: 'XLF', sector: 'Financial' },
+        { sym: 'XLE', sector: 'Energy' },
+        { sym: 'XLK', sector: 'Technology' },
+        { sym: 'XLV', sector: 'Healthcare' },
+        { sym: 'XLI', sector: 'Industrial' },
+        { sym: 'XLB', sector: 'Materials' },
+        { sym: 'XLU', sector: 'Utilities' },
+        { sym: 'XLP', sector: 'Staples' },
+        { sym: 'XLY', sector: 'Discretionary' }
+    ];
 
-    rows.forEach(function(row) {
-        if (!row.cells || row.cells.length < 12) return;
-
-        // Get symbol from cells[1]
-        var symbolCell = row.cells[1];
-        var symbol = symbolCell ? symbolCell.textContent.trim() : 'Unknown';
-
-        // Get price from the row's price cell
-        var priceCell = row.cells[3];
-        if (!priceCell) return;
-        var priceText = priceCell.textContent.replace('$', '').trim();
-        var price = parseFloat(priceText);
-        if (isNaN(price) || price <= 0) return;
-
-        // Get direction from TRADE cell (index 10) - CALL or PUT
-        var tradeCell = row.cells[10];
-        var isCall = tradeCell && tradeCell.textContent.includes('CALL');
-
-        // Calculate target as 3% move: CALL = above price, PUT = below price
-        var target = isCall ? (price * 1.03).toFixed(2) : (price * 0.97).toFixed(2);
-
-        console.log(symbol + ': price=' + price + ', isCall=' + isCall + ', target=' + target);
-
-        // Update target cell (index 11)
-        if (row.cells[11]) {
-            row.cells[11].textContent = '$' + target;
+    // Get SPY 20MA for market conditions
+    var spy20MA = 0;
+    var spyData = allSymbolsData['SPY'];
+    if (spyData && spyData.length >= 20) {
+        var sum = 0;
+        for (var i = spyData.length - 20; i < spyData.length; i++) {
+            sum += parseFloat(spyData[i].Close) || 0;
         }
-    });
+        spy20MA = sum / 20;
+    }
 
-    console.log('Opportunities prices updated from symbolGannData');
+    var rows = [];
+    var callCount = 0, putCount = 0, alignedCount = 0;
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i].sym;
+        var sector = symbols[i].sector;
+        var data = symbolGannData[sym];
+        var csvData = allSymbolsData[sym];
+
+        if (!data || !data.price) continue;
+
+        var price = data.price;
+        var high = data.high || price * 1.1;
+        var low = data.low || price * 0.9;
+        var atr = data.atr || price * 0.015;
+        var changePct = data.changePct || 0;
+
+        // GANN Analysis (price position in range)
+        var range = high - low;
+        var position = range > 0 ? (price - low) / range : 0.5;
+        var gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+        var gannReason = position < 0.35 ? 'Near support (' + (position * 100).toFixed(0) + '%)' :
+                         position > 0.65 ? 'Near resistance (' + (position * 100).toFixed(0) + '%)' :
+                         'Mid-range (' + (position * 100).toFixed(0) + '%)';
+
+        // MARKET Analysis (20MA comparison)
+        var sym20MA = 0;
+        if (csvData && csvData.length >= 20) {
+            var sum20 = 0;
+            for (var j = csvData.length - 20; j < csvData.length; j++) {
+                sum20 += parseFloat(csvData[j].Close) || 0;
+            }
+            sym20MA = sum20 / 20;
+        }
+        var mktSignal = price < sym20MA ? 'PUT' : 'CALL';
+        var mktReason = price < sym20MA ?
+            'Below 20MA ($' + sym20MA.toFixed(2) + ')' :
+            'Above 20MA ($' + sym20MA.toFixed(2) + ')';
+
+        // Check alignment
+        var aligned = (gannSignal === mktSignal) || gannSignal === 'HOLD';
+        var alignIcon = aligned ? '✅' : '⚠️';
+        var alignColor = aligned ? '#22c55e' : '#f59e0b';
+
+        // Calculate entry/target/stop based on GANN signal (primary)
+        var isBullish = gannSignal === 'CALL' || (gannSignal === 'HOLD' && mktSignal === 'CALL');
+        var entry = isBullish ? (price - atr * 0.3).toFixed(2) : (price + atr * 0.3).toFixed(2);
+        var target = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
+        var stop = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
+
+        // Risk level based on alignment and position
+        var risk = 'MED';
+        var riskColor = '#eab308';
+        if (aligned && (position < 0.25 || position > 0.75)) {
+            risk = 'LOW';
+            riskColor = '#22c55e';
+        } else if (!aligned) {
+            risk = 'HIGH';
+            riskColor = '#ef4444';
+        }
+
+        // Score based on alignment and position strength
+        var score = 50;
+        if (aligned) score += 20;
+        if (position < 0.25 || position > 0.75) score += 15;
+        if (Math.abs(changePct) > 1) score += 10;
+        score = Math.min(95, score);
+
+        // Count
+        if (gannSignal === 'CALL') callCount++;
+        else if (gannSignal === 'PUT') putCount++;
+        if (aligned) alignedCount++;
+
+        // Build row
+        var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444' : '#eab308');
+        var mktColor = mktSignal === 'CALL' ? '#22c55e' : '#ef4444';
+        var changeColor = changePct >= 0 ? '#22c55e' : '#ef4444';
+        var changeSign = changePct >= 0 ? '+' : '';
+
+        var row = '<tr style="border-left: 3px solid ' + alignColor + ';">' +
+            '<td style="padding: 8px; font-size: 16px;" title="' + (aligned ? 'Gann & Market Aligned' : 'Gann & Market Conflict') + '">' + alignIcon + '</td>' +
+            '<td style="padding: 8px;"><strong>' + sym + '</strong><br><span style="font-size: 9px; color: #666;">' + sector + '</span></td>' +
+            '<td style="padding: 8px; font-weight: 600;">$' + price.toFixed(2) + '</td>' +
+            '<td style="padding: 8px; color: ' + changeColor + '; font-size: 10px;">' + changeSign + changePct.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 700;">' + gannSignal + '</span></td>' +
+            '<td style="padding: 8px; background: rgba(139,92,246,0.05); font-size: 9px; color: #666;">' + gannReason + '</td>' +
+            '<td style="padding: 8px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 700;">' + mktSignal + '</span></td>' +
+            '<td style="padding: 8px; background: rgba(239,68,68,0.05); font-size: 9px; color: #666;">' + mktReason + '</td>' +
+            '<td style="padding: 8px; font-size: 10px;">$' + entry + '</td>' +
+            '<td style="padding: 8px; font-size: 10px; color: #22c55e;">$' + target + '</td>' +
+            '<td style="padding: 8px; font-size: 10px; color: #ef4444;">$' + stop + '</td>' +
+            '<td style="padding: 8px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68' : '234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 6px; border-radius: 4px; font-size: 10px;">' + risk + '</span></td>' +
+            '<td style="padding: 8px; font-weight: 600;">' + score + '</td>' +
+            '<td style="padding: 8px;"><button onclick="viewChart(\'' + sym + '\')" style="padding: 4px 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">VIEW</button></td>' +
+            '</tr>';
+
+        rows.push({ html: row, score: score, aligned: aligned, gann: gannSignal });
+    }
+
+    // Sort by score descending
+    rows.sort(function(a, b) { return b.score - a.score; });
+
+    // Update table
+    tbody.innerHTML = rows.map(function(r) { return r.html; }).join('');
+
+    // Update summary counts
+    var totalEl = document.getElementById('opp-total');
+    var readyEl = document.getElementById('opp-ready');
+    var soonEl = document.getElementById('opp-soon');
+    var ratioEl = document.getElementById('opp-ratio');
+
+    if (totalEl) totalEl.textContent = rows.length;
+    if (readyEl) readyEl.textContent = alignedCount;
+    if (soonEl) soonEl.textContent = rows.length - alignedCount;
+    if (ratioEl) ratioEl.textContent = callCount + ' / ' + putCount;
+
+    console.log('Dynamic Opportunities generated: ' + rows.length + ' symbols, ' + alignedCount + ' aligned');
+}
+
+// Keep old function name for compatibility
+function updateOpportunitiesPrices() {
+    generateDynamicOpportunities();
 }
 
 // Update Daily Analysis for symbol
