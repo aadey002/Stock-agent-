@@ -10585,11 +10585,8 @@ function checkDataQuality() {
         healthStatus.alerts.push({ type: 'warning', message: 'Unusual price detected - verify data integrity' });
     }
     
-    // Check for signal data
-    checks++;
-    if (!lastBar.Bias) {
-        issues++;
-    }
+    // Note: Bias is calculated at runtime, not stored in CSV
+    // So we don't check for it here
     
     // Calculate quality score
     const score = Math.round(((checks - issues) / checks) * 100);
