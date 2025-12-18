@@ -13282,23 +13282,29 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
         ];
         movePercent = { min: 0.3, max: 0.7 };
     } else if (timeframe === 'swing') {
-        // Swing - medium moves, weekly cycles
-        isBullish = false; // Current trend is up, expect pullback
+        // Swing - use price position logic (same as auto-calc)
+        var swingRange = high - low;
+        var swingPosition = swingRange > 0 ? (price - low) / swingRange : 0.5;
+        isBullish = swingPosition < 0.35; // Below 35% = expect rally
+        console.log('Gann swing: position=' + (swingPosition*100).toFixed(1) + '%, isBullish=' + isBullish);
         reasons = [
-            `Current trend: <strong>UP</strong> (rallied from ${low.toFixed(2)} → ${price.toFixed(2)})`,
-            `At Gann resistance: <strong>$${(price * 1.015).toFixed(2)}</strong> (90° level)`,
-            `Cycle position: <strong>Day 22/30</strong> (approaching cycle HIGH)`,
+            `Current trend: <strong>${isBullish ? 'DOWN' : 'UP'}</strong> (price at ${(swingPosition*100).toFixed(0)}% of range)`,
+            `At Gann ${isBullish ? 'support' : 'resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
+            `Cycle position: <strong>${isBullish ? 'Near LOW' : 'Near HIGH'}</strong>`,
             `Time symmetry: <strong>Winter Solstice Dec 21</strong> = major reversal`
         ];
         movePercent = { min: 1.0, max: 2.5 };
     } else {
-        // Position - larger moves, monthly cycles
-        isBullish = true; // Longer term outlook bullish
+        // Position - use price position logic
+        var posRange = high - low;
+        var posPosition = posRange > 0 ? (price - low) / posRange : 0.5;
+        isBullish = posPosition < 0.3; // Below 30% = expect rally
+        console.log('Gann position: position=' + (posPosition*100).toFixed(1) + '%, isBullish=' + isBullish);
         reasons = [
-            `Major cycle: <strong>Q1 2026</strong> bullish setup forming`,
-            `Annual support: <strong>$${(price * 0.95).toFixed(2)}</strong> (360° level)`,
-            `Seasonal pattern: <strong>Jan-Apr rally</strong> typical`,
-            `Long-term Gann angle: <strong>1x1 support holding</strong>`
+            `Major cycle: <strong>${isBullish ? 'BOTTOM' : 'TOP'}</strong> forming`,
+            `Annual ${isBullish ? 'support' : 'resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
+            `Seasonal pattern: <strong>${isBullish ? 'Rally' : 'Pullback'}</strong> expected`,
+            `Long-term Gann angle: <strong>1x1 ${isBullish ? 'support' : 'resistance'}</strong>`
         ];
         movePercent = { min: 3.0, max: 8.0 };
     }
