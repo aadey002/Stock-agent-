@@ -5053,8 +5053,16 @@ function calculateGannDirectionForSymbol(symbol, timeframe) {
         threshold = 0.3;
     }
 
-    // Below threshold = bearish (PUT), above = bullish (CALL)
-    var direction = position < threshold ? 'PUT' : 'CALL';
+    // LOW position = near support = expect rally = CALL
+    // HIGH position = near resistance = expect pullback = PUT
+    var direction;
+    if (position < 0.4) {
+        direction = 'CALL';  // Near support - expect rally
+    } else if (position > 0.6) {
+        direction = 'PUT';   // Near resistance - expect pullback
+    } else {
+        direction = 'CALL';  // Middle - default to CALL
+    }
 
     console.log('Auto-calc ' + symbol + ' ' + timeframe + ': position=' + (position*100).toFixed(1) + '%, direction=' + direction);
 
