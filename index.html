@@ -16934,18 +16934,18 @@ function updateMarketTradeForTimeframe(timeframe) {
     };
     var s = settings[timeframe] || settings['INTRADAY'];
 
-    // Get market direction (always based on 20MA)
-    var spyData = allSymbolsData['SPY'];
-    var spy20MA = 0;
-    if (spyData && spyData.length >= 20) {
+
+    // Get symbol's own 20MA for direction
+    var symbolData = allSymbolsData[symbol];
+    var symbol20MA = 0;
+    if (symbolData && symbolData.length >= 20) {
         var sum = 0;
-        for (var i = spyData.length - 20; i < spyData.length; i++) {
-            sum += parseFloat(spyData[i].Close) || 0;
+        for (var i = symbolData.length - 20; i < symbolData.length; i++) {
+            sum += parseFloat(symbolData[i].Close) || 0;
         }
-        spy20MA = sum / 20;
+        symbol20MA = sum / 20;
     }
-    var spyPrice = symbolGannData['SPY'] ? symbolGannData['SPY'].price : price;
-    var direction = spyPrice < spy20MA ? 'PUT' : 'CALL';
+    var direction = price < symbol20MA ? 'PUT' : 'CALL';
     var isBullish = direction === 'CALL';
 
     // Calculate prices with timeframe multipliers
@@ -17002,18 +17002,9 @@ function updateMarketTradeForTimeframe(timeframe) {
     el = document.getElementById('marketTradeStop');
     if (el) el.textContent = 'Stop: $' + stopPrice + ' | Opt $' + optStop;
 
-    // Calculate the CURRENT symbol's 20MA for rationale (not SPY)
-    var symbolData2 = allSymbolsData[symbol];
-    var symbol20MA = 0;
-    if (symbolData2 && symbolData2.length >= 20) {
-        var sum2 = 0;
-        for (var m = symbolData2.length - 20; m < symbolData2.length; m++) {
-            sum2 += parseFloat(symbolData2[m].Close) || 0;
-        }
-        symbol20MA = sum2 / 20;
-    }
-    var symbolPrice2 = symbolGannData[symbol] ? symbolGannData[symbol].price : price;
-    var aboveBelow = symbolPrice2 < symbol20MA ? 'below' : 'above';
+
+    // Rationale with timeframe context
+    var aboveBelow = price < symbol20MA ? 'below' : 'above';
     var tfLabel = timeframe === 'INTRADAY' ? 'Intraday' : (timeframe === 'SWING' ? 'Swing' : 'Position');
     var rationale = tfLabel + ' trade: ' + symbol + ' ' + aboveBelow + ' 20MA ($' + symbol20MA.toFixed(2) + '). ';
     rationale += direction === 'PUT' ? 'Weak conditions favor downside.' : 'Strong conditions favor upside.';
