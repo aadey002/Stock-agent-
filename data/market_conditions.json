@@ -1,14 +1,13 @@
 {
-  "timestamp": "2025-12-18T21:28:16.655112",
+  "timestamp": "2025-12-19T15:54:56.387795",
   "trade_allowed": true,
-  "position_size_multiplier": 0.5,
+  "position_size_multiplier": 1.0,
   "conditions": {
     "volatility": {
-      "vix_estimate": 32.86,
-      "uvxy_price": 41.08,
-      "level": "HIGH",
-      "status": "OK",
-      "recommendation": "REDUCE_SIZE"
+      "vix_estimate": "N/A",
+      "level": "UNKNOWN",
+      "status": "API_ERROR",
+      "recommendation": "PROCEED_WITH_CAUTION"
     },
     "economic_calendar": {
       "events_today": 0,
@@ -18,27 +17,14 @@
       "recommendation": "CLEAR"
     },
     "sentiment": {
-      "sentiment": "NEUTRAL",
-      "sentiment_score": 50,
-      "fear_greed": "GREED",
-      "fear_greed_score": 70,
-      "momentum_5d": -0.78,
-      "momentum_20d": 2.48,
-      "status": "OK"
+      "status": "API_ERROR",
+      "sentiment": "UNKNOWN"
     },
     "sector_rotation": {
-      "rotation": "RISK_OFF",
-      "rotation_strength": 1.09,
-      "cyclical_avg": 0.41,
-      "defensive_avg": 1.5,
-      "strongest": "Consumer Disc (+3.69%)",
-      "weakest": "Technology (-4.13%)",
-      "status": "OK"
+      "status": "NO_DATA",
+      "rotation": "UNKNOWN"
     }
   },
-  "warnings": [
-    "WARNING: HIGH VOLATILITY - Reduce position size",
-    "ROTATION: RISK-OFF detected - Defensive sectors leading"
-  ],
-  "overall_score": 25
+  "warnings": [],
+  "overall_score": 50
 }
