@@ -6815,14 +6815,6 @@ function generateDynamicOpportunities() {
     console.log('Opportunities: ' + rows.length + ' symbols, ' + alignedCount + ' aligned, ' + readyCount + ' ready');
 }
 
-    if (totalEl) totalEl.textContent = rows.length;
-    if (readyEl) readyEl.textContent = alignedCount;
-    if (soonEl) soonEl.textContent = rows.length - alignedCount;
-    if (ratioEl) ratioEl.textContent = callCount + ' / ' + putCount;
-
-    console.log('Dynamic Opportunities generated: ' + rows.length + ' symbols, ' + alignedCount + ' aligned');
-}
-
 // Keep old function name for compatibility
 function updateOpportunitiesPrices() {
     generateDynamicOpportunities();
