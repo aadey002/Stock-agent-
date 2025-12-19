@@ -2788,35 +2788,42 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                         <div style="font-size: 24px; font-weight: 700;" id="opp-ratio">7 / 5</div>
                     </div>
                 </div>
+                </div>
                 <div style="margin-bottom: 15px;">
                     <button onclick="filterOppTable('all')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">All</button>
                     <button onclick="filterOppTable('aligned')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">✅ Aligned Only</button>
-                    <button onclick="filterOppTable('calls')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Calls Only</button>
-                    <button onclick="filterOppTable('puts')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">Puts Only</button>
+                    <button onclick="filterOppTable('ready')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">⏰ Ready (≤3 days)</button>
+                    <button onclick="filterOppTable('calls')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">📈 Calls</button>
+                    <button onclick="filterOppTable('puts')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">📉 Puts</button>
                     <button onclick="filterOppTable('lowrisk')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer;">Low Risk</button>
                 </div>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f0f0f0;">
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ALIGN</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">SYMBOL</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">PRICE</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">CHG</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(139,92,246,0.1);">REASON</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(239,68,68,0.1);">📊 MKT</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px; background: rgba(239,68,68,0.1);">REASON</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ENTRY</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">TARGET</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">STOP</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">RISK</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">SCORE</th>
-                                <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 10px;">ACTION</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ALIGN</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SYMBOL</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">PRICE</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">CHG</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">20MA</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SUPPORT</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RESIST</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(239,68,68,0.1);">📊 MKT</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TURN</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">NEXT</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">DAYS</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STAGE</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ENTRY</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TARGET</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STOP</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RISK</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SCORE</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody id="oppTableBody">
-                            <tr><td colspan="14" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
+                            <tr><td colspan="19" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -5579,14 +5586,18 @@ function filterOppTable(filter) {
     rows.forEach(function(row) {
         var show = true;
         var cells = row.querySelectorAll('td');
-        if (cells.length < 5) return;
+        if (cells.length < 10) return;
 
         var alignCell = cells[0].textContent.trim();
-        var gannCell = cells[4].textContent.trim();
-        var riskCell = cells[11] ? cells[11].textContent.trim() : '';
+        var gannCell = cells[7].textContent.trim();
+        var daysCell = cells[11] ? cells[11].textContent.trim() : "";
+        var riskCell = cells[16] ? cells[11].textContent.trim() : '';
 
         if (filter === 'aligned') {
             show = alignCell.includes('✅');
+        } else if (filter === 'ready') {
+            var days = parseInt(daysCell) || 99;
+            show = days <= 3;
         } else if (filter === 'calls') {
             show = gannCell === 'CALL';
         } else if (filter === 'puts') {
@@ -5608,6 +5619,7 @@ function filterOppTable(filter) {
 
             var isActive = (filter === 'all' && btnText === 'all') ||
                 (filter === 'aligned' && btnText.includes('aligned')) ||
+                (filter === 'ready' && btnText.includes('ready')) ||
                 (filter === 'calls' && btnText.includes('calls')) ||
                 (filter === 'puts' && btnText.includes('puts')) ||
                 (filter === 'lowrisk' && btnText.includes('low risk'));
@@ -6632,19 +6644,8 @@ function generateDynamicOpportunities() {
         { sym: 'XLY', sector: 'Discretionary' }
     ];
 
-    // Get SPY 20MA for market conditions
-    var spy20MA = 0;
-    var spyData = allSymbolsData['SPY'];
-    if (spyData && spyData.length >= 20) {
-        var sum = 0;
-        for (var i = spyData.length - 20; i < spyData.length; i++) {
-            sum += parseFloat(spyData[i].Close) || 0;
-        }
-        spy20MA = sum / 20;
-    }
-
     var rows = [];
-    var callCount = 0, putCount = 0, alignedCount = 0;
+    var callCount = 0, putCount = 0, alignedCount = 0, readyCount = 0;
 
     for (var i = 0; i < symbols.length; i++) {
         var sym = symbols[i].sym;
@@ -6660,15 +6661,7 @@ function generateDynamicOpportunities() {
         var atr = data.atr || price * 0.015;
         var changePct = data.changePct || 0;
 
-        // GANN Analysis (price position in range)
-        var range = high - low;
-        var position = range > 0 ? (price - low) / range : 0.5;
-        var gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
-        var gannReason = position < 0.35 ? 'Near support (' + (position * 100).toFixed(0) + '%)' :
-                         position > 0.65 ? 'Near resistance (' + (position * 100).toFixed(0) + '%)' :
-                         'Mid-range (' + (position * 100).toFixed(0) + '%)';
-
-        // MARKET Analysis (20MA comparison)
+        // Calculate 20MA
         var sym20MA = 0;
         if (csvData && csvData.length >= 20) {
             var sum20 = 0;
@@ -6677,23 +6670,82 @@ function generateDynamicOpportunities() {
             }
             sym20MA = sum20 / 20;
         }
-        var mktSignal = price < sym20MA ? 'PUT' : 'CALL';
-        var mktReason = price < sym20MA ?
-            'Below 20MA ($' + sym20MA.toFixed(2) + ')' :
-            'Above 20MA ($' + sym20MA.toFixed(2) + ')';
 
-        // Check alignment
+        // Support and Resistance (actual prices)
+        var range = high - low;
+        var support = low + range * 0.236;
+        var resist = low + range * 0.786;
+
+        // Position in range
+        var position = range > 0 ? (price - low) / range : 0.5;
+
+        // GANN Analysis
+        var gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+        var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444' : '#eab308');
+
+        // MARKET Analysis (20MA)
+        var mktSignal = price < sym20MA ? 'PUT' : 'CALL';
+        var mktColor = mktSignal === 'CALL' ? '#22c55e' : '#ef4444';
+
+        // Turn Direction
+        var turnDir = '';
+        var turnColor = '#666';
+        if (gannSignal === 'CALL' && mktSignal === 'CALL') {
+            turnDir = 'RALLY';
+            turnColor = '#22c55e';
+        } else if (gannSignal === 'PUT' && mktSignal === 'PUT') {
+            turnDir = 'BREAKDOWN';
+            turnColor = '#ef4444';
+        } else if (gannSignal === 'CALL' && mktSignal === 'PUT') {
+            turnDir = 'REVERSAL';
+            turnColor = '#f59e0b';
+        } else if (gannSignal === 'PUT' && mktSignal === 'CALL') {
+            turnDir = 'PULLBACK';
+            turnColor = '#8b5cf6';
+        } else {
+            turnDir = 'HOLD';
+            turnColor = '#666';
+        }
+
+        // Next Turn Date
+        var today = new Date();
+        var cycleLength = 5;
+        if (position < 0.2 || position > 0.8) cycleLength = 2;
+        else if (position < 0.35 || position > 0.65) cycleLength = 4;
+        var nextTurn = new Date(today);
+        nextTurn.setDate(today.getDate() + cycleLength);
+        var nextTurnStr = nextTurn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        var daysToTurn = cycleLength;
+
+        // Stage
+        var stage = '';
+        var stageColor = '#666';
+        if (position < 0.15 || position > 0.85) {
+            stage = 'EXHAUSTED';
+            stageColor = '#ef4444';
+        } else if (position < 0.3 || position > 0.7) {
+            stage = 'LATE';
+            stageColor = '#f59e0b';
+        } else if (position < 0.4 || position > 0.6) {
+            stage = 'MID';
+            stageColor = '#3b82f6';
+        } else {
+            stage = 'EARLY';
+            stageColor = '#22c55e';
+        }
+
+        // Alignment
         var aligned = (gannSignal === mktSignal) || gannSignal === 'HOLD';
         var alignIcon = aligned ? '✅' : '⚠️';
         var alignColor = aligned ? '#22c55e' : '#f59e0b';
 
-        // Calculate entry/target/stop based on GANN signal (primary)
+        // Entry/Target/Stop
         var isBullish = gannSignal === 'CALL' || (gannSignal === 'HOLD' && mktSignal === 'CALL');
         var entry = isBullish ? (price - atr * 0.3).toFixed(2) : (price + atr * 0.3).toFixed(2);
         var target = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
         var stop = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
 
-        // Risk level based on alignment and position
+        // Risk
         var risk = 'MED';
         var riskColor = '#eab308';
         if (aligned && (position < 0.25 || position > 0.75)) {
@@ -6704,55 +6756,64 @@ function generateDynamicOpportunities() {
             riskColor = '#ef4444';
         }
 
-        // Score based on alignment and position strength
+        // Score
         var score = 50;
         if (aligned) score += 20;
         if (position < 0.25 || position > 0.75) score += 15;
-        if (Math.abs(changePct) > 1) score += 10;
+        if (daysToTurn <= 3) score += 10;
+        if (Math.abs(changePct) > 1) score += 5;
         score = Math.min(95, score);
 
-        // Count
+        // Counts
         if (gannSignal === 'CALL') callCount++;
         else if (gannSignal === 'PUT') putCount++;
         if (aligned) alignedCount++;
+        if (daysToTurn <= 3) readyCount++;
 
-        // Build row
-        var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444' : '#eab308');
-        var mktColor = mktSignal === 'CALL' ? '#22c55e' : '#ef4444';
         var changeColor = changePct >= 0 ? '#22c55e' : '#ef4444';
         var changeSign = changePct >= 0 ? '+' : '';
+        var maColor = price >= sym20MA ? '#22c55e' : '#ef4444';
 
-        var row = '<tr style="border-left: 3px solid ' + alignColor + ';">' +
-            '<td style="padding: 8px; font-size: 16px;" title="' + (aligned ? 'Gann & Market Aligned' : 'Gann & Market Conflict') + '">' + alignIcon + '</td>' +
-            '<td style="padding: 8px;"><strong>' + sym + '</strong><br><span style="font-size: 9px; color: #666;">' + sector + '</span></td>' +
-            '<td style="padding: 8px; font-weight: 600;">$' + price.toFixed(2) + '</td>' +
-            '<td style="padding: 8px; color: ' + changeColor + '; font-size: 10px;">' + changeSign + changePct.toFixed(2) + '%</td>' +
-            '<td style="padding: 8px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 700;">' + gannSignal + '</span></td>' +
-            '<td style="padding: 8px; background: rgba(139,92,246,0.05); font-size: 9px; color: #666;">' + gannReason + '</td>' +
-            '<td style="padding: 8px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 700;">' + mktSignal + '</span></td>' +
-            '<td style="padding: 8px; background: rgba(239,68,68,0.05); font-size: 9px; color: #666;">' + mktReason + '</td>' +
-            '<td style="padding: 8px; font-size: 10px;">$' + entry + '</td>' +
-            '<td style="padding: 8px; font-size: 10px; color: #22c55e;">$' + target + '</td>' +
-            '<td style="padding: 8px; font-size: 10px; color: #ef4444;">$' + stop + '</td>' +
-            '<td style="padding: 8px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68' : '234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 6px; border-radius: 4px; font-size: 10px;">' + risk + '</span></td>' +
-            '<td style="padding: 8px; font-weight: 600;">' + score + '</td>' +
-            '<td style="padding: 8px;"><button onclick="viewChart(\'' + sym + '\')" style="padding: 4px 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">VIEW</button></td>' +
+        var row = '<tr style="border-left: 3px solid ' + alignColor + ';" data-days="' + daysToTurn + '">' +
+            '<td style="padding: 6px; font-size: 14px;">' + alignIcon + '</td>' +
+            '<td style="padding: 6px;"><strong>' + sym + '</strong><br><span style="font-size: 8px; color: #666;">' + sector + '</span></td>' +
+            '<td style="padding: 6px; font-weight: 600; font-size: 10px;">$' + price.toFixed(2) + '</td>' +
+            '<td style="padding: 6px; color: ' + changeColor + '; font-size: 9px;">' + changeSign + changePct.toFixed(1) + '%</td>' +
+            '<td style="padding: 6px; font-size: 9px; color: ' + maColor + ';">$' + sym20MA.toFixed(2) + '</td>' +
+            '<td style="padding: 6px; font-size: 9px; color: #22c55e;">$' + support.toFixed(2) + '</td>' +
+            '<td style="padding: 6px; font-size: 9px; color: #ef4444;">$' + resist.toFixed(2) + '</td>' +
+            '<td style="padding: 6px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 700; font-size: 10px;">' + gannSignal + '</span></td>' +
+            '<td style="padding: 6px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 700; font-size: 10px;">' + mktSignal + '</span></td>' +
+            '<td style="padding: 6px;"><span style="color: ' + turnColor + '; font-weight: 600; font-size: 9px;">' + turnDir + '</span></td>' +
+            '<td style="padding: 6px; font-size: 9px;">' + nextTurnStr + '</td>' +
+            '<td style="padding: 6px; font-size: 10px; font-weight: 600; color: ' + (daysToTurn <= 3 ? '#ef4444' : '#666') + ';">' + daysToTurn + '</td>' +
+            '<td style="padding: 6px;"><span style="color: ' + stageColor + '; font-size: 9px; font-weight: 600;">' + stage + '</span></td>' +
+            '<td style="padding: 6px; font-size: 9px;">$' + entry + '</td>' +
+            '<td style="padding: 6px; font-size: 9px; color: #22c55e;">$' + target + '</td>' +
+            '<td style="padding: 6px; font-size: 9px; color: #ef4444;">$' + stop + '</td>' +
+            '<td style="padding: 6px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68' : '234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 4px; border-radius: 3px; font-size: 9px;">' + risk + '</span></td>' +
+            '<td style="padding: 6px; font-weight: 600; font-size: 10px;">' + score + '</td>' +
+            '<td style="padding: 6px;"><button onclick="viewChart(\'' + sym + '\')" style="padding: 3px 6px; background: #3b82f6; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 9px;">VIEW</button></td>' +
             '</tr>';
 
-        rows.push({ html: row, score: score, aligned: aligned, gann: gannSignal });
+        rows.push({ html: row, score: score, aligned: aligned, gann: gannSignal, days: daysToTurn });
     }
 
-    // Sort by score descending
     rows.sort(function(a, b) { return b.score - a.score; });
-
-    // Update table
     tbody.innerHTML = rows.map(function(r) { return r.html; }).join('');
 
-    // Update summary counts
     var totalEl = document.getElementById('opp-total');
     var readyEl = document.getElementById('opp-ready');
     var soonEl = document.getElementById('opp-soon');
     var ratioEl = document.getElementById('opp-ratio');
+
+    if (totalEl) totalEl.textContent = rows.length;
+    if (readyEl) readyEl.textContent = alignedCount;
+    if (soonEl) soonEl.textContent = readyCount;
+    if (ratioEl) ratioEl.textContent = callCount + ' / ' + putCount;
+
+    console.log('Opportunities: ' + rows.length + ' symbols, ' + alignedCount + ' aligned, ' + readyCount + ' ready');
+}
 
     if (totalEl) totalEl.textContent = rows.length;
     if (readyEl) readyEl.textContent = alignedCount;
