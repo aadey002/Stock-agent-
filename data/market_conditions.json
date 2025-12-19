@@ -1,50 +1,44 @@
 {
-  "timestamp": "2025-11-24T01:30:05.481769",
+  "timestamp": "2025-12-18T12:57:01.749933",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 48.5,
-      "uvxy_price": 60.63,
-      "level": "EXTREME",
+      "vix_estimate": 33.36,
+      "uvxy_price": 41.7,
+      "level": "HIGH",
       "status": "OK",
-      "recommendation": "AVOID_TRADING"
+      "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 1,
-      "upcoming_events": [
-        {
-          "name": "GDP Release",
-          "impact": "HIGH",
-          "timing": "TOMORROW"
-        }
-      ],
-      "status": "OK"
+      "events_tomorrow": 0,
+      "upcoming_events": [],
+      "status": "OK",
+      "recommendation": "CLEAR"
     },
     "sentiment": {
-      "sentiment": "NEUTRAL",
-      "sentiment_score": 50,
-      "fear_greed": "FEAR",
-      "fear_greed_score": 30,
-      "momentum_5d": -1.0,
-      "momentum_20d": -3.82,
+      "sentiment": "BEARISH",
+      "sentiment_score": 24,
+      "fear_greed": "NEUTRAL",
+      "fear_greed_score": 50,
+      "momentum_5d": -2.58,
+      "momentum_20d": 1.71,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 3.3,
-      "cyclical_avg": -2.65,
-      "defensive_avg": 0.66,
-      "strongest": "Healthcare (+1.83%)",
-      "weakest": "Technology (-5.19%)",
+      "rotation_strength": 1.8,
+      "cyclical_avg": -0.46,
+      "defensive_avg": 1.34,
+      "strongest": "Consumer Stap (+2.36%)",
+      "weakest": "Technology (-5.58%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
-    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT",
+    "WARNING: HIGH VOLATILITY - Reduce position size",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 0
+  "overall_score": 15
 }
