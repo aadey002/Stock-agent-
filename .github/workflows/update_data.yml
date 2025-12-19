@@ -29,7 +29,6 @@ jobs:
 
       - name: Fetch market data
         env:
-          TIINGO_TOKEN: ${{ secrets.TIINGO_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           python run_all_agents.py --force
