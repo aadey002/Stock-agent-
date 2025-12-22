@@ -28,6 +28,7 @@ jobs:
     
     - name: Send health notification
       if: always()
+      env:
         DISCORD_ENABLED: ${{ secrets.DISCORD_ENABLED }}
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       run: |
@@ -53,6 +54,7 @@ jobs:
     - name: Upload health report
       uses: actions/upload-artifact@v4
       if: always()
+      env:
       with:
         name: health-report-${{ github.run_number }}
         path: monitoring/
