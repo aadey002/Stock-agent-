@@ -4020,7 +4020,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <!-- SPY Trend -->
                     <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(59,130,246,0.3);">
-                        <div style="font-size: 11px; color: #2563eb; font-weight: 600;">SPY vs 20MA</div>
+                        <div id="mktSymbolLabel" style="font-size: 11px; color: #2563eb; font-weight: 600;">SPY vs 20MA</div>
                         <div id="mktSpyTrend" style="font-size: 28px; font-weight: 800; color: #666;">--</div>
                         <div id="mktSpyTrendStatus" style="font-size: 12px; color: #666; font-weight: 600;">Loading...</div>
                         <div id="mktSpy20MA" style="font-size: 10px; color: #666; margin-top: 5px;">20MA: --</div>
@@ -6211,7 +6211,7 @@ function updateCardinalNumbers(symbol) {
 function updateMasterConfluence(symbol) {
     console.log('Updating Master Confluence for: ' + symbol);
 
-    var data = symbolGannData[symbol] || symbolGannData['SPY'];
+    var data = symbolGannData[symbol] || symbolGannData[selectedSymbol];
     if (!data || !data.price) return;
 
     var price = parseFloat(data.price);
@@ -8256,6 +8256,9 @@ async function changeSymbol() {
     if (typeof updateGannAngles === 'function') updateGannAngles(currentSymbol);
     if (typeof updateGannTimeCycles === 'function') updateGannTimeCycles(currentSymbol);
 
+    // === UPDATE MARKET ANALYSIS TAB ===
+    if (typeof updateMarketAnalysisTab === 'function') updateMarketAnalysisTab();
+
     // === UPDATE PATTERN & HISTORICAL SECTIONS ===
     if (typeof updateDataPatternDetection === 'function') updateDataPatternDetection();
     if (typeof updatePatternDetection === 'function') updatePatternDetection(currentSymbol);
@@ -8511,12 +8514,13 @@ function updateMarketAnalysisTab() {
     el = document.getElementById('mktVixInterpretation');
     if (el) el.innerHTML = '<strong>Interpretation:</strong> ' + vixInterp;
 
-    // === SPY Analysis ===
+    // === Selected Symbol Analysis ===
+    var selectedSymbol = currentSymbol || 'SPY';
     var spyPrice = 0;
     var spy20MA = 0;
     var spy50MA = 0;
     var spy200MA = 0;
-    var spyData = allSymbolsData['SPY'];
+    var spyData = allSymbolsData[selectedSymbol];
 
     if (spyData && spyData.length > 0) {
         spyPrice = parseFloat(spyData[spyData.length - 1].Close) || 0;
@@ -8544,8 +8548,8 @@ function updateMarketAnalysisTab() {
         }
     }
 
-    if (symbolGannData && symbolGannData['SPY'] && symbolGannData['SPY'].price) {
-        spyPrice = symbolGannData['SPY'].price;
+    if (symbolGannData && symbolGannData[selectedSymbol] && symbolGannData[selectedSymbol].price) {
+        spyPrice = symbolGannData[selectedSymbol].price;
     }
 
     var spyAbove20MA = spyPrice > spy20MA;
@@ -8567,6 +8571,12 @@ function updateMarketAnalysisTab() {
     if (el) el.textContent = '$' + spy50MA.toFixed(2);
     el = document.getElementById('mktSpy200MALevel');
     if (el) el.textContent = '$' + spy200MA.toFixed(2);
+
+    // Update symbol labels
+    el = document.getElementById('mktSymbolLabel');
+    if (el) el.textContent = selectedSymbol + ' vs 20MA';
+    el = document.getElementById('mktMATitle');
+    if (el) el.textContent = '📉 ' + selectedSymbol + ' Moving Average Levels';
 
     var dist20 = spy20MA > 0 ? ((spyPrice - spy20MA) / spy20MA * 100).toFixed(1) : 0;
     var dist50 = spy50MA > 0 ? ((spyPrice - spy50MA) / spy50MA * 100).toFixed(1) : 0;
@@ -13263,7 +13273,7 @@ function calculateSacredNumbers(price) {
 
 // Get symbol-specific Gann analysis data
 function getSymbolGannData(symbol) {
-    return symbolGannData[symbol] || symbolGannData['SPY'];
+    return symbolGannData[symbol] || symbolGannData[selectedSymbol];
 }
 
 // Update Gann Analysis for specific symbol
@@ -17350,7 +17360,7 @@ function checkAnalysisConflict() {
     var gannDirection = gannPred.direction;
 
     // Get Market Conditions direction based on SPY vs 20MA
-    var spyData = allSymbolsData['SPY'];
+    var spyData = allSymbolsData[selectedSymbol];
     var spy20MA = 0;
     if (spyData && spyData.length >= 20) {
         var sum = 0;
@@ -17360,7 +17370,7 @@ function checkAnalysisConflict() {
         spy20MA = sum / 20;
     }
 
-    var spyPrice = symbolGannData['SPY'] ? symbolGannData['SPY'].price : price;
+    var spyPrice = symbolGannData[selectedSymbol] ? symbolGannData[selectedSymbol].price : price;
     var marketDirection = spyPrice < spy20MA ? 'PUT' : 'CALL';
 
     // Check for conflict
@@ -17667,7 +17677,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var vix = currentVIX;
 
         // Use real SPY data from CSV
-        var spyData = symbolGannData['SPY'];
+        var spyData = symbolGannData[selectedSymbol];
         var spyPrice = spyData ? spyData.price : 607;
         var spyHigh = spyData ? spyData.high : 610;
         var spyLow = spyData ? spyData.low : 480;
