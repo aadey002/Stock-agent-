@@ -14038,21 +14038,33 @@ function updateGannForecast(symbol) {
         resistanceEl.textContent = '$' + resistance45.toFixed(2);
     }
 
-    // Calculate next cycle turn (Dec 21, 2025 Winter Solstice)
+    // Calculate 30-day Gann cycle - always show NEXT upcoming turn
+    const cycleLength = 30;
+    const cycleBaseDate = new Date('2024-11-15');
     const today = new Date();
-    const nextTurn = new Date(2025, 11, 21); // Dec 21, 2025
-    const daysUntil = Math.ceil((nextTurn - today) / (1000 * 60 * 60 * 24));
+    const daysSinceBase = Math.floor((today - cycleBaseDate) / (1000 * 60 * 60 * 24));
+    let cycleDay = ((daysSinceBase % cycleLength) + cycleLength) % cycleLength;
+    let daysUntilTurn = cycleLength - cycleDay;
+
+    // Ensure we always show next turn (never zero - if today is turn, show 30)
+    if (daysUntilTurn <= 0) {
+        daysUntilTurn = daysUntilTurn + cycleLength;
+    }
+
+    // Calculate next turn date
+    const nextTurnDate = new Date(today);
+    nextTurnDate.setDate(today.getDate() + daysUntilTurn);
 
     // Update Next Cycle Turn - use forecastCycleDate
     const turnDateEl = document.getElementById('forecastCycleDate');
     if (turnDateEl) {
-        turnDateEl.textContent = 'Dec 21, 2025';
+        turnDateEl.textContent = nextTurnDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     // Update Days Until - use forecastDaysUntil
     const daysEl = document.getElementById('forecastDaysUntil');
     if (daysEl) {
-        daysEl.textContent = daysUntil + ' days';
+        daysEl.textContent = daysUntilTurn + ' days';
     }
 
     // Update Projected Move - SYMBOL SPECIFIC - use projectedMoveText
