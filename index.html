@@ -1253,6 +1253,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn ai-tab" data-tab="ai-assistant">🧠 AI Assistant</button>
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
             <button class="tab-btn gann-tab" data-tab="gann-analysis" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white;">🔮 Gann Analysis</button>
+            <button class="tab-btn market-tab" data-tab="market-analysis" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">📊 Market Analysis</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
             <button class="tab-btn" data-tab="mtf-bias" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">📊 MTF Bias</button>
@@ -3997,6 +3998,167 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+
+        <!-- MARKET ANALYSIS TAB -->
+        <div id="market-analysis" class="tab-content">
+            <!-- Market Analysis Header -->
+            <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.15)); border-radius: 12px; border: 2px solid #ef4444;">
+                <h2 style="margin: 0; color: #dc2626; font-size: 24px;">📊 Market Conditions Analysis</h2>
+                <p style="margin: 5px 0 0 0; color: #991b1b; font-size: 12px;">Trend-Following Approach Based on Moving Averages, Breadth and Volatility</p>
+            </div>
+
+            <!-- Market Conditions Dashboard -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-title">📊 Market Conditions Dashboard</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <!-- VIX -->
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(139,92,246,0.3);">
+                        <div style="font-size: 11px; color: #7c3aed; font-weight: 600;">VIX LEVEL</div>
+                        <div id="mktVixValue" style="font-size: 32px; font-weight: 800; color: #7c3aed;">--</div>
+                        <div id="mktVixStatus" style="font-size: 12px; color: #22c55e; font-weight: 600;">Loading...</div>
+                        <div id="mktVix20MA" style="font-size: 10px; color: #666; margin-top: 5px;">20MA: --</div>
+                    </div>
+                    <!-- SPY Trend -->
+                    <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(59,130,246,0.3);">
+                        <div style="font-size: 11px; color: #2563eb; font-weight: 600;">SPY vs 20MA</div>
+                        <div id="mktSpyTrend" style="font-size: 28px; font-weight: 800; color: #666;">--</div>
+                        <div id="mktSpyTrendStatus" style="font-size: 12px; color: #666; font-weight: 600;">Loading...</div>
+                        <div id="mktSpy20MA" style="font-size: 10px; color: #666; margin-top: 5px;">20MA: --</div>
+                    </div>
+                    <!-- Breadth -->
+                    <div style="background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(234,179,8,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(234,179,8,0.3);">
+                        <div style="font-size: 11px; color: #ca8a04; font-weight: 600;">MARKET BREADTH</div>
+                        <div id="mktBreadthValue" style="font-size: 32px; font-weight: 800; color: #666;">--%</div>
+                        <div id="mktBreadthStatus" style="font-size: 12px; color: #666; font-weight: 600;">Loading...</div>
+                        <div id="mktBreadthCount" style="font-size: 10px; color: #666; margin-top: 5px;">--/-- above 20MA</div>
+                    </div>
+                    <!-- Overall -->
+                    <div id="mktOverallBox" style="background: linear-gradient(135deg, rgba(107,114,128,0.1), rgba(107,114,128,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #6b7280;">
+                        <div style="font-size: 11px; color: #374151; font-weight: 600;">OVERALL</div>
+                        <div id="mktOverallValue" style="font-size: 24px; font-weight: 800; color: #374151;">LOADING</div>
+                        <div id="mktOverallScore" style="font-size: 14px; color: #666; font-weight: 600;">--/3</div>
+                        <div id="mktOverallAdvice" style="font-size: 10px; color: #666; margin-top: 5px;">...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Directional Bias -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                    <div id="mktBiasBox" style="background: linear-gradient(135deg, rgba(107,114,128,0.15), rgba(107,114,128,0.25)); border-radius: 12px; padding: 25px; text-align: center; border: 2px solid #6b7280;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">MARKET DIRECTIONAL BIAS</div>
+                        <div id="mktBiasText" style="font-size: 36px; font-weight: 800; color: #374151;">NEUTRAL</div>
+                    </div>
+                    <div style="padding: 15px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 10px;">📋 Market Analysis Summary</div>
+                        <div id="mktAnalysisSummary" style="font-size: 12px; color: #666; line-height: 1.8;">
+                            <div>Loading market conditions...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIX Analysis -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-title">📈 VIX Volatility Analysis</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: #666;">Current</div>
+                                <div id="mktVixCurrent" style="font-size: 20px; font-weight: 700; color: #7c3aed;">--</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: #666;">20-Day Avg</div>
+                                <div id="mktVixAvg" style="font-size: 20px; font-weight: 700; color: #666;">--</div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 10px; color: #666;">% vs Avg</div>
+                                <div id="mktVixVsAvg" style="font-size: 20px; font-weight: 700; color: #666;">--%</div>
+                            </div>
+                        </div>
+                        <div id="mktVixInterpretation" style="padding: 15px; background: rgba(139,92,246,0.1); border-radius: 8px; font-size: 12px; color: #5b21b6; line-height: 1.6;">
+                            <strong>Interpretation:</strong> Loading VIX analysis...
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">VIX Level Guide</div>
+                        <div style="font-size: 11px; line-height: 2.0;">
+                            <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 4px; margin-bottom: 4px;">
+                                <span style="color: #22c55e; font-weight: 600;">Below 12:</span> Extreme complacency - expect volatility spike
+                            </div>
+                            <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 4px; margin-bottom: 4px;">
+                                <span style="color: #22c55e; font-weight: 600;">12-16:</span> Low vol - favor selling premium strategies
+                            </div>
+                            <div style="padding: 8px; background: rgba(234,179,8,0.1); border-radius: 4px; margin-bottom: 4px;">
+                                <span style="color: #eab308; font-weight: 600;">16-20:</span> Normal volatility - standard trading
+                            </div>
+                            <div style="padding: 8px; background: rgba(249,115,22,0.1); border-radius: 4px; margin-bottom: 4px;">
+                                <span style="color: #f97316; font-weight: 600;">20-25:</span> Elevated fear - use caution, wider stops
+                            </div>
+                            <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 4px;">
+                                <span style="color: #ef4444; font-weight: 600;">Above 25:</span> High fear - contrarian buy opportunities
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breadth Analysis -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-title">📊 Market Breadth Analysis</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #22c55e; margin-bottom: 10px;">✅ Above 20MA (Bullish)</div>
+                        <div id="mktBreadthAbove" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: rgba(107,114,128,0.15); color: #666; border-radius: 6px; font-size: 11px;">Loading...</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #ef4444; margin-bottom: 10px;">❌ Below 20MA (Bearish)</div>
+                        <div id="mktBreadthBelow" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span style="padding: 6px 12px; background: rgba(107,114,128,0.15); color: #666; border-radius: 6px; font-size: 11px;">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 12px; color: #666;">
+                        <strong>Breadth Interpretation:</strong> When fewer than 50% of sectors are above their 20MA, the market rally is narrow and vulnerable. Current breadth at <span id="mktBreadthPct" style="color: #666; font-weight: 600;">--%</span> - favor defensive positioning when below 50%.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Moving Average Levels -->
+            <div class="card">
+                <div class="card-title">📉 SPY Moving Average Levels</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #666;">Current Price</div>
+                        <div id="mktSpyPrice" style="font-size: 22px; font-weight: 700; color: #333;">$--</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #3b82f6;">
+                        <div style="font-size: 10px; color: #2563eb;">20 MA (Key Level)</div>
+                        <div id="mktSpy20MALevel" style="font-size: 22px; font-weight: 700; color: #2563eb;">$--</div>
+                        <div id="mktSpy20MADist" style="font-size: 10px; color: #666;">--% from price</div>
+                    </div>
+                    <div style="background: rgba(234,179,8,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #ca8a04;">50 MA</div>
+                        <div id="mktSpy50MALevel" style="font-size: 22px; font-weight: 700; color: #ca8a04;">$--</div>
+                        <div id="mktSpy50MADist" style="font-size: 10px; color: #666;">--% from price</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #7c3aed;">200 MA</div>
+                        <div id="mktSpy200MALevel" style="font-size: 22px; font-weight: 700; color: #7c3aed;">$--</div>
+                        <div id="mktSpy200MADist" style="font-size: 10px; color: #666;">--% from price</div>
+                    </div>
+                </div>
+                <div style="padding: 12px; background: rgba(59,130,246,0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
+                    <div style="font-size: 12px; color: #1e40af;">
+                        <strong>20MA Rule:</strong> When SPY is ABOVE 20MA = favor CALLS. When SPY is BELOW 20MA = favor PUTS. The 20MA acts as dynamic support/resistance.
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- MULTI-CHARTS TAB -->
                 <div id="multi-charts" class="tab-content">
             <div class="card" style="margin-bottom: 15px;">
