@@ -14306,16 +14306,26 @@ function updateGannQuickView() {
         barsEl.style.color = barsInTrend > 5 ? '#f59e0b' : 'var(--text)';
     }
 
-    // Cycle Phase
-    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    const cycleDay = dayOfYear % 30;
+    // Cycle Phase - Calculate 30-day Gann cycle from fixed base date
+    const cycleLength = 30;
+    const cycleBaseDate = new Date('2024-11-15');
+    const todayDate = new Date();
+    const daysSinceBase = Math.floor((todayDate - cycleBaseDate) / (1000 * 60 * 60 * 24));
+    let cycleDay = ((daysSinceBase % cycleLength) + cycleLength) % cycleLength; // Always positive
+    let daysToTurn = cycleLength - cycleDay;
+
+    // If turn is today (day 0), show as day 30 with next turn in 30 days
+    if (cycleDay === 0) {
+        cycleDay = cycleLength;
+        daysToTurn = cycleLength;
+    }
+
     const cyclePhaseEl = document.getElementById('gannQvCyclePhase');
     if (cyclePhaseEl) {
-        cyclePhaseEl.textContent = 'Day ' + cycleDay + ' of 30';
+        cyclePhaseEl.textContent = 'Day ' + cycleDay + ' of ' + cycleLength;
     }
 
     // Next Cycle Turn
-    const daysToTurn = 30 - cycleDay;
     const nextTurnEl = document.getElementById('gannQvNextTurn');
     if (nextTurnEl) {
         const nextDate = new Date();
