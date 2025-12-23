@@ -2,7 +2,10 @@ name: Daily Health Check
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    # Run 3 times daily at 9am, 12pm, 3pm ET (14:00, 17:00, 20:00 UTC)
+    - cron: '0 14 * * *'
+    - cron: '0 17 * * *'
+    - cron: '0 20 * * *'
   workflow_dispatch:
 
 jobs:
