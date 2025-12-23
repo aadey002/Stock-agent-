@@ -1254,6 +1254,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn analysis-tab" data-tab="daily-analysis">📋 Daily Analysis</button>
             <button class="tab-btn gann-tab" data-tab="gann-analysis" style="background: linear-gradient(135deg, #d4a017, #b8860b); color: white;">🔮 Gann Analysis</button>
             <button class="tab-btn market-tab" data-tab="market-analysis" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">📊 Market Analysis</button>
+            <button class="tab-btn performance-tab" data-tab="performance-tracker" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📈 Performance</button>
             <button class="tab-btn charts-tab" data-tab="multi-charts">📊 Multi-Charts</button>
             <button class="tab-btn" data-tab="options-calc" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">🧮 Options Calc</button>
             <button class="tab-btn" data-tab="mtf-bias" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">📊 MTF Bias</button>
@@ -4159,6 +4160,167 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
         </div>
+
+        <!-- PERFORMANCE TRACKER TAB -->
+        <div id="performance-tracker" class="tab-content">
+            <!-- Performance Header -->
+            <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15)); border-radius: 12px; border: 2px solid #8b5cf6;">
+                <h2 style="margin: 0; color: #7c3aed; font-size: 24px;">📈 Performance Tracker</h2>
+                <p style="margin: 5px 0 0 0; color: #5b21b6; font-size: 12px;">Track Gann vs Market Analysis Prediction Accuracy</p>
+            </div>
+
+            <!-- Backtest Summary Cards -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-title">📊 Backtest Results Summary</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <!-- Gann Performance -->
+                    <div style="background: linear-gradient(135deg, rgba(212,160,23,0.1), rgba(212,160,23,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(212,160,23,0.3);">
+                        <div style="font-size: 11px; color: #b8860b; font-weight: 600;">GANN ACCURACY</div>
+                        <div id="perfGannAccuracy" style="font-size: 32px; font-weight: 800; color: #d4a017;">--%</div>
+                        <div id="perfGannWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
+                        <div style="font-size: 10px; color: #666; margin-top: 5px;">Based on Square of 9</div>
+                    </div>
+                    <!-- Market Performance -->
+                    <div style="background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(239,68,68,0.3);">
+                        <div style="font-size: 11px; color: #dc2626; font-weight: 600;">MARKET ACCURACY</div>
+                        <div id="perfMktAccuracy" style="font-size: 32px; font-weight: 800; color: #ef4444;">--%</div>
+                        <div id="perfMktWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
+                        <div style="font-size: 10px; color: #666; margin-top: 5px;">VIX + Breadth + MA</div>
+                    </div>
+                    <!-- Aligned Performance -->
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid rgba(34,197,94,0.5);">
+                        <div style="font-size: 11px; color: #16a34a; font-weight: 600;">ALIGNED (BOTH AGREE)</div>
+                        <div id="perfAlignedAccuracy" style="font-size: 32px; font-weight: 800; color: #22c55e;">--%</div>
+                        <div id="perfAlignedWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
+                        <div style="font-size: 10px; color: #16a34a; margin-top: 5px;">⭐ Best Performance</div>
+                    </div>
+                    <!-- Conflict Performance -->
+                    <div style="background: linear-gradient(135deg, rgba(249,115,22,0.1), rgba(249,115,22,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(249,115,22,0.3);">
+                        <div style="font-size: 11px; color: #ea580c; font-weight: 600;">CONFLICT (DISAGREE)</div>
+                        <div id="perfConflictAccuracy" style="font-size: 32px; font-weight: 800; color: #f97316;">--%</div>
+                        <div id="perfConflictWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
+                        <div style="font-size: 10px; color: #666; margin-top: 5px;">⚠️ Avoid Trading</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backtest Methodology -->
+            <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(124,58,237,0.1));">
+                <div class="card-title">📋 Backtest Methodology & Insights</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #5b21b6; margin-bottom: 10px;">Testing Criteria</div>
+                        <div style="font-size: 12px; color: #666; line-height: 1.8;">
+                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
+                                <strong>✅ Win:</strong> Next day closes in predicted direction (>0.3% move)
+                            </div>
+                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
+                                <strong>❌ Loss:</strong> Next day closes against prediction OR flat (<0.3%)
+                            </div>
+                            <div style="padding: 8px; background: white; border-radius: 6px;">
+                                <strong>🎯 Aligned:</strong> Both Gann AND Market agree on direction
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #5b21b6; margin-bottom: 10px;">Key Insights</div>
+                        <div id="perfInsights" style="font-size: 12px; color: #666; line-height: 1.8;">
+                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
+                                📈 Trade when BOTH indicators align for best results
+                            </div>
+                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
+                                ⚠️ Conflicting signals = stay in cash or reduce size
+                            </div>
+                            <div style="padding: 8px; background: white; border-radius: 6px;">
+                                🔄 Data updates daily after market close
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Prediction Log -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="card-title" style="margin: 0;">📝 Daily Prediction Log</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="savePrediction()" style="padding: 8px 16px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">💾 Save Today's Prediction</button>
+                        <button onclick="verifyPredictions()" style="padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">✅ Verify Yesterday</button>
+                        <button onclick="clearPredictions()" style="padding: 8px 16px; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">🗑️ Clear All</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15));">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #8b5cf6;">DATE</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #8b5cf6;">SYMBOL</th>
+                                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #8b5cf6;">PRICE</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">GANN</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">MKT</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">ALIGNED</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">NEXT DAY</th>
+                                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #8b5cf6;">ACTUAL</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">G ✓</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">M ✓</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionLogBody">
+                            <tr>
+                                <td colspan="10" style="padding: 30px; text-align: center; color: #666;">
+                                    No predictions logged yet. Click "Save Today's Prediction" to start tracking.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance Over Time Chart -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-title">📈 Performance Over Time</div>
+                <div id="performanceChartContainer" style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
+                    <div style="text-align: center; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                        <div style="font-size: 14px;">Start logging predictions to see performance chart</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 5px;">Accuracy trends will appear here</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Performing Conditions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="card">
+                    <div class="card-title">🏆 Best Performing Conditions</div>
+                    <div id="bestConditions" style="font-size: 12px; line-height: 2.0;">
+                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #22c55e;">
+                            <strong>VIX < 15 + Gann Bullish:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
+                        </div>
+                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #22c55e;">
+                            <strong>Breadth > 70% + Aligned:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
+                        </div>
+                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; border-left: 4px solid #22c55e;">
+                            <strong>SPY > 20MA + Gann Bullish:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">⚠️ Worst Performing Conditions</div>
+                    <div id="worstConditions" style="font-size: 12px; line-height: 2.0;">
+                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #ef4444;">
+                            <strong>VIX > 25 + Conflicting:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
+                        </div>
+                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #ef4444;">
+                            <strong>Breadth < 30% + Bullish:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
+                        </div>
+                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; border-left: 4px solid #ef4444;">
+                            <strong>SPY < 20MA + Gann Bullish:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- MULTI-CHARTS TAB -->
                 <div id="multi-charts" class="tab-content">
             <div class="card" style="margin-bottom: 15px;">
