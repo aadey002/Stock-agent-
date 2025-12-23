@@ -5264,6 +5264,7 @@ async function fetchVIXData() {
                 currentVIX = vixClose;
                 console.log('VIX updated from CSV: ' + currentVIX.toFixed(2));
                 updateVIXDisplay();
+                if (typeof loadVixData === 'function') loadVixData();
                 return currentVIX;
             }
         }
@@ -5728,7 +5729,14 @@ function initTabs() {
             if (btn.dataset.tab === 'gann-analysis') {
                 updateGannAnalysis();
                 updateGannAnalysisForSymbol(currentSymbol);
+
+            // Trigger Market Analysis update when tab is clicked
+            if (btn.dataset.tab === 'market-analysis') {
+                if (typeof updateMarketAnalysisTab === 'function') {
+                    updateMarketAnalysisTab();
+                }
             }
+        };
         };
     });
 }
@@ -8395,6 +8403,326 @@ async function loadAllSymbolsData() {
         } catch (e) { console.error(`Error loading ${symbol}:`, e); }
     }
 }
+
+
+// =============================================
+// MARKET ANALYSIS TAB - VIX & BREADTH FUNCTIONS
+// =============================================
+
+// VIX data storage
+var vixData = [];
+
+// Load VIX data from CSV
+async function loadVixData() {
+    try {
+        var response = await fetch('data/VIX.csv?t=' + Date.now());
+        if (!response.ok) {
+            console.log('VIX.csv not found, using defaults');
+            return;
+        }
+        var text = await response.text();
+        var lines = text.trim().split('\n');
+        var headers = lines[0].split(',');
+
+        vixData = [];
+        for (var i = 1; i < lines.length; i++) {
+            var values = lines[i].split(',');
+            var row = {};
+            for (var j = 0; j < headers.length; j++) {
+                row[headers[j].trim()] = values[j] ? values[j].trim() : '';
+            }
+            vixData.push(row);
+        }
+        console.log('VIX data loaded: ' + vixData.length + ' rows');
+
+        if (typeof updateMarketAnalysisTab === 'function') {
+            updateMarketAnalysisTab();
+        }
+    } catch (e) {
+        console.log('Error loading VIX data: ' + e);
+    }
+}
+
+// Update Market Analysis Tab with real data
+function updateMarketAnalysisTab() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    // === VIX Analysis ===
+    var vixCurrent = 14.9;
+    var vix20MA = 16.5;
+    if (vixData && vixData.length > 0) {
+        vixCurrent = parseFloat(vixData[vixData.length - 1].Close) || 14.9;
+        if (vixData.length >= 20) {
+            var vixSum = 0;
+            for (var i = vixData.length - 20; i < vixData.length; i++) {
+                vixSum += parseFloat(vixData[i].Close) || 0;
+            }
+            vix20MA = vixSum / 20;
+        }
+    }
+    var vixVsAvg = ((vixCurrent - vix20MA) / vix20MA * 100).toFixed(1);
+    var vixStatus, vixStatusColor;
+    if (vixCurrent < 12) {
+        vixStatus = 'Extreme Low ⚠️';
+        vixStatusColor = '#f59e0b';
+    } else if (vixCurrent < 16) {
+        vixStatus = 'Low Vol ✅';
+        vixStatusColor = '#22c55e';
+    } else if (vixCurrent < 20) {
+        vixStatus = 'Normal';
+        vixStatusColor = '#666';
+    } else if (vixCurrent < 25) {
+        vixStatus = 'Elevated ⚠️';
+        vixStatusColor = '#f59e0b';
+    } else {
+        vixStatus = 'High Fear 🔴';
+        vixStatusColor = '#ef4444';
+    }
+
+    var el;
+    el = document.getElementById('mktVixValue');
+    if (el) el.textContent = vixCurrent.toFixed(1);
+    el = document.getElementById('mktVixStatus');
+    if (el) { el.textContent = vixStatus; el.style.color = vixStatusColor; }
+    el = document.getElementById('mktVix20MA');
+    if (el) el.textContent = '20MA: ' + vix20MA.toFixed(1);
+    el = document.getElementById('mktVixCurrent');
+    if (el) el.textContent = vixCurrent.toFixed(1);
+    el = document.getElementById('mktVixAvg');
+    if (el) el.textContent = vix20MA.toFixed(1);
+    el = document.getElementById('mktVixVsAvg');
+    if (el) {
+        el.textContent = (vixVsAvg >= 0 ? '+' : '') + vixVsAvg + '%';
+        el.style.color = vixVsAvg < 0 ? '#22c55e' : '#ef4444';
+    }
+
+    var vixInterp = '';
+    if (vixCurrent < 12) {
+        vixInterp = 'VIX extremely low indicates complacency. High risk of volatility spike. Consider protective puts.';
+    } else if (vixCurrent < 16) {
+        vixInterp = 'VIX below average indicates low fear. Markets may be vulnerable to a volatility spike. Good for selling premium.';
+    } else if (vixCurrent < 20) {
+        vixInterp = 'VIX in normal range. Standard trading conditions apply. No volatility edge either way.';
+    } else if (vixCurrent < 25) {
+        vixInterp = 'Elevated VIX indicates increased fear. Use wider stops and smaller position sizes. Potential bounce setups.';
+    } else {
+        vixInterp = 'High VIX indicates extreme fear. Contrarian buy opportunities may emerge. Watch for capitulation signals.';
+    }
+    el = document.getElementById('mktVixInterpretation');
+    if (el) el.innerHTML = '<strong>Interpretation:</strong> ' + vixInterp;
+
+    // === SPY Analysis ===
+    var spyPrice = 0;
+    var spy20MA = 0;
+    var spy50MA = 0;
+    var spy200MA = 0;
+    var spyData = allSymbolsData['SPY'];
+
+    if (spyData && spyData.length > 0) {
+        spyPrice = parseFloat(spyData[spyData.length - 1].Close) || 0;
+
+        if (spyData.length >= 20) {
+            var sum20 = 0;
+            for (var i = spyData.length - 20; i < spyData.length; i++) {
+                sum20 += parseFloat(spyData[i].Close) || 0;
+            }
+            spy20MA = sum20 / 20;
+        }
+        if (spyData.length >= 50) {
+            var sum50 = 0;
+            for (var i = spyData.length - 50; i < spyData.length; i++) {
+                sum50 += parseFloat(spyData[i].Close) || 0;
+            }
+            spy50MA = sum50 / 50;
+        }
+        if (spyData.length >= 200) {
+            var sum200 = 0;
+            for (var i = spyData.length - 200; i < spyData.length; i++) {
+                sum200 += parseFloat(spyData[i].Close) || 0;
+            }
+            spy200MA = sum200 / 200;
+        }
+    }
+
+    if (symbolGannData && symbolGannData['SPY'] && symbolGannData['SPY'].price) {
+        spyPrice = symbolGannData['SPY'].price;
+    }
+
+    var spyAbove20MA = spyPrice > spy20MA;
+    var spyTrendText = spyAbove20MA ? '↑ ABOVE' : '↓ BELOW';
+    var spyTrendStatus = spyAbove20MA ? 'Bullish ✅' : 'Bearish ❌';
+    var spyTrendColor = spyAbove20MA ? '#22c55e' : '#ef4444';
+
+    el = document.getElementById('mktSpyTrend');
+    if (el) { el.textContent = spyTrendText; el.style.color = spyTrendColor; }
+    el = document.getElementById('mktSpyTrendStatus');
+    if (el) { el.textContent = spyTrendStatus; el.style.color = spyTrendColor; }
+    el = document.getElementById('mktSpy20MA');
+    if (el) el.textContent = '20MA: $' + spy20MA.toFixed(2);
+    el = document.getElementById('mktSpyPrice');
+    if (el) el.textContent = '$' + spyPrice.toFixed(2);
+    el = document.getElementById('mktSpy20MALevel');
+    if (el) el.textContent = '$' + spy20MA.toFixed(2);
+    el = document.getElementById('mktSpy50MALevel');
+    if (el) el.textContent = '$' + spy50MA.toFixed(2);
+    el = document.getElementById('mktSpy200MALevel');
+    if (el) el.textContent = '$' + spy200MA.toFixed(2);
+
+    var dist20 = spy20MA > 0 ? ((spyPrice - spy20MA) / spy20MA * 100).toFixed(1) : 0;
+    var dist50 = spy50MA > 0 ? ((spyPrice - spy50MA) / spy50MA * 100).toFixed(1) : 0;
+    var dist200 = spy200MA > 0 ? ((spyPrice - spy200MA) / spy200MA * 100).toFixed(1) : 0;
+
+    el = document.getElementById('mktSpy20MADist');
+    if (el) {
+        el.textContent = (dist20 >= 0 ? '+' : '') + dist20 + '% ' + (dist20 >= 0 ? 'above' : 'below');
+        el.style.color = dist20 >= 0 ? '#22c55e' : '#ef4444';
+    }
+    el = document.getElementById('mktSpy50MADist');
+    if (el) {
+        el.textContent = (dist50 >= 0 ? '+' : '') + dist50 + '% ' + (dist50 >= 0 ? 'above' : 'below');
+        el.style.color = dist50 >= 0 ? '#22c55e' : '#ef4444';
+    }
+    el = document.getElementById('mktSpy200MADist');
+    if (el) {
+        el.textContent = (dist200 >= 0 ? '+' : '') + dist200 + '% ' + (dist200 >= 0 ? 'above' : 'below');
+        el.style.color = dist200 >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // === Breadth Analysis ===
+    var aboveMA = [];
+    var belowMA = [];
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var symData = allSymbolsData[sym];
+        if (!symData || symData.length < 20) continue;
+
+        var symPrice = parseFloat(symData[symData.length - 1].Close) || 0;
+        if (symbolGannData && symbolGannData[sym] && symbolGannData[sym].price) {
+            symPrice = symbolGannData[sym].price;
+        }
+
+        var symSum = 0;
+        for (var i = symData.length - 20; i < symData.length; i++) {
+            symSum += parseFloat(symData[i].Close) || 0;
+        }
+        var sym20MA = symSum / 20;
+
+        if (symPrice > sym20MA) {
+            aboveMA.push(sym);
+        } else {
+            belowMA.push(sym);
+        }
+    }
+
+    var breadthPct = symbols.length > 0 ? Math.round((aboveMA.length / symbols.length) * 100) : 0;
+    var breadthStatus, breadthColor;
+    if (breadthPct >= 70) {
+        breadthStatus = 'Strong ✅';
+        breadthColor = '#22c55e';
+    } else if (breadthPct >= 50) {
+        breadthStatus = 'Neutral';
+        breadthColor = '#eab308';
+    } else if (breadthPct >= 30) {
+        breadthStatus = 'Weak ⚠️';
+        breadthColor = '#f59e0b';
+    } else {
+        breadthStatus = 'Very Weak ❌';
+        breadthColor = '#ef4444';
+    }
+
+    el = document.getElementById('mktBreadthValue');
+    if (el) { el.textContent = breadthPct + '%'; el.style.color = breadthColor; }
+    el = document.getElementById('mktBreadthStatus');
+    if (el) { el.textContent = breadthStatus; el.style.color = breadthColor; }
+    el = document.getElementById('mktBreadthCount');
+    if (el) el.textContent = aboveMA.length + '/' + symbols.length + ' above 20MA';
+    el = document.getElementById('mktBreadthPct');
+    if (el) { el.textContent = breadthPct + '%'; el.style.color = breadthColor; }
+
+    el = document.getElementById('mktBreadthAbove');
+    if (el) {
+        el.innerHTML = aboveMA.map(function(sym) {
+            return '<span style="padding: 6px 12px; background: rgba(34,197,94,0.15); color: #22c55e; border-radius: 6px; font-size: 11px; font-weight: 600;">' + sym + '</span>';
+        }).join('') || '<span style="color: #666; font-size: 11px;">None</span>';
+    }
+    el = document.getElementById('mktBreadthBelow');
+    if (el) {
+        el.innerHTML = belowMA.map(function(sym) {
+            return '<span style="padding: 6px 12px; background: rgba(239,68,68,0.15); color: #ef4444; border-radius: 6px; font-size: 11px; font-weight: 600;">' + sym + '</span>';
+        }).join('') || '<span style="color: #666; font-size: 11px;">None</span>';
+    }
+
+    // === Overall Score ===
+    var score = 0;
+    var vixOK = vixCurrent < 20;
+    var spyOK = spyAbove20MA;
+    var breadthOK = breadthPct >= 50;
+
+    if (vixOK) score++;
+    if (spyOK) score++;
+    if (breadthOK) score++;
+
+    var overallText, overallColor, overallAdvice;
+    if (score >= 3) {
+        overallText = 'FAVORABLE';
+        overallColor = '#22c55e';
+        overallAdvice = 'Favor CALLs';
+    } else if (score >= 2) {
+        overallText = 'MIXED';
+        overallColor = '#eab308';
+        overallAdvice = 'Be Selective';
+    } else {
+        overallText = 'UNFAVORABLE';
+        overallColor = '#ef4444';
+        overallAdvice = 'Favor PUTs';
+    }
+
+    el = document.getElementById('mktOverallValue');
+    if (el) { el.textContent = overallText; el.style.color = overallColor; }
+    el = document.getElementById('mktOverallScore');
+    if (el) { el.textContent = score + '/3 ' + (score >= 2 ? '✅' : '❌'); el.style.color = overallColor; }
+    el = document.getElementById('mktOverallAdvice');
+    if (el) el.textContent = overallAdvice;
+    el = document.getElementById('mktOverallBox');
+    if (el) {
+        var rgb = overallColor === '#22c55e' ? '34,197,94' : overallColor === '#eab308' ? '234,179,8' : '239,68,68';
+        el.style.background = 'linear-gradient(135deg, rgba(' + rgb + ',0.1), rgba(' + rgb + ',0.2))';
+        el.style.borderColor = overallColor;
+    }
+
+    // === Directional Bias ===
+    var biasText = spyOK ? 'BULLISH' : 'BEARISH';
+    var biasColor = spyOK ? '#22c55e' : '#ef4444';
+
+    el = document.getElementById('mktBiasText');
+    if (el) { el.textContent = biasText; el.style.color = biasColor; }
+    el = document.getElementById('mktBiasBox');
+    if (el) {
+        var biasRgb = spyOK ? '34,197,94' : '239,68,68';
+        el.style.background = 'linear-gradient(135deg, rgba(' + biasRgb + ',0.15), rgba(' + biasRgb + ',0.25))';
+        el.style.borderColor = biasColor;
+    }
+
+    el = document.getElementById('mktAnalysisSummary');
+    if (el) {
+        var summaryHTML = '<div>• <strong>SPY ' + (spyOK ? 'above' : 'below') + ' 20MA</strong> - Primary trend is ' + (spyOK ? 'UP' : 'DOWN') + '</div>';
+        summaryHTML += '<div>• <strong>' + (breadthOK ? 'Strong' : 'Weak') + ' breadth (' + breadthPct + '%)</strong> - ' + (breadthOK ? 'Broad participation' : 'Narrow participation') + '</div>';
+        summaryHTML += '<div>• <strong>' + (vixCurrent < 16 ? 'Low' : vixCurrent < 20 ? 'Normal' : 'High') + ' VIX (' + vixCurrent.toFixed(1) + ')</strong> - ' + (vixCurrent < 16 ? 'Complacency risk' : vixCurrent < 20 ? 'Normal conditions' : 'Fear elevated') + '</div>';
+
+        var recColor = spyOK ? '#166534' : '#991b1b';
+        var recBg = spyOK ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+        var recText = spyOK ?
+            '✅ Recommendation: Favor CALL trades, normal position sizes, buy dips' :
+            '⚠️ Recommendation: Favor PUT trades, reduce position sizes, sell rallies';
+
+        summaryHTML += '<div style="margin-top: 10px; padding: 10px; background: ' + recBg + '; border-radius: 6px; color: ' + recColor + '; font-weight: 600;">' + recText + '</div>';
+        el.innerHTML = summaryHTML;
+    }
+
+    console.log('Market Analysis Tab updated - Score: ' + score + '/3, Bias: ' + biasText);
+}
+
 
 function updateDashboard() {
     if (!currentData || !currentData.length) { console.warn("updateDashboard: No data"); return; }
