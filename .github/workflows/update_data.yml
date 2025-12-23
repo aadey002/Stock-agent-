@@ -2,8 +2,8 @@ name: Update Market Data
 
 on:
   schedule:
-    # Every 15 minutes during market hours (14:30-21:00 UTC = 9:30 AM-4 PM ET)
-    - cron: '*/15 14-20 * * 1-5'
+    # Every 15 minutes during market hours (14:00-21:45 UTC = 9:00 AM-4:45 PM ET)
+    - cron: '*/15 14-21 * * 1-5'
   workflow_dispatch:  # Manual trigger
 
 jobs:
