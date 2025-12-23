@@ -4163,158 +4163,158 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
         <!-- PERFORMANCE TRACKER TAB -->
         <div id="performance-tracker" class="tab-content">
-            <!-- Performance Header -->
+            <!-- Header -->
             <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15)); border-radius: 12px; border: 2px solid #8b5cf6;">
-                <h2 style="margin: 0; color: #7c3aed; font-size: 24px;">📈 Performance Tracker</h2>
-                <p style="margin: 5px 0 0 0; color: #5b21b6; font-size: 12px;">Track Gann vs Market Analysis Prediction Accuracy</p>
+                <h2 style="margin: 0; color: #7c3aed; font-size: 24px;">📈 Prediction Performance Tracker</h2>
+                <p style="margin: 5px 0 0 0; color: #6d28d9; font-size: 12px;">Compare Gann Analysis vs Market Conditions Accuracy</p>
             </div>
 
             <!-- Backtest Summary Cards -->
             <div class="card" style="margin-bottom: 20px;">
-                <div class="card-title">📊 Backtest Results Summary</div>
+                <div class="card-title">📊 Historical Backtest Results (SPY)</div>
+                <div id="backtestPeriod" style="font-size: 11px; color: #666; margin-bottom: 15px;">Analyzing last 252 trading days...</div>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
                     <!-- Gann Performance -->
-                    <div style="background: linear-gradient(135deg, rgba(212,160,23,0.1), rgba(212,160,23,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(212,160,23,0.3);">
-                        <div style="font-size: 11px; color: #b8860b; font-weight: 600;">GANN ACCURACY</div>
-                        <div id="perfGannAccuracy" style="font-size: 32px; font-weight: 800; color: #d4a017;">--%</div>
-                        <div id="perfGannWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
-                        <div style="font-size: 10px; color: #666; margin-top: 5px;">Based on Square of 9</div>
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #8b5cf6;">
+                        <div style="font-size: 11px; color: #7c3aed; font-weight: 600;">🔮 GANN ANALYSIS</div>
+                        <div id="btGannWinRate" style="font-size: 36px; font-weight: 800; color: #7c3aed;">---%</div>
+                        <div id="btGannRecord" style="font-size: 12px; color: #666;">-/- trades</div>
+                        <div id="btGannAvgReturn" style="font-size: 10px; color: #22c55e; margin-top: 5px;">Avg: +0.0%</div>
                     </div>
                     <!-- Market Performance -->
-                    <div style="background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(239,68,68,0.3);">
-                        <div style="font-size: 11px; color: #dc2626; font-weight: 600;">MARKET ACCURACY</div>
-                        <div id="perfMktAccuracy" style="font-size: 32px; font-weight: 800; color: #ef4444;">--%</div>
-                        <div id="perfMktWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
-                        <div style="font-size: 10px; color: #666; margin-top: 5px;">VIX + Breadth + MA</div>
+                    <div style="background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #ef4444;">
+                        <div style="font-size: 11px; color: #dc2626; font-weight: 600;">📊 MARKET CONDITIONS</div>
+                        <div id="btMktWinRate" style="font-size: 36px; font-weight: 800; color: #ef4444;">---%</div>
+                        <div id="btMktRecord" style="font-size: 12px; color: #666;">-/- trades</div>
+                        <div id="btMktAvgReturn" style="font-size: 10px; color: #22c55e; margin-top: 5px;">Avg: +0.0%</div>
                     </div>
                     <!-- Aligned Performance -->
-                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid rgba(34,197,94,0.5);">
-                        <div style="font-size: 11px; color: #16a34a; font-weight: 600;">ALIGNED (BOTH AGREE)</div>
-                        <div id="perfAlignedAccuracy" style="font-size: 32px; font-weight: 800; color: #22c55e;">--%</div>
-                        <div id="perfAlignedWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
-                        <div style="font-size: 10px; color: #16a34a; margin-top: 5px;">⭐ Best Performance</div>
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #22c55e;">
+                        <div style="font-size: 11px; color: #16a34a; font-weight: 600;">✅ WHEN ALIGNED</div>
+                        <div id="btAlignedWinRate" style="font-size: 36px; font-weight: 800; color: #22c55e;">---%</div>
+                        <div id="btAlignedRecord" style="font-size: 12px; color: #666;">-/- trades</div>
+                        <div id="btAlignedAvgReturn" style="font-size: 10px; color: #22c55e; margin-top: 5px;">Avg: +0.0%</div>
                     </div>
                     <!-- Conflict Performance -->
-                    <div style="background: linear-gradient(135deg, rgba(249,115,22,0.1), rgba(249,115,22,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(249,115,22,0.3);">
-                        <div style="font-size: 11px; color: #ea580c; font-weight: 600;">CONFLICT (DISAGREE)</div>
-                        <div id="perfConflictAccuracy" style="font-size: 32px; font-weight: 800; color: #f97316;">--%</div>
-                        <div id="perfConflictWinLoss" style="font-size: 12px; color: #666; font-weight: 600;">--W / --L</div>
-                        <div style="font-size: 10px; color: #666; margin-top: 5px;">⚠️ Avoid Trading</div>
+                    <div style="background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(234,179,8,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #eab308;">
+                        <div style="font-size: 11px; color: #ca8a04; font-weight: 600;">⚠️ WHEN CONFLICT</div>
+                        <div id="btConflictGann" style="font-size: 14px; font-weight: 700; color: #7c3aed;">Gann: ---%</div>
+                        <div id="btConflictMkt" style="font-size: 14px; font-weight: 700; color: #ef4444;">Mkt: ---%</div>
+                        <div id="btConflictCount" style="font-size: 10px; color: #666; margin-top: 5px;">- conflict days</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Backtest Methodology -->
-            <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(124,58,237,0.1));">
+            <!-- Backtest Details -->
+            <div class="card" style="margin-bottom: 20px;">
                 <div class="card-title">📋 Backtest Methodology & Insights</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #5b21b6; margin-bottom: 10px;">Testing Criteria</div>
-                        <div style="font-size: 12px; color: #666; line-height: 1.8;">
-                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
-                                <strong>✅ Win:</strong> Next day closes in predicted direction (>0.3% move)
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">How Predictions Are Scored:</div>
+                        <div style="font-size: 11px; color: #666; line-height: 1.8;">
+                            <div style="padding: 8px; background: rgba(139,92,246,0.1); border-radius: 4px; margin-bottom: 6px;">
+                                <strong>🔮 Gann:</strong> CALL if price in bottom 35% of 20-day range, PUT if top 35%
                             </div>
-                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
-                                <strong>❌ Loss:</strong> Next day closes against prediction OR flat (<0.3%)
+                            <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 4px; margin-bottom: 6px;">
+                                <strong>📊 Market:</strong> CALL if price > 20MA, PUT if price < 20MA
                             </div>
-                            <div style="padding: 8px; background: white; border-radius: 6px;">
-                                <strong>🎯 Aligned:</strong> Both Gann AND Market agree on direction
+                            <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 4px;">
+                                <strong>✅ Correct:</strong> If next-day move matches prediction direction
                             </div>
                         </div>
                     </div>
                     <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #5b21b6; margin-bottom: 10px;">Key Insights</div>
-                        <div id="perfInsights" style="font-size: 12px; color: #666; line-height: 1.8;">
-                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
-                                📈 Trade when BOTH indicators align for best results
-                            </div>
-                            <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px;">
-                                ⚠️ Conflicting signals = stay in cash or reduce size
-                            </div>
-                            <div style="padding: 8px; background: white; border-radius: 6px;">
-                                🔄 Data updates daily after market close
+                        <div style="font-size: 12px; font-weight: 600; color: #333; margin-bottom: 10px;">Key Insights:</div>
+                        <div id="btInsights" style="font-size: 11px; color: #666; line-height: 1.8;">
+                            <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; margin-bottom: 6px;">
+                                • Loading insights...
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Daily Prediction Log -->
+            <!-- Prediction Log Controls -->
             <div class="card" style="margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div class="card-title" style="margin: 0;">📝 Daily Prediction Log</div>
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="savePrediction()" style="padding: 8px 16px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">💾 Save Today's Prediction</button>
-                        <button onclick="verifyPredictions()" style="padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">✅ Verify Yesterday</button>
-                        <button onclick="clearPredictions()" style="padding: 8px 16px; background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">🗑️ Clear All</button>
+                        <button onclick="saveTodaysPrediction()" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">💾 Save Today's Predictions</button>
+                        <button onclick="verifyPastPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Past Predictions</button>
+                        <button onclick="clearPredictionLog()" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear Log</button>
                     </div>
                 </div>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                        <thead>
-                            <tr style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15));">
-                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #8b5cf6;">DATE</th>
-                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #8b5cf6;">SYMBOL</th>
-                                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #8b5cf6;">PRICE</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">GANN</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">MKT</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">ALIGNED</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">NEXT DAY</th>
-                                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #8b5cf6;">ACTUAL</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">G ✓</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #8b5cf6;">M ✓</th>
+
+                <!-- Recent Predictions Summary -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                    <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: #666;">Total Logged</div>
+                        <div id="logTotalCount" style="font-size: 24px; font-weight: 700; color: #333;">0</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: #7c3aed;">🔮 Gann Accuracy</div>
+                        <div id="logGannAccuracy" style="font-size: 24px; font-weight: 700; color: #7c3aed;">--%</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: #dc2626;">📊 Market Accuracy</div>
+                        <div id="logMktAccuracy" style="font-size: 24px; font-weight: 700; color: #ef4444;">--%</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: #16a34a;">✅ Aligned Accuracy</div>
+                        <div id="logAlignedAccuracy" style="font-size: 24px; font-weight: 700; color: #22c55e;">--%</div>
+                    </div>
+                </div>
+
+                <!-- Prediction Log Table -->
+                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                        <thead style="position: sticky; top: 0; background: #f0f0f0;">
+                            <tr>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">DATE</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">SYMBOL</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">PRICE</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1);">🔮 GANN</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1);">📊 MKT</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">ALIGNED</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">NEXT DAY</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">ACTUAL</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1);">G ✓</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1);">M ✓</th>
                             </tr>
                         </thead>
                         <tbody id="predictionLogBody">
-                            <tr>
-                                <td colspan="10" style="padding: 30px; text-align: center; color: #666;">
-                                    No predictions logged yet. Click "Save Today's Prediction" to start tracking.
-                                </td>
-                            </tr>
+                            <tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">No predictions logged yet. Click "Save Today's Predictions" to start tracking.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Performance Over Time Chart -->
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="card-title">📈 Performance Over Time</div>
-                <div id="performanceChartContainer" style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
+            <!-- Performance Over Time Chart (placeholder) -->
+            <div class="card">
+                <div class="card-title">📈 Cumulative Accuracy Over Time</div>
+                <div id="performanceChartContainer" style="height: 200px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                     <div style="text-align: center; color: #666;">
-                        <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
-                        <div style="font-size: 14px;">Start logging predictions to see performance chart</div>
-                        <div style="font-size: 11px; color: #999; margin-top: 5px;">Accuracy trends will appear here</div>
+                        <div style="font-size: 14px; margin-bottom: 5px;">📊 Chart will populate as predictions are verified</div>
+                        <div style="font-size: 11px;">Log at least 10 predictions to see trends</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Best Performing Conditions -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="card">
-                    <div class="card-title">🏆 Best Performing Conditions</div>
-                    <div id="bestConditions" style="font-size: 12px; line-height: 2.0;">
-                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #22c55e;">
-                            <strong>VIX < 15 + Gann Bullish:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
-                        </div>
-                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #22c55e;">
-                            <strong>Breadth > 70% + Aligned:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
-                        </div>
-                        <div style="padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; border-left: 4px solid #22c55e;">
-                            <strong>SPY > 20MA + Gann Bullish:</strong> <span style="color: #22c55e; font-weight: 600;">--% win rate</span>
+                <!-- Best Performing Conditions -->
+                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="padding: 15px; background: rgba(139,92,246,0.1); border-radius: 8px;">
+                        <div style="font-size: 12px; font-weight: 600; color: #7c3aed; margin-bottom: 8px;">🔮 Gann Works Best When:</div>
+                        <div style="font-size: 11px; color: #666; line-height: 1.6;">
+                            • Price at range extremes (< 25% or > 75%)<br>
+                            • After extended moves (reversion likely)<br>
+                            • In ranging/consolidating markets
                         </div>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">⚠️ Worst Performing Conditions</div>
-                    <div id="worstConditions" style="font-size: 12px; line-height: 2.0;">
-                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #ef4444;">
-                            <strong>VIX > 25 + Conflicting:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
-                        </div>
-                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #ef4444;">
-                            <strong>Breadth < 30% + Bullish:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
-                        </div>
-                        <div style="padding: 10px; background: rgba(239,68,68,0.1); border-radius: 6px; border-left: 4px solid #ef4444;">
-                            <strong>SPY < 20MA + Gann Bullish:</strong> <span style="color: #ef4444; font-weight: 600;">--% win rate</span>
+                    <div style="padding: 15px; background: rgba(239,68,68,0.1); border-radius: 8px;">
+                        <div style="font-size: 12px; font-weight: 600; color: #dc2626; margin-bottom: 8px;">📊 Market Works Best When:</div>
+                        <div style="font-size: 11px; color: #666; line-height: 1.6;">
+                            • Strong trending markets<br>
+                            • Clear above/below 20MA position<br>
+                            • Low VIX (< 20) environments
                         </div>
                     </div>
                 </div>
@@ -8893,6 +8893,511 @@ function updateMarketAnalysisTab() {
     }
 
     console.log('Market Analysis Tab updated - Score: ' + score + '/3, Bias: ' + biasText);
+}
+
+// ==========================================
+// PERFORMANCE TRACKER - BACKTESTING ENGINE
+// ==========================================
+
+// Run backtest on historical data
+function runBacktest() {
+    var spyData = allSymbolsData['SPY'];
+    if (!spyData || spyData.length < 50) {
+        console.log('Not enough SPY data for backtest');
+        return;
+    }
+
+    var results = {
+        gann: { wins: 0, losses: 0, totalReturn: 0 },
+        market: { wins: 0, losses: 0, totalReturn: 0 },
+        aligned: { wins: 0, losses: 0, totalReturn: 0 },
+        conflict: { gannWins: 0, gannLosses: 0, mktWins: 0, mktLosses: 0 },
+        daily: []
+    };
+
+    // Start from day 21 (need 20 days for MA calculation)
+    var startDay = 21;
+    var endDay = spyData.length - 1; // Need next day to verify
+
+    for (var i = startDay; i < endDay; i++) {
+        var today = spyData[i];
+        var nextDay = spyData[i + 1];
+
+        var price = parseFloat(today.Close) || 0;
+        var nextClose = parseFloat(nextDay.Close) || 0;
+        if (price === 0 || nextClose === 0) continue;
+
+        var actualMove = nextClose - price;
+        var actualPct = (actualMove / price) * 100;
+
+        // Calculate 20-day high/low for Gann
+        var high20 = 0, low20 = 999999;
+        for (var j = i - 20; j < i; j++) {
+            var h = parseFloat(spyData[j].High) || 0;
+            var l = parseFloat(spyData[j].Low) || 0;
+            if (h > high20) high20 = h;
+            if (l < low20 && l > 0) low20 = l;
+        }
+
+        // Calculate 20MA for Market Conditions
+        var sum20 = 0;
+        for (var j = i - 19; j <= i; j++) {
+            sum20 += parseFloat(spyData[j].Close) || 0;
+        }
+        var ma20 = sum20 / 20;
+
+        // GANN Prediction (mean reversion)
+        var range = high20 - low20;
+        var position = range > 0 ? (price - low20) / range : 0.5;
+        var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+
+        // MARKET Prediction (trend following)
+        var mktPred = price > ma20 ? 'CALL' : 'PUT';
+
+        // Skip HOLD predictions for Gann
+        if (gannPred === 'HOLD') continue;
+
+        // Check if predictions were correct
+        var gannCorrect = (gannPred === 'CALL' && actualMove > 0) || (gannPred === 'PUT' && actualMove < 0);
+        var mktCorrect = (mktPred === 'CALL' && actualMove > 0) || (mktPred === 'PUT' && actualMove < 0);
+        var aligned = gannPred === mktPred;
+
+        // Update Gann stats
+        if (gannCorrect) {
+            results.gann.wins++;
+            results.gann.totalReturn += Math.abs(actualPct);
+        } else {
+            results.gann.losses++;
+            results.gann.totalReturn -= Math.abs(actualPct);
+        }
+
+        // Update Market stats
+        if (mktCorrect) {
+            results.market.wins++;
+            results.market.totalReturn += Math.abs(actualPct);
+        } else {
+            results.market.losses++;
+            results.market.totalReturn -= Math.abs(actualPct);
+        }
+
+        // Update Aligned/Conflict stats
+        if (aligned) {
+            if (gannCorrect) {
+                results.aligned.wins++;
+                results.aligned.totalReturn += Math.abs(actualPct);
+            } else {
+                results.aligned.losses++;
+                results.aligned.totalReturn -= Math.abs(actualPct);
+            }
+        } else {
+            // Conflict
+            if (gannCorrect) results.conflict.gannWins++;
+            else results.conflict.gannLosses++;
+            if (mktCorrect) results.conflict.mktWins++;
+            else results.conflict.mktLosses++;
+        }
+
+        // Store daily result
+        results.daily.push({
+            date: today.Date,
+            price: price,
+            gannPred: gannPred,
+            mktPred: mktPred,
+            aligned: aligned,
+            actualMove: actualPct,
+            gannCorrect: gannCorrect,
+            mktCorrect: mktCorrect
+        });
+    }
+
+    // Calculate final stats
+    var gannTotal = results.gann.wins + results.gann.losses;
+    var mktTotal = results.market.wins + results.market.losses;
+    var alignedTotal = results.aligned.wins + results.aligned.losses;
+    var conflictGannTotal = results.conflict.gannWins + results.conflict.gannLosses;
+    var conflictMktTotal = results.conflict.mktWins + results.conflict.mktLosses;
+
+    results.gannWinRate = gannTotal > 0 ? (results.gann.wins / gannTotal * 100).toFixed(1) : 0;
+    results.mktWinRate = mktTotal > 0 ? (results.market.wins / mktTotal * 100).toFixed(1) : 0;
+    results.alignedWinRate = alignedTotal > 0 ? (results.aligned.wins / alignedTotal * 100).toFixed(1) : 0;
+    results.conflictGannWinRate = conflictGannTotal > 0 ? (results.conflict.gannWins / conflictGannTotal * 100).toFixed(1) : 0;
+    results.conflictMktWinRate = conflictMktTotal > 0 ? (results.conflict.mktWins / conflictMktTotal * 100).toFixed(1) : 0;
+
+    results.gannAvgReturn = gannTotal > 0 ? (results.gann.totalReturn / gannTotal).toFixed(2) : 0;
+    results.mktAvgReturn = mktTotal > 0 ? (results.market.totalReturn / mktTotal).toFixed(2) : 0;
+    results.alignedAvgReturn = alignedTotal > 0 ? (results.aligned.totalReturn / alignedTotal).toFixed(2) : 0;
+
+    console.log('Backtest complete:', results);
+    return results;
+}
+
+// Update backtest display
+function updateBacktestDisplay(results) {
+    if (!results) {
+        results = runBacktest();
+    }
+    if (!results) return;
+
+    var el;
+
+    // Period info
+    var spyData = allSymbolsData['SPY'];
+    var startDate = spyData && spyData.length > 21 ? spyData[21].Date : 'N/A';
+    var endDate = spyData && spyData.length > 0 ? spyData[spyData.length - 1].Date : 'N/A';
+    el = document.getElementById('backtestPeriod');
+    if (el) el.textContent = 'Period: ' + startDate + ' to ' + endDate + ' (' + results.daily.length + ' trading days analyzed)';
+
+    // Gann stats
+    el = document.getElementById('btGannWinRate');
+    if (el) {
+        el.textContent = results.gannWinRate + '%';
+        el.style.color = results.gannWinRate >= 55 ? '#22c55e' : (results.gannWinRate >= 45 ? '#eab308' : '#ef4444');
+    }
+    el = document.getElementById('btGannRecord');
+    if (el) el.textContent = results.gann.wins + '/' + (results.gann.wins + results.gann.losses) + ' correct';
+    el = document.getElementById('btGannAvgReturn');
+    if (el) {
+        el.textContent = 'Avg: ' + (results.gannAvgReturn >= 0 ? '+' : '') + results.gannAvgReturn + '%';
+        el.style.color = results.gannAvgReturn >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // Market stats
+    el = document.getElementById('btMktWinRate');
+    if (el) {
+        el.textContent = results.mktWinRate + '%';
+        el.style.color = results.mktWinRate >= 55 ? '#22c55e' : (results.mktWinRate >= 45 ? '#eab308' : '#ef4444');
+    }
+    el = document.getElementById('btMktRecord');
+    if (el) el.textContent = results.market.wins + '/' + (results.market.wins + results.market.losses) + ' correct';
+    el = document.getElementById('btMktAvgReturn');
+    if (el) {
+        el.textContent = 'Avg: ' + (results.mktAvgReturn >= 0 ? '+' : '') + results.mktAvgReturn + '%';
+        el.style.color = results.mktAvgReturn >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // Aligned stats
+    el = document.getElementById('btAlignedWinRate');
+    if (el) {
+        el.textContent = results.alignedWinRate + '%';
+        el.style.color = results.alignedWinRate >= 55 ? '#22c55e' : (results.alignedWinRate >= 45 ? '#eab308' : '#ef4444');
+    }
+    el = document.getElementById('btAlignedRecord');
+    if (el) el.textContent = results.aligned.wins + '/' + (results.aligned.wins + results.aligned.losses) + ' correct';
+    el = document.getElementById('btAlignedAvgReturn');
+    if (el) {
+        el.textContent = 'Avg: ' + (results.alignedAvgReturn >= 0 ? '+' : '') + results.alignedAvgReturn + '%';
+        el.style.color = results.alignedAvgReturn >= 0 ? '#22c55e' : '#ef4444';
+    }
+
+    // Conflict stats
+    el = document.getElementById('btConflictGann');
+    if (el) {
+        el.textContent = 'Gann: ' + results.conflictGannWinRate + '%';
+        el.style.color = results.conflictGannWinRate >= 50 ? '#22c55e' : '#ef4444';
+    }
+    el = document.getElementById('btConflictMkt');
+    if (el) {
+        el.textContent = 'Mkt: ' + results.conflictMktWinRate + '%';
+        el.style.color = results.conflictMktWinRate >= 50 ? '#22c55e' : '#ef4444';
+    }
+    var conflictCount = results.conflict.gannWins + results.conflict.gannLosses;
+    el = document.getElementById('btConflictCount');
+    if (el) el.textContent = conflictCount + ' conflict days';
+
+    // Generate insights
+    var insights = [];
+    if (parseFloat(results.mktWinRate) > parseFloat(results.gannWinRate)) {
+        insights.push('📊 Market Conditions outperformed Gann by ' + (results.mktWinRate - results.gannWinRate).toFixed(1) + '%');
+    } else {
+        insights.push('🔮 Gann Analysis outperformed Market by ' + (results.gannWinRate - results.mktWinRate).toFixed(1) + '%');
+    }
+
+    if (parseFloat(results.alignedWinRate) > parseFloat(results.gannWinRate) && parseFloat(results.alignedWinRate) > parseFloat(results.mktWinRate)) {
+        insights.push('✅ Aligned signals have highest accuracy - wait for agreement!');
+    }
+
+    if (parseFloat(results.conflictMktWinRate) > parseFloat(results.conflictGannWinRate)) {
+        insights.push('⚠️ During conflicts, Market Conditions more reliable');
+    } else if (parseFloat(results.conflictGannWinRate) > parseFloat(results.conflictMktWinRate)) {
+        insights.push('⚠️ During conflicts, Gann Analysis more reliable');
+    }
+
+    var alignedCount = results.aligned.wins + results.aligned.losses;
+    var totalCount = results.daily.length;
+    var alignedPct = totalCount > 0 ? Math.round(alignedCount / totalCount * 100) : 0;
+    insights.push('📈 Systems agreed ' + alignedPct + '% of the time (' + alignedCount + '/' + totalCount + ' days)');
+
+    el = document.getElementById('btInsights');
+    if (el) {
+        el.innerHTML = insights.map(function(insight) {
+            return '<div style="padding: 8px; background: #f8f9fa; border-radius: 4px; margin-bottom: 6px;">' + insight + '</div>';
+        }).join('');
+    }
+
+    console.log('Backtest display updated');
+}
+
+// ==========================================
+// PREDICTION LOGGER - SAVE & VERIFY
+// ==========================================
+
+// Get predictions from localStorage
+function getPredictionLog() {
+    var log = localStorage.getItem('stockAgentPredictionLog');
+    return log ? JSON.parse(log) : [];
+}
+
+// Save predictions to localStorage
+function savePredictionLog(log) {
+    localStorage.setItem('stockAgentPredictionLog', JSON.stringify(log));
+}
+
+// Save today's predictions for all symbols
+function saveTodaysPrediction() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var today = new Date().toISOString().split('T')[0];
+    var log = getPredictionLog();
+
+    // Check if today already logged
+    var todayExists = log.some(function(entry) {
+        return entry.date === today && entry.symbol === 'SPY';
+    });
+
+    if (todayExists) {
+        alert('Today\'s predictions already saved! Use "Verify Past Predictions" to update results.');
+        return;
+    }
+
+    var savedCount = 0;
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = allSymbolsData[sym];
+        if (!data || data.length < 21) continue;
+
+        var price = symbolGannData[sym] ? symbolGannData[sym].price : parseFloat(data[data.length - 1].Close);
+        if (!price) continue;
+
+        // Calculate 20-day high/low for Gann
+        var high20 = 0, low20 = 999999;
+        for (var j = data.length - 21; j < data.length - 1; j++) {
+            var h = parseFloat(data[j].High) || 0;
+            var l = parseFloat(data[j].Low) || 0;
+            if (h > high20) high20 = h;
+            if (l < low20 && l > 0) low20 = l;
+        }
+
+        // Calculate 20MA for Market
+        var sum20 = 0;
+        for (var j = data.length - 20; j < data.length; j++) {
+            sum20 += parseFloat(data[j].Close) || 0;
+        }
+        var ma20 = sum20 / 20;
+
+        // GANN Prediction
+        var range = high20 - low20;
+        var position = range > 0 ? (price - low20) / range : 0.5;
+        var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+
+        // MARKET Prediction
+        var mktPred = price > ma20 ? 'CALL' : 'PUT';
+
+        var aligned = gannPred === mktPred || gannPred === 'HOLD';
+
+        log.push({
+            date: today,
+            symbol: sym,
+            price: price,
+            gannPred: gannPred,
+            mktPred: mktPred,
+            aligned: aligned,
+            nextDayPrice: null,
+            actualMove: null,
+            gannCorrect: null,
+            mktCorrect: null,
+            verified: false
+        });
+
+        savedCount++;
+    }
+
+    savePredictionLog(log);
+    updatePredictionLogDisplay();
+    alert('Saved predictions for ' + savedCount + ' symbols on ' + today);
+}
+
+// Verify past predictions with actual results
+function verifyPastPredictions() {
+    var log = getPredictionLog();
+    var verifiedCount = 0;
+
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (entry.verified) continue;
+
+        var sym = entry.symbol;
+        var data = allSymbolsData[sym];
+        if (!data || data.length < 2) continue;
+
+        // Find the entry date in data
+        var entryIndex = -1;
+        for (var j = 0; j < data.length; j++) {
+            if (data[j].Date === entry.date) {
+                entryIndex = j;
+                break;
+            }
+        }
+
+        // Need at least next day's data
+        if (entryIndex === -1 || entryIndex >= data.length - 1) continue;
+
+        var nextDayData = data[entryIndex + 1];
+        var nextDayPrice = parseFloat(nextDayData.Close);
+        if (!nextDayPrice) continue;
+
+        var actualMove = ((nextDayPrice - entry.price) / entry.price * 100).toFixed(2);
+        var moveUp = nextDayPrice > entry.price;
+
+        entry.nextDayPrice = nextDayPrice;
+        entry.actualMove = parseFloat(actualMove);
+        entry.gannCorrect = (entry.gannPred === 'CALL' && moveUp) || (entry.gannPred === 'PUT' && !moveUp) || entry.gannPred === 'HOLD';
+        entry.mktCorrect = (entry.mktPred === 'CALL' && moveUp) || (entry.mktPred === 'PUT' && !moveUp);
+        entry.verified = true;
+
+        verifiedCount++;
+    }
+
+    savePredictionLog(log);
+    updatePredictionLogDisplay();
+
+    if (verifiedCount > 0) {
+        alert('Verified ' + verifiedCount + ' predictions with actual results!');
+    } else {
+        alert('No unverified predictions found, or next-day data not yet available.');
+    }
+}
+
+// Clear prediction log
+function clearPredictionLog() {
+    if (confirm('Are you sure you want to clear all prediction history? This cannot be undone.')) {
+        localStorage.removeItem('stockAgentPredictionLog');
+        updatePredictionLogDisplay();
+        alert('Prediction log cleared.');
+    }
+}
+
+// Update prediction log display
+function updatePredictionLogDisplay() {
+    var log = getPredictionLog();
+    var tbody = document.getElementById('predictionLogBody');
+
+    // Calculate summary stats
+    var totalVerified = 0;
+    var gannWins = 0, gannTotal = 0;
+    var mktWins = 0, mktTotal = 0;
+    var alignedWins = 0, alignedTotal = 0;
+
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (entry.verified) {
+            totalVerified++;
+            if (entry.gannPred !== 'HOLD') {
+                gannTotal++;
+                if (entry.gannCorrect) gannWins++;
+            }
+            mktTotal++;
+            if (entry.mktCorrect) mktWins++;
+            if (entry.aligned) {
+                alignedTotal++;
+                if (entry.gannCorrect || entry.mktCorrect) alignedWins++;
+            }
+        }
+    }
+
+    // Update summary cards
+    var el;
+    el = document.getElementById('logTotalCount');
+    if (el) el.textContent = log.length;
+
+    el = document.getElementById('logGannAccuracy');
+    if (el) el.textContent = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) + '%' : '--%';
+
+    el = document.getElementById('logMktAccuracy');
+    if (el) el.textContent = mktTotal > 0 ? Math.round(mktWins / mktTotal * 100) + '%' : '--%';
+
+    el = document.getElementById('logAlignedAccuracy');
+    if (el) el.textContent = alignedTotal > 0 ? Math.round(alignedWins / alignedTotal * 100) + '%' : '--%';
+
+    // Update table
+    if (!tbody) return;
+
+    if (log.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.</td></tr>';
+        return;
+    }
+
+    // Sort by date descending, then by symbol
+    log.sort(function(a, b) {
+        if (a.date !== b.date) return b.date.localeCompare(a.date);
+        return a.symbol.localeCompare(b.symbol);
+    });
+
+    // Only show SPY entries in table (to avoid clutter), but track all for stats
+    var spyLog = log.filter(function(entry) { return entry.symbol === 'SPY'; });
+
+    var rows = spyLog.map(function(entry) {
+        var gannColor = entry.gannPred === 'CALL' ? '#22c55e' : (entry.gannPred === 'PUT' ? '#ef4444' : '#eab308');
+        var mktColor = entry.mktPred === 'CALL' ? '#22c55e' : '#ef4444';
+        var alignedIcon = entry.aligned ? '✅' : '⚠️';
+        var actualColor = entry.actualMove >= 0 ? '#22c55e' : '#ef4444';
+        var actualSign = entry.actualMove >= 0 ? '+' : '';
+
+        var gannCheckIcon = entry.verified ? (entry.gannCorrect ? '✅' : '❌') : '⏳';
+        var mktCheckIcon = entry.verified ? (entry.mktCorrect ? '✅' : '❌') : '⏳';
+
+        return '<tr>' +
+            '<td style="padding: 8px;">' + entry.date + '</td>' +
+            '<td style="padding: 8px; font-weight: 600;">' + entry.symbol + '</td>' +
+            '<td style="padding: 8px;">$' + entry.price.toFixed(2) + '</td>' +
+            '<td style="padding: 8px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 600;">' + entry.gannPred + '</span></td>' +
+            '<td style="padding: 8px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 600;">' + entry.mktPred + '</span></td>' +
+            '<td style="padding: 8px;">' + alignedIcon + '</td>' +
+            '<td style="padding: 8px;">' + (entry.nextDayPrice ? '$' + entry.nextDayPrice.toFixed(2) : '--') + '</td>' +
+            '<td style="padding: 8px; color: ' + actualColor + '; font-weight: 600;">' + (entry.actualMove !== null ? actualSign + entry.actualMove + '%' : '--') + '</td>' +
+            '<td style="padding: 8px; background: rgba(139,92,246,0.05); font-size: 14px;">' + gannCheckIcon + '</td>' +
+            '<td style="padding: 8px; background: rgba(239,68,68,0.05); font-size: 14px;">' + mktCheckIcon + '</td>' +
+            '</tr>';
+    });
+
+    tbody.innerHTML = rows.join('');
+}
+
+// ==========================================
+// INITIALIZE PERFORMANCE TRACKER
+// ==========================================
+
+// Add performance tracker tab click handler
+function initPerformanceTracker() {
+    var perfTab = document.querySelector('[data-tab="performance-tracker"]');
+    if (perfTab) {
+        perfTab.addEventListener('click', function() {
+            setTimeout(function() {
+                if (typeof updateBacktestDisplay === 'function') {
+                    updateBacktestDisplay();
+                }
+                if (typeof updatePredictionLogDisplay === 'function') {
+                    updatePredictionLogDisplay();
+                }
+            }, 100);
+        });
+    }
+}
+
+// Initialize on DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPerformanceTracker);
+} else {
+    initPerformanceTracker();
 }
 
 
