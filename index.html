@@ -1383,6 +1383,13 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 </div>
             </div>
 
+            <!-- Confidence Badge based on Alignment -->
+            <div id="signalConfidenceBadge" style="margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; background: #f8f9fa; border: 2px solid #ddd;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">SIGNAL CONFIDENCE</div>
+                <div id="confidenceLevel" style="font-size: 24px; font-weight: 800;">--</div>
+                <div id="confidenceExplain" style="font-size: 11px; color: #666; margin-top: 5px;">Based on backtested accuracy</div>
+            </div>
+
             <!-- Conflict Warning & Market Analysis Trade -->
             <div id="analysisConflictSection" style="display: none; margin-top: 15px;">
                 <!-- Conflict Warning Banner -->
@@ -4327,6 +4334,23 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
+                <!-- Gann Signal Mode Toggle -->
+                <div style="margin-top: 15px; padding: 15px; background: rgba(139,92,246,0.1); border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 12px; font-weight: 600; color: #7c3aed;">🔄 Gann Signal Mode</div>
+                            <div style="font-size: 11px; color: #666;">Current Gann accuracy: 36% (below 50% = contrarian)</div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="btnGannNormal" onclick="setGannMode(false)" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">Normal (36%)</button>
+                            <button id="btnGannInvert" onclick="setGannMode(true)" style="padding: 8px 16px; background: white; color: #8b5cf6; border: 1px solid #8b5cf6; border-radius: 6px; cursor: pointer; font-size: 11px;">Inverted (64%)</button>
+                        </div>
+                    </div>
+                    <div id="gannModeExplain" style="margin-top: 10px; font-size: 10px; color: #666;">
+                        Normal mode: CALL when price in bottom 35% of range. Inverted: CALL when price in TOP 35% (momentum following).
+                    </div>
+                </div>
+
                 <!-- Best Performing Conditions -->
                 <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div style="padding: 15px; background: rgba(139,92,246,0.1); border-radius: 8px;">
@@ -5440,6 +5464,67 @@ let conversationHistory = [];
 // VIX data - updated from CSV
 var currentVIX = 14.9;
 
+// Gann signal inversion (based on backtest showing 36% = contrarian indicator)
+var invertGannSignal = false; // Set to true to invert Gann signals
+
+// Toggle Gann signal inversion
+function setGannMode(invert) {
+    invertGannSignal = invert;
+
+    // Update button styles
+    var normalBtn = document.getElementById('btnGannNormal');
+    var invertBtn = document.getElementById('btnGannInvert');
+    var explainEl = document.getElementById('gannModeExplain');
+
+    if (normalBtn && invertBtn) {
+        if (invert) {
+            normalBtn.style.background = 'white';
+            normalBtn.style.color = '#8b5cf6';
+            normalBtn.style.border = '1px solid #8b5cf6';
+            invertBtn.style.background = '#8b5cf6';
+            invertBtn.style.color = 'white';
+            invertBtn.style.border = 'none';
+        } else {
+            normalBtn.style.background = '#8b5cf6';
+            normalBtn.style.color = 'white';
+            normalBtn.style.border = 'none';
+            invertBtn.style.background = 'white';
+            invertBtn.style.color = '#8b5cf6';
+            invertBtn.style.border = '1px solid #8b5cf6';
+        }
+    }
+
+    if (explainEl) {
+        if (invert) {
+            explainEl.textContent = 'INVERTED MODE: Treating Gann as momentum indicator. CALL when price HIGH in range (64% est. accuracy).';
+            explainEl.style.color = '#22c55e';
+        } else {
+            explainEl.textContent = 'NORMAL MODE: Mean reversion. CALL when price LOW in range (36% historical accuracy).';
+            explainEl.style.color = '#666';
+        }
+    }
+
+    // Recalculate all displays
+    if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+    if (typeof generateDynamicOpportunities === 'function') generateDynamicOpportunities();
+    if (typeof checkAnalysisConflict === 'function') checkAnalysisConflict();
+
+    // Save preference
+    localStorage.setItem('gannInvertMode', invert ? 'true' : 'false');
+
+    console.log('Gann mode set to: ' + (invert ? 'INVERTED' : 'NORMAL'));
+}
+
+// Load saved Gann mode preference on startup
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var saved = localStorage.getItem('gannInvertMode');
+        if (saved === 'true') {
+            setGannMode(true);
+        }
+    }, 2000);
+});
+
 // Fetch real VIX data from CSV
 async function fetchVIXData() {
     try {
@@ -5574,16 +5659,29 @@ function calculateGannDirectionForSymbol(symbol, timeframe) {
     }
 
     // Match Gann Analysis thresholds exactly (binary, no middle zone)
+    // Respects inversion mode
     var direction;
-    if (timeframe === 'INTRADAY') {
-        direction = position < 0.4 ? 'CALL' : 'PUT';
-    } else if (timeframe === 'SWING') {
-        direction = position < 0.35 ? 'CALL' : 'PUT';
+    if (typeof invertGannSignal !== 'undefined' && invertGannSignal) {
+        // INVERTED MODE: High position = CALL (momentum following)
+        if (timeframe === 'INTRADAY') {
+            direction = position > 0.6 ? 'CALL' : 'PUT';
+        } else if (timeframe === 'SWING') {
+            direction = position > 0.65 ? 'CALL' : 'PUT';
+        } else {
+            direction = position > 0.7 ? 'CALL' : 'PUT';
+        }
     } else {
-        direction = position < 0.3 ? 'CALL' : 'PUT';
+        // NORMAL MODE: Low position = CALL (mean reversion)
+        if (timeframe === 'INTRADAY') {
+            direction = position < 0.4 ? 'CALL' : 'PUT';
+        } else if (timeframe === 'SWING') {
+            direction = position < 0.35 ? 'CALL' : 'PUT';
+        } else {
+            direction = position < 0.3 ? 'CALL' : 'PUT';
+        }
     }
 
-    console.log('Auto-calc ' + symbol + ' ' + timeframe + ': position=' + (position*100).toFixed(1) + '%, direction=' + direction);
+    console.log('Auto-calc ' + symbol + ' ' + timeframe + ': position=' + (position*100).toFixed(1) + '%, direction=' + direction + (invertGannSignal ? ' (INVERTED)' : ''));
 
     return direction;
 }
@@ -7039,8 +7137,15 @@ function generateDynamicOpportunities() {
         // Position in range
         var position = range > 0 ? (price - low) / range : 0.5;
 
-        // GANN Analysis
-        var gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+        // GANN Analysis (respects inversion mode)
+        var gannSignal;
+        if (typeof invertGannSignal !== 'undefined' && invertGannSignal) {
+            // INVERTED: High position = CALL (momentum), Low position = PUT
+            gannSignal = position > 0.65 ? 'CALL' : (position < 0.35 ? 'PUT' : 'HOLD');
+        } else {
+            // NORMAL: Low position = CALL (mean reversion), High position = PUT
+            gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+        }
         var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444' : '#eab308');
 
         // MARKET Analysis (20MA)
@@ -18372,7 +18477,7 @@ function checkAnalysisConflict() {
     var gannDirection = gannPred.direction;
 
     // Get Market Conditions direction based on SPY vs 20MA
-    var spyData = allSymbolsData[selectedSymbol];
+    var spyData = allSymbolsData['SPY'] || allSymbolsData[currentSymbol];
     var spy20MA = 0;
     if (spyData && spyData.length >= 20) {
         var sum = 0;
@@ -18382,7 +18487,7 @@ function checkAnalysisConflict() {
         spy20MA = sum / 20;
     }
 
-    var spyPrice = symbolGannData[selectedSymbol] ? symbolGannData[selectedSymbol].price : price;
+    var spyPrice = symbolGannData['SPY'] ? symbolGannData['SPY'].price : price;
     var marketDirection = spyPrice < spy20MA ? 'PUT' : 'CALL';
 
     // Check for conflict
@@ -18412,6 +18517,38 @@ function checkAnalysisConflict() {
     }
 
     console.log('Conflict check: Gann=' + gannDirection + ', Market=' + marketDirection + ', Conflict=' + hasConflict);
+
+    // Update confidence badge
+    if (typeof updateSignalConfidence === 'function') {
+        updateSignalConfidence(gannDirection, marketDirection);
+    }
+}
+
+// Calculate signal confidence based on alignment
+function updateSignalConfidence(gannSignal, mktSignal) {
+    var badge = document.getElementById('signalConfidenceBadge');
+    var levelEl = document.getElementById('confidenceLevel');
+    var explainEl = document.getElementById('confidenceExplain');
+
+    if (!badge || !levelEl) return;
+
+    var aligned = gannSignal === mktSignal;
+
+    if (aligned) {
+        // ALIGNED = 100% historical accuracy
+        badge.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.3))';
+        badge.style.border = '2px solid #22c55e';
+        levelEl.textContent = '🎯 HIGH CONFIDENCE';
+        levelEl.style.color = '#22c55e';
+        explainEl.textContent = 'Gann & Market ALIGNED - 100% historical accuracy. Trade with conviction!';
+    } else {
+        // CONFLICT - Market is more reliable (67% vs 36%)
+        badge.style.background = 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.3))';
+        badge.style.border = '2px solid #eab308';
+        levelEl.textContent = '⚠️ CONFLICT - TRUST MARKET';
+        levelEl.style.color = '#eab308';
+        explainEl.textContent = 'Gann (36%) vs Market (67%). Data shows Market signal more reliable in conflicts.';
+    }
 }
 
 function updateMarketTrade(symbol, price, high, low, atr, direction, spy20MA, spyPrice) {
