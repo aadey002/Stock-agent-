@@ -4250,6 +4250,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <button onclick="verifyPastPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Past Predictions</button>
                         <button onclick="clearPredictionLog()" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear Log</button>
                         <button onclick="debugPredictionData()" style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔍 Debug Data</button>
+                        <button onclick="backfillPredictions('2025-11-01')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">📅 Backfill Nov 1</button>
+                        <button onclick="clearAndBackfill()" style="padding: 8px 16px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Reset & Backfill</button>
                     </div>
                 </div>
 
@@ -9506,6 +9508,174 @@ function clearPredictionLog() {
         updatePredictionLogDisplay();
         alert('Prediction log cleared.');
     }
+}
+
+// Clear and re-backfill predictions
+function clearAndBackfill() {
+    if (confirm('This will clear ALL prediction history and backfill from Nov 1, 2025. Continue?')) {
+        localStorage.removeItem('stockAgentPredictionLog');
+        backfillPredictions('2025-11-01');
+    }
+}
+
+// Backfill historical predictions from a start date
+function backfillPredictions(startDateStr) {
+    var startDate = new Date(startDateStr || '2025-11-01');
+    var today = new Date();
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    var log = getPredictionLog();
+    var addedCount = 0;
+    var verifiedCount = 0;
+
+    console.log('Backfilling predictions from ' + startDateStr + '...');
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = allSymbolsData[sym];
+
+        if (!data || data.length < 25) {
+            console.log(sym + ': Not enough data');
+            continue;
+        }
+
+        // Find start index (need 20 days before for MA calculation)
+        var startIndex = -1;
+        for (var i = 20; i < data.length; i++) {
+            var rowDateStr = data[i].Date ? data[i].Date.split(' ')[0].split('T')[0] : '';
+            var rowDate = new Date(rowDateStr);
+            if (rowDate >= startDate) {
+                startIndex = i;
+                break;
+            }
+        }
+
+        if (startIndex === -1) {
+            console.log(sym + ': Start date not found in data');
+            continue;
+        }
+
+        // Process each day from start to yesterday (need next day to verify)
+        for (var i = startIndex; i < data.length - 1; i++) {
+            var row = data[i];
+            var nextRow = data[i + 1];
+            var dateStr = row.Date ? row.Date.split(' ')[0].split('T')[0] : '';
+
+            // Skip if already in log
+            var exists = log.some(function(entry) {
+                return entry.date === dateStr && entry.symbol === sym;
+            });
+            if (exists) continue;
+
+            var price = parseFloat(row.Close);
+            var nextPrice = parseFloat(nextRow.Close);
+            if (!price || !nextPrice) continue;
+
+            // Calculate 20-day high/low for Gann
+            var high20 = 0, low20 = 999999;
+            for (var j = i - 20; j < i; j++) {
+                var h = parseFloat(data[j].High) || 0;
+                var l = parseFloat(data[j].Low) || 0;
+                if (h > high20) high20 = h;
+                if (l < low20 && l > 0) low20 = l;
+            }
+
+            // Calculate 20MA for Market
+            var sum20 = 0;
+            for (var j = i - 19; j <= i; j++) {
+                sum20 += parseFloat(data[j].Close) || 0;
+            }
+            var ma20 = sum20 / 20;
+
+            // GANN Prediction (mean reversion)
+            var range = high20 - low20;
+            var position = range > 0 ? (price - low20) / range : 0.5;
+            var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
+
+            // MARKET Prediction (trend following)
+            var mktPred = price > ma20 ? 'CALL' : 'PUT';
+
+            var aligned = gannPred === mktPred || gannPred === 'HOLD';
+
+            // Calculate actual result
+            var actualMove = ((nextPrice - price) / price * 100);
+            var moveUp = nextPrice > price;
+
+            var gannCorrect;
+            if (gannPred === 'HOLD') {
+                gannCorrect = true;
+            } else {
+                gannCorrect = (gannPred === 'CALL' && moveUp) || (gannPred === 'PUT' && !moveUp);
+            }
+            var mktCorrect = (mktPred === 'CALL' && moveUp) || (mktPred === 'PUT' && !moveUp);
+
+            // Add to log
+            log.push({
+                date: dateStr,
+                symbol: sym,
+                price: price,
+                gannPred: gannPred,
+                mktPred: mktPred,
+                aligned: aligned,
+                nextDayPrice: nextPrice,
+                actualMove: parseFloat(actualMove.toFixed(2)),
+                gannCorrect: gannCorrect,
+                mktCorrect: mktCorrect,
+                verified: true,
+                backfilled: true
+            });
+
+            addedCount++;
+            if (gannPred !== 'HOLD') verifiedCount++;
+        }
+    }
+
+    // Save and update display
+    savePredictionLog(log);
+    updatePredictionLogDisplay();
+    if (typeof renderAccuracyChart === 'function') {
+        renderAccuracyChart();
+    }
+
+    // Calculate summary stats
+    var gannWins = 0, gannTotal = 0;
+    var mktWins = 0, mktTotal = 0;
+    var alignedWins = 0, alignedTotal = 0;
+
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (!entry.verified) continue;
+
+        if (entry.gannPred !== 'HOLD') {
+            gannTotal++;
+            if (entry.gannCorrect) gannWins++;
+        }
+        mktTotal++;
+        if (entry.mktCorrect) mktWins++;
+
+        if (entry.aligned && entry.gannPred !== 'HOLD') {
+            alignedTotal++;
+            if (entry.gannCorrect && entry.mktCorrect) alignedWins++;
+        }
+    }
+
+    var gannPct = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) : 0;
+    var mktPct = mktTotal > 0 ? Math.round(mktWins / mktTotal * 100) : 0;
+    var alignedPct = alignedTotal > 0 ? Math.round(alignedWins / alignedTotal * 100) : 0;
+
+    var message = 'BACKFILL COMPLETE!\n\n' +
+        'Added: ' + addedCount + ' predictions\n' +
+        'Total in log: ' + log.length + '\n\n' +
+        'RESULTS:\n' +
+        '🔮 Gann Accuracy: ' + gannPct + '% (' + gannWins + '/' + gannTotal + ')\n' +
+        '📊 Market Accuracy: ' + mktPct + '% (' + mktWins + '/' + mktTotal + ')\n' +
+        '✅ Aligned Accuracy: ' + alignedPct + '% (' + alignedWins + '/' + alignedTotal + ')\n\n' +
+        'Leader: ' + (mktPct > gannPct ? '📊 MARKET' : '🔮 GANN') + ' by ' + Math.abs(mktPct - gannPct) + '%';
+
+    alert(message);
+    console.log('Backfill complete:', { added: addedCount, gannPct: gannPct, mktPct: mktPct, alignedPct: alignedPct });
+
+    return { gannPct: gannPct, mktPct: mktPct, alignedPct: alignedPct, total: log.length };
 }
 
 // Debug function to check prediction data
