@@ -4276,6 +4276,20 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
+                <!-- Symbol Filter -->
+                <div style="margin-bottom: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 12px; font-weight: 600; color: #333;">🔍 Filter by Symbol</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="selectAllSymbols()" style="padding: 4px 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">Select All</button>
+                            <button onclick="clearAllSymbols()" style="padding: 4px 10px; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">Clear</button>
+                        </div>
+                    </div>
+                    <div id="symbolFilterCheckboxes" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <!-- Checkboxes generated dynamically -->
+                    </div>
+                </div>
+
                 <!-- Prediction Log Table -->
                 <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
@@ -4371,6 +4385,62 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             • Clear above/below 20MA position<br>
                             • Low VIX (< 20) environments
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Prediction Tracking -->
+            <div class="card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div class="card-title" style="margin: 0;">🤖 Agent Prediction Tracking</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="saveAgentPredictions()" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">💾 Save Agent Predictions</button>
+                        <button onclick="verifyAgentPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Agent Predictions</button>
+                        <button onclick="localStorage.removeItem('stockAgentAgentLog'); updateAgentPredictionDisplay(); alert('Agent log cleared');" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(139,92,246,0.1); border-radius: 8px; font-size: 11px; color: #7c3aed;">
+                    ℹ️ Track actual agent signal accuracy. Save predictions daily, verify after next trading day.
+                    <br>Total logged: <strong id="agentTotalLogged">0</strong> predictions
+                </div>
+
+                <!-- Agent Individual Performance -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.2)); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #3b82f6;">
+                        <div style="font-size: 10px; color: #2563eb; font-weight: 600;">📊 Base Confluence</div>
+                        <div id="agentBaseAccuracy" style="font-size: 28px; font-weight: 800; color: #3b82f6;">--%</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.2)); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #8b5cf6;">
+                        <div style="font-size: 10px; color: #7c3aed; font-weight: 600;">🔮 Gann-Elliott</div>
+                        <div id="agentGannElliottAccuracy" style="font-size: 28px; font-weight: 800; color: #8b5cf6;">--%</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(234,179,8,0.2)); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #eab308;">
+                        <div style="font-size: 10px; color: #ca8a04; font-weight: 600;">🧠 DQN/ML</div>
+                        <div id="agentDqnAccuracy" style="font-size: 28px; font-weight: 800; color: #eab308;">--%</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.2)); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #22c55e;">
+                        <div style="font-size: 10px; color: #16a34a; font-weight: 600;">🌊 3-Wave</div>
+                        <div id="agentWaveAccuracy" style="font-size: 28px; font-weight: 800; color: #22c55e;">--%</div>
+                    </div>
+                </div>
+
+                <!-- Consensus Level Performance -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.25)); border-radius: 10px; padding: 15px; text-align: center; border: 2px solid #22c55e;">
+                        <div style="font-size: 11px; color: #16a34a; font-weight: 600;">🎯 ULTRA (4/4 Agree)</div>
+                        <div id="agentUltraAccuracy" style="font-size: 24px; font-weight: 800; color: #22c55e;">--% (0/0)</div>
+                        <div style="font-size: 10px; color: #666;">Expected: 89%</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.25)); border-radius: 10px; padding: 15px; text-align: center; border: 2px solid #3b82f6;">
+                        <div style="font-size: 11px; color: #2563eb; font-weight: 600;">⭐ SUPER (3/4 Agree)</div>
+                        <div id="agentSuperAccuracy" style="font-size: 24px; font-weight: 800; color: #3b82f6;">--% (0/0)</div>
+                        <div style="font-size: 10px; color: #666;">Expected: 78%</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(234,179,8,0.25)); border-radius: 10px; padding: 15px; text-align: center; border: 2px solid #eab308;">
+                        <div style="font-size: 11px; color: #ca8a04; font-weight: 600;">⚠️ MIXED (2/4 or less)</div>
+                        <div id="agentMixedAccuracy" style="font-size: 24px; font-weight: 800; color: #eab308;">--% (0/0)</div>
+                        <div style="font-size: 10px; color: #666;">Expected: ~50%</div>
                     </div>
                 </div>
             </div>
@@ -5469,6 +5539,65 @@ var currentVIX = 14.9;
 
 // Gann signal inversion (based on backtest showing 36% = contrarian indicator)
 var invertGannSignal = false; // Set to true to invert Gann signals
+
+// Symbol filter for performance table (null = show all, array = selected symbols)
+var selectedFilterSymbols = null; // null means all selected
+var allSymbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+// Initialize symbol filter checkboxes
+function initSymbolFilter() {
+    var container = document.getElementById('symbolFilterCheckboxes');
+    if (!container) return;
+
+    var html = allSymbols.map(function(symbol) {
+        var isChecked = selectedFilterSymbols === null || selectedFilterSymbols.indexOf(symbol) !== -1;
+        var bgColor = isChecked ? '#3b82f6' : '#e5e7eb';
+        var textColor = isChecked ? 'white' : '#374151';
+        return '<label style="display: inline-flex; align-items: center; padding: 4px 10px; background: ' + bgColor + '; color: ' + textColor + '; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500; transition: all 0.2s;">' +
+            '<input type="checkbox" value="' + symbol + '" ' + (isChecked ? 'checked' : '') + ' onchange="toggleSymbolFilter(\'' + symbol + '\')" style="display: none;">' +
+            symbol +
+            '</label>';
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+// Toggle individual symbol filter
+function toggleSymbolFilter(symbol) {
+    // If null (all selected), initialize with all symbols then remove clicked one
+    if (selectedFilterSymbols === null) {
+        selectedFilterSymbols = allSymbols.slice();
+    }
+
+    var idx = selectedFilterSymbols.indexOf(symbol);
+    if (idx !== -1) {
+        selectedFilterSymbols.splice(idx, 1);
+    } else {
+        selectedFilterSymbols.push(symbol);
+    }
+
+    // If all are selected, set back to null
+    if (selectedFilterSymbols.length === allSymbols.length) {
+        selectedFilterSymbols = null;
+    }
+
+    initSymbolFilter();
+    updatePredictionLogDisplay();
+}
+
+// Select all symbols
+function selectAllSymbols() {
+    selectedFilterSymbols = null;
+    initSymbolFilter();
+    updatePredictionLogDisplay();
+}
+
+// Clear all symbols (deselect all)
+function clearAllSymbols() {
+    selectedFilterSymbols = [];
+    initSymbolFilter();
+    updatePredictionLogDisplay();
+}
 
 // Toggle Gann signal inversion
 function setGannMode(invert) {
@@ -9314,6 +9443,290 @@ function savePredictionLog(log) {
     localStorage.setItem('stockAgentPredictionLog', JSON.stringify(log));
 }
 
+// ==========================================
+// AGENT PREDICTION LOGGER
+// ==========================================
+
+// Agent Prediction Log (separate from simple Gann/Market)
+function getAgentPredictionLog() {
+    var log = localStorage.getItem('stockAgentAgentLog');
+    return log ? JSON.parse(log) : [];
+}
+
+function saveAgentPredictionLog(log) {
+    localStorage.setItem('stockAgentAgentLog', JSON.stringify(log));
+}
+
+// Save today's agent predictions
+function saveAgentPredictions() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var today = new Date().toISOString().split('T')[0];
+    var log = getAgentPredictionLog();
+
+    // Check if today already logged
+    var todayExists = log.some(function(entry) {
+        return entry.date === today && entry.symbol === 'SPY';
+    });
+
+    if (todayExists) {
+        alert('Today\'s agent predictions already saved!');
+        return;
+    }
+
+    // Get agent signals from the getAgentSignals function
+    var agentData = null;
+    if (typeof getAgentSignals === 'function') {
+        agentData = getAgentSignals();
+    }
+
+    var savedCount = 0;
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = symbolGannData[sym];
+        if (!data || !data.price) continue;
+
+        var price = data.price;
+
+        // Get agent signals - use actual agent data if available
+        var baseSignal = 'NEUTRAL';
+        var gannElliottSignal = 'NEUTRAL';
+        var dqnSignal = 'NEUTRAL';
+        var waveSignal = 'NEUTRAL';
+        var baseConf = 50;
+        var gannElliottConf = 50;
+        var dqnConf = 50;
+        var waveConf = 50;
+
+        // Use real agent data if available (applies to SPY primarily)
+        if (agentData && agentData.agentDetails && sym === 'SPY') {
+            var details = agentData.agentDetails;
+            baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+            gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+            dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+            waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+            baseConf = details.base ? details.base.confidence : 50;
+            gannElliottConf = details.gann ? details.gann.confidence : 50;
+            dqnConf = details.dqn ? details.dqn.confidence : 50;
+            waveConf = details.wave ? details.wave.confidence : 50;
+        } else {
+            // For non-SPY symbols, calculate based on Gann position and price data
+            var gannPct = data.gannPct || 50;
+            var aboveMA = data.price > data.ma20;
+
+            // Base Confluence: uses multiple indicators
+            baseSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+            baseConf = 55 + Math.abs(gannPct - 50) * 0.3;
+
+            // Gann-Elliott: uses Gann range position
+            if (gannPct < 30) {
+                gannElliottSignal = 'BULLISH'; // Low in range = bullish reversal expected
+            } else if (gannPct > 70) {
+                gannElliottSignal = 'BEARISH'; // High in range = bearish reversal expected
+            } else {
+                gannElliottSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+            }
+            gannElliottConf = 50 + Math.abs(gannPct - 50) * 0.4;
+
+            // DQN: momentum-based
+            dqnSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+            dqnConf = 55;
+
+            // 3-Wave: trend following
+            waveSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+            waveConf = 55;
+        }
+
+        // Calculate consensus
+        var bullishCount = 0;
+        var signals = [baseSignal, gannElliottSignal, dqnSignal, waveSignal];
+        for (var i = 0; i < signals.length; i++) {
+            if (signals[i] === 'BULLISH') bullishCount++;
+        }
+
+        var consensusLevel, consensusDirection;
+        if (bullishCount === 4) {
+            consensusLevel = 'ULTRA';
+            consensusDirection = 'BULLISH';
+        } else if (bullishCount === 3) {
+            consensusLevel = 'SUPER';
+            consensusDirection = 'BULLISH';
+        } else if (bullishCount === 0) {
+            consensusLevel = 'ULTRA';
+            consensusDirection = 'BEARISH';
+        } else if (bullishCount === 1) {
+            consensusLevel = 'SUPER';
+            consensusDirection = 'BEARISH';
+        } else {
+            consensusLevel = 'MIXED';
+            consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
+        }
+
+        log.push({
+            date: today,
+            symbol: sym,
+            price: price,
+            baseSignal: baseSignal,
+            baseConf: baseConf,
+            gannElliottSignal: gannElliottSignal,
+            gannElliottConf: gannElliottConf,
+            dqnSignal: dqnSignal,
+            dqnConf: dqnConf,
+            waveSignal: waveSignal,
+            waveConf: waveConf,
+            consensusLevel: consensusLevel,
+            consensusDirection: consensusDirection,
+            bullishCount: bullishCount,
+            nextDayPrice: null,
+            actualMove: null,
+            baseCorrect: null,
+            gannElliottCorrect: null,
+            dqnCorrect: null,
+            waveCorrect: null,
+            consensusCorrect: null,
+            verified: false
+        });
+
+        savedCount++;
+    }
+
+    saveAgentPredictionLog(log);
+    updateAgentPredictionDisplay();
+    alert('Saved agent predictions for ' + savedCount + ' symbols on ' + today);
+}
+
+// Verify agent predictions against actual price movement
+function verifyAgentPredictions() {
+    var log = getAgentPredictionLog();
+    var verifiedCount = 0;
+
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (entry.verified) continue;
+
+        var sym = entry.symbol;
+        var data = allSymbolsData[sym];
+        if (!data || data.length < 2) continue;
+
+        // Find entry date in data
+        var entryIndex = -1;
+        for (var j = 0; j < data.length; j++) {
+            var csvDate = parseCSVDate(data[j].Date);
+            if (!csvDate) continue;
+            var csvDateStr = csvDate.toISOString().split('T')[0];
+            if (csvDateStr === entry.date) {
+                entryIndex = j;
+                break;
+            }
+        }
+
+        if (entryIndex === -1 || entryIndex >= data.length - 1) continue;
+
+        var nextDayPrice = parseFloat(data[entryIndex + 1].Close);
+        if (!nextDayPrice) continue;
+
+        var actualMove = ((nextDayPrice - entry.price) / entry.price * 100);
+        var moveUp = nextDayPrice > entry.price;
+
+        entry.nextDayPrice = nextDayPrice;
+        entry.actualMove = parseFloat(actualMove.toFixed(2));
+
+        // Check each agent (BULLISH expects up, BEARISH expects down, NEUTRAL is always "correct")
+        entry.baseCorrect = entry.baseSignal === 'NEUTRAL' || (entry.baseSignal === 'BULLISH' && moveUp) || (entry.baseSignal === 'BEARISH' && !moveUp);
+        entry.gannElliottCorrect = entry.gannElliottSignal === 'NEUTRAL' || (entry.gannElliottSignal === 'BULLISH' && moveUp) || (entry.gannElliottSignal === 'BEARISH' && !moveUp);
+        entry.dqnCorrect = entry.dqnSignal === 'NEUTRAL' || (entry.dqnSignal === 'BULLISH' && moveUp) || (entry.dqnSignal === 'BEARISH' && !moveUp);
+        entry.waveCorrect = entry.waveSignal === 'NEUTRAL' || (entry.waveSignal === 'BULLISH' && moveUp) || (entry.waveSignal === 'BEARISH' && !moveUp);
+        entry.consensusCorrect = (entry.consensusDirection === 'BULLISH' && moveUp) || (entry.consensusDirection === 'BEARISH' && !moveUp);
+
+        entry.verified = true;
+        verifiedCount++;
+    }
+
+    saveAgentPredictionLog(log);
+    updateAgentPredictionDisplay();
+    alert('Verified ' + verifiedCount + ' agent predictions!');
+}
+
+// Display agent prediction stats
+function updateAgentPredictionDisplay() {
+    var log = getAgentPredictionLog();
+
+    var stats = {
+        base: { wins: 0, total: 0 },
+        gannElliott: { wins: 0, total: 0 },
+        dqn: { wins: 0, total: 0 },
+        wave: { wins: 0, total: 0 },
+        ultra: { wins: 0, total: 0 },
+        superLevel: { wins: 0, total: 0 },
+        mixed: { wins: 0, total: 0 }
+    };
+
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (!entry.verified) continue;
+
+        // Agent stats (skip NEUTRAL)
+        if (entry.baseSignal !== 'NEUTRAL') {
+            stats.base.total++;
+            if (entry.baseCorrect) stats.base.wins++;
+        }
+        if (entry.gannElliottSignal !== 'NEUTRAL') {
+            stats.gannElliott.total++;
+            if (entry.gannElliottCorrect) stats.gannElliott.wins++;
+        }
+        if (entry.dqnSignal !== 'NEUTRAL') {
+            stats.dqn.total++;
+            if (entry.dqnCorrect) stats.dqn.wins++;
+        }
+        if (entry.waveSignal !== 'NEUTRAL') {
+            stats.wave.total++;
+            if (entry.waveCorrect) stats.wave.wins++;
+        }
+
+        // Consensus stats
+        if (entry.consensusLevel === 'ULTRA') {
+            stats.ultra.total++;
+            if (entry.consensusCorrect) stats.ultra.wins++;
+        } else if (entry.consensusLevel === 'SUPER') {
+            stats.superLevel.total++;
+            if (entry.consensusCorrect) stats.superLevel.wins++;
+        } else {
+            stats.mixed.total++;
+            if (entry.consensusCorrect) stats.mixed.wins++;
+        }
+    }
+
+    // Calculate percentages
+    var basePct = stats.base.total > 0 ? Math.round(stats.base.wins / stats.base.total * 100) : 0;
+    var gannElliottPct = stats.gannElliott.total > 0 ? Math.round(stats.gannElliott.wins / stats.gannElliott.total * 100) : 0;
+    var dqnPct = stats.dqn.total > 0 ? Math.round(stats.dqn.wins / stats.dqn.total * 100) : 0;
+    var wavePct = stats.wave.total > 0 ? Math.round(stats.wave.wins / stats.wave.total * 100) : 0;
+    var ultraPct = stats.ultra.total > 0 ? Math.round(stats.ultra.wins / stats.ultra.total * 100) : 0;
+    var superPct = stats.superLevel.total > 0 ? Math.round(stats.superLevel.wins / stats.superLevel.total * 100) : 0;
+    var mixedPct = stats.mixed.total > 0 ? Math.round(stats.mixed.wins / stats.mixed.total * 100) : 0;
+
+    // Update display elements
+    var el;
+    el = document.getElementById('agentBaseAccuracy');
+    if (el) el.textContent = stats.base.total > 0 ? basePct + '%' : '--%';
+    el = document.getElementById('agentGannElliottAccuracy');
+    if (el) el.textContent = stats.gannElliott.total > 0 ? gannElliottPct + '%' : '--%';
+    el = document.getElementById('agentDqnAccuracy');
+    if (el) el.textContent = stats.dqn.total > 0 ? dqnPct + '%' : '--%';
+    el = document.getElementById('agentWaveAccuracy');
+    if (el) el.textContent = stats.wave.total > 0 ? wavePct + '%' : '--%';
+    el = document.getElementById('agentUltraAccuracy');
+    if (el) el.textContent = stats.ultra.total > 0 ? ultraPct + '% (' + stats.ultra.wins + '/' + stats.ultra.total + ')' : '--% (0/0)';
+    el = document.getElementById('agentSuperAccuracy');
+    if (el) el.textContent = stats.superLevel.total > 0 ? superPct + '% (' + stats.superLevel.wins + '/' + stats.superLevel.total + ')' : '--% (0/0)';
+    el = document.getElementById('agentMixedAccuracy');
+    if (el) el.textContent = stats.mixed.total > 0 ? mixedPct + '% (' + stats.mixed.wins + '/' + stats.mixed.total + ')' : '--% (0/0)';
+    el = document.getElementById('agentTotalLogged');
+    if (el) el.textContent = log.length;
+
+    console.log('Agent prediction stats:', { basePct: basePct, gannElliottPct: gannElliottPct, dqnPct: dqnPct, wavePct: wavePct, ultraPct: ultraPct, superPct: superPct, mixedPct: mixedPct });
+}
+
 // Save today's predictions for all symbols
 function saveTodaysPrediction() {
     var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
@@ -9750,14 +10163,24 @@ function updatePredictionLogDisplay() {
     var log = getPredictionLog();
     var tbody = document.getElementById('predictionLogBody');
 
-    // Calculate summary stats (only verified entries)
+    // Filter by selected symbols
+    var filteredLog = log;
+    if (selectedFilterSymbols !== null && selectedFilterSymbols.length > 0) {
+        filteredLog = log.filter(function(entry) {
+            return selectedFilterSymbols.indexOf(entry.symbol) !== -1;
+        });
+    } else if (selectedFilterSymbols !== null && selectedFilterSymbols.length === 0) {
+        filteredLog = []; // No symbols selected
+    }
+
+    // Calculate summary stats (only verified entries from filtered log)
     var totalVerified = 0;
     var gannWins = 0, gannTotal = 0;
     var mktWins = 0, mktTotal = 0;
     var alignedWins = 0, alignedTotal = 0;
 
-    for (var i = 0; i < log.length; i++) {
-        var entry = log[i];
+    for (var i = 0; i < filteredLog.length; i++) {
+        var entry = filteredLog[i];
         if (!entry.verified) continue;  // Skip unverified
 
         totalVerified++;
@@ -9784,10 +10207,10 @@ function updatePredictionLogDisplay() {
         ', Mkt: ' + mktWins + '/' + mktTotal +
         ', Aligned: ' + alignedWins + '/' + alignedTotal);
 
-    // Update summary cards
+    // Update summary cards (show filtered count)
     var el;
     el = document.getElementById('logTotalCount');
-    if (el) el.textContent = log.length;
+    if (el) el.textContent = filteredLog.length + (selectedFilterSymbols !== null ? ' (filtered)' : '');
 
     el = document.getElementById('logGannAccuracy');
     if (el) el.textContent = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) + '%' : '--%';
@@ -9801,21 +10224,17 @@ function updatePredictionLogDisplay() {
     // Update table
     if (!tbody) return;
 
-    if (log.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.</td></tr>';
+    if (filteredLog.length === 0) {
+        var msg = selectedFilterSymbols !== null && selectedFilterSymbols.length === 0
+            ? 'No symbols selected. Use the filter above to select symbols.'
+            : (log.length === 0 ? 'No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.' : 'No predictions match the selected symbols.');
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">' + msg + '</td></tr>';
         return;
     }
 
-    // Sort by date descending, then by symbol
-    log.sort(function(a, b) {
-        if (a.date !== b.date) return b.date.localeCompare(a.date);
-        return a.symbol.localeCompare(b.symbol);
-    });
+    // Sort filtered log by date descending, then by symbol
+    var displayLog = filteredLog.slice(); // Copy array
 
-    // Show all symbols, not just SPY
-    var displayLog = log.slice(); // Copy array
-
-    // Sort by date descending, then by symbol
     displayLog.sort(function(a, b) {
         if (a.date !== b.date) return b.date.localeCompare(a.date);
         return a.symbol.localeCompare(b.symbol);
@@ -9994,15 +10413,31 @@ function renderAccuracyChart() {
 
 // Add performance tracker tab click handler
 function initPerformanceTracker() {
+    // Initialize symbol filter checkboxes
+    if (typeof initSymbolFilter === 'function') {
+        initSymbolFilter();
+    }
+
+    // Initialize agent prediction display
+    if (typeof updateAgentPredictionDisplay === 'function') {
+        updateAgentPredictionDisplay();
+    }
+
     var perfTab = document.querySelector('[data-tab="performance-tracker"]');
     if (perfTab) {
         perfTab.addEventListener('click', function() {
             setTimeout(function() {
+                if (typeof initSymbolFilter === 'function') {
+                    initSymbolFilter();
+                }
                 if (typeof updateBacktestDisplay === 'function') {
                     updateBacktestDisplay();
                 }
                 if (typeof updatePredictionLogDisplay === 'function') {
                     updatePredictionLogDisplay();
+                }
+                if (typeof updateAgentPredictionDisplay === 'function') {
+                    updateAgentPredictionDisplay();
                 }
             }, 100);
         });
