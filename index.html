@@ -8226,6 +8226,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== TIMESTAMP FUNCTIONS ====================
 
+// Robust date parsing for CSV dates (handles "2025-12-23 00:00:00-05:00" and ISO formats)
+function parseCSVDate(dateStr) {
+    if (!dateStr) return null;
+
+    // Handle "2025-12-23 00:00:00-05:00" format (space before time)
+    let cleanDate = String(dateStr).split(' ')[0];
+
+    // Also handle ISO format with T separator
+    if (cleanDate.includes('T')) {
+        cleanDate = cleanDate.split('T')[0];
+    }
+
+    // Parse YYYY-MM-DD format
+    const parts = cleanDate.split('-');
+    if (parts.length === 3) {
+        const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        if (!isNaN(date.getTime())) return date;
+    }
+
+    // Fallback: try native parsing
+    const date = new Date(dateStr);
+    if (!isNaN(date.getTime())) return date;
+
+    return null;
+}
+
 // Format timestamp as "Dec 2, 2025 2:45 PM ET" or short "2:45 PM"
 function formatLastUpdated(date, short = false) {
     if (!date) return '--';
@@ -9839,8 +9865,10 @@ function updateSignalsFibonacci() {
     // Find swing high/low dates
     const swingHighIdx = highs.indexOf(swingHigh);
     const swingLowIdx = lows.indexOf(swingLow);
-    const swingHighDate = recent[swingHighIdx]?.Date ? new Date(recent[swingHighIdx].Date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
-    const swingLowDate = recent[swingLowIdx]?.Date ? new Date(recent[swingLowIdx].Date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
+    const swingHighDateParsed = recent[swingHighIdx]?.Date ? parseCSVDate(recent[swingHighIdx].Date) : null;
+    const swingLowDateParsed = recent[swingLowIdx]?.Date ? parseCSVDate(recent[swingLowIdx].Date) : null;
+    const swingHighDate = swingHighDateParsed ? swingHighDateParsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
+    const swingLowDate = swingLowDateParsed ? swingLowDateParsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
 
     // Fibonacci levels with implications
     const levels = [
@@ -11836,14 +11864,11 @@ function checkDataFreshness() {
     console.log('📅 Last bar:', lastBar);
     console.log('📅 Last bar Date:', lastBar.Date);
     
-    // Parse the date - handle ISO format WITHOUT timezone conversion
+    // Use global parseCSVDate function for robust date parsing
     let lastDate;
     if (lastBar.Date) {
-        // Extract just the date part (YYYY-MM-DD) to avoid timezone issues
-        const dateStr = lastBar.Date.split('T')[0];
-        const [year, month, day] = dateStr.split('-').map(Number);
-        lastDate = new Date(year, month - 1, day); // month is 0-indexed
-        console.log('📅 Parsed lastDate (no TZ):', lastDate);
+        lastDate = parseCSVDate(lastBar.Date);
+        console.log('📅 Parsed lastDate:', lastDate, 'from:', lastBar.Date);
     }
     
     if (!lastDate || isNaN(lastDate.getTime())) {
@@ -11892,10 +11917,10 @@ function checkDataFreshness() {
     // First date for range
     const firstBar = currentData[0];
     if (firstBar && firstBar.Date && dateRangeEl) {
-        const firstDateStr = firstBar.Date.split('T')[0];
-        const [fy, fm, fd] = firstDateStr.split('-').map(Number);
-        const firstDate = new Date(fy, fm - 1, fd);
-        dateRangeEl.textContent = firstDate.toLocaleDateString() + ' - ' + lastDate.toLocaleDateString();
+        const firstDate = parseCSVDate(firstBar.Date);
+        if (firstDate) {
+            dateRangeEl.textContent = firstDate.toLocaleDateString() + ' - ' + lastDate.toLocaleDateString();
+        }
     }
     
     // Expected update
@@ -12307,10 +12332,12 @@ function updateComponentStatus() {
     if (currentData && currentData.length > 0) {
         const lastBar = currentData[currentData.length - 1];
         if (lastBar.Date) {
-            const lastDate = new Date(lastBar.Date);
-            // Assume data was fetched at 4:05 PM on that date
-            lastDate.setHours(16, 5, 0);
-            if (dataFetchTimeEl) dataFetchTimeEl.textContent = lastDate.toLocaleString();
+            const lastDate = parseCSVDate(lastBar.Date);
+            if (lastDate) {
+                // Assume data was fetched at 4:05 PM on that date
+                lastDate.setHours(16, 5, 0);
+                if (dataFetchTimeEl) dataFetchTimeEl.textContent = lastDate.toLocaleString();
+            }
             if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? '🟢' : healthStatus.dataFreshness === 'warning' ? '🟡' : '🔴';
         }
     }
@@ -12321,9 +12348,11 @@ function updateComponentStatus() {
     if (currentData && currentData.length > 0) {
         const lastBar = currentData[currentData.length - 1];
         if (lastBar.Date) {
-            const lastDate = new Date(lastBar.Date);
-            lastDate.setHours(16, 5, 0);
-            if (workflowTimeEl) workflowTimeEl.textContent = lastDate.toLocaleString();
+            const lastDate = parseCSVDate(lastBar.Date);
+            if (lastDate) {
+                lastDate.setHours(16, 5, 0);
+                if (workflowTimeEl) workflowTimeEl.textContent = lastDate.toLocaleString();
+            }
             if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? '🟢' : healthStatus.workflowStatus === 'warning' ? '🟡' : '🔴';
         }
     }
@@ -15099,12 +15128,14 @@ function updatePivotDisplay(pivots, currentPrice) {
     const highEl = document.getElementById('gannPivotHigh');
 
     if (lowEl && pivots.low) {
-        const dateStr = new Date(pivots.low.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const parsedDate = parseCSVDate(pivots.low.date);
+        const dateStr = parsedDate ? parsedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
         lowEl.innerHTML = `$${pivots.low.price.toFixed(2)} <span style="font-size:10px;color:var(--muted);">(${dateStr})</span>`;
     }
 
     if (highEl && pivots.high) {
-        const dateStr = new Date(pivots.high.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const parsedDate = parseCSVDate(pivots.high.date);
+        const dateStr = parsedDate ? parsedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--';
         highEl.innerHTML = `$${pivots.high.price.toFixed(2)} <span style="font-size:10px;color:var(--muted);">(${dateStr})</span>`;
     }
 }
