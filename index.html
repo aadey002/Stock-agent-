@@ -9282,20 +9282,30 @@ function verifyPastPredictions() {
 
         // Find the entry date in data
         var entryIndex = -1;
+        var entryDateClean = entry.date ? entry.date.split(' ')[0].split('T')[0] : '';
+
+        // Debug: show what we're looking for
+        console.log('Looking for date:', entryDateClean, 'in', sym, 'data');
+        console.log('Sample CSV dates:', data.slice(-5).map(function(d) { return d.Date; }));
+
         for (var j = 0; j < data.length; j++) {
             var csvDate = data[j].Date;
             // Handle different date formats - extract just YYYY-MM-DD part
             var csvDateClean = csvDate ? csvDate.split(' ')[0].split('T')[0] : '';
-            var entryDateClean = entry.date ? entry.date.split(' ')[0].split('T')[0] : '';
 
             if (csvDateClean === entryDateClean) {
                 entryIndex = j;
+                console.log('Found match at index', j, '- CSV date:', csvDate, '-> cleaned:', csvDateClean);
                 break;
             }
         }
 
         if (entryIndex === -1) {
-            errors.push(sym + ' ' + entry.date + ': Date not found in CSV');
+            // Debug: show first and last CSV dates
+            var firstDate = data[0].Date ? data[0].Date.split(' ')[0] : 'unknown';
+            var lastDate = data[data.length-1].Date ? data[data.length-1].Date.split(' ')[0] : 'unknown';
+            console.log('Date NOT found! Entry:', entryDateClean, 'CSV range:', firstDate, 'to', lastDate);
+            errors.push(sym + ' ' + entry.date + ': Date not found (CSV: ' + firstDate + ' to ' + lastDate + ')');
             skippedCount++;
             continue;
         }
