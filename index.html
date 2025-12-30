@@ -18525,7 +18525,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var vix = currentVIX;
 
         // Use real SPY data from CSV
-        var spyData = symbolGannData[selectedSymbol];
+        var spyData = symbolGannData['SPY'] || symbolGannData[currentSymbol];
         var spyPrice = spyData ? spyData.price : 607;
         var spyHigh = spyData ? spyData.high : 610;
         var spyLow = spyData ? spyData.low : 480;
