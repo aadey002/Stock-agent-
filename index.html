@@ -4393,10 +4393,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <div class="card" style="margin-top: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div class="card-title" style="margin: 0;">🤖 Agent Prediction Tracking</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="saveAgentPredictions()" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">💾 Save Agent Predictions</button>
-                        <button onclick="verifyAgentPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Agent Predictions</button>
-                        <button onclick="localStorage.removeItem('stockAgentAgentLog'); updateAgentPredictionDisplay(); alert('Agent log cleared');" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="saveAgentPredictions()" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">💾 Save Today</button>
+                        <button onclick="verifyAgentPredictions()" style="padding: 6px 12px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">✓ Verify</button>
+                        <button onclick="clearAndBackfillAgentPredictions('2023-01-03')" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: 600;">📊 BACKFILL 2 YEARS</button>
+                        <button onclick="localStorage.removeItem('stockAgentAgentLog'); updateAgentPredictionDisplay(); alert('Agent log cleared');" style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">🗑️ Clear</button>
                     </div>
                 </div>
 
@@ -10305,6 +10306,176 @@ function backfillPredictions(startDateStr) {
     console.log('Backfill complete:', { added: addedCount, gannPct: gannPct, mktPct: mktPct, alignedPct: alignedPct });
 
     return { gannPct: gannPct, mktPct: mktPct, alignedPct: alignedPct, total: log.length };
+}
+
+// Backfill agent predictions for 2 years
+function backfillAgentPredictions(startDateStr) {
+    var startDate = new Date(startDateStr || '2023-01-03');
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    // Show loading indicator
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'agentBackfillLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🤖</div><div style="font-size: 14px; font-weight: 600;">Backfilling Agent Predictions...</div><div style="font-size: 12px; color: #666; margin-top: 10px;">Starting from ' + startDateStr + '</div>';
+    document.body.appendChild(loadingDiv);
+
+    var log = getAgentPredictionLog();
+    var addedCount = 0;
+
+    console.log('Backfilling agent predictions from ' + startDateStr + '...');
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = allSymbolsData[sym];
+
+        if (!data || data.length < 25) {
+            console.log(sym + ': Not enough data for agent backfill');
+            continue;
+        }
+
+        var startIndex = -1;
+        for (var i = 20; i < data.length; i++) {
+            var rowDateStr = data[i].Date ? data[i].Date.split(' ')[0].split('T')[0] : '';
+            var rowDate = new Date(rowDateStr);
+            if (rowDate >= startDate) {
+                startIndex = i;
+                break;
+            }
+        }
+
+        if (startIndex === -1) continue;
+
+        for (var i = startIndex; i < data.length - 1; i++) {
+            var row = data[i];
+            var nextRow = data[i + 1];
+            var dateStr = row.Date ? row.Date.split(' ')[0].split('T')[0] : '';
+
+            var exists = log.some(function(entry) {
+                return entry.date === dateStr && entry.symbol === sym;
+            });
+            if (exists) continue;
+
+            var price = parseFloat(row.Close);
+            var nextPrice = parseFloat(nextRow.Close);
+            if (!price || !nextPrice) continue;
+
+            // Calculate indicators
+            var high20 = 0, low20 = 999999;
+            for (var j = i - 20; j < i; j++) {
+                var h = parseFloat(data[j].High) || 0;
+                var l = parseFloat(data[j].Low) || 0;
+                if (h > high20) high20 = h;
+                if (l < low20 && l > 0) low20 = l;
+            }
+
+            var sum20 = 0;
+            for (var j = i - 19; j <= i; j++) {
+                sum20 += parseFloat(data[j].Close) || 0;
+            }
+            var ma20 = sum20 / 20;
+
+            var closes5 = [];
+            for (var j = i - 4; j <= i; j++) {
+                closes5.push(parseFloat(data[j].Close) || 0);
+            }
+            var trend5 = closes5[4] > closes5[0];
+            var momentum = closes5[0] > 0 ? (closes5[4] - closes5[0]) / closes5[0] : 0;
+
+            var range = high20 - low20;
+            var gannPct = range > 0 ? ((price - low20) / range) * 100 : 50;
+            var aboveMA = price > ma20;
+
+            // Agent signals
+            var baseSignal = (trend5 && momentum > 0) ? 'BULLISH' : ((!trend5 && momentum < 0) ? 'BEARISH' : 'NEUTRAL');
+            var gannElliottSignal = (gannPct < 30) ? 'BULLISH' : ((gannPct > 70) ? 'BEARISH' : (aboveMA ? 'BULLISH' : 'BEARISH'));
+            var dqnSignal = (momentum > 0.005) ? 'BULLISH' : ((momentum < -0.005) ? 'BEARISH' : 'NEUTRAL');
+            var waveSignal = trend5 ? 'BULLISH' : 'BEARISH';
+
+            var bullishCount = [baseSignal, gannElliottSignal, dqnSignal, waveSignal].filter(function(s) { return s === 'BULLISH'; }).length;
+
+            var consensusLevel = (bullishCount === 4 || bullishCount === 0) ? 'ULTRA' : ((bullishCount === 3 || bullishCount === 1) ? 'SUPER' : 'MIXED');
+            var consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
+
+            var moveUp = nextPrice > price;
+            var actualMove = ((nextPrice - price) / price * 100);
+
+            log.push({
+                date: dateStr,
+                symbol: sym,
+                price: price,
+                baseSignal: baseSignal,
+                gannElliottSignal: gannElliottSignal,
+                dqnSignal: dqnSignal,
+                waveSignal: waveSignal,
+                consensusLevel: consensusLevel,
+                consensusDirection: consensusDirection,
+                bullishCount: bullishCount,
+                nextDayPrice: nextPrice,
+                actualMove: parseFloat(actualMove.toFixed(2)),
+                baseCorrect: baseSignal === 'NEUTRAL' || (baseSignal === 'BULLISH' && moveUp) || (baseSignal === 'BEARISH' && !moveUp),
+                gannElliottCorrect: (gannElliottSignal === 'BULLISH' && moveUp) || (gannElliottSignal === 'BEARISH' && !moveUp),
+                dqnCorrect: dqnSignal === 'NEUTRAL' || (dqnSignal === 'BULLISH' && moveUp) || (dqnSignal === 'BEARISH' && !moveUp),
+                waveCorrect: (waveSignal === 'BULLISH' && moveUp) || (waveSignal === 'BEARISH' && !moveUp),
+                consensusCorrect: (consensusDirection === 'BULLISH' && moveUp) || (consensusDirection === 'BEARISH' && !moveUp),
+                verified: true,
+                backfilled: true
+            });
+            addedCount++;
+        }
+    }
+
+    saveAgentPredictionLog(log);
+    updateAgentPredictionDisplay();
+
+    // Calculate stats
+    var stats = { base: {w:0,t:0}, gann: {w:0,t:0}, dqn: {w:0,t:0}, wave: {w:0,t:0}, ultra: {w:0,t:0}, super: {w:0,t:0}, mixed: {w:0,t:0} };
+    for (var i = 0; i < log.length; i++) {
+        var e = log[i];
+        if (!e.verified) continue;
+        if (e.baseSignal !== 'NEUTRAL') { stats.base.t++; if (e.baseCorrect) stats.base.w++; }
+        if (e.gannElliottSignal !== 'NEUTRAL') { stats.gann.t++; if (e.gannElliottCorrect) stats.gann.w++; }
+        if (e.dqnSignal !== 'NEUTRAL') { stats.dqn.t++; if (e.dqnCorrect) stats.dqn.w++; }
+        stats.wave.t++; if (e.waveCorrect) stats.wave.w++;
+        if (e.consensusLevel === 'ULTRA') { stats.ultra.t++; if (e.consensusCorrect) stats.ultra.w++; }
+        else if (e.consensusLevel === 'SUPER') { stats.super.t++; if (e.consensusCorrect) stats.super.w++; }
+        else { stats.mixed.t++; if (e.consensusCorrect) stats.mixed.w++; }
+    }
+
+    var pct = function(s) { return s.t > 0 ? Math.round(s.w / s.t * 100) : 0; };
+    var message = 'AGENT BACKFILL COMPLETE!\n\nAdded: ' + addedCount + '\nTotal: ' + log.length + '\n\n' +
+        'AGENT ACCURACY:\n' +
+        '📊 Base: ' + pct(stats.base) + '% (' + stats.base.w + '/' + stats.base.t + ')\n' +
+        '🔮 Gann-Elliott: ' + pct(stats.gann) + '% (' + stats.gann.w + '/' + stats.gann.t + ')\n' +
+        '🧠 DQN: ' + pct(stats.dqn) + '% (' + stats.dqn.w + '/' + stats.dqn.t + ')\n' +
+        '🌊 3-Wave: ' + pct(stats.wave) + '% (' + stats.wave.w + '/' + stats.wave.t + ')\n\n' +
+        'CONSENSUS:\n' +
+        '🎯 ULTRA: ' + pct(stats.ultra) + '% (' + stats.ultra.w + '/' + stats.ultra.t + ')\n' +
+        '⭐ SUPER: ' + pct(stats.super) + '% (' + stats.super.w + '/' + stats.super.t + ')\n' +
+        '⚠️ MIXED: ' + pct(stats.mixed) + '% (' + stats.mixed.w + '/' + stats.mixed.t + ')';
+
+    var loadingEl = document.getElementById('agentBackfillLoading');
+    if (loadingEl) loadingEl.remove();
+
+    alert(message);
+    console.log('Agent backfill complete:', { added: addedCount, total: log.length });
+}
+
+// Clear and backfill agent predictions
+function clearAndBackfillAgentPredictions(startDate) {
+    var dateStr = startDate || '2023-01-03';
+
+    // Check if data is loaded
+    var spyData = allSymbolsData && allSymbolsData['SPY'];
+    if (!spyData || spyData.length < 100) {
+        alert('ERROR: CSV data not loaded yet!\n\nPlease wait a few seconds for data to load, then try again.\n\nSPY data rows: ' + (spyData ? spyData.length : 0));
+        return;
+    }
+
+    if (confirm('Backfill agent predictions from ' + dateStr + '?\n\nSPY data: ' + spyData.length + ' rows\n\nThis will clear existing data.')) {
+        localStorage.removeItem('stockAgentAgentLog');
+        backfillAgentPredictions(dateStr);
+    }
 }
 
 // Debug function to check prediction data
