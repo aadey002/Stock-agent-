@@ -4250,8 +4250,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <button onclick="verifyPastPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Past Predictions</button>
                         <button onclick="clearPredictionLog()" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear Log</button>
                         <button onclick="debugPredictionData()" style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔍 Debug Data</button>
-                        <button onclick="backfillPredictions('2025-11-01')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">📅 Backfill Nov 1</button>
-                        <button onclick="clearAndBackfill()" style="padding: 8px 16px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Reset & Backfill</button>
+                        <button onclick="backfillPredictions('2025-11-01')" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">📅 Nov 2025</button>
+                        <button onclick="backfillPredictions('2023-01-03')" style="padding: 8px 16px; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">📅 Full 2 Years</button>
+                        <button onclick="clearAndBackfill('2023-01-03')" style="padding: 8px 16px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Reset & Full</button>
                     </div>
                 </div>
 
@@ -9511,10 +9512,11 @@ function clearPredictionLog() {
 }
 
 // Clear and re-backfill predictions
-function clearAndBackfill() {
-    if (confirm('This will clear ALL prediction history and backfill from Nov 1, 2025. Continue?')) {
+function clearAndBackfill(startDate) {
+    var dateStr = startDate || '2023-01-03';
+    if (confirm('This will clear ALL prediction history and backfill from ' + dateStr + '. This may take a moment. Continue?')) {
         localStorage.removeItem('stockAgentPredictionLog');
-        backfillPredictions('2025-11-01');
+        backfillPredictions(dateStr);
     }
 }
 
@@ -9523,6 +9525,13 @@ function backfillPredictions(startDateStr) {
     var startDate = new Date(startDateStr || '2025-11-01');
     var today = new Date();
     var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    // Show loading indicator
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'backfillLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">⏳</div><div style="font-size: 14px; font-weight: 600;">Backfilling predictions...</div><div id="backfillProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Starting from ' + startDateStr + '</div>';
+    document.body.appendChild(loadingDiv);
 
     var log = getPredictionLog();
     var addedCount = 0;
@@ -9671,6 +9680,10 @@ function backfillPredictions(startDateStr) {
         '📊 Market Accuracy: ' + mktPct + '% (' + mktWins + '/' + mktTotal + ')\n' +
         '✅ Aligned Accuracy: ' + alignedPct + '% (' + alignedWins + '/' + alignedTotal + ')\n\n' +
         'Leader: ' + (mktPct > gannPct ? '📊 MARKET' : '🔮 GANN') + ' by ' + Math.abs(mktPct - gannPct) + '%';
+
+    // Remove loading indicator
+    var loadingEl = document.getElementById('backfillLoading');
+    if (loadingEl) loadingEl.remove();
 
     alert(message);
     console.log('Backfill complete:', { added: addedCount, gannPct: gannPct, mktPct: mktPct, alignedPct: alignedPct });
@@ -18705,19 +18718,19 @@ function updateSignalConfidence(gannSignal, mktSignal) {
     var aligned = gannSignal === mktSignal;
 
     if (aligned) {
-        // ALIGNED = 100% historical accuracy
+        // ALIGNED - Both signals agree (49% historical accuracy)
         badge.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.3))';
         badge.style.border = '2px solid #22c55e';
-        levelEl.textContent = '🎯 HIGH CONFIDENCE';
+        levelEl.textContent = '✓ SIGNALS ALIGNED';
         levelEl.style.color = '#22c55e';
-        explainEl.textContent = 'Gann & Market ALIGNED - 100% historical accuracy. Trade with conviction!';
+        explainEl.textContent = 'Gann & Market AGREE on direction. Backtest: 49% accuracy when aligned.';
     } else {
-        // CONFLICT - Market is more reliable (67% vs 36%)
+        // CONFLICT - Gann slightly outperforms (53% vs 48%)
         badge.style.background = 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.3))';
         badge.style.border = '2px solid #eab308';
-        levelEl.textContent = '⚠️ CONFLICT - TRUST MARKET';
+        levelEl.textContent = '⚠️ SIGNAL CONFLICT';
         levelEl.style.color = '#eab308';
-        explainEl.textContent = 'Gann (36%) vs Market (67%). Data shows Market signal more reliable in conflicts.';
+        explainEl.textContent = 'Gann (53%) vs Market (48%). Slight edge to Gann in backtests.';
     }
 }
 
