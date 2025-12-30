@@ -4242,6 +4242,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <button onclick="saveTodaysPrediction()" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">💾 Save Today's Predictions</button>
                         <button onclick="verifyPastPredictions()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">✓ Verify Past Predictions</button>
                         <button onclick="clearPredictionLog()" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🗑️ Clear Log</button>
+                        <button onclick="debugPredictionData()" style="padding: 8px 16px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔍 Debug Data</button>
                     </div>
                 </div>
 
@@ -9256,39 +9257,85 @@ function saveTodaysPrediction() {
 function verifyPastPredictions() {
     var log = getPredictionLog();
     var verifiedCount = 0;
+    var skippedCount = 0;
+    var errors = [];
+
+    console.log('Starting verification for ' + log.length + ' predictions...');
 
     for (var i = 0; i < log.length; i++) {
         var entry = log[i];
-        if (entry.verified) continue;
+
+        // Skip already verified
+        if (entry.verified) {
+            console.log('Skipping ' + entry.symbol + ' ' + entry.date + ' - already verified');
+            continue;
+        }
 
         var sym = entry.symbol;
         var data = allSymbolsData[sym];
-        if (!data || data.length < 2) continue;
+
+        if (!data || data.length < 2) {
+            errors.push(sym + ': No data loaded');
+            skippedCount++;
+            continue;
+        }
 
         // Find the entry date in data
         var entryIndex = -1;
         for (var j = 0; j < data.length; j++) {
-            if (data[j].Date === entry.date) {
+            var csvDate = data[j].Date;
+            // Handle different date formats - extract just YYYY-MM-DD part
+            var csvDateClean = csvDate ? csvDate.split(' ')[0].split('T')[0] : '';
+            var entryDateClean = entry.date ? entry.date.split(' ')[0].split('T')[0] : '';
+
+            if (csvDateClean === entryDateClean) {
                 entryIndex = j;
                 break;
             }
         }
 
+        if (entryIndex === -1) {
+            errors.push(sym + ' ' + entry.date + ': Date not found in CSV');
+            skippedCount++;
+            continue;
+        }
+
         // Need at least next day's data
-        if (entryIndex === -1 || entryIndex >= data.length - 1) continue;
+        if (entryIndex >= data.length - 1) {
+            errors.push(sym + ' ' + entry.date + ': No next-day data yet');
+            skippedCount++;
+            continue;
+        }
 
         var nextDayData = data[entryIndex + 1];
         var nextDayPrice = parseFloat(nextDayData.Close);
-        if (!nextDayPrice) continue;
 
-        var actualMove = ((nextDayPrice - entry.price) / entry.price * 100).toFixed(2);
-        var moveUp = nextDayPrice > entry.price;
+        if (!nextDayPrice || isNaN(nextDayPrice)) {
+            errors.push(sym + ' ' + entry.date + ': Invalid next-day price');
+            skippedCount++;
+            continue;
+        }
+
+        var entryPrice = parseFloat(entry.price);
+        var actualMove = ((nextDayPrice - entryPrice) / entryPrice * 100);
+        var moveUp = nextDayPrice > entryPrice;
 
         entry.nextDayPrice = nextDayPrice;
-        entry.actualMove = parseFloat(actualMove);
-        entry.gannCorrect = (entry.gannPred === 'CALL' && moveUp) || (entry.gannPred === 'PUT' && !moveUp) || entry.gannPred === 'HOLD';
+        entry.actualMove = parseFloat(actualMove.toFixed(2));
+
+        // Check if predictions were correct
+        if (entry.gannPred === 'HOLD') {
+            entry.gannCorrect = true; // HOLD is always "correct"
+        } else {
+            entry.gannCorrect = (entry.gannPred === 'CALL' && moveUp) || (entry.gannPred === 'PUT' && !moveUp);
+        }
         entry.mktCorrect = (entry.mktPred === 'CALL' && moveUp) || (entry.mktPred === 'PUT' && !moveUp);
         entry.verified = true;
+
+        console.log('Verified ' + sym + ' ' + entry.date + ': ' +
+            'Gann=' + entry.gannPred + (entry.gannCorrect ? '✓' : '✗') + ', ' +
+            'Mkt=' + entry.mktPred + (entry.mktCorrect ? '✓' : '✗') + ', ' +
+            'Move=' + entry.actualMove.toFixed(2) + '%');
 
         verifiedCount++;
     }
@@ -9296,11 +9343,18 @@ function verifyPastPredictions() {
     savePredictionLog(log);
     updatePredictionLogDisplay();
 
-    if (verifiedCount > 0) {
-        alert('Verified ' + verifiedCount + ' predictions with actual results!');
-    } else {
-        alert('No unverified predictions found, or next-day data not yet available.');
+    var message = 'Verified: ' + verifiedCount + ' predictions\n';
+    if (skippedCount > 0) {
+        message += 'Skipped: ' + skippedCount + ' (no next-day data yet)\n';
     }
+    if (errors.length > 0 && errors.length <= 5) {
+        message += '\nDetails:\n' + errors.join('\n');
+    } else if (errors.length > 5) {
+        message += '\nFirst 5 issues:\n' + errors.slice(0, 5).join('\n');
+    }
+
+    alert(message);
+    console.log('Verification complete. Errors:', errors);
 }
 
 // Clear prediction log
@@ -9312,12 +9366,66 @@ function clearPredictionLog() {
     }
 }
 
+// Debug function to check prediction data
+function debugPredictionData() {
+    var log = getPredictionLog();
+    console.log('=== PREDICTION LOG DEBUG ===');
+    console.log('Total entries:', log.length);
+    console.log('Entries:', log);
+
+    // Check what data is available
+    var symbols = ['SPY', 'QQQ', 'IWM'];
+    var info = [];
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i];
+        var data = allSymbolsData[sym];
+        if (data && data.length > 0) {
+            var lastBar = data[data.length - 1];
+            var lastDate = lastBar.Date ? lastBar.Date.split(' ')[0].split('T')[0] : 'unknown';
+            info.push(sym + ': ' + data.length + ' bars, last date: ' + lastDate);
+            console.log(sym + ' data:', {
+                bars: data.length,
+                lastDate: lastDate,
+                lastClose: lastBar.Close
+            });
+        } else {
+            info.push(sym + ': NO DATA LOADED');
+            console.log(sym + ': NO DATA');
+        }
+    }
+
+    // Check unverified predictions
+    var unverified = log.filter(function(e) { return !e.verified; });
+    var verified = log.filter(function(e) { return e.verified; });
+
+    var message = '=== DEBUG INFO ===\n\n';
+    message += 'Loaded Data:\n' + info.join('\n') + '\n\n';
+    message += 'Predictions:\n';
+    message += '- Total: ' + log.length + '\n';
+    message += '- Verified: ' + verified.length + '\n';
+    message += '- Unverified: ' + unverified.length + '\n';
+
+    if (unverified.length > 0) {
+        message += '\nUnverified dates:\n';
+        var dates = {};
+        unverified.forEach(function(e) {
+            var key = e.date + ' (' + e.symbol + ')';
+            dates[key] = true;
+        });
+        message += Object.keys(dates).slice(0, 10).join('\n');
+    }
+
+    alert(message);
+    console.log('=== END DEBUG ===');
+}
+
 // Update prediction log display
 function updatePredictionLogDisplay() {
     var log = getPredictionLog();
     var tbody = document.getElementById('predictionLogBody');
 
-    // Calculate summary stats
+    // Calculate summary stats (only verified entries)
     var totalVerified = 0;
     var gannWins = 0, gannTotal = 0;
     var mktWins = 0, mktTotal = 0;
@@ -9325,20 +9433,31 @@ function updatePredictionLogDisplay() {
 
     for (var i = 0; i < log.length; i++) {
         var entry = log[i];
-        if (entry.verified) {
-            totalVerified++;
-            if (entry.gannPred !== 'HOLD') {
-                gannTotal++;
-                if (entry.gannCorrect) gannWins++;
-            }
-            mktTotal++;
-            if (entry.mktCorrect) mktWins++;
-            if (entry.aligned) {
-                alignedTotal++;
-                if (entry.gannCorrect || entry.mktCorrect) alignedWins++;
-            }
+        if (!entry.verified) continue;  // Skip unverified
+
+        totalVerified++;
+
+        // Gann stats (skip HOLD)
+        if (entry.gannPred !== 'HOLD') {
+            gannTotal++;
+            if (entry.gannCorrect) gannWins++;
+        }
+
+        // Market stats
+        mktTotal++;
+        if (entry.mktCorrect) mktWins++;
+
+        // Aligned stats (when both agree)
+        if (entry.aligned) {
+            alignedTotal++;
+            if (entry.gannCorrect && entry.mktCorrect) alignedWins++;
         }
     }
+
+    console.log('Prediction stats - Verified: ' + totalVerified +
+        ', Gann: ' + gannWins + '/' + gannTotal +
+        ', Mkt: ' + mktWins + '/' + mktTotal +
+        ', Aligned: ' + alignedWins + '/' + alignedTotal);
 
     // Update summary cards
     var el;
@@ -9368,10 +9487,19 @@ function updatePredictionLogDisplay() {
         return a.symbol.localeCompare(b.symbol);
     });
 
-    // Only show SPY entries in table (to avoid clutter), but track all for stats
-    var spyLog = log.filter(function(entry) { return entry.symbol === 'SPY'; });
+    // Show all symbols, not just SPY
+    var displayLog = log.slice(); // Copy array
 
-    var rows = spyLog.map(function(entry) {
+    // Sort by date descending, then by symbol
+    displayLog.sort(function(a, b) {
+        if (a.date !== b.date) return b.date.localeCompare(a.date);
+        return a.symbol.localeCompare(b.symbol);
+    });
+
+    // Limit to most recent 50 entries for performance
+    displayLog = displayLog.slice(0, 50);
+
+    var rows = displayLog.map(function(entry) {
         var gannColor = entry.gannPred === 'CALL' ? '#22c55e' : (entry.gannPred === 'PUT' ? '#ef4444' : '#eab308');
         var mktColor = entry.mktPred === 'CALL' ? '#22c55e' : '#ef4444';
         var alignedIcon = entry.aligned ? '✅' : '⚠️';
