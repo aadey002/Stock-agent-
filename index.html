@@ -9727,6 +9727,209 @@ function updateAgentPredictionDisplay() {
     console.log('Agent prediction stats:', { basePct: basePct, gannElliottPct: gannElliottPct, dqnPct: dqnPct, wavePct: wavePct, ultraPct: ultraPct, superPct: superPct, mixedPct: mixedPct });
 }
 
+// Auto-save predictions (silent, no alerts)
+function autoSavePredictions() {
+    var today = new Date();
+    var dayOfWeek = today.getDay();
+
+    // Skip weekends (0 = Sunday, 6 = Saturday)
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+        console.log('Auto-save skipped: Weekend');
+        return;
+    }
+
+    var todayStr = today.toISOString().split('T')[0];
+
+    // Check if simple predictions already saved
+    var simpleLog = getPredictionLog();
+    var simpleExists = simpleLog.some(function(entry) {
+        return entry.date === todayStr && entry.symbol === 'SPY';
+    });
+
+    // Check if agent predictions already saved
+    var agentLog = getAgentPredictionLog();
+    var agentExists = agentLog.some(function(entry) {
+        return entry.date === todayStr && entry.symbol === 'SPY';
+    });
+
+    var savedSimple = false;
+    var savedAgent = false;
+
+    // Auto-save simple predictions (Gann/Market)
+    if (!simpleExists) {
+        var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+        var savedCount = 0;
+
+        for (var s = 0; s < symbols.length; s++) {
+            var sym = symbols[s];
+            var data = symbolGannData[sym];
+            if (!data || !data.price) continue;
+
+            var gannPred = 'HOLD';
+            var gannPct = data.gannPct || 50;
+
+            if (gannPct < 35) {
+                gannPred = invertGannSignal ? 'PUT' : 'CALL';
+            } else if (gannPct > 65) {
+                gannPred = invertGannSignal ? 'CALL' : 'PUT';
+            }
+
+            var mktPred = data.price > data.ma20 ? 'CALL' : 'PUT';
+            var aligned = (gannPred === mktPred) || gannPred === 'HOLD';
+
+            simpleLog.push({
+                date: todayStr,
+                symbol: sym,
+                price: data.price,
+                gannPct: gannPct,
+                ma20: data.ma20,
+                gannPred: gannPred,
+                mktPred: mktPred,
+                aligned: aligned,
+                nextDayPrice: null,
+                actualMove: null,
+                gannCorrect: null,
+                mktCorrect: null,
+                verified: false
+            });
+            savedCount++;
+        }
+
+        if (savedCount > 0) {
+            savePredictionLog(simpleLog);
+            savedSimple = true;
+            console.log('Auto-saved simple predictions for ' + savedCount + ' symbols');
+        }
+    }
+
+    // Auto-save agent predictions
+    if (!agentExists) {
+        var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+        var agentData = null;
+        if (typeof getAgentSignals === 'function') {
+            agentData = getAgentSignals();
+        }
+
+        var savedCount = 0;
+
+        for (var s = 0; s < symbols.length; s++) {
+            var sym = symbols[s];
+            var data = symbolGannData[sym];
+            if (!data || !data.price) continue;
+
+            var price = data.price;
+            var baseSignal = 'NEUTRAL';
+            var gannElliottSignal = 'NEUTRAL';
+            var dqnSignal = 'NEUTRAL';
+            var waveSignal = 'NEUTRAL';
+            var baseConf = 50, gannElliottConf = 50, dqnConf = 50, waveConf = 50;
+
+            if (agentData && agentData.agentDetails && sym === 'SPY') {
+                var details = agentData.agentDetails;
+                baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+                gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+                dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+                waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
+                baseConf = details.base ? details.base.confidence : 50;
+                gannElliottConf = details.gann ? details.gann.confidence : 50;
+                dqnConf = details.dqn ? details.dqn.confidence : 50;
+                waveConf = details.wave ? details.wave.confidence : 50;
+            } else {
+                var gannPct = data.gannPct || 50;
+                var aboveMA = data.price > data.ma20;
+
+                baseSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+                baseConf = 55 + Math.abs(gannPct - 50) * 0.3;
+
+                if (gannPct < 30) {
+                    gannElliottSignal = 'BULLISH';
+                } else if (gannPct > 70) {
+                    gannElliottSignal = 'BEARISH';
+                } else {
+                    gannElliottSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+                }
+                gannElliottConf = 50 + Math.abs(gannPct - 50) * 0.4;
+
+                dqnSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+                dqnConf = 55;
+
+                waveSignal = aboveMA ? 'BULLISH' : 'BEARISH';
+                waveConf = 55;
+            }
+
+            var bullishCount = 0;
+            var signals = [baseSignal, gannElliottSignal, dqnSignal, waveSignal];
+            for (var i = 0; i < signals.length; i++) {
+                if (signals[i] === 'BULLISH') bullishCount++;
+            }
+
+            var consensusLevel, consensusDirection;
+            if (bullishCount === 4) {
+                consensusLevel = 'ULTRA';
+                consensusDirection = 'BULLISH';
+            } else if (bullishCount === 3) {
+                consensusLevel = 'SUPER';
+                consensusDirection = 'BULLISH';
+            } else if (bullishCount === 0) {
+                consensusLevel = 'ULTRA';
+                consensusDirection = 'BEARISH';
+            } else if (bullishCount === 1) {
+                consensusLevel = 'SUPER';
+                consensusDirection = 'BEARISH';
+            } else {
+                consensusLevel = 'MIXED';
+                consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
+            }
+
+            agentLog.push({
+                date: todayStr,
+                symbol: sym,
+                price: price,
+                baseSignal: baseSignal,
+                baseConf: baseConf,
+                gannElliottSignal: gannElliottSignal,
+                gannElliottConf: gannElliottConf,
+                dqnSignal: dqnSignal,
+                dqnConf: dqnConf,
+                waveSignal: waveSignal,
+                waveConf: waveConf,
+                consensusLevel: consensusLevel,
+                consensusDirection: consensusDirection,
+                bullishCount: bullishCount,
+                nextDayPrice: null,
+                actualMove: null,
+                baseCorrect: null,
+                gannElliottCorrect: null,
+                dqnCorrect: null,
+                waveCorrect: null,
+                consensusCorrect: null,
+                verified: false
+            });
+            savedCount++;
+        }
+
+        if (savedCount > 0) {
+            saveAgentPredictionLog(agentLog);
+            savedAgent = true;
+            console.log('Auto-saved agent predictions for ' + savedCount + ' symbols');
+        }
+    }
+
+    // Update displays
+    if (savedSimple && typeof updatePredictionLogDisplay === 'function') {
+        updatePredictionLogDisplay();
+    }
+    if (savedAgent && typeof updateAgentPredictionDisplay === 'function') {
+        updateAgentPredictionDisplay();
+    }
+
+    if (savedSimple || savedAgent) {
+        console.log('✅ Auto-save complete: ' + todayStr);
+    } else {
+        console.log('Auto-save: Predictions already exist for ' + todayStr);
+    }
+}
+
 // Save today's predictions for all symbols
 function saveTodaysPrediction() {
     var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
@@ -12805,6 +13008,11 @@ async function initializeApp() {
                 if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
                 if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
                 console.log('Initial calculations complete');
+
+                // Auto-save predictions after data loads
+                if (typeof autoSavePredictions === 'function') {
+                    setTimeout(autoSavePredictions, 1000);
+                }
             }, 500);
         } else {
             initialCalcAttempts++;
