@@ -4293,10 +4293,37 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <!-- Performance Over Time Chart (placeholder) -->
             <div class="card">
                 <div class="card-title">📈 Cumulative Accuracy Over Time</div>
-                <div id="performanceChartContainer" style="height: 200px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    <div style="text-align: center; color: #666;">
-                        <div style="font-size: 14px; margin-bottom: 5px;">📊 Chart will populate as predictions are verified</div>
-                        <div style="font-size: 11px;">Log at least 10 predictions to see trends</div>
+                <div id="performanceChartContainer" style="height: 250px; background: #f8f9fa; border-radius: 8px; padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 12px; color: #666;">Accuracy by Date (Most Recent 14 Days)</div>
+                        <div style="display: flex; gap: 15px; font-size: 10px;">
+                            <span><span style="display: inline-block; width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px;"></span> Gann</span>
+                            <span><span style="display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></span> Market</span>
+                            <span><span style="display: inline-block; width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></span> Both Correct</span>
+                        </div>
+                    </div>
+                    <div id="accuracyChartBars" style="display: flex; align-items: flex-end; justify-content: space-around; height: 180px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
+                        <div style="text-align: center; color: #999; font-size: 12px; width: 100%;">No verified predictions yet.<br>Click "Verify Past Predictions" after next trading day.</div>
+                    </div>
+                    <div id="accuracyChartLabels" style="display: flex; justify-content: space-around; padding-top: 5px; font-size: 9px; color: #666;"></div>
+                </div>
+
+                <!-- Running Accuracy Totals -->
+                <div id="runningTotalsContainer" style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <div style="background: rgba(139,92,246,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #7c3aed;">🔮 Gann Running Total</div>
+                        <div id="runningGannAccuracy" style="font-size: 20px; font-weight: 700; color: #8b5cf6;">--%</div>
+                        <div id="runningGannRecord" style="font-size: 10px; color: #666;">0/0 correct</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #dc2626;">📊 Market Running Total</div>
+                        <div id="runningMktAccuracy" style="font-size: 20px; font-weight: 700; color: #ef4444;">--%</div>
+                        <div id="runningMktRecord" style="font-size: 10px; color: #666;">0/0 correct</div>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #16a34a;">🏆 Leader</div>
+                        <div id="runningLeader" style="font-size: 16px; font-weight: 700; color: #22c55e;">TBD</div>
+                        <div id="runningLeaderMargin" style="font-size: 10px; color: #666;">Need data</div>
                     </div>
                 </div>
 
@@ -9534,6 +9561,143 @@ function updatePredictionLogDisplay() {
     });
 
     tbody.innerHTML = rows.join('');
+
+    // Render accuracy chart
+    if (typeof renderAccuracyChart === 'function') {
+        renderAccuracyChart();
+    }
+}
+
+// Render cumulative accuracy chart
+function renderAccuracyChart() {
+    var log = getPredictionLog();
+    var chartContainer = document.getElementById('accuracyChartBars');
+    var labelsContainer = document.getElementById('accuracyChartLabels');
+
+    if (!chartContainer || !labelsContainer) return;
+
+    // Get verified predictions grouped by date
+    var byDate = {};
+    for (var i = 0; i < log.length; i++) {
+        var entry = log[i];
+        if (!entry.verified) continue;
+
+        if (!byDate[entry.date]) {
+            byDate[entry.date] = { gannCorrect: 0, gannTotal: 0, mktCorrect: 0, mktTotal: 0, bothCorrect: 0 };
+        }
+
+        if (entry.gannPred !== 'HOLD') {
+            byDate[entry.date].gannTotal++;
+            if (entry.gannCorrect) byDate[entry.date].gannCorrect++;
+        }
+
+        byDate[entry.date].mktTotal++;
+        if (entry.mktCorrect) byDate[entry.date].mktCorrect++;
+
+        if (entry.gannCorrect && entry.mktCorrect) byDate[entry.date].bothCorrect++;
+    }
+
+    var dates = Object.keys(byDate).sort();
+
+    // Show message if no data
+    if (dates.length === 0) {
+        chartContainer.innerHTML = '<div style="text-align: center; color: #999; font-size: 12px; width: 100%;">No verified predictions yet.<br>Click "Verify Past Predictions" after next trading day.</div>';
+        labelsContainer.innerHTML = '';
+        return;
+    }
+
+    // Take last 14 days max
+    dates = dates.slice(-14);
+
+    // Build chart bars
+    var barsHTML = '';
+
+    for (var d = 0; d < dates.length; d++) {
+        var date = dates[d];
+        var data = byDate[date];
+
+        var gannPct = data.gannTotal > 0 ? Math.round(data.gannCorrect / data.gannTotal * 100) : 0;
+        var mktPct = data.mktTotal > 0 ? Math.round(data.mktCorrect / data.mktTotal * 100) : 0;
+        var bothPct = data.mktTotal > 0 ? Math.round(data.bothCorrect / data.mktTotal * 100) : 0;
+
+        // Bar heights (max 150px)
+        var gannHeight = Math.max(5, gannPct * 1.5);
+        var mktHeight = Math.max(5, mktPct * 1.5);
+        var bothHeight = Math.max(5, bothPct * 1.5);
+
+        var dateLabel = date.slice(5); // MM-DD format
+
+        barsHTML += '<div style="display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1;">' +
+            '<div style="display: flex; gap: 2px; align-items: flex-end; height: 150px;">' +
+                '<div style="width: 12px; height: ' + gannHeight + 'px; background: #8b5cf6; border-radius: 2px 2px 0 0;" title="Gann: ' + gannPct + '%"></div>' +
+                '<div style="width: 12px; height: ' + mktHeight + 'px; background: #ef4444; border-radius: 2px 2px 0 0;" title="Market: ' + mktPct + '%"></div>' +
+                '<div style="width: 12px; height: ' + bothHeight + 'px; background: #22c55e; border-radius: 2px 2px 0 0;" title="Both: ' + bothPct + '%"></div>' +
+            '</div>' +
+            '<div style="font-size: 8px; color: #666; transform: rotate(-45deg); white-space: nowrap;">' + dateLabel + '</div>' +
+        '</div>';
+    }
+
+    chartContainer.innerHTML = barsHTML;
+
+    // Calculate cumulative stats
+    var totalGannCorrect = 0, totalGannTotal = 0;
+    var totalMktCorrect = 0, totalMktTotal = 0;
+
+    for (var d = 0; d < dates.length; d++) {
+        var data = byDate[dates[d]];
+        totalGannCorrect += data.gannCorrect;
+        totalGannTotal += data.gannTotal;
+        totalMktCorrect += data.mktCorrect;
+        totalMktTotal += data.mktTotal;
+    }
+
+    var cumGannPct = totalGannTotal > 0 ? Math.round(totalGannCorrect / totalGannTotal * 100) : 0;
+    var cumMktPct = totalMktTotal > 0 ? Math.round(totalMktCorrect / totalMktTotal * 100) : 0;
+
+    labelsContainer.innerHTML = '<div style="width: 100%; display: flex; justify-content: center; gap: 30px; padding-top: 10px;">' +
+        '<span>Cumulative Gann: <strong style="color: #8b5cf6;">' + cumGannPct + '%</strong> (' + totalGannCorrect + '/' + totalGannTotal + ')</span>' +
+        '<span>Cumulative Market: <strong style="color: #ef4444;">' + cumMktPct + '%</strong> (' + totalMktCorrect + '/' + totalMktTotal + ')</span>' +
+        '</div>';
+
+    // Update running totals display
+    var el;
+    el = document.getElementById('runningGannAccuracy');
+    if (el) el.textContent = cumGannPct + '%';
+
+    el = document.getElementById('runningGannRecord');
+    if (el) el.textContent = totalGannCorrect + '/' + totalGannTotal + ' correct';
+
+    el = document.getElementById('runningMktAccuracy');
+    if (el) el.textContent = cumMktPct + '%';
+
+    el = document.getElementById('runningMktRecord');
+    if (el) el.textContent = totalMktCorrect + '/' + totalMktTotal + ' correct';
+
+    el = document.getElementById('runningLeader');
+    if (el) {
+        if (cumGannPct > cumMktPct) {
+            el.textContent = '🔮 Gann';
+            el.style.color = '#8b5cf6';
+        } else if (cumMktPct > cumGannPct) {
+            el.textContent = '📊 Market';
+            el.style.color = '#ef4444';
+        } else {
+            el.textContent = '🤝 Tied';
+            el.style.color = '#666';
+        }
+    }
+
+    el = document.getElementById('runningLeaderMargin');
+    if (el) {
+        var margin = Math.abs(cumGannPct - cumMktPct);
+        if (totalGannTotal > 0 && totalMktTotal > 0) {
+            el.textContent = 'by ' + margin + '% margin';
+        } else {
+            el.textContent = 'Need more data';
+        }
+    }
+
+    console.log('Accuracy chart rendered with ' + dates.length + ' dates');
 }
 
 // ==========================================
