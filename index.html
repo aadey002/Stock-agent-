@@ -13009,6 +13009,11 @@ async function initializeApp() {
                 if (typeof updateGannAnalysis === 'function') updateGannAnalysis();
                 console.log('Initial calculations complete');
 
+                // Update agent signal display with real values
+                if (typeof updateAgentSignalDisplay === 'function') {
+                    updateAgentSignalDisplay();
+                }
+
                 // Auto-save predictions after data loads
                 if (typeof autoSavePredictions === 'function') {
                     setTimeout(autoSavePredictions, 1000);
@@ -17508,6 +17513,10 @@ async function loadRealAgentSignals() {
             const data = await response.json();
             realAgentVotes = data;
             console.log('✅ Loaded real agent signals from voting_log.json');
+            // Update display with real signals
+            if (typeof updateAgentSignalDisplay === 'function') {
+                setTimeout(updateAgentSignalDisplay, 100);
+            }
             return true;
         }
     } catch (e) {
@@ -17635,16 +17644,137 @@ function getAgentSignals() {
         agreeing = putCount;
     }
     
-    return { 
-        signal, 
-        agreeing, 
-        callCount, 
-        putCount, 
+    return {
+        signal,
+        agreeing,
+        callCount,
+        putCount,
         holdCount,
         isReal: false,
         agentDetails,
         timestamp: null
     };
+}
+
+// Convert CALL/PUT/HOLD to BULLISH/BEARISH/NEUTRAL for display
+function signalToDisplay(signal) {
+    if (signal === 'CALL') return 'BULLISH';
+    if (signal === 'PUT') return 'BEARISH';
+    return 'NEUTRAL';
+}
+
+// Update signal display table with real agent values
+function updateAgentSignalDisplay() {
+    // Get real signals from the calculation function
+    var signals = getAgentSignals();
+    if (!signals || !signals.agentDetails) {
+        console.log('No agent signals available');
+        return;
+    }
+
+    console.log('Updating agent signal display:', signals.isReal ? 'REAL from voting_log.json' : 'Calculated from price data');
+
+    var details = signals.agentDetails;
+
+    // Helper function to update signal badge
+    function updateBadge(elementId, signal) {
+        var el = document.getElementById(elementId);
+        if (!el) return;
+
+        var displaySignal = signalToDisplay(signal);
+        el.textContent = displaySignal;
+
+        // Update badge styling
+        el.className = 'badge';
+        if (displaySignal === 'BULLISH') {
+            el.classList.add('badge-success');
+            el.style.background = 'rgba(34,197,94,0.2)';
+            el.style.color = '#22c55e';
+        } else if (displaySignal === 'BEARISH') {
+            el.classList.add('badge-danger');
+            el.style.background = 'rgba(239,68,68,0.2)';
+            el.style.color = '#ef4444';
+        } else {
+            el.classList.add('badge-warning');
+            el.style.background = 'rgba(234,179,8,0.2)';
+            el.style.color = '#eab308';
+        }
+    }
+
+    // Helper to update confidence
+    function updateConf(elementId, confidence) {
+        var el = document.getElementById(elementId);
+        if (el) el.textContent = Math.round(confidence || 50) + '%';
+    }
+
+    // All agents use the same signal for all timeframes (simplification)
+    // Base Confluence
+    var baseSignal = details.base ? details.base.signal : 'HOLD';
+    var baseConf = details.base ? details.base.confidence : 50;
+    updateBadge('sigBaseIntraday', baseSignal);
+    updateBadge('sigBaseSwing', baseSignal);
+    updateBadge('sigBasePosition', baseSignal);
+    updateConf('sigBaseIntradayConf', baseConf);
+    updateConf('sigBaseSwingConf', baseConf);
+    updateConf('sigBasePositionConf', baseConf);
+
+    // Gann-Elliott
+    var gannSignal = details.gann ? details.gann.signal : 'HOLD';
+    var gannConf = details.gann ? details.gann.confidence : 50;
+    updateBadge('sigGannIntraday', gannSignal);
+    updateBadge('sigGannSwing', gannSignal);
+    updateBadge('sigGannPosition', gannSignal);
+    updateConf('sigGannIntradayConf', gannConf);
+    updateConf('sigGannSwingConf', gannConf);
+    updateConf('sigGannPositionConf', gannConf);
+
+    // DQN/RL
+    var dqnSignal = details.dqn ? details.dqn.signal : 'HOLD';
+    var dqnConf = details.dqn ? details.dqn.confidence : 50;
+    updateBadge('sigDqnIntraday', dqnSignal);
+    updateBadge('sigDqnSwing', dqnSignal);
+    updateBadge('sigDqnPosition', dqnSignal);
+    updateConf('sigDqnIntradayConf', dqnConf);
+    updateConf('sigDqnSwingConf', dqnConf);
+    updateConf('sigDqnPositionConf', dqnConf);
+
+    // 3-Wave
+    var waveSignal = details.wave ? details.wave.signal : 'HOLD';
+    var waveConf = details.wave ? details.wave.confidence : 50;
+    updateBadge('sigWaveIntraday', waveSignal);
+    updateBadge('sigWaveSwing', waveSignal);
+    updateBadge('sigWavePosition', waveSignal);
+    updateConf('sigWaveIntradayConf', waveConf);
+    updateConf('sigWaveSwingConf', waveConf);
+    updateConf('sigWavePositionConf', waveConf);
+
+    // Update consensus row
+    var consensusEl = document.getElementById('gannQvConsensus');
+    if (consensusEl) {
+        consensusEl.textContent = signals.agreeing + '/4';
+        if (signals.agreeing >= 3) {
+            consensusEl.style.color = '#22c55e';
+        } else if (signals.agreeing === 2) {
+            consensusEl.style.color = '#eab308';
+        } else {
+            consensusEl.style.color = '#ef4444';
+        }
+    }
+
+    // Update trend display based on consensus
+    var trendEl = document.getElementById('gannQvTrend');
+    if (trendEl) {
+        var trendText = signalToDisplay(signals.signal);
+        trendEl.textContent = trendText;
+        trendEl.style.color = signals.signal === 'CALL' ? '#22c55e' : (signals.signal === 'PUT' ? '#ef4444' : '#eab308');
+    }
+
+    // Log the update
+    console.log('Agent signals updated - Base:', signalToDisplay(baseSignal),
+                'Gann:', signalToDisplay(gannSignal),
+                'DQN:', signalToDisplay(dqnSignal),
+                'Wave:', signalToDisplay(waveSignal),
+                'Consensus:', signals.agreeing + '/4', signals.signal);
 }
 
 function calculateMomentum(data) {
