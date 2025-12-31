@@ -454,8 +454,8 @@
             animation: gannPulse 2s ease-in-out infinite;
         }
         @keyframes gannPulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(212,160,23,0.3); }
-            50% { box-shadow: 0 0 25px rgba(212,160,23,0.6); }
+            0%, 100% { box-shadow: 0 0 10px rgba(212,160,23,0.3); transform: scale(1); opacity: 1; }
+            50% { box-shadow: 0 0 25px rgba(212,160,23,0.6); transform: scale(1.3); opacity: 0.7; }
         }
         .gann-tab:hover { filter: brightness(1.1); }
         .cycle-bar {
@@ -1261,6 +1261,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn" data-tab="reports" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">📑 Reports</button>
             <button class="tab-btn" data-tab="gann-rules" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📜 Gann Rules</button>
             <button class="tab-btn" data-tab="options-calc-advanced" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">🧮 Options Pro</button>
+            <button class="tab-btn" data-tab="gann-cycles" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🔮 Gann Cycles</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -5615,6 +5616,422 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GANN CYCLES TAB -->
+        <div id="gann-cycles" class="tab-content">
+            <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border: 1px solid rgba(102,126,234,0.3);">
+                <h2 style="margin-bottom: 15px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🔮 Gann Cycle Trading Dashboard</h2>
+                <p style="color: #666; font-size: 13px;">Biblical Cycles • Sq9 Levels • Options Recommendations | Based on W.D. Gann's methods from "Tunnel Thru the Air"</p>
+            </div>
+
+            <!-- Alert Banner & Quick Stats Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <!-- Active Alerts -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">🚨 Active Alerts</h3>
+                    <div id="gannActiveAlerts">
+                        <div style="padding: 12px; border-radius: 8px; background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.5); margin-bottom: 10px;">
+                            <div style="font-weight: 600; font-size: 13px;">270-Day Cycle <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px;">3 DAYS</span></div>
+                            <div style="font-size: 11px; color: #888; margin-top: 4px;">SPY/QQQ/IWM from Apr 7 low → Jan 2, 2026</div>
+                        </div>
+                        <div style="padding: 12px; border-radius: 8px; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.1)); border: 1px solid rgba(59,130,246,0.5);">
+                            <div style="font-weight: 600; font-size: 13px;">360-Day Anniversary <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 8px;">45 DAYS</span></div>
+                            <div style="font-size: 11px; color: #888; margin-top: 4px;">From Feb 19, 2025 ATH → Feb 14, 2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cycle Countdown -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">📅 Cycle Countdown</h3>
+                    <div id="gannCycleCountdowns">
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                                <span>From Feb 19 ATH → 360d</span>
+                                <span style="color: #888;">Day 316 / 360</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 88%; height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                                <span>From Apr 7 Low → 270d</span>
+                                <span style="color: #888;">Day 268 / 270</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 99%; height: 100%; background: linear-gradient(90deg, #ef4444, #dc2626); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                                <span>From Apr 7 Low → 360d</span>
+                                <span style="color: #888;">Day 268 / 360</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 74%; height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Status -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">📊 Market Status</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+                        <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 10px; color: #888;">SPY</div>
+                            <div id="gannSpyPrice" style="font-size: 16px; font-weight: 700;">$598.27</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 10px; color: #888;">QQQ</div>
+                            <div id="gannQqqPrice" style="font-size: 16px; font-weight: 700;">$524.18</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 10px; color: #888;">IWM</div>
+                            <div id="gannIwmPrice" style="font-size: 16px; font-weight: 700;">$248.20</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05)); border-radius: 10px; border: 1px solid rgba(245,158,11,0.3);">
+                        <div style="font-size: 10px; color: #f59e0b;">CURRENT SIGNAL</div>
+                        <div id="gannCurrentSignal" style="font-size: 20px; font-weight: 700; color: #f59e0b;">⚠️ CAUTION</div>
+                        <div style="font-size: 10px; color: #888;">270-day cycle approaching</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pivot Timelines -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h3 style="font-size: 14px; margin-bottom: 15px;">📍 Major Pivots & Cycle Timeline</h3>
+
+                <!-- SPY Low Pivot -->
+                <div style="background: rgba(0,0,0,0.02); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <span style="font-weight: 600; font-size: 15px;">SPY</span>
+                            <span style="font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; background: rgba(34,197,94,0.2); color: #22c55e; margin-left: 8px;">LOW</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600;">Apr 7, 2025</div>
+                            <div style="font-size: 12px; color: #888;">$506.22</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">49d</div>
+                            <div style="font-size: 9px; color: #666;">May 26</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">90d</div>
+                            <div style="font-size: 9px; color: #666;">Jul 6</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">120d</div>
+                            <div style="font-size: 9px; color: #666;">Aug 5</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">144d</div>
+                            <div style="font-size: 9px; color: #666;">Aug 29</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">180d</div>
+                            <div style="font-size: 9px; color: #666;">Oct 4</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444; margin: 0 auto 4px; animation: gannPulse 1s infinite;"></div>
+                            <div style="font-size: 10px; color: #ef4444; font-weight: 600;">270d</div>
+                            <div style="font-size: 9px; color: #ef4444;">Jan 2 🚨</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #9ca3af; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">360d</div>
+                            <div style="font-size: 9px; color: #666;">Apr 2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPY ATH Pivot -->
+                <div style="background: rgba(0,0,0,0.02); border-radius: 10px; padding: 15px; border: 1px solid rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <span style="font-weight: 600; font-size: 15px;">SPY</span>
+                            <span style="font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; background: rgba(239,68,68,0.2); color: #ef4444; margin-left: 8px;">HIGH</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 600;">Feb 19, 2025</div>
+                            <div style="font-size: 12px; color: #888;">$614.42</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #22c55e;">49d ✓</div>
+                            <div style="font-size: 9px; color: #666;">Apr 7</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #22c55e;">90d ✓</div>
+                            <div style="font-size: 9px; color: #666;">May 20</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">180d</div>
+                            <div style="font-size: 9px; color: #666;">Aug 18</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #888;">270d</div>
+                            <div style="font-size: 9px; color: #666;">Nov 16</div>
+                        </div>
+                        <div style="text-align: center; flex: 1; min-width: 55px;">
+                            <div style="width: 12px; height: 12px; border-radius: 50%; background: #9ca3af; margin: 0 auto 4px;"></div>
+                            <div style="font-size: 10px; color: #f59e0b;">360d</div>
+                            <div style="font-size: 9px; color: #f59e0b;">Feb 14 🚨</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade Rec, Sq9, Calculator Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+
+                <!-- Trade Recommendation -->
+                <div class="card" style="background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(59,130,246,0.05)); border: 1px solid rgba(124,58,237,0.2);">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">🎯 Trade Recommendation</h3>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="font-size: 11px; color: #888;">CURRENT SIGNAL</div>
+                        <div id="gannTradeSignal" style="font-size: 24px; font-weight: 700; color: #f59e0b;">⚠️ WAIT</div>
+                    </div>
+                    <div style="font-size: 11px; color: #888; text-align: center; margin-bottom: 15px;">
+                        270-day cycle from Apr 7 low approaches Jan 2, 2026.<br>
+                        Expect potential pause or pullback.
+                    </div>
+                    <div style="background: rgba(0,0,0,0.05); border-radius: 8px; padding: 12px;">
+                        <div style="font-size: 10px; font-weight: 600; color: #888; margin-bottom: 8px;">IF PULLBACK OCCURS (Jan 3-7):</div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <span style="color: #888;">Action</span>
+                            <span style="font-weight: 500; color: #22c55e;">BUY CALL</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <span style="color: #888;">Symbol</span>
+                            <span style="font-weight: 500;">SPY / QQQ / IWM</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <span style="color: #888;">Expiration</span>
+                            <span style="font-weight: 500;">45-60 DTE</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <span style="color: #888;">Target</span>
+                            <span style="font-weight: 500; color: #22c55e;">+100%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px;">
+                            <span style="color: #888;">Stop</span>
+                            <span style="font-weight: 500; color: #ef4444;">-50%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sq9 Levels -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">📐 Sq9 Support/Resistance - SPY</h3>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="font-size: 11px; color: #888;">Current Price</div>
+                        <div id="gannSq9Price" style="font-size: 24px; font-weight: 700;">$598.27</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 10px;">
+                            <div style="font-size: 10px; font-weight: 600; color: #22c55e; margin-bottom: 8px;">✅ SUPPORT (62%)</div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <span style="color: #888;">-45°</span>
+                                <span style="font-weight: 500;">$591.82</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <span style="color: #888;">-90°</span>
+                                <span style="font-weight: 500;">$585.42</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0;">
+                                <span style="color: #888;">-180°</span>
+                                <span style="font-weight: 500;">$572.78</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 10px;">
+                            <div style="font-size: 10px; font-weight: 600; color: #ef4444; margin-bottom: 8px;">❌ RESISTANCE (41%)</div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <span style="color: #888;">+45°</span>
+                                <span style="font-weight: 500;">$604.75</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <span style="color: #888;">+90°</span>
+                                <span style="font-weight: 500;">$611.28</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0;">
+                                <span style="color: #888;">+180°</span>
+                                <span style="font-weight: 500;">$624.50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backtested Stats -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">📊 Backtested Performance</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;">62%</div>
+                            <div style="font-size: 10px; color: #888;">Sq9 Support Bounce</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;">80%</div>
+                            <div style="font-size: 10px; color: #888;">49-Day Jubilee</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 22px; font-weight: 700; color: #f59e0b;">67%</div>
+                            <div style="font-size: 10px; color: #888;">90-Day Quarter</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="font-size: 22px; font-weight: 700; color: #f59e0b;">60%</div>
+                            <div style="font-size: 10px; color: #888;">Continuation</div>
+                        </div>
+                    </div>
+                    <div style="padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px; font-size: 11px;">
+                        <div style="color: #888; margin-bottom: 5px;">Confirmed Across:</div>
+                        <div>✅ SPY (32 years) • ✅ QQQ (40 years) • ✅ IWM (20 years)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-ETF Status Table -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h3 style="font-size: 14px; margin-bottom: 15px;">📈 Multi-ETF Cycle Status</h3>
+                <div class="table-wrap">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Symbol</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Price</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">From Last HIGH</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">From Last LOW</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Nearest Cycle</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Signal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gannEtfTableBody">
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 12px 10px; font-weight: 600;">SPY</td>
+                                <td style="padding: 12px 10px; color: #64748b;">$598.27</td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                                        Day 316/360 (88%)
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                                        Day 268/270 (99%) 🚨
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">270d - Jan 2</td>
+                                <td style="padding: 12px 10px;"><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 12px 10px; font-weight: 600;">QQQ</td>
+                                <td style="padding: 12px 10px; color: #64748b;">$524.18</td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                                        Day 316/360 (88%)
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                                        Day 268/270 (99%) 🚨
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">270d - Jan 2</td>
+                                <td style="padding: 12px 10px;"><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 10px; font-weight: 600;">IWM</td>
+                                <td style="padding: 12px 10px; color: #64748b;">$248.20</td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
+                                        Day 401/720 (56%)
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">
+                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                                        Day 268/270 (99%) 🚨
+                                    </div>
+                                </td>
+                                <td style="padding: 12px 10px;">270d - Jan 2</td>
+                                <td style="padding: 12px 10px;"><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Calendar Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- January Calendar -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">📆 January 2026 Cycle Calendar</h3>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Sun</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Mon</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Tue</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Wed</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Thu</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Fri</div>
+                        <div style="text-align: center; font-size: 10px; color: #888; padding: 6px;">Sat</div>
+
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;"></div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;"></div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;"></div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;"></div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;">1</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.5); border-radius: 4px; color: #ef4444; font-weight: 600;">2<br><span style="font-size:8px;">270d</span></div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 4px; color: #22c55e;">3</div>
+
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 4px; color: #22c55e;">4</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 4px; color: #22c55e;">5</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 4px; color: #22c55e;">6</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 4px; color: #22c55e;">7</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;">8</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;">9</div>
+                        <div style="text-align: center; padding: 8px; font-size: 11px; background: rgba(0,0,0,0.02); border-radius: 4px;">10</div>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 10px; color: #888;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: rgba(239,68,68,0.3); border-radius: 2px; margin-right: 4px;"></span> Cycle Date
+                        <span style="display: inline-block; width: 10px; height: 10px; background: rgba(34,197,94,0.3); border-radius: 2px; margin-left: 12px; margin-right: 4px;"></span> Entry Zone
+                    </div>
+                </div>
+
+                <!-- Full Dashboard Link -->
+                <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <h3 style="font-size: 14px; margin-bottom: 15px;">🔮 Full Gann Cycles Dashboard</h3>
+                    <p style="color: #888; font-size: 12px; margin-bottom: 20px;">
+                        Access the full standalone dashboard with additional features:<br>
+                        • Alert Settings (Email/SMS)<br>
+                        • Trade Journal<br>
+                        • Options Calculator<br>
+                        • Extended Analysis
+                    </p>
+                    <a href="gann_cycles.html" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px; transition: all 0.2s;">
+                        Open Full Dashboard →
+                    </a>
                 </div>
             </div>
         </div>
