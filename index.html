@@ -9664,36 +9664,48 @@ function updateAgentPredictionDisplay() {
 
     for (var i = 0; i < log.length; i++) {
         var entry = log[i];
-        if (!entry.verified) continue;
 
-        // Agent stats (skip NEUTRAL)
-        if (entry.baseSignal !== 'NEUTRAL') {
-            stats.base.total++;
-            if (entry.baseCorrect) stats.base.wins++;
-        }
-        if (entry.gannElliottSignal !== 'NEUTRAL') {
-            stats.gannElliott.total++;
-            if (entry.gannElliottCorrect) stats.gannElliott.wins++;
-        }
-        if (entry.dqnSignal !== 'NEUTRAL') {
-            stats.dqn.total++;
-            if (entry.dqnCorrect) stats.dqn.wins++;
-        }
-        if (entry.waveSignal !== 'NEUTRAL') {
-            stats.wave.total++;
-            if (entry.waveCorrect) stats.wave.wins++;
-        }
+        // Support both compact format (b,g,q,w,c,l,n,dn) and old format
+        var isCompact = entry.hasOwnProperty('b');
 
-        // Consensus stats
-        if (entry.consensusLevel === 'ULTRA') {
-            stats.ultra.total++;
-            if (entry.consensusCorrect) stats.ultra.wins++;
-        } else if (entry.consensusLevel === 'SUPER') {
-            stats.superLevel.total++;
-            if (entry.consensusCorrect) stats.superLevel.wins++;
+        if (isCompact) {
+            // Compact format
+            if (!entry.n) { stats.base.total++; if (entry.b) stats.base.wins++; }
+            stats.gannElliott.total++; if (entry.g) stats.gannElliott.wins++;
+            if (!entry.dn) { stats.dqn.total++; if (entry.q) stats.dqn.wins++; }
+            stats.wave.total++; if (entry.w) stats.wave.wins++;
+            if (entry.l === 'U') { stats.ultra.total++; if (entry.c) stats.ultra.wins++; }
+            else if (entry.l === 'S') { stats.superLevel.total++; if (entry.c) stats.superLevel.wins++; }
+            else { stats.mixed.total++; if (entry.c) stats.mixed.wins++; }
         } else {
-            stats.mixed.total++;
-            if (entry.consensusCorrect) stats.mixed.wins++;
+            // Old format (backwards compatible)
+            if (!entry.verified) continue;
+            if (entry.baseSignal !== 'NEUTRAL') {
+                stats.base.total++;
+                if (entry.baseCorrect) stats.base.wins++;
+            }
+            if (entry.gannElliottSignal !== 'NEUTRAL') {
+                stats.gannElliott.total++;
+                if (entry.gannElliottCorrect) stats.gannElliott.wins++;
+            }
+            if (entry.dqnSignal !== 'NEUTRAL') {
+                stats.dqn.total++;
+                if (entry.dqnCorrect) stats.dqn.wins++;
+            }
+            if (entry.waveSignal !== 'NEUTRAL') {
+                stats.wave.total++;
+                if (entry.waveCorrect) stats.wave.wins++;
+            }
+            if (entry.consensusLevel === 'ULTRA') {
+                stats.ultra.total++;
+                if (entry.consensusCorrect) stats.ultra.wins++;
+            } else if (entry.consensusLevel === 'SUPER') {
+                stats.superLevel.total++;
+                if (entry.consensusCorrect) stats.superLevel.wins++;
+            } else {
+                stats.mixed.total++;
+                if (entry.consensusCorrect) stats.mixed.wins++;
+            }
         }
     }
 
@@ -10416,28 +10428,21 @@ function backfillAgentPredictions(startDateStr) {
                 var consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
 
                 var moveUp = nextPrice > price;
-                var actualMove = ((nextPrice - price) / price * 100);
 
+                // Compact storage: d=date, s=symbol, b=baseCorrect, g=gannCorrect, q=dqnCorrect, w=waveCorrect, c=consensusCorrect, l=level(U/S/M), n=baseNeutral, dn=dqnNeutral
+                var baseNeutral = baseSignal === 'NEUTRAL';
+                var dqnNeutral = dqnSignal === 'NEUTRAL';
                 log.push({
-                    date: dateStr,
-                    symbol: sym,
-                    price: price,
-                    baseSignal: baseSignal,
-                    gannElliottSignal: gannElliottSignal,
-                    dqnSignal: dqnSignal,
-                    waveSignal: waveSignal,
-                    consensusLevel: consensusLevel,
-                    consensusDirection: consensusDirection,
-                    bullishCount: bullishCount,
-                    nextDayPrice: nextPrice,
-                    actualMove: parseFloat(actualMove.toFixed(2)),
-                    baseCorrect: baseSignal === 'NEUTRAL' || (baseSignal === 'BULLISH' && moveUp) || (baseSignal === 'BEARISH' && !moveUp),
-                    gannElliottCorrect: (gannElliottSignal === 'BULLISH' && moveUp) || (gannElliottSignal === 'BEARISH' && !moveUp),
-                    dqnCorrect: dqnSignal === 'NEUTRAL' || (dqnSignal === 'BULLISH' && moveUp) || (dqnSignal === 'BEARISH' && !moveUp),
-                    waveCorrect: (waveSignal === 'BULLISH' && moveUp) || (waveSignal === 'BEARISH' && !moveUp),
-                    consensusCorrect: (consensusDirection === 'BULLISH' && moveUp) || (consensusDirection === 'BEARISH' && !moveUp),
-                    verified: true,
-                    backfilled: true
+                    d: dateStr,
+                    s: sym,
+                    b: baseNeutral || (baseSignal === 'BULLISH' && moveUp) || (baseSignal === 'BEARISH' && !moveUp) ? 1 : 0,
+                    g: (gannElliottSignal === 'BULLISH' && moveUp) || (gannElliottSignal === 'BEARISH' && !moveUp) ? 1 : 0,
+                    q: dqnNeutral || (dqnSignal === 'BULLISH' && moveUp) || (dqnSignal === 'BEARISH' && !moveUp) ? 1 : 0,
+                    w: (waveSignal === 'BULLISH' && moveUp) || (waveSignal === 'BEARISH' && !moveUp) ? 1 : 0,
+                    c: (consensusDirection === 'BULLISH' && moveUp) || (consensusDirection === 'BEARISH' && !moveUp) ? 1 : 0,
+                    l: consensusLevel === 'ULTRA' ? 'U' : (consensusLevel === 'SUPER' ? 'S' : 'M'),
+                    n: baseNeutral ? 1 : 0,
+                    dn: dqnNeutral ? 1 : 0
                 });
                 addedCount++;
             }
@@ -10459,17 +10464,22 @@ function backfillAgentPredictions(startDateStr) {
             updateAgentPredictionDisplay();
 
             // Calculate stats
+            // Calculate stats using compact format: b=base, g=gann, q=dqn, w=wave, c=consensus, l=level, n=baseNeutral, dn=dqnNeutral
             var stats = { base: {w:0,t:0}, gann: {w:0,t:0}, dqn: {w:0,t:0}, wave: {w:0,t:0}, ultra: {w:0,t:0}, super: {w:0,t:0}, mixed: {w:0,t:0} };
             for (var i = 0; i < log.length; i++) {
                 var e = log[i];
-                if (!e.verified) continue;
-                if (e.baseSignal !== 'NEUTRAL') { stats.base.t++; if (e.baseCorrect) stats.base.w++; }
-                if (e.gannElliottSignal !== 'NEUTRAL') { stats.gann.t++; if (e.gannElliottCorrect) stats.gann.w++; }
-                if (e.dqnSignal !== 'NEUTRAL') { stats.dqn.t++; if (e.dqnCorrect) stats.dqn.w++; }
-                stats.wave.t++; if (e.waveCorrect) stats.wave.w++;
-                if (e.consensusLevel === 'ULTRA') { stats.ultra.t++; if (e.consensusCorrect) stats.ultra.w++; }
-                else if (e.consensusLevel === 'SUPER') { stats.super.t++; if (e.consensusCorrect) stats.super.w++; }
-                else { stats.mixed.t++; if (e.consensusCorrect) stats.mixed.w++; }
+                // Skip non-neutral base signals
+                if (!e.n) { stats.base.t++; if (e.b) stats.base.w++; }
+                // Gann is never neutral
+                stats.gann.t++; if (e.g) stats.gann.w++;
+                // Skip non-neutral DQN signals
+                if (!e.dn) { stats.dqn.t++; if (e.q) stats.dqn.w++; }
+                // Wave is never neutral
+                stats.wave.t++; if (e.w) stats.wave.w++;
+                // Consensus by level
+                if (e.l === 'U') { stats.ultra.t++; if (e.c) stats.ultra.w++; }
+                else if (e.l === 'S') { stats.super.t++; if (e.c) stats.super.w++; }
+                else { stats.mixed.t++; if (e.c) stats.mixed.w++; }
             }
 
             var pct = function(s) { return s.t > 0 ? Math.round(s.w / s.t * 100) : 0; };
