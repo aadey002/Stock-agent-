@@ -10700,19 +10700,19 @@ function backtestRealGann() {
                 Math.pow(sqrtHigh - 2.0, 2)    // -360 deg
             ];
 
-            // Check if price is near any Sq9 SUPPORT level (within 0.5%)
+            // Check if price is near any Sq9 SUPPORT level (within 1%)
             var nearSupport = false;
             for (var lvl = 0; lvl < sq9SupportLevels.length; lvl++) {
-                if (sq9SupportLevels[lvl] > 0 && Math.abs(price - sq9SupportLevels[lvl]) / price < 0.005) {
+                if (sq9SupportLevels[lvl] > 0 && Math.abs(price - sq9SupportLevels[lvl]) / price < 0.01) {
                     nearSupport = true;
                     break;
                 }
             }
 
-            // Check if price is near any Sq9 RESISTANCE level (within 0.5%)
+            // Check if price is near any Sq9 RESISTANCE level (within 1%)
             var nearResist = false;
             for (var lvl = 0; lvl < sq9ResistLevels.length; lvl++) {
-                if (Math.abs(price - sq9ResistLevels[lvl]) / price < 0.005) {
+                if (Math.abs(price - sq9ResistLevels[lvl]) / price < 0.01) {
                     nearResist = true;
                     break;
                 }
