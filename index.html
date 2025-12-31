@@ -25621,10 +25621,17 @@ const trackerCycles = [
     { days: 360, name: '360-Day Annual', category: 'annual', expectedRate: 65 }
 ];
 
-// Initialize on page load
+// Initialize on page load - wrapped in try-catch to prevent breaking other scripts
 document.addEventListener('DOMContentLoaded', function() {
-    loadGannPredictions();
-    updatePredictionTracker();
+    try {
+        loadGannPredictions();
+        // Only update if the tracker section exists
+        if (document.getElementById('gannPredictionTracker')) {
+            updatePredictionTracker();
+        }
+    } catch (e) {
+        console.error('Gann Tracker init error:', e);
+    }
 });
 
 function loadGannPredictions() {
@@ -25796,12 +25803,14 @@ function updatePerfSummary() {
         ? (withMoves.reduce((sum, p) => sum + Math.abs(p.movePercent), 0) / withMoves.length).toFixed(2)
         : '--';
 
-    document.getElementById('gannOverallAccuracy').textContent = accuracy === '--' ? '--' : accuracy + '%';
-    document.getElementById('gannTotalPredictions').textContent = total;
-    document.getElementById('gannCorrectPredictions').textContent = correct;
-    document.getElementById('gannIncorrectPredictions').textContent = incorrect;
-    document.getElementById('gannPendingPredictions').textContent = pending;
-    document.getElementById('gannAvgMove').textContent = avgMove === '--' ? '--' : avgMove + '%';
+    // Safe element updates
+    const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+    el('gannOverallAccuracy', accuracy === '--' ? '--' : accuracy + '%');
+    el('gannTotalPredictions', total);
+    el('gannCorrectPredictions', correct);
+    el('gannIncorrectPredictions', incorrect);
+    el('gannPendingPredictions', pending);
+    el('gannAvgMove', avgMove === '--' ? '--' : avgMove + '%');
 
     // Rolling accuracy (last 20)
     const recent = gannPredictions
@@ -25810,26 +25819,30 @@ function updatePerfSummary() {
     const recentCorrect = recent.filter(p => p.result === 'correct').length;
     const rollingAccuracy = recent.length > 0 ? ((recentCorrect / recent.length) * 100).toFixed(1) : 0;
 
-    document.getElementById('gannRollingAccuracyValue').textContent = recent.length > 0 ? rollingAccuracy + '%' : '--';
+    el('gannRollingAccuracyValue', recent.length > 0 ? rollingAccuracy + '%' : '--');
     const fillEl = document.getElementById('gannRollingAccuracyFill');
-    fillEl.style.width = rollingAccuracy + '%';
-    fillEl.className = 'gann-rolling-accuracy-fill ' +
-        (rollingAccuracy >= 65 ? 'high' : rollingAccuracy >= 50 ? 'medium' : 'low');
+    if (fillEl) {
+        fillEl.style.width = rollingAccuracy + '%';
+        fillEl.className = 'gann-rolling-accuracy-fill ' +
+            (rollingAccuracy >= 65 ? 'high' : rollingAccuracy >= 50 ? 'medium' : 'low');
+    }
 }
 
 function updateCycleBreakdown() {
+    const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+    const elClass = (id, cls) => { const e = document.getElementById(id); if (e) e.className = cls; };
+
     // 49-Day
     const preds49 = gannPredictions.filter(p => p.cycleDays === 49);
     const correct49 = preds49.filter(p => p.result === 'correct').length;
     const validated49 = preds49.filter(p => p.result !== 'pending').length;
     const rate49 = validated49 > 0 ? ((correct49 / validated49) * 100).toFixed(0) : '--';
 
-    document.getElementById('gann49Total').textContent = preds49.length;
-    document.getElementById('gann49Correct').textContent = correct49;
-    document.getElementById('gann49Rate').textContent = rate49 === '--' ? '--' : rate49 + '%';
-    document.getElementById('gann49Badge').textContent = rate49 === '--' ? '--' : rate49 + '%';
-    document.getElementById('gann49Badge').className = 'gann-cycle-type-badge ' +
-        (rate49 >= 70 ? 'high' : rate49 >= 50 ? 'medium' : 'low');
+    el('gann49Total', preds49.length);
+    el('gann49Correct', correct49);
+    el('gann49Rate', rate49 === '--' ? '--' : rate49 + '%');
+    el('gann49Badge', rate49 === '--' ? '--' : rate49 + '%');
+    elClass('gann49Badge', 'gann-cycle-type-badge ' + (rate49 >= 70 ? 'high' : rate49 >= 50 ? 'medium' : 'low'));
 
     // 90-Day
     const preds90 = gannPredictions.filter(p => [90, 120].includes(p.cycleDays));
@@ -25837,12 +25850,11 @@ function updateCycleBreakdown() {
     const validated90 = preds90.filter(p => p.result !== 'pending').length;
     const rate90 = validated90 > 0 ? ((correct90 / validated90) * 100).toFixed(0) : '--';
 
-    document.getElementById('gann90Total').textContent = preds90.length;
-    document.getElementById('gann90Correct').textContent = correct90;
-    document.getElementById('gann90Rate').textContent = rate90 === '--' ? '--' : rate90 + '%';
-    document.getElementById('gann90Badge').textContent = rate90 === '--' ? '--' : rate90 + '%';
-    document.getElementById('gann90Badge').className = 'gann-cycle-type-badge ' +
-        (rate90 >= 70 ? 'high' : rate90 >= 50 ? 'medium' : 'low');
+    el('gann90Total', preds90.length);
+    el('gann90Correct', correct90);
+    el('gann90Rate', rate90 === '--' ? '--' : rate90 + '%');
+    el('gann90Badge', rate90 === '--' ? '--' : rate90 + '%');
+    elClass('gann90Badge', 'gann-cycle-type-badge ' + (rate90 >= 70 ? 'high' : rate90 >= 50 ? 'medium' : 'low'));
 
     // 180-Day
     const preds180 = gannPredictions.filter(p => [144, 180, 270].includes(p.cycleDays));
@@ -25850,12 +25862,11 @@ function updateCycleBreakdown() {
     const validated180 = preds180.filter(p => p.result !== 'pending').length;
     const rate180 = validated180 > 0 ? ((correct180 / validated180) * 100).toFixed(0) : '--';
 
-    document.getElementById('gann180Total').textContent = preds180.length;
-    document.getElementById('gann180Correct').textContent = correct180;
-    document.getElementById('gann180Rate').textContent = rate180 === '--' ? '--' : rate180 + '%';
-    document.getElementById('gann180Badge').textContent = rate180 === '--' ? '--' : rate180 + '%';
-    document.getElementById('gann180Badge').className = 'gann-cycle-type-badge ' +
-        (rate180 >= 70 ? 'high' : rate180 >= 50 ? 'medium' : 'low');
+    el('gann180Total', preds180.length);
+    el('gann180Correct', correct180);
+    el('gann180Rate', rate180 === '--' ? '--' : rate180 + '%');
+    el('gann180Badge', rate180 === '--' ? '--' : rate180 + '%');
+    elClass('gann180Badge', 'gann-cycle-type-badge ' + (rate180 >= 70 ? 'high' : rate180 >= 50 ? 'medium' : 'low'));
 
     // 360-Day
     const preds360 = gannPredictions.filter(p => p.cycleDays === 360);
@@ -25863,16 +25874,16 @@ function updateCycleBreakdown() {
     const validated360 = preds360.filter(p => p.result !== 'pending').length;
     const rate360 = validated360 > 0 ? ((correct360 / validated360) * 100).toFixed(0) : '--';
 
-    document.getElementById('gann360Total').textContent = preds360.length;
-    document.getElementById('gann360Correct').textContent = correct360;
-    document.getElementById('gann360Rate').textContent = rate360 === '--' ? '--' : rate360 + '%';
-    document.getElementById('gann360Badge').textContent = rate360 === '--' ? '--' : rate360 + '%';
-    document.getElementById('gann360Badge').className = 'gann-cycle-type-badge ' +
-        (rate360 >= 70 ? 'high' : rate360 >= 50 ? 'medium' : 'low');
+    el('gann360Total', preds360.length);
+    el('gann360Correct', correct360);
+    el('gann360Rate', rate360 === '--' ? '--' : rate360 + '%');
+    el('gann360Badge', rate360 === '--' ? '--' : rate360 + '%');
+    elClass('gann360Badge', 'gann-cycle-type-badge ' + (rate360 >= 70 ? 'high' : rate360 >= 50 ? 'medium' : 'low'));
 }
 
 function updateActivePredictions() {
     const container = document.getElementById('gannActivePredGrid');
+    if (!container) return;
     const active = gannPredictions.filter(p => p.result === 'pending');
 
     if (active.length === 0) {
@@ -25926,6 +25937,7 @@ function updateActivePredictions() {
 
 function updatePredictionsTable(filter) {
     const tbody = document.getElementById('gannPredictionsTableBody');
+    if (!tbody) return;
 
     let filtered = [...gannPredictions];
     if (filter === 'correct') filtered = filtered.filter(p => p.result === 'correct');
@@ -26007,20 +26019,21 @@ function filterPredictions(filter) {
 }
 
 function updateConfidenceStats() {
+    const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
     const validated = gannPredictions.filter(p => p.result !== 'pending');
     const correct = validated.filter(p => p.result === 'correct').length;
     const total = validated.length;
 
     if (total === 0) {
-        document.getElementById('gannLiveAccuracy').textContent = '--';
-        document.getElementById('gannLiveConfidence').textContent = 'Need more data';
-        document.getElementById('gannPerfVsExpected').textContent = '--';
-        document.getElementById('gannPerfStatus').textContent = 'Analyzing...';
+        el('gannLiveAccuracy', '--');
+        el('gannLiveConfidence', 'Need more data');
+        el('gannPerfVsExpected', '--');
+        el('gannPerfStatus', 'Analyzing...');
         return;
     }
 
     const accuracy = (correct / total * 100).toFixed(1);
-    document.getElementById('gannLiveAccuracy').textContent = accuracy + '%';
+    el('gannLiveAccuracy', accuracy + '%');
 
     // Calculate 95% confidence interval (Wilson score)
     const z = 1.96;
@@ -26032,17 +26045,18 @@ function updateConfidenceStats() {
     const lower = Math.max(0, ((centre - margin) / denominator) * 100).toFixed(0);
     const upper = Math.min(100, ((centre + margin) / denominator) * 100).toFixed(0);
 
-    document.getElementById('gannLiveConfidence').textContent = `95% CI: ${lower}% - ${upper}%`;
+    el('gannLiveConfidence', `95% CI: ${lower}% - ${upper}%`);
 
     // Performance vs expected (67% backtest baseline)
     const expected = 67;
     const diff = parseFloat(accuracy) - expected;
     const diffText = diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
-    document.getElementById('gannPerfVsExpected').textContent = diffText;
-    document.getElementById('gannPerfVsExpected').style.color = diff >= 0 ? '#16a34a' : '#dc2626';
+    el('gannPerfVsExpected', diffText);
+    const perfEl = document.getElementById('gannPerfVsExpected');
+    if (perfEl) perfEl.style.color = diff >= 0 ? '#16a34a' : '#dc2626';
 
     const statusText = diff >= 5 ? 'Outperforming!' : diff >= -5 ? 'On Track' : 'Below Expected';
-    document.getElementById('gannPerfStatus').textContent = statusText;
+    el('gannPerfStatus', statusText);
 }
 
 // Export to CSV
