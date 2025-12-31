@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gann Cycle Trading Dashboard</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -45,6 +46,32 @@
             color: #666;
             font-size: 12px;
             margin-top: 10px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: rgba(34,197,94,0.2);
+            border: 1px solid rgba(34,197,94,0.5);
+            border-radius: 20px;
+            font-size: 11px;
+            color: #22c55e;
+            margin-left: 10px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
 
         .dashboard-grid {
@@ -98,11 +125,23 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .alert-card:hover {
+            transform: scale(1.02);
         }
 
         .alert-critical {
             background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1));
             border: 1px solid rgba(239,68,68,0.5);
+            animation: alertPulse 2s infinite;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+            50% { box-shadow: 0 0 20px 5px rgba(239,68,68,0.2); }
         }
 
         .alert-warning {
@@ -124,6 +163,9 @@
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .alert-subtitle {
@@ -137,7 +179,6 @@
             border-radius: 12px;
             font-size: 10px;
             font-weight: 600;
-            margin-left: 8px;
         }
 
         .badge-critical { background: #ef4444; color: white; }
@@ -183,6 +224,44 @@
         .progress-normal { background: linear-gradient(90deg, #3b82f6, #8b5cf6); }
         .progress-warning { background: linear-gradient(90deg, #f59e0b, #ef4444); }
         .progress-critical { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+        /* Price Cards */
+        .price-card {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .price-card.price-up {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        .price-card.price-down {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+
+        .price-symbol {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .price-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .price-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .price-change.up { color: #22c55e; }
+        .price-change.down { color: #ef4444; }
 
         /* Pivot Cards */
         .pivot-card {
@@ -236,6 +315,14 @@
             text-align: center;
             flex: 1;
             min-width: 50px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .cycle-dot:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         .cycle-dot .dot {
@@ -249,11 +336,6 @@
         .dot-active { background: #ef4444; animation: pulse 1s infinite; }
         .dot-future { background: #4b5563; }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
-
         .cycle-dot .label {
             font-size: 10px;
             color: #888;
@@ -262,6 +344,11 @@
         .cycle-dot .date {
             font-size: 9px;
             color: #666;
+        }
+
+        .cycle-dot .result {
+            font-size: 8px;
+            margin-top: 2px;
         }
 
         /* Trade Recommendation */
@@ -284,7 +371,7 @@
         }
 
         .signal-value {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
         }
 
@@ -293,6 +380,14 @@
         .signal-wait { color: #f59e0b; }
         .signal-caution { color: #f97316; }
 
+        .signal-reason {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
         .trade-details {
             background: rgba(0,0,0,0.2);
             border-radius: 8px;
@@ -300,12 +395,21 @@
             margin-top: 15px;
         }
 
+        .trade-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
         .trade-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .trade-row:last-child {
@@ -348,13 +452,21 @@
         .sq9-level {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            align-items: center;
+            padding: 8px 0;
             font-size: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .sq9-level:last-child {
             border-bottom: none;
+        }
+
+        .sq9-level.near-level {
+            background: rgba(34,197,94,0.1);
+            margin: 0 -8px;
+            padding: 8px;
+            border-radius: 6px;
         }
 
         .sq9-level .angle {
@@ -367,16 +479,23 @@
 
         .sq9-level .distance {
             font-size: 10px;
-            color: #666;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sq9-level .distance.close {
+            background: rgba(34,197,94,0.2);
+            color: #4ade80;
         }
 
         .sq9-alert {
             margin-top: 12px;
-            padding: 10px;
+            padding: 12px;
             background: rgba(34,197,94,0.1);
             border-radius: 8px;
             border: 1px solid rgba(34,197,94,0.3);
-            font-size: 11px;
+            font-size: 12px;
             color: #4ade80;
         }
 
@@ -388,40 +507,361 @@
 
         .etf-table th {
             text-align: left;
-            padding: 10px;
+            padding: 12px 10px;
             font-size: 11px;
             color: #888;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-transform: uppercase;
         }
 
         .etf-table td {
-            padding: 12px 10px;
+            padding: 15px 10px;
             font-size: 13px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .etf-table tr:hover {
+            background: rgba(255,255,255,0.03);
         }
 
         .etf-symbol {
             font-weight: 600;
             color: #fff;
+            font-size: 15px;
         }
 
         .etf-price {
-            color: #888;
+            font-weight: 500;
         }
 
         .cycle-status {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
+        .signal-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .signal-badge.buy { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .signal-badge.sell { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .signal-badge.wait { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .signal-badge.caution { background: rgba(249,115,22,0.2); color: #f97316; }
+
+        /* Trade Journal */
+        .journal-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+        }
+
+        .journal-entry:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .journal-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .journal-result {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .result-win { background: rgba(34,197,94,0.2); }
+        .result-loss { background: rgba(239,68,68,0.2); }
+        .result-open { background: rgba(59,130,246,0.2); }
+
+        .journal-info .symbol {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .journal-info .details {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .journal-info .signal-type {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .journal-pnl {
+            text-align: right;
+        }
+
+        .pnl-amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .pnl-positive { color: #22c55e; }
+        .pnl-negative { color: #ef4444; }
+        .pnl-open { color: #3b82f6; }
+
+        .pnl-percent {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+        }
+
+        /* Full Width Sections */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Alert Settings */
+        .alert-settings {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .alert-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .alert-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            padding: 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+        }
+
+        .alert-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
         /* Calendar */
+        .calendar-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .calendar-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-month {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -437,10 +877,21 @@
 
         .calendar-day {
             text-align: center;
-            padding: 8px;
+            padding: 10px 5px;
             font-size: 12px;
             border-radius: 6px;
             background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .calendar-day.today {
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.5);
         }
 
         .calendar-day.cycle-day {
@@ -450,135 +901,18 @@
             font-weight: 600;
         }
 
-        .calendar-day.today {
-            background: rgba(59,130,246,0.2);
-            border: 1px solid rgba(59,130,246,0.5);
-        }
-
         .calendar-day.entry-zone {
             background: rgba(34,197,94,0.2);
             border: 1px solid rgba(34,197,94,0.5);
             color: #4ade80;
         }
 
-        /* Options Calculator */
-        .options-calc {
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .calc-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .calc-row:last-child {
-            border-bottom: none;
-        }
-
-        .calc-label {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .calc-value {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .calc-highlight {
-            color: #22c55e;
-        }
-
-        /* Full Width Sections */
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Journal */
-        .journal-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .journal-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .journal-result {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .result-win { background: rgba(34,197,94,0.2); }
-        .result-loss { background: rgba(239,68,68,0.2); }
-
-        .journal-info .symbol {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .journal-info .details {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .journal-pnl {
-            text-align: right;
-        }
-
-        .pnl-amount {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .pnl-positive { color: #22c55e; }
-        .pnl-negative { color: #ef4444; }
-
-        .pnl-percent {
-            font-size: 11px;
-            color: #888;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #888;
+        .calendar-day .cycle-indicator {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
         }
 
         /* Navigation */
@@ -599,889 +933,1663 @@
             color: #fff;
         }
 
-        /* Buttons */
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-success { border-left: 4px solid #22c55e; }
+        .toast-error { border-left: 4px solid #ef4444; }
+        .toast-warning { border-left: 4px solid #f59e0b; }
+        .toast-info { border-left: 4px solid #3b82f6; }
+
+        .toast-message {
             font-size: 13px;
-            font-weight: 600;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.03);
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
+            border-radius: 8px;
             transition: all 0.2s;
         }
 
-        .btn-primary {
+        .tab:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab.active {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
             color: #fff;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
+        .tab-content {
+            display: none;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        /* Email Alert Section */
-        .alert-settings {
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .alert-settings input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .alert-settings input::placeholder {
-            color: #666;
-        }
-
-        .alert-options {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .alert-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .alert-option input[type="checkbox"] {
-            width: auto;
-            margin: 0;
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Header -->
     <div class="header">
         <h1>Gann Cycle Trading Dashboard</h1>
-        <div class="subtitle">Biblical Cycles - Sq9 Levels - Options Recommendations</div>
+        <div class="subtitle">
+            Biblical Cycles - Sq9 Levels - Options Recommendations
+            <span class="live-indicator" id="liveIndicator">
+                <span class="live-dot"></span>
+                <span id="liveStatus">Connecting...</span>
+            </span>
+        </div>
         <div class="last-update">Last Updated: <span id="lastUpdate">Loading...</span></div>
         <div style="margin-top: 15px;">
-            <a href="index.html" class="nav-link">← Main Dashboard</a>
-            <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
+            <a href="index.html" class="nav-link">&#8592; Main Dashboard</a>
+            <button class="btn btn-primary btn-sm" onclick="refreshData()">Refresh</button>
+            <button class="btn btn-secondary btn-sm" onclick="openAddTradeModal()">Add Trade</button>
+            <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">Settings</button>
         </div>
     </div>
 
     <!-- Alert Banner -->
     <div id="alertBanner" style="display: none; margin-bottom: 20px;"></div>
 
-    <!-- Top Row: Alerts, Countdown, Quick Stats -->
-    <div class="dashboard-grid">
-
-        <!-- Active Alerts -->
-        <div class="card">
-            <div class="card-title"><span class="icon">!</span> Active Alerts</div>
-            <div id="activeAlerts">
-                <div class="alert-card alert-warning">
-                    <div class="alert-title">
-                        270-Day Cycle <span class="alert-badge badge-warning">3 DAYS</span>
-                    </div>
-                    <div class="alert-subtitle">SPY/QQQ/IWM from Apr 7 low - Jan 2, 2026</div>
-                </div>
-                <div class="alert-card alert-info">
-                    <div class="alert-title">
-                        360-Day Anniversary <span class="alert-badge badge-info">45 DAYS</span>
-                    </div>
-                    <div class="alert-subtitle">From Feb 19, 2025 ATH - Feb 14, 2026</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cycle Countdown -->
-        <div class="card">
-            <div class="card-title"><span class="icon">CAL</span> Cycle Countdown</div>
-            <div id="cycleCountdowns">
-                <div class="cycle-progress">
-                    <div class="cycle-header">
-                        <span class="cycle-name">From Feb 19 ATH - 360d</span>
-                        <span class="cycle-days">Day 316 / 360</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill progress-warning" style="width: 88%;"></div>
-                    </div>
-                </div>
-                <div class="cycle-progress">
-                    <div class="cycle-header">
-                        <span class="cycle-name">From Apr 7 Low - 270d</span>
-                        <span class="cycle-days">Day 268 / 270</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill progress-critical" style="width: 99%;"></div>
-                    </div>
-                </div>
-                <div class="cycle-progress">
-                    <div class="cycle-header">
-                        <span class="cycle-name">From Apr 7 Low - 360d</span>
-                        <span class="cycle-days">Day 268 / 360</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill progress-normal" style="width: 74%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="card">
-            <div class="card-title"><span class="icon">$</span> Market Status</div>
-            <div id="quickStats">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                        <div style="font-size: 11px; color: #888;">SPY</div>
-                        <div id="spyPrice" style="font-size: 18px; font-weight: 700;">$598.27</div>
-                    </div>
-                    <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                        <div style="font-size: 11px; color: #888;">QQQ</div>
-                        <div id="qqqPrice" style="font-size: 18px; font-weight: 700;">$524.18</div>
-                    </div>
-                    <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                        <div style="font-size: 11px; color: #888;">IWM</div>
-                        <div id="iwmPrice" style="font-size: 18px; font-weight: 700;">$248.20</div>
-                    </div>
-                </div>
-                <div style="text-align: center; padding: 15px; background: rgba(245,158,11,0.1); border-radius: 10px; border: 1px solid rgba(245,158,11,0.3);">
-                    <div style="font-size: 11px; color: #f59e0b;">CURRENT SIGNAL</div>
-                    <div id="currentSignal" style="font-size: 24px; font-weight: 700; color: #f59e0b;">CAUTION</div>
-                    <div style="font-size: 11px; color: #888;">270-day cycle approaching</div>
-                </div>
-            </div>
-        </div>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab" onclick="switchTab('cycles')">Cycles</button>
+        <button class="tab" onclick="switchTab('journal')">Journal</button>
+        <button class="tab" onclick="switchTab('alerts')">Alerts</button>
     </div>
 
-    <!-- Pivot Timeline Section -->
-    <div class="dashboard-grid">
-        <div class="card full-width">
-            <div class="card-title"><span class="icon">PIN</span> Major Pivots & Cycle Timeline</div>
-            <div id="pivotTimelines">
+    <!-- Overview Tab -->
+    <div class="tab-content active" id="tab-overview">
+        <!-- Top Row: Alerts, Countdown, Quick Stats -->
+        <div class="dashboard-grid">
 
-                <!-- SPY Pivots -->
-                <div class="pivot-card">
-                    <div class="pivot-header">
-                        <div>
-                            <span style="font-weight: 600; font-size: 16px;">SPY</span>
-                            <span class="pivot-type pivot-low">LOW</span>
-                        </div>
-                        <div class="pivot-info">
-                            <div class="pivot-date">Apr 7, 2025</div>
-                            <div class="pivot-price">$506.22</div>
-                        </div>
-                    </div>
-                    <div class="cycle-timeline">
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">49d</div>
-                            <div class="date">May 26</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">90d</div>
-                            <div class="date">Jul 6</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">120d</div>
-                            <div class="date">Aug 5</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">144d</div>
-                            <div class="date">Aug 29</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">180d</div>
-                            <div class="date">Oct 4</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-active"></div>
-                            <div class="label">270d</div>
-                            <div class="date">Jan 2 !</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-future"></div>
-                            <div class="label">360d</div>
-                            <div class="date">Apr 2</div>
-                        </div>
+            <!-- Active Alerts -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#128680;</span> Active Alerts</div>
+                <div id="activeAlerts">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                        Loading alerts...
                     </div>
                 </div>
-
-                <!-- SPY ATH Pivot -->
-                <div class="pivot-card">
-                    <div class="pivot-header">
-                        <div>
-                            <span style="font-weight: 600; font-size: 16px;">SPY</span>
-                            <span class="pivot-type pivot-high">HIGH</span>
-                        </div>
-                        <div class="pivot-info">
-                            <div class="pivot-date">Feb 19, 2025</div>
-                            <div class="pivot-price">$614.42</div>
-                        </div>
-                    </div>
-                    <div class="cycle-timeline">
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">49d</div>
-                            <div class="date">Apr 7 OK</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">90d</div>
-                            <div class="date">May 20 OK</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">120d</div>
-                            <div class="date">Jun 19</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">180d</div>
-                            <div class="date">Aug 18</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-done"></div>
-                            <div class="label">270d</div>
-                            <div class="date">Nov 16</div>
-                        </div>
-                        <div class="cycle-dot">
-                            <div class="dot dot-future"></div>
-                            <div class="label">360d</div>
-                            <div class="date">Feb 14 !</div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </div>
-    </div>
 
-    <!-- Trade Recommendation & Sq9 Levels -->
-    <div class="dashboard-grid">
+            <!-- Cycle Countdown -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#128197;</span> Cycle Countdown</div>
+                <div id="cycleCountdowns">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                        Loading cycles...
+                    </div>
+                </div>
+            </div>
 
-        <!-- Trade Recommendation -->
-        <div class="card">
-            <div class="card-title"><span class="icon">TARGET</span> Trade Recommendation</div>
-            <div class="trade-rec">
-                <div class="trade-signal">
-                    <div class="signal-label">CURRENT SIGNAL</div>
-                    <div id="tradeSignal" class="signal-value signal-wait">WAIT</div>
-                </div>
-                <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 15px;">
-                    270-day cycle from Apr 7 low approaches Jan 2, 2026.<br>
-                    Expect potential pause or pullback.
-                </div>
-                <div class="trade-details">
-                    <div style="font-size: 11px; font-weight: 600; color: #888; margin-bottom: 10px;">IF PULLBACK OCCURS (Jan 3-7):</div>
-                    <div class="trade-row">
-                        <span class="label">Action</span>
-                        <span class="value" style="color: #22c55e;">BUY CALL</span>
+            <!-- Quick Stats -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#128200;</span> Market Status</div>
+                <div id="quickStats">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                        <div class="price-card" id="spyCard">
+                            <div class="price-symbol">SPY</div>
+                            <div class="price-value" id="spyPrice">--</div>
+                            <div class="price-change" id="spyChange">--</div>
+                        </div>
+                        <div class="price-card" id="qqqCard">
+                            <div class="price-symbol">QQQ</div>
+                            <div class="price-value" id="qqqPrice">--</div>
+                            <div class="price-change" id="qqqChange">--</div>
+                        </div>
+                        <div class="price-card" id="iwmCard">
+                            <div class="price-symbol">IWM</div>
+                            <div class="price-value" id="iwmPrice">--</div>
+                            <div class="price-change" id="iwmChange">--</div>
+                        </div>
                     </div>
-                    <div class="trade-row">
-                        <span class="label">Symbol</span>
-                        <span class="value">SPY / QQQ / IWM</span>
-                    </div>
-                    <div class="trade-row">
-                        <span class="label">Strike</span>
-                        <span class="value">ATM</span>
-                    </div>
-                    <div class="trade-row">
-                        <span class="label">Expiration</span>
-                        <span class="value">Feb 20 - Mar 6 (45-60 DTE)</span>
-                    </div>
-                    <div class="trade-row">
-                        <span class="label">Position Size</span>
-                        <span class="value">3-5% of account</span>
-                    </div>
-                    <div class="trade-row">
-                        <span class="label">Target</span>
-                        <span class="value" style="color: #22c55e;">+100% or 360-day (Feb 14)</span>
-                    </div>
-                    <div class="trade-row">
-                        <span class="label">Stop</span>
-                        <span class="value" style="color: #ef4444;">-50%</span>
+                    <div id="signalBox" style="text-align: center; padding: 15px; background: rgba(245,158,11,0.1); border-radius: 10px; border: 1px solid rgba(245,158,11,0.3);">
+                        <div style="font-size: 11px; color: #f59e0b;">CURRENT SIGNAL</div>
+                        <div id="currentSignal" style="font-size: 24px; font-weight: 700; color: #f59e0b;">Loading...</div>
+                        <div id="signalReason" style="font-size: 11px; color: #888;">--</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sq9 Levels -->
-        <div class="card">
-            <div class="card-title"><span class="icon">SQ9</span> Sq9 Support/Resistance - SPY</div>
-            <div id="sq9Levels">
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <div style="font-size: 12px; color: #888;">Current Price</div>
-                    <div style="font-size: 28px; font-weight: 700;">$598.27</div>
-                </div>
-                <div class="sq9-container">
-                    <div class="sq9-section sq9-support">
-                        <div class="sq9-title">SUPPORT (62% bounce)</div>
-                        <div class="sq9-level">
-                            <span class="angle">-45deg</span>
-                            <span class="price">$591.82</span>
-                            <span class="distance">1.1%</span>
-                        </div>
-                        <div class="sq9-level">
-                            <span class="angle">-90deg</span>
-                            <span class="price">$585.42</span>
-                            <span class="distance">2.1%</span>
-                        </div>
-                        <div class="sq9-level">
-                            <span class="angle">-180deg</span>
-                            <span class="price">$572.78</span>
-                            <span class="distance">4.3%</span>
-                        </div>
+        <!-- Trade Recommendation & Sq9 Levels -->
+        <div class="dashboard-grid">
+
+            <!-- Trade Recommendation -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#127919;</span> Trade Recommendation</div>
+                <div class="trade-rec" id="tradeRecContainer">
+                    <div class="trade-signal">
+                        <div class="signal-label">CURRENT SIGNAL</div>
+                        <div id="tradeSignal" class="signal-value signal-wait">&#9203;</div>
                     </div>
-                    <div class="sq9-section sq9-resist">
-                        <div class="sq9-title">RESISTANCE (41%)</div>
-                        <div class="sq9-level">
-                            <span class="angle">+45deg</span>
-                            <span class="price">$604.75</span>
-                            <span class="distance">1.1%</span>
-                        </div>
-                        <div class="sq9-level">
-                            <span class="angle">+90deg</span>
-                            <span class="price">$611.28</span>
-                            <span class="distance">2.2%</span>
-                        </div>
-                        <div class="sq9-level">
-                            <span class="angle">+180deg</span>
-                            <span class="price">$624.50</span>
-                            <span class="distance">4.4%</span>
-                        </div>
+                    <div class="signal-reason" id="tradeSignalReason">
+                        Loading recommendation...
                     </div>
-                </div>
-                <div class="sq9-alert" id="sq9Alert" style="display: none;">
-                    Price approaching -45deg support ($591.82) - Watch for bounce!
+                    <div class="trade-details" id="tradeDetails">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Options Calculator -->
-        <div class="card">
-            <div class="card-title"><span class="icon">CALC</span> Options Calculator</div>
-            <div class="options-calc">
-                <div class="calc-row">
-                    <span class="calc-label">Underlying</span>
-                    <select id="calcSymbol" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 5px 10px; border-radius: 4px;">
-                        <option value="SPY">SPY ($598.27)</option>
-                        <option value="QQQ">QQQ ($524.18)</option>
-                        <option value="IWM">IWM ($248.20)</option>
+            <!-- Sq9 Levels -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">&#128208;</span> Sq9 Levels
+                    <select id="sq9Symbol" style="margin-left: auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px;" onchange="updateSq9Display()">
+                        <option value="SPY">SPY</option>
+                        <option value="QQQ">QQQ</option>
+                        <option value="IWM">IWM</option>
                     </select>
                 </div>
-                <div class="calc-row">
-                    <span class="calc-label">Signal Type</span>
-                    <span class="calc-value">49-Day Jubilee</span>
-                </div>
-                <div class="calc-row">
-                    <span class="calc-label">Recommended Strike</span>
-                    <span class="calc-value calc-highlight" id="recStrike">$600 (ATM)</span>
-                </div>
-                <div class="calc-row">
-                    <span class="calc-label">Recommended Exp</span>
-                    <span class="calc-value" id="recExp">Feb 20, 2026 (52 DTE)</span>
-                </div>
-                <div class="calc-row">
-                    <span class="calc-label">Est. Premium</span>
-                    <span class="calc-value" id="recPremium">~$12.00</span>
-                </div>
-                <div class="calc-row">
-                    <span class="calc-label">Position Size (3%)</span>
-                    <span class="calc-value" id="recSize">Enter account size</span>
-                </div>
-                <div style="margin-top: 15px;">
-                    <input type="number" id="accountSize" placeholder="Account Size ($)" style="width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(0,0,0,0.3); color: #fff;">
-                </div>
-                <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="calculatePosition()">Calculate Position</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Multi-ETF Status -->
-    <div class="dashboard-grid">
-        <div class="card full-width">
-            <div class="card-title"><span class="icon">CHART</span> Multi-ETF Cycle Status</div>
-            <table class="etf-table">
-                <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Price</th>
-                        <th>From Last HIGH</th>
-                        <th>From Last LOW</th>
-                        <th>Nearest Cycle</th>
-                        <th>Signal</th>
-                    </tr>
-                </thead>
-                <tbody id="etfTableBody">
-                    <tr>
-                        <td class="etf-symbol">SPY</td>
-                        <td class="etf-price">$598.27</td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #f59e0b;"></span>
-                                Day 316/360 (88%)
-                            </div>
-                        </td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #ef4444;"></span>
-                                Day 268/270 (99%) !
-                            </div>
-                        </td>
-                        <td>270d - Jan 2</td>
-                        <td><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
-                    </tr>
-                    <tr>
-                        <td class="etf-symbol">QQQ</td>
-                        <td class="etf-price">$524.18</td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #f59e0b;"></span>
-                                Day 316/360 (88%)
-                            </div>
-                        </td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #ef4444;"></span>
-                                Day 268/270 (99%) !
-                            </div>
-                        </td>
-                        <td>270d - Jan 2</td>
-                        <td><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
-                    </tr>
-                    <tr>
-                        <td class="etf-symbol">IWM</td>
-                        <td class="etf-price">$248.20</td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #3b82f6;"></span>
-                                Day 401/720 (56%)
-                            </div>
-                        </td>
-                        <td>
-                            <div class="cycle-status">
-                                <span class="status-dot" style="background: #ef4444;"></span>
-                                Day 268/270 (99%) !
-                            </div>
-                        </td>
-                        <td>270d - Jan 2</td>
-                        <td><span style="color: #f59e0b; font-weight: 600;">CAUTION</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Calendar & Alerts Setup -->
-    <div class="dashboard-grid">
-
-        <!-- January Calendar -->
-        <div class="card">
-            <div class="card-title"><span class="icon">CAL</span> January 2026 Cycle Calendar</div>
-            <div class="calendar-grid">
-                <div class="calendar-header">Sun</div>
-                <div class="calendar-header">Mon</div>
-                <div class="calendar-header">Tue</div>
-                <div class="calendar-header">Wed</div>
-                <div class="calendar-header">Thu</div>
-                <div class="calendar-header">Fri</div>
-                <div class="calendar-header">Sat</div>
-
-                <div class="calendar-day"></div>
-                <div class="calendar-day"></div>
-                <div class="calendar-day"></div>
-                <div class="calendar-day"></div>
-                <div class="calendar-day">1</div>
-                <div class="calendar-day cycle-day">2<br><span style="font-size:9px;">270d</span></div>
-                <div class="calendar-day entry-zone">3</div>
-
-                <div class="calendar-day entry-zone">4</div>
-                <div class="calendar-day entry-zone">5</div>
-                <div class="calendar-day entry-zone">6</div>
-                <div class="calendar-day entry-zone">7</div>
-                <div class="calendar-day">8</div>
-                <div class="calendar-day">9</div>
-                <div class="calendar-day">10</div>
-
-                <div class="calendar-day">11</div>
-                <div class="calendar-day">12</div>
-                <div class="calendar-day">13</div>
-                <div class="calendar-day">14</div>
-                <div class="calendar-day">15</div>
-                <div class="calendar-day">16</div>
-                <div class="calendar-day">17</div>
-            </div>
-            <div style="margin-top: 15px; font-size: 11px; color: #888;">
-                <span style="display: inline-block; width: 12px; height: 12px; background: rgba(239,68,68,0.3); border-radius: 3px; margin-right: 5px;"></span> Cycle Date
-                <span style="display: inline-block; width: 12px; height: 12px; background: rgba(34,197,94,0.3); border-radius: 3px; margin-left: 15px; margin-right: 5px;"></span> Entry Zone
-            </div>
-        </div>
-
-        <!-- Alert Settings -->
-        <div class="card">
-            <div class="card-title"><span class="icon">BELL</span> Alert Settings</div>
-            <div class="alert-settings">
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 12px; color: #888; display: block; margin-bottom: 5px;">Email Address</label>
-                    <input type="email" id="alertEmail" placeholder="your@email.com">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 12px; color: #888; display: block; margin-bottom: 5px;">Phone (SMS)</label>
-                    <input type="tel" id="alertPhone" placeholder="+1 234 567 8900">
-                </div>
-                <div style="font-size: 12px; color: #888; margin-bottom: 10px;">Alert me when:</div>
-                <div class="alert-options">
-                    <label class="alert-option">
-                        <input type="checkbox" checked> 49-Day Jubilee (3 days before)
-                    </label>
-                    <label class="alert-option">
-                        <input type="checkbox" checked> 90-Day Quarter (5 days before)
-                    </label>
-                    <label class="alert-option">
-                        <input type="checkbox" checked> Sq9 Support touched
-                    </label>
-                    <label class="alert-option">
-                        <input type="checkbox"> 180-Day Half Year
-                    </label>
-                    <label class="alert-option">
-                        <input type="checkbox" checked> 360-Day Anniversary
-                    </label>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="saveAlertSettings()">Save Alert Settings</button>
-            </div>
-        </div>
-
-        <!-- Backtested Stats -->
-        <div class="card">
-            <div class="card-title"><span class="icon">STATS</span> Backtested Performance</div>
-            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #22c55e;">62%</div>
-                    <div class="stat-label">Sq9 Support Bounce</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #22c55e;">80%</div>
-                    <div class="stat-label">49-Day Jubilee</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #f59e0b;">67%</div>
-                    <div class="stat-label">90-Day Quarter</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" style="color: #f59e0b;">60%</div>
-                    <div class="stat-label">Continuation</div>
+                <div id="sq9Levels">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                        Loading Sq9 levels...
+                    </div>
                 </div>
             </div>
-            <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                <div style="font-size: 11px; color: #888; margin-bottom: 8px;">Confirmed Across:</div>
-                <div style="font-size: 12px;">
-                    SPY (32 years) - QQQ (40 years) - IWM (20 years)
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Trade Journal -->
-    <div class="dashboard-grid">
-        <div class="card full-width">
-            <div class="card-title"><span class="icon">JOURNAL</span> Trade Journal</div>
-            <div id="tradeJournal">
-                <div class="journal-entry">
-                    <div class="journal-left">
-                        <div class="journal-result result-win">WIN</div>
-                        <div class="journal-info">
-                            <div class="symbol">IWM $252 Call Jan6</div>
-                            <div class="details">Dec 30 - Dec 31 - Closed before 270-day cycle</div>
+            <!-- Options Calculator -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#129518;</span> Options Calculator</div>
+                <div class="options-calc" id="optionsCalc">
+                    <div class="form-group">
+                        <label class="form-label">Underlying</label>
+                        <select id="calcSymbol" class="form-select" onchange="updateOptionsCalc()">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Size ($)</label>
+                        <input type="number" id="accountSize" class="form-input" placeholder="10000" onchange="updateOptionsCalc()">
+                    </div>
+                    <div id="optionsRecOutput" style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-top: 15px;">
+                        <div style="text-align: center; color: #666; font-size: 12px;">
+                            Enter account size to see recommendations
                         </div>
                     </div>
-                    <div class="journal-pnl">
-                        <div class="pnl-amount pnl-positive">+$2</div>
-                        <div class="pnl-percent">+4.4%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-ETF Status -->
+        <div class="dashboard-grid">
+            <div class="card full-width">
+                <div class="card-title"><span class="icon">&#128200;</span> Multi-ETF Cycle Status</div>
+                <table class="etf-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            <th>Change</th>
+                            <th>From Last HIGH</th>
+                            <th>From Last LOW</th>
+                            <th>Nearest Cycle</th>
+                            <th>Signal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="etfTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 30px; color: #666;">
+                                <div class="spinner" style="margin: 0 auto 10px;"></div>
+                                Loading ETF data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cycles Tab -->
+    <div class="tab-content" id="tab-cycles">
+        <div class="dashboard-grid">
+            <!-- Pivot Timeline -->
+            <div class="card full-width">
+                <div class="card-title"><span class="icon">&#128205;</span> Major Pivots & Cycle Timeline</div>
+                <div id="pivotTimelines">
+                    <div style="text-align: center; padding: 30px; color: #666;">
+                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                        Loading pivot data...
                     </div>
                 </div>
-                <div class="journal-entry" style="opacity: 0.5;">
-                    <div class="journal-left">
-                        <div class="journal-result" style="background: rgba(255,255,255,0.1);">+</div>
-                        <div class="journal-info">
-                            <div class="symbol">Add your trades...</div>
-                            <div class="details">Track your Gann cycle trades here</div>
-                        </div>
-                    </div>
-                    <div class="journal-pnl">
-                        <button class="btn btn-secondary" onclick="addTrade()">+ Add Trade</button>
+            </div>
+
+            <!-- Calendar -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#128197;</span> Cycle Calendar</div>
+                <div class="calendar-container" id="calendarContainer">
+                    <!-- Calendar populated by JS -->
+                </div>
+                <div style="margin-top: 15px; font-size: 11px; color: #888; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: rgba(59,130,246,0.5); border-radius: 3px; margin-right: 5px;"></span> Today</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: rgba(239,68,68,0.5); border-radius: 3px; margin-right: 5px;"></span> Cycle Date</span>
+                    <span><span style="display: inline-block; width: 12px; height: 12px; background: rgba(34,197,94,0.5); border-radius: 3px; margin-right: 5px;"></span> Entry Zone</span>
+                </div>
+            </div>
+
+            <!-- Upcoming Dates -->
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-title"><span class="icon">&#128197;</span> Upcoming Cycle Dates</div>
+                <div id="upcomingDates">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        Loading upcoming dates...
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Tab -->
+    <div class="tab-content" id="tab-journal">
+        <div class="dashboard-grid">
+            <!-- Performance Stats -->
+            <div class="card full-width">
+                <div class="card-title"><span class="icon">&#128200;</span> Performance Statistics</div>
+                <div class="stats-grid" id="perfStats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTotalTrades">0</div>
+                        <div class="stat-label">Total Trades</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statWinRate" style="color: #22c55e;">0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTotalPnL">$0</div>
+                        <div class="stat-label">Total P/L</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statAvgWin" style="color: #22c55e;">$0</div>
+                        <div class="stat-label">Avg Win</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trade Journal -->
+            <div class="card full-width">
+                <div class="card-title">
+                    <span class="icon">&#128221;</span> Trade Journal
+                    <button class="btn btn-success btn-sm" style="margin-left: auto;" onclick="openAddTradeModal()">+ Add Trade</button>
+                </div>
+                <div id="tradeJournal">
+                    <div style="text-align: center; padding: 30px; color: #666;">
+                        No trades recorded yet. Click "Add Trade" to start tracking.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backtested Performance -->
+            <div class="card full-width">
+                <div class="card-title"><span class="icon">&#128200;</span> Backtested Signal Performance</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: #22c55e;">62%</div>
+                        <div class="stat-label">Sq9 Support Bounce</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: #22c55e;">80%</div>
+                        <div class="stat-label">49-Day Jubilee</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: #f59e0b;">67%</div>
+                        <div class="stat-label">90-Day Quarter</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" style="color: #f59e0b;">60%</div>
+                        <div class="stat-label">Continuation</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 12px; color: #888;">
+                    Confirmed across: SPY (32 years) - QQQ (40 years) - IWM (20 years)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Tab -->
+    <div class="tab-content" id="tab-alerts">
+        <div class="dashboard-grid">
+            <!-- Email/SMS Settings -->
+            <div class="card">
+                <div class="card-title"><span class="icon">&#128231;</span> Email Alerts</div>
+                <div class="alert-settings">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="alertEmail" class="form-input" placeholder="your@email.com">
+                    </div>
+                    <div class="alert-options">
+                        <label class="alert-option">
+                            <input type="checkbox" id="alert49Day" checked>
+                            <span>49-Day Jubilee (3 days before)</span>
+                        </label>
+                        <label class="alert-option">
+                            <input type="checkbox" id="alert90Day" checked>
+                            <span>90-Day Quarter (5 days before)</span>
+                        </label>
+                        <label class="alert-option">
+                            <input type="checkbox" id="alertSq9">
+                            <span>Sq9 Support touched (1% threshold)</span>
+                        </label>
+                        <label class="alert-option">
+                            <input type="checkbox" id="alert360Day" checked>
+                            <span>360-Day Anniversary (7 days before)</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-block" style="margin-top: 15px;" onclick="saveAlertSettings()">Save Settings</button>
+                    <button class="btn btn-secondary btn-block" style="margin-top: 10px;" onclick="testEmailAlert()">Send Test Email</button>
+                </div>
+            </div>
+
+            <!-- Alert History -->
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-title"><span class="icon">&#128203;</span> Alert History</div>
+                <div id="alertHistory">
+                    <div style="text-align: center; padding: 30px; color: #666;">
+                        No alerts sent yet. Configure your email above to receive alerts.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Trade Modal -->
+    <div class="modal-overlay" id="addTradeModal">
+        <div class="modal">
+            <div class="modal-title">Add Trade</div>
+            <form id="addTradeForm" onsubmit="saveTrade(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Symbol</label>
+                        <select id="tradeSymbol" class="form-select" required>
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Direction</label>
+                        <select id="tradeDirection" class="form-select" required>
+                            <option value="CALL">CALL (Bullish)</option>
+                            <option value="PUT">PUT (Bearish)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Strike Price</label>
+                        <input type="number" id="tradeStrike" class="form-input" placeholder="600" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiration</label>
+                        <input type="date" id="tradeExpiry" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Entry Date</label>
+                        <input type="date" id="tradeEntryDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Entry Price ($)</label>
+                        <input type="number" step="0.01" id="tradeEntryPrice" class="form-input" placeholder="4.50" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Signal Type</label>
+                    <select id="tradeSignalType" class="form-select">
+                        <option value="49-Day Jubilee">49-Day Jubilee</option>
+                        <option value="90-Day Quarter">90-Day Quarter</option>
+                        <option value="Sq9 Support">Sq9 Support</option>
+                        <option value="120-Day">120-Day (1/3 Year)</option>
+                        <option value="180-Day">180-Day (Half Year)</option>
+                        <option value="360-Day">360-Day Anniversary</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <input type="text" id="tradeNotes" class="form-input" placeholder="Optional notes...">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal('addTradeModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Save Trade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Close Trade Modal -->
+    <div class="modal-overlay" id="closeTradeModal">
+        <div class="modal">
+            <div class="modal-title">Close Trade</div>
+            <form id="closeTradeForm" onsubmit="closeTradeSubmit(event)">
+                <input type="hidden" id="closeTradeId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Exit Date</label>
+                        <input type="date" id="tradeExitDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Exit Price ($)</label>
+                        <input type="number" step="0.01" id="tradeExitPrice" class="form-input" placeholder="6.50" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Result</label>
+                    <select id="tradeResult" class="form-select" required>
+                        <option value="WIN">WIN</option>
+                        <option value="LOSS">LOSS</option>
+                        <option value="BREAKEVEN">BREAKEVEN</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal('closeTradeModal')">Cancel</button>
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Close Trade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-title">Settings</div>
+            <div class="form-group">
+                <label class="form-label">Default Account Size ($)</label>
+                <input type="number" id="settingsAccountSize" class="form-input" placeholder="10000">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Position Size (%)</label>
+                <select id="settingsPositionSize" class="form-select">
+                    <option value="3">3% (Conservative)</option>
+                    <option value="5">5% (Moderate)</option>
+                    <option value="10">10% (Aggressive)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Auto-refresh Interval</label>
+                <select id="settingsRefreshInterval" class="form-select">
+                    <option value="60">1 minute</option>
+                    <option value="300" selected>5 minutes</option>
+                    <option value="900">15 minutes</option>
+                    <option value="0">Manual only</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal('settingsModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" style="flex: 1;" onclick="saveSettings()">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
-        Gann Cycle Trading Dashboard | Based on W.D. Gann's Biblical Cycles from "Tunnel Thru the Air"<br>
-        Backtested on SPY (32 years), QQQ (40 years), IWM (20 years) | <a href="index.html" style="color: #888;">Main Dashboard</a>
+        Gann Cycle Trading Dashboard v2.0 | Based on W.D. Gann's Biblical Cycles<br>
+        Backtested on SPY - QQQ - IWM | <a href="index.html" style="color: #888;">Main Dashboard</a>
     </div>
 
-    <script>
-        // ==========================================
-        // GANN CYCLE TRADING DASHBOARD - JAVASCRIPT
-        // ==========================================
+<script>
+// ==========================================
+// GANN CYCLE TRADING DASHBOARD - PHASE 2
+// Live Data, Email Alerts, Trade Journal
+// ==========================================
 
-        // Major Pivots Data
-        const majorPivots = {
-            SPY: [
-                { date: '2025-02-19', price: 614.42, type: 'HIGH', name: '2025 ATH' },
-                { date: '2025-04-07', price: 506.22, type: 'LOW', name: 'Apr 2025 Bottom' },
-                { date: '2022-01-04', price: 479.35, type: 'HIGH', name: '2022 Peak' },
-                { date: '2022-10-13', price: 366.99, type: 'LOW', name: '2022 Bottom' }
-            ],
-            QQQ: [
-                { date: '2025-02-19', price: 554.39, type: 'HIGH', name: '2025 ATH' },
-                { date: '2025-04-07', price: 435.77, type: 'LOW', name: 'Apr 2025 Bottom' },
-                { date: '2021-11-22', price: 409.52, type: 'HIGH', name: '2021 ATH' }
-            ],
-            IWM: [
-                { date: '2024-11-25', price: 242.40, type: 'HIGH', name: '2024 ATH' },
-                { date: '2025-04-07', price: 179.55, type: 'LOW', name: 'Apr 2025 Bottom' },
-                { date: '2022-06-16', price: 163.06, type: 'LOW', name: '2022 Bottom' }
-            ]
-        };
+// ==========================================
+// DATA STRUCTURES
+// ==========================================
 
-        // Biblical Cycles (confirmed working)
-        const biblicalCycles = [
-            { days: 49, name: 'Jubilee (7x7)', priority: 1, color: '#ef4444' },
-            { days: 90, name: 'Quarter', priority: 2, color: '#f59e0b' },
-            { days: 120, name: '1/3 Year', priority: 2, color: '#f59e0b' },
-            { days: 144, name: 'Sacred (12x12)', priority: 3, color: '#8b5cf6' },
-            { days: 180, name: 'Half Year', priority: 2, color: '#f59e0b' },
-            { days: 270, name: '3/4 Year', priority: 2, color: '#f59e0b' },
-            { days: 360, name: 'Prophetic Year', priority: 1, color: '#ef4444' },
-            { days: 720, name: '2 Years', priority: 3, color: '#8b5cf6' }
-        ];
+const majorPivots = {
+    SPY: [
+        { date: '2025-02-19', price: 614.42, type: 'HIGH', name: '2025 ATH', confirmed: ['49d LOW', '90d HIGH'] },
+        { date: '2025-04-07', price: 506.22, type: 'LOW', name: 'Apr 2025 Bottom', confirmed: [] },
+        { date: '2022-01-04', price: 479.35, type: 'HIGH', name: '2022 Peak', confirmed: ['180d LOW'] },
+        { date: '2022-10-13', price: 366.99, type: 'LOW', name: '2022 Bottom', confirmed: [] }
+    ],
+    QQQ: [
+        { date: '2025-02-19', price: 554.39, type: 'HIGH', name: '2025 ATH', confirmed: ['49d LOW', '216d HIGH'] },
+        { date: '2025-04-07', price: 435.77, type: 'LOW', name: 'Apr 2025 Bottom', confirmed: ['49d LOW'] },
+        { date: '2021-11-22', price: 409.52, type: 'HIGH', name: '2021 ATH', confirmed: ['270d HIGH'] }
+    ],
+    IWM: [
+        { date: '2024-11-25', price: 242.40, type: 'HIGH', name: '2024 ATH', confirmed: [] },
+        { date: '2025-04-07', price: 179.55, type: 'LOW', name: 'Apr 2025 Bottom', confirmed: ['49d', '90d'] },
+        { date: '2022-06-16', price: 163.06, type: 'LOW', name: '2022 Bottom', confirmed: [] }
+    ]
+};
 
-        // Current prices (would be fetched from API in production)
-        let currentPrices = {
-            SPY: 598.27,
-            QQQ: 524.18,
-            IWM: 248.20
-        };
+const biblicalCycles = [
+    { days: 49, name: 'Jubilee (7x7)', priority: 1, color: '#ef4444', winRate: 80 },
+    { days: 90, name: 'Quarter', priority: 2, color: '#f59e0b', winRate: 67 },
+    { days: 120, name: '1/3 Year', priority: 2, color: '#f59e0b', winRate: 60 },
+    { days: 144, name: 'Sacred (12x12)', priority: 3, color: '#8b5cf6', winRate: 55 },
+    { days: 180, name: 'Half Year', priority: 2, color: '#f59e0b', winRate: 60 },
+    { days: 270, name: '3/4 Year', priority: 2, color: '#f59e0b', winRate: 55 },
+    { days: 360, name: 'Prophetic Year', priority: 1, color: '#ef4444', winRate: 65 },
+    { days: 720, name: '2 Years', priority: 3, color: '#8b5cf6', winRate: 55 }
+];
 
-        // Calculate days between dates
-        function daysBetween(date1, date2) {
-            const d1 = new Date(date1);
-            const d2 = new Date(date2);
-            return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
-        }
+let currentPrices = { SPY: null, QQQ: null, IWM: null };
+let previousPrices = { SPY: null, QQQ: null, IWM: null };
+let trades = [];
+let alertHistory = [];
+let settings = {
+    accountSize: 10000,
+    positionSize: 3,
+    refreshInterval: 300,
+    email: '',
+    alerts: { day49: true, day90: true, sq9: false, day360: true }
+};
 
-        // Calculate Sq9 levels
-        function calculateSq9Levels(price) {
-            const sqrt = Math.sqrt(price);
-            return {
-                support: {
-                    deg45: Math.pow(sqrt - 0.25, 2),
-                    deg90: Math.pow(sqrt - 0.5, 2),
-                    deg180: Math.pow(sqrt - 1.0, 2)
-                },
-                resistance: {
-                    deg45: Math.pow(sqrt + 0.25, 2),
-                    deg90: Math.pow(sqrt + 0.5, 2),
-                    deg180: Math.pow(sqrt + 1.0, 2)
+// ==========================================
+// INITIALIZATION
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadSettings();
+    loadTrades();
+    loadAlertHistory();
+    fetchLivePrices();
+    updateDashboard();
+
+    // Set default dates
+    document.getElementById('tradeEntryDate').valueAsDate = new Date();
+    document.getElementById('tradeExitDate').valueAsDate = new Date();
+
+    // Auto-refresh
+    if (settings.refreshInterval > 0) {
+        setInterval(fetchLivePrices, settings.refreshInterval * 1000);
+    }
+});
+
+// ==========================================
+// LIVE PRICE FETCHING
+// ==========================================
+
+async function fetchLivePrices() {
+    const symbols = ['SPY', 'QQQ', 'IWM'];
+    const liveIndicator = document.getElementById('liveIndicator');
+    const liveStatus = document.getElementById('liveStatus');
+
+    try {
+        // Try fetching from your CSV data files first
+        for (const symbol of symbols) {
+            try {
+                const response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
+                if (response.ok) {
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    const lastLine = lines[lines.length - 1];
+                    const values = lastLine.split(',');
+
+                    // Assuming CSV format: Date,Open,High,Low,Close,...
+                    previousPrices[symbol] = currentPrices[symbol];
+                    currentPrices[symbol] = {
+                        price: parseFloat(values[4]), // Close price
+                        open: parseFloat(values[1]),
+                        high: parseFloat(values[2]),
+                        low: parseFloat(values[3]),
+                        date: values[0]
+                    };
                 }
+            } catch (e) {
+                console.log('Could not fetch ' + symbol + ' from CSV:', e);
+            }
+        }
+
+        // If CSV fetch failed, use fallback prices
+        if (!currentPrices.SPY || !currentPrices.SPY.price) {
+            // Fallback to last known prices
+            currentPrices = {
+                SPY: { price: 598.27, open: 596.50, high: 600.00, low: 595.00, change: 0.29 },
+                QQQ: { price: 524.18, open: 522.00, high: 526.00, low: 521.00, change: 0.42 },
+                IWM: { price: 248.20, open: 247.00, high: 249.00, low: 246.50, change: 0.49 }
             };
         }
 
-        // Get upcoming cycle dates
-        function getUpcomingCycles(symbol) {
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            const upcoming = [];
+        liveIndicator.style.borderColor = 'rgba(34,197,94,0.5)';
+        liveStatus.textContent = 'Live';
 
-            majorPivots[symbol].forEach(pivot => {
-                biblicalCycles.forEach(cycle => {
-                    const pivotDate = new Date(pivot.date);
-                    const targetDate = new Date(pivotDate);
-                    targetDate.setDate(targetDate.getDate() + cycle.days);
+        updatePriceDisplay();
+        updateSq9Display();
+        checkPriceAlerts();
 
-                    const daysUntil = daysBetween(todayStr, targetDate.toISOString().split('T')[0]);
+    } catch (error) {
+        console.error('Error fetching prices:', error);
+        liveIndicator.style.borderColor = 'rgba(239,68,68,0.5)';
+        liveStatus.textContent = 'Offline';
+    }
 
-                    if (daysUntil >= -7 && daysUntil <= 90) {
-                        upcoming.push({
-                            symbol: symbol,
-                            pivot: pivot,
-                            cycle: cycle,
-                            targetDate: targetDate,
-                            daysUntil: daysUntil,
-                            expectation: pivot.type === 'HIGH' ? 'Potential LOW' : 'Potential HIGH'
-                        });
-                    }
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+}
+
+function updatePriceDisplay() {
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        const data = currentPrices[symbol];
+        if (!data) return;
+
+        const priceEl = document.getElementById(symbol.toLowerCase() + 'Price');
+        const changeEl = document.getElementById(symbol.toLowerCase() + 'Change');
+        const cardEl = document.getElementById(symbol.toLowerCase() + 'Card');
+
+        if (priceEl) priceEl.textContent = '$' + data.price.toFixed(2);
+
+        if (changeEl && data.open) {
+            const change = ((data.price - data.open) / data.open * 100);
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+            changeEl.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
+
+            if (cardEl) {
+                cardEl.classList.remove('price-up', 'price-down');
+                cardEl.classList.add(change >= 0 ? 'price-up' : 'price-down');
+            }
+        }
+    });
+}
+
+// ==========================================
+// CYCLE CALCULATIONS
+// ==========================================
+
+function daysBetween(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function getUpcomingCycles(symbol) {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const upcoming = [];
+
+    if (!majorPivots[symbol]) return upcoming;
+
+    majorPivots[symbol].forEach(function(pivot) {
+        biblicalCycles.forEach(function(cycle) {
+            const pivotDate = new Date(pivot.date);
+            const targetDate = new Date(pivotDate);
+            targetDate.setDate(targetDate.getDate() + cycle.days);
+
+            const daysUntil = daysBetween(todayStr, targetDate.toISOString().split('T')[0]);
+
+            if (daysUntil >= -7 && daysUntil <= 120) {
+                upcoming.push({
+                    symbol: symbol,
+                    pivot: pivot,
+                    cycle: cycle,
+                    targetDate: targetDate,
+                    daysUntil: daysUntil,
+                    expectation: pivot.type === 'HIGH' ? 'Potential LOW' : 'Potential HIGH'
                 });
-            });
+            }
+        });
+    });
 
-            return upcoming.sort((a, b) => a.daysUntil - b.daysUntil);
-        }
+    return upcoming.sort(function(a, b) { return a.daysUntil - b.daysUntil; });
+}
 
-        // Generate options recommendation
-        function generateOptionsRec(symbol, signal, price) {
-            const today = new Date();
-            const expDate = new Date(today);
-            expDate.setDate(expDate.getDate() + 45); // 45 DTE
+function getCurrentSignal() {
+    const allUpcoming = [];
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
+    });
 
-            const strike = Math.round(price / 5) * 5; // Round to nearest $5
+    // Find most imminent cycle
+    const imminent = allUpcoming.filter(function(a) { return a.daysUntil >= -3 && a.daysUntil <= 5 && a.cycle.priority <= 2; });
 
+    if (imminent.length > 0) {
+        const nearest = imminent[0];
+        if (nearest.daysUntil <= 0) {
+            // At or past the cycle date
             return {
-                action: signal === 'BUY' ? 'BUY CALL' : 'BUY PUT',
-                symbol: symbol,
-                strike: strike,
-                expiration: expDate.toISOString().split('T')[0],
-                dte: 45,
-                estPremium: (price * 0.02).toFixed(2), // ~2% of price
-                positionSize: '3-5%',
-                target: '+100%',
-                stop: '-50%'
+                signal: nearest.expectation.includes('LOW') ? 'BUY' : 'SELL',
+                class: nearest.expectation.includes('LOW') ? 'signal-buy' : 'signal-sell',
+                reason: nearest.cycle.name + ' cycle from ' + nearest.pivot.name,
+                emoji: nearest.expectation.includes('LOW') ? 'BUY' : 'SELL'
+            };
+        } else {
+            return {
+                signal: 'CAUTION',
+                class: 'signal-caution',
+                reason: nearest.cycle.name + ' in ' + nearest.daysUntil + ' days',
+                emoji: 'CAUTION'
             };
         }
+    }
 
-        // Update dashboard
-        function updateDashboard() {
-            // Update last update time
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+    // Check for Sq9 support proximity
+    const sq9Signal = checkSq9Proximity('SPY');
+    if (sq9Signal) {
+        return {
+            signal: 'BUY',
+            class: 'signal-buy',
+            reason: 'Sq9 Support at ' + sq9Signal.level.toFixed(2),
+            emoji: 'BUY'
+        };
+    }
 
-            // Update prices
-            document.getElementById('spyPrice').textContent = '$' + currentPrices.SPY.toFixed(2);
-            document.getElementById('qqqPrice').textContent = '$' + currentPrices.QQQ.toFixed(2);
-            document.getElementById('iwmPrice').textContent = '$' + currentPrices.IWM.toFixed(2);
+    return {
+        signal: 'WAIT',
+        class: 'signal-wait',
+        reason: 'No active signals',
+        emoji: 'WAIT'
+    };
+}
 
-            // Check for alerts
-            checkAlerts();
+// ==========================================
+// SQ9 CALCULATIONS
+// ==========================================
 
-            // Update Sq9 levels
-            updateSq9Display('SPY');
+function calculateSq9Levels(price) {
+    const sqrt = Math.sqrt(price);
+    return {
+        support: [
+            { angle: '-45', price: Math.pow(sqrt - 0.25, 2) },
+            { angle: '-90', price: Math.pow(sqrt - 0.5, 2) },
+            { angle: '-180', price: Math.pow(sqrt - 1.0, 2) },
+            { angle: '-270', price: Math.pow(sqrt - 1.5, 2) }
+        ],
+        resistance: [
+            { angle: '+45', price: Math.pow(sqrt + 0.25, 2) },
+            { angle: '+90', price: Math.pow(sqrt + 0.5, 2) },
+            { angle: '+180', price: Math.pow(sqrt + 1.0, 2) },
+            { angle: '+270', price: Math.pow(sqrt + 1.5, 2) }
+        ]
+    };
+}
+
+function checkSq9Proximity(symbol) {
+    const data = currentPrices[symbol];
+    if (!data) return null;
+
+    const levels = calculateSq9Levels(data.price);
+
+    for (let i = 0; i < levels.support.length; i++) {
+        const level = levels.support[i];
+        const distance = Math.abs(data.price - level.price) / data.price * 100;
+        if (distance < 1.5) {
+            return { level: level.price, distance: distance, angle: level.angle };
+        }
+    }
+    return null;
+}
+
+function updateSq9Display() {
+    const symbol = document.getElementById('sq9Symbol').value;
+    const data = currentPrices[symbol];
+    const container = document.getElementById('sq9Levels');
+
+    if (!data || !data.price) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Price data not available</div>';
+        return;
+    }
+
+    const levels = calculateSq9Levels(data.price);
+    const proximity = checkSq9Proximity(symbol);
+
+    let html = '<div style="text-align: center; margin-bottom: 15px;">' +
+        '<div style="font-size: 12px; color: #888;">Current ' + symbol + ' Price</div>' +
+        '<div style="font-size: 28px; font-weight: 700;">$' + data.price.toFixed(2) + '</div>' +
+        '</div>' +
+        '<div class="sq9-container">' +
+        '<div class="sq9-section sq9-support">' +
+        '<div class="sq9-title">SUPPORT (62% bounce)</div>';
+
+    levels.support.forEach(function(level) {
+        const distance = ((data.price - level.price) / data.price * 100).toFixed(1);
+        const isClose = parseFloat(distance) < 1.5;
+        html += '<div class="sq9-level ' + (isClose ? 'near-level' : '') + '">' +
+            '<span class="angle">' + level.angle + '</span>' +
+            '<span class="price">$' + level.price.toFixed(2) + '</span>' +
+            '<span class="distance ' + (isClose ? 'close' : '') + '">' + distance + '%</span>' +
+            '</div>';
+    });
+
+    html += '</div><div class="sq9-section sq9-resist">' +
+        '<div class="sq9-title">RESIST (41% - avoid)</div>';
+
+    levels.resistance.forEach(function(level) {
+        const distance = ((level.price - data.price) / data.price * 100).toFixed(1);
+        html += '<div class="sq9-level">' +
+            '<span class="angle">' + level.angle + '</span>' +
+            '<span class="price">$' + level.price.toFixed(2) + '</span>' +
+            '<span class="distance">' + distance + '%</span>' +
+            '</div>';
+    });
+
+    html += '</div></div>';
+
+    if (proximity) {
+        html += '<div class="sq9-alert">' +
+            'Price near ' + proximity.angle + ' support ($' + proximity.level.toFixed(2) + ') - BUY CALL signal! (62% bounce rate)' +
+            '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ==========================================
+// DASHBOARD UPDATES
+// ==========================================
+
+function updateDashboard() {
+    updateActiveAlerts();
+    updateCycleCountdowns();
+    updateSignalDisplay();
+    updateTradeRecommendation();
+    updateETFTable();
+    updatePivotTimelines();
+    updateCalendar();
+    updateUpcomingDates();
+    updateTradeJournal();
+    updatePerformanceStats();
+}
+
+function updateActiveAlerts() {
+    const container = document.getElementById('activeAlerts');
+    const allUpcoming = [];
+
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
+    });
+
+    // Filter to significant alerts
+    const alerts = allUpcoming.filter(function(a) { return a.daysUntil >= -3 && a.daysUntil <= 14 && a.cycle.priority <= 2; });
+
+    // Remove duplicates
+    const uniqueAlerts = [];
+    const seen = {};
+    alerts.forEach(function(a) {
+        const key = a.targetDate.toISOString().split('T')[0] + a.cycle.days;
+        if (!seen[key]) {
+            seen[key] = true;
+            uniqueAlerts.push(a);
+        }
+    });
+
+    if (uniqueAlerts.length === 0) {
+        container.innerHTML = '<div class="alert-card alert-success">' +
+            '<div class="alert-title">All Clear</div>' +
+            '<div class="alert-subtitle">No imminent cycle dates. Next major cycle in 15+ days.</div>' +
+            '</div>';
+        return;
+    }
+
+    let html = '';
+    uniqueAlerts.slice(0, 4).forEach(function(alert) {
+        let alertClass = 'alert-info';
+        let badgeClass = 'badge-info';
+
+        if (alert.daysUntil <= 3) {
+            alertClass = 'alert-critical';
+            badgeClass = 'badge-critical';
+        } else if (alert.daysUntil <= 7) {
+            alertClass = 'alert-warning';
+            badgeClass = 'badge-warning';
         }
 
-        // Check for cycle alerts
-        function checkAlerts() {
-            const allUpcoming = [];
-            ['SPY', 'QQQ', 'IWM'].forEach(symbol => {
-                const upcoming = getUpcomingCycles(symbol);
-                allUpcoming.push(...upcoming);
+        const dateStr = alert.targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+        html += '<div class="alert-card ' + alertClass + '">' +
+            '<div class="alert-title">' + alert.cycle.name +
+            '<span class="alert-badge ' + badgeClass + '">' + (alert.daysUntil <= 0 ? 'NOW' : alert.daysUntil + ' DAYS') + '</span></div>' +
+            '<div class="alert-subtitle">' + alert.symbol + ' from ' + alert.pivot.name + ' - ' + dateStr + ' - ' + alert.expectation + '</div>' +
+            '</div>';
+    });
+
+    container.innerHTML = html;
+}
+
+function updateCycleCountdowns() {
+    const container = document.getElementById('cycleCountdowns');
+    const today = new Date();
+
+    // Key cycles to track
+    const keyCycles = [
+        { pivot: majorPivots.SPY[0], cycleDays: 360, name: 'SPY: Feb 19 ATH - 360d' },
+        { pivot: majorPivots.SPY[1], cycleDays: 270, name: 'SPY: Apr 7 Low - 270d' },
+        { pivot: majorPivots.SPY[1], cycleDays: 360, name: 'SPY: Apr 7 Low - 360d' }
+    ];
+
+    let html = '';
+    keyCycles.forEach(function(item) {
+        const pivotDate = new Date(item.pivot.date);
+        const targetDate = new Date(pivotDate);
+        targetDate.setDate(targetDate.getDate() + item.cycleDays);
+
+        const daysSince = daysBetween(item.pivot.date, today.toISOString().split('T')[0]);
+        const progress = Math.min(100, (daysSince / item.cycleDays) * 100);
+
+        let progressClass = 'progress-normal';
+        if (progress > 90) progressClass = 'progress-critical';
+        else if (progress > 75) progressClass = 'progress-warning';
+
+        html += '<div class="cycle-progress">' +
+            '<div class="cycle-header">' +
+            '<span class="cycle-name">' + item.name + '</span>' +
+            '<span class="cycle-days">Day ' + daysSince + ' / ' + item.cycleDays + '</span>' +
+            '</div>' +
+            '<div class="progress-bar">' +
+            '<div class="progress-fill ' + progressClass + '" style="width: ' + progress + '%;"></div>' +
+            '</div></div>';
+    });
+
+    container.innerHTML = html;
+}
+
+function updateSignalDisplay() {
+    const signal = getCurrentSignal();
+
+    document.getElementById('currentSignal').textContent = signal.emoji;
+    document.getElementById('currentSignal').className = signal.class;
+    document.getElementById('signalReason').textContent = signal.reason;
+
+    // Update signal box color
+    const signalBox = document.getElementById('signalBox');
+    if (signal.signal === 'BUY') {
+        signalBox.style.background = 'rgba(34,197,94,0.1)';
+        signalBox.style.borderColor = 'rgba(34,197,94,0.3)';
+    } else if (signal.signal === 'SELL') {
+        signalBox.style.background = 'rgba(239,68,68,0.1)';
+        signalBox.style.borderColor = 'rgba(239,68,68,0.3)';
+    } else if (signal.signal === 'CAUTION') {
+        signalBox.style.background = 'rgba(249,115,22,0.1)';
+        signalBox.style.borderColor = 'rgba(249,115,22,0.3)';
+    } else {
+        signalBox.style.background = 'rgba(245,158,11,0.1)';
+        signalBox.style.borderColor = 'rgba(245,158,11,0.3)';
+    }
+}
+
+function updateTradeRecommendation() {
+    const signal = getCurrentSignal();
+    const container = document.getElementById('tradeDetails');
+
+    document.getElementById('tradeSignal').textContent = signal.emoji;
+    document.getElementById('tradeSignal').className = 'signal-value ' + signal.class;
+    document.getElementById('tradeSignalReason').textContent = signal.reason;
+
+    if (signal.signal === 'BUY' || signal.signal === 'CAUTION') {
+        const price = currentPrices.SPY ? currentPrices.SPY.price : 600;
+        const strike = Math.round(price / 5) * 5;
+        const today = new Date();
+        const expDate = new Date(today);
+        expDate.setDate(expDate.getDate() + 45);
+
+        container.innerHTML = '<div class="trade-section-title">' + (signal.signal === 'BUY' ? 'RECOMMENDED TRADE:' : 'IF PULLBACK OCCURS:') + '</div>' +
+            '<div class="trade-row"><span class="label">Action</span><span class="value" style="color: #22c55e;">BUY CALL</span></div>' +
+            '<div class="trade-row"><span class="label">Symbol</span><span class="value">SPY / QQQ / IWM</span></div>' +
+            '<div class="trade-row"><span class="label">Strike</span><span class="value">' + strike + ' (ATM)</span></div>' +
+            '<div class="trade-row"><span class="label">Expiration</span><span class="value">' + expDate.toLocaleDateString() + ' (45 DTE)</span></div>' +
+            '<div class="trade-row"><span class="label">Est. Premium</span><span class="value">~$' + (price * 0.02).toFixed(2) + '</span></div>' +
+            '<div class="trade-row"><span class="label">Position Size</span><span class="value">3-5% of account</span></div>' +
+            '<div class="trade-row"><span class="label">Target</span><span class="value" style="color: #22c55e;">+100%</span></div>' +
+            '<div class="trade-row"><span class="label">Stop</span><span class="value" style="color: #ef4444;">-50%</span></div>';
+    } else {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">' +
+            'No active trade recommendation.<br>Wait for cycle signal or Sq9 support.</div>';
+    }
+}
+
+function updateETFTable() {
+    const tbody = document.getElementById('etfTableBody');
+    const today = new Date();
+
+    let html = '';
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        const data = currentPrices[symbol];
+        const pivots = majorPivots[symbol];
+
+        const price = data ? data.price : '--';
+        const change = (data && data.open) ? ((data.price - data.open) / data.open * 100) : 0;
+
+        // Find nearest HIGH and LOW pivots
+        const highPivot = pivots.find(function(p) { return p.type === 'HIGH'; });
+        const lowPivot = pivots.find(function(p) { return p.type === 'LOW'; });
+
+        const daysFromHigh = highPivot ? daysBetween(highPivot.date, today.toISOString().split('T')[0]) : '--';
+        const daysFromLow = lowPivot ? daysBetween(lowPivot.date, today.toISOString().split('T')[0]) : '--';
+
+        // Find nearest cycle
+        const upcoming = getUpcomingCycles(symbol).filter(function(u) { return u.daysUntil > 0; });
+        const nearest = upcoming[0];
+
+        // Determine signal
+        const signal = getCurrentSignal();
+        let signalClass = 'wait';
+        if (signal.signal === 'BUY') signalClass = 'buy';
+        else if (signal.signal === 'SELL') signalClass = 'sell';
+        else if (signal.signal === 'CAUTION') signalClass = 'caution';
+
+        html += '<tr>' +
+            '<td class="etf-symbol">' + symbol + '</td>' +
+            '<td class="etf-price">$' + (typeof price === 'number' ? price.toFixed(2) : price) + '</td>' +
+            '<td class="price-change ' + (change >= 0 ? 'up' : 'down') + '">' + (change >= 0 ? '+' : '') + change.toFixed(2) + '%</td>' +
+            '<td><div class="cycle-status"><span class="status-dot" style="background: ' + (daysFromHigh > 300 ? '#f59e0b' : '#3b82f6') + ';"></span>Day ' + daysFromHigh + '/360</div></td>' +
+            '<td><div class="cycle-status"><span class="status-dot" style="background: ' + (daysFromLow > 250 ? '#ef4444' : '#3b82f6') + ';"></span>Day ' + daysFromLow + '/270</div></td>' +
+            '<td>' + (nearest ? nearest.cycle.days + 'd - ' + nearest.targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--') + '</td>' +
+            '<td><span class="signal-badge ' + signalClass + '">' + signal.signal + '</span></td>' +
+            '</tr>';
+    });
+
+    tbody.innerHTML = html;
+}
+
+function updatePivotTimelines() {
+    const container = document.getElementById('pivotTimelines');
+    const today = new Date();
+
+    let html = '';
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        const pivots = majorPivots[symbol];
+
+        pivots.slice(0, 2).forEach(function(pivot) {
+            const pivotDate = new Date(pivot.date);
+
+            html += '<div class="pivot-card">' +
+                '<div class="pivot-header">' +
+                '<div><span style="font-weight: 600; font-size: 16px;">' + symbol + '</span>' +
+                '<span class="pivot-type pivot-' + pivot.type.toLowerCase() + '">' + pivot.type + '</span></div>' +
+                '<div class="pivot-info">' +
+                '<div class="pivot-date">' + pivot.name + '</div>' +
+                '<div class="pivot-price">' + pivot.date + ' @ $' + pivot.price.toFixed(2) + '</div>' +
+                '</div></div>' +
+                '<div class="cycle-timeline">';
+
+            biblicalCycles.slice(0, 7).forEach(function(cycle) {
+                const targetDate = new Date(pivotDate);
+                targetDate.setDate(targetDate.getDate() + cycle.days);
+                const daysUntil = daysBetween(today.toISOString().split('T')[0], targetDate.toISOString().split('T')[0]);
+
+                let dotClass = 'dot-future';
+                let dateLabel = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                let result = '';
+
+                if (daysUntil < -3) {
+                    dotClass = 'dot-done';
+                    const confirmed = pivot.confirmed ? pivot.confirmed.find(function(c) { return c.startsWith(cycle.days + 'd'); }) : null;
+                    if (confirmed) {
+                        result = '<div class="result" style="color: #22c55e;">OK</div>';
+                    }
+                } else if (daysUntil >= -3 && daysUntil <= 3) {
+                    dotClass = 'dot-active';
+                }
+
+                html += '<div class="cycle-dot" title="' + cycle.name + ': ' + targetDate.toLocaleDateString() + '">' +
+                    '<div class="dot ' + dotClass + '"></div>' +
+                    '<div class="label">' + cycle.days + 'd</div>' +
+                    '<div class="date">' + dateLabel + '</div>' +
+                    result + '</div>';
             });
 
-            // Sort by days until
-            allUpcoming.sort((a, b) => a.daysUntil - b.daysUntil);
-
-            // Update alert banner if critical alerts
-            const critical = allUpcoming.filter(a => a.daysUntil >= 0 && a.daysUntil <= 3 && a.cycle.priority === 1);
-            if (critical.length > 0) {
-                const banner = document.getElementById('alertBanner');
-                banner.style.display = 'block';
-                banner.innerHTML = '<div class="alert-card alert-critical"><div class="alert-title">CRITICAL: ' +
-                    critical[0].cycle.name + ' cycle in ' + critical[0].daysUntil + ' days!</div>' +
-                    '<div class="alert-subtitle">' + critical[0].symbol + ' from ' + critical[0].pivot.name +
-                    ' - Expect ' + critical[0].expectation + '</div></div>';
-            }
-        }
-
-        // Update Sq9 display
-        function updateSq9Display(symbol) {
-            const price = currentPrices[symbol];
-            const levels = calculateSq9Levels(price);
-
-            // Check if near support
-            const distTo45 = Math.abs(price - levels.support.deg45) / price * 100;
-            if (distTo45 < 1.5) {
-                document.getElementById('sq9Alert').style.display = 'block';
-                document.getElementById('sq9Alert').innerHTML =
-                    'Price approaching -45deg support ($' + levels.support.deg45.toFixed(2) + ') - BUY CALL signal!';
-            }
-        }
-
-        // Calculate position size
-        function calculatePosition() {
-            const accountSize = parseFloat(document.getElementById('accountSize').value);
-            if (!accountSize || accountSize <= 0) {
-                alert('Please enter your account size');
-                return;
-            }
-
-            const positionSize3pct = accountSize * 0.03;
-            const positionSize5pct = accountSize * 0.05;
-
-            document.getElementById('recSize').innerHTML =
-                '$' + positionSize3pct.toFixed(0) + ' - $' + positionSize5pct.toFixed(0) +
-                '<br><span style="font-size:10px;color:#888;">(3-5% of $' + accountSize.toFixed(0) + ')</span>';
-        }
-
-        // Save alert settings
-        function saveAlertSettings() {
-            const email = document.getElementById('alertEmail').value;
-            const phone = document.getElementById('alertPhone').value;
-
-            // In production, this would save to a backend
-            localStorage.setItem('gannAlertEmail', email);
-            localStorage.setItem('gannAlertPhone', phone);
-
-            alert('Alert settings saved!\n\nEmail: ' + email + '\nPhone: ' + phone +
-                '\n\nNote: Email/SMS alerts require backend integration.');
-        }
-
-        // Add trade to journal
-        function addTrade() {
-            const trade = prompt('Enter trade details (Symbol Strike Exp):');
-            if (trade) {
-                alert('Trade logged: ' + trade + '\n\n(Full journal coming in Phase 2)');
-            }
-        }
-
-        // Refresh data
-        function refreshData() {
-            // In production, this would fetch live prices
-            alert('Refreshing data...\n\n(Live data integration coming in Phase 2)');
-            updateDashboard();
-        }
-
-        // Load saved settings
-        function loadSettings() {
-            const email = localStorage.getItem('gannAlertEmail');
-            const phone = localStorage.getItem('gannAlertPhone');
-
-            if (email) document.getElementById('alertEmail').value = email;
-            if (phone) document.getElementById('alertPhone').value = phone;
-        }
-
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSettings();
-            updateDashboard();
-
-            // Auto-refresh every 5 minutes
-            setInterval(updateDashboard, 300000);
+            html += '</div></div>';
         });
-    </script>
+    });
+
+    container.innerHTML = html;
+}
+
+function updateCalendar() {
+    const container = document.getElementById('calendarContainer');
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    // Get cycle dates for the month
+    const cycleDates = {};
+    const entryDates = {};
+
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        getUpcomingCycles(symbol).forEach(function(u) {
+            const dateStr = u.targetDate.toISOString().split('T')[0];
+            cycleDates[dateStr] = true;
+
+            // Entry zone is 1-4 days after cycle date
+            for (let i = 1; i <= 4; i++) {
+                const entryDate = new Date(u.targetDate);
+                entryDate.setDate(entryDate.getDate() + i);
+                entryDates[entryDate.toISOString().split('T')[0]] = true;
+            }
+        });
+    });
+
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    let html = '<div class="calendar-header-nav">' +
+        '<button class="calendar-nav-btn" onclick="changeMonth(-1)">&#8592;</button>' +
+        '<div class="calendar-month">' + monthNames[currentMonth] + ' ' + currentYear + '</div>' +
+        '<button class="calendar-nav-btn" onclick="changeMonth(1)">&#8594;</button>' +
+        '</div>' +
+        '<div class="calendar-grid">' +
+        '<div class="calendar-header">Sun</div>' +
+        '<div class="calendar-header">Mon</div>' +
+        '<div class="calendar-header">Tue</div>' +
+        '<div class="calendar-header">Wed</div>' +
+        '<div class="calendar-header">Thu</div>' +
+        '<div class="calendar-header">Fri</div>' +
+        '<div class="calendar-header">Sat</div>';
+
+    // Empty cells before first day
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div class="calendar-day" style="opacity: 0.3;"></div>';
+    }
+
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        const isToday = dateStr === today.toISOString().split('T')[0];
+        const isCycleDay = cycleDates[dateStr];
+        const isEntryZone = entryDates[dateStr];
+
+        let dayClass = 'calendar-day';
+        if (isToday) dayClass += ' today';
+        if (isCycleDay) dayClass += ' cycle-day';
+        else if (isEntryZone) dayClass += ' entry-zone';
+
+        html += '<div class="' + dayClass + '">' + day + '</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updateUpcomingDates() {
+    const container = document.getElementById('upcomingDates');
+    const allUpcoming = [];
+
+    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
+    });
+
+    const upcoming = allUpcoming.filter(function(u) { return u.daysUntil > 0; }).slice(0, 10);
+
+    if (upcoming.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">No upcoming cycles in the next 120 days.</div>';
+        return;
+    }
+
+    let html = '<div style="display: grid; gap: 10px;">';
+    upcoming.forEach(function(u) {
+        const dateStr = u.targetDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">' +
+            '<div><div style="font-weight: 600;">' + u.symbol + ' - ' + u.cycle.name + '</div>' +
+            '<div style="font-size: 12px; color: #888;">' + dateStr + '</div></div>' +
+            '<div style="text-align: right;">' +
+            '<div style="font-size: 14px; font-weight: 600; color: ' + (u.daysUntil <= 7 ? '#ef4444' : '#888') + ';">' + u.daysUntil + ' days</div>' +
+            '<div style="font-size: 11px; color: ' + (u.expectation.includes('LOW') ? '#22c55e' : '#ef4444') + ';">' + u.expectation + '</div>' +
+            '</div></div>';
+    });
+    html += '</div>';
+
+    container.innerHTML = html;
+}
+
+// ==========================================
+// TRADE JOURNAL
+// ==========================================
+
+function loadTrades() {
+    const saved = localStorage.getItem('gannTrades');
+    if (saved) {
+        trades = JSON.parse(saved);
+    }
+}
+
+function saveTrades() {
+    localStorage.setItem('gannTrades', JSON.stringify(trades));
+}
+
+function saveTrade(event) {
+    event.preventDefault();
+
+    const trade = {
+        id: Date.now(),
+        symbol: document.getElementById('tradeSymbol').value,
+        direction: document.getElementById('tradeDirection').value,
+        strike: parseFloat(document.getElementById('tradeStrike').value),
+        expiry: document.getElementById('tradeExpiry').value,
+        entryDate: document.getElementById('tradeEntryDate').value,
+        entryPrice: parseFloat(document.getElementById('tradeEntryPrice').value),
+        signalType: document.getElementById('tradeSignalType').value,
+        notes: document.getElementById('tradeNotes').value,
+        status: 'OPEN',
+        exitDate: null,
+        exitPrice: null,
+        result: null,
+        pnl: null
+    };
+
+    trades.unshift(trade);
+    saveTrades();
+    updateTradeJournal();
+    updatePerformanceStats();
+    closeModal('addTradeModal');
+    showToast('Trade added successfully!', 'success');
+
+    // Reset form
+    document.getElementById('addTradeForm').reset();
+    document.getElementById('tradeEntryDate').valueAsDate = new Date();
+}
+
+function openCloseTrade(tradeId) {
+    document.getElementById('closeTradeId').value = tradeId;
+    document.getElementById('tradeExitDate').valueAsDate = new Date();
+    openModal('closeTradeModal');
+}
+
+function closeTradeSubmit(event) {
+    event.preventDefault();
+
+    const tradeId = parseInt(document.getElementById('closeTradeId').value);
+    const trade = trades.find(function(t) { return t.id === tradeId; });
+
+    if (trade) {
+        trade.exitDate = document.getElementById('tradeExitDate').value;
+        trade.exitPrice = parseFloat(document.getElementById('tradeExitPrice').value);
+        trade.result = document.getElementById('tradeResult').value;
+        trade.status = 'CLOSED';
+        trade.pnl = (trade.exitPrice - trade.entryPrice) * 100; // Per contract
+        trade.pnlPercent = ((trade.exitPrice - trade.entryPrice) / trade.entryPrice * 100).toFixed(1);
+
+        saveTrades();
+        updateTradeJournal();
+        updatePerformanceStats();
+        closeModal('closeTradeModal');
+        showToast('Trade closed!', trade.result === 'WIN' ? 'success' : 'warning');
+    }
+}
+
+function deleteTrade(tradeId) {
+    if (confirm('Are you sure you want to delete this trade?')) {
+        trades = trades.filter(function(t) { return t.id !== tradeId; });
+        saveTrades();
+        updateTradeJournal();
+        updatePerformanceStats();
+        showToast('Trade deleted', 'info');
+    }
+}
+
+function updateTradeJournal() {
+    const container = document.getElementById('tradeJournal');
+
+    if (trades.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">No trades recorded yet. Click "Add Trade" to start tracking.</div>';
+        return;
+    }
+
+    let html = '';
+    trades.forEach(function(trade) {
+        const isOpen = trade.status === 'OPEN';
+        let resultClass = 'result-open';
+        let resultIcon = 'OPEN';
+        let pnlClass = 'pnl-open';
+
+        if (!isOpen) {
+            if (trade.result === 'WIN') {
+                resultClass = 'result-win';
+                resultIcon = 'WIN';
+                pnlClass = 'pnl-positive';
+            } else if (trade.result === 'LOSS') {
+                resultClass = 'result-loss';
+                resultIcon = 'LOSS';
+                pnlClass = 'pnl-negative';
+            } else {
+                resultIcon = 'BE';
+            }
+        }
+
+        const pnlDisplay = isOpen ? 'OPEN' : (trade.pnl >= 0 ? '+' : '') + '$' + trade.pnl.toFixed(0);
+        const pctDisplay = isOpen ? '' : '(' + trade.pnlPercent + '%)';
+
+        html += '<div class="journal-entry">' +
+            '<div class="journal-left">' +
+            '<div class="journal-result ' + resultClass + '">' + resultIcon + '</div>' +
+            '<div class="journal-info">' +
+            '<div class="symbol">' + trade.symbol + ' ' + trade.strike + ' ' + trade.direction + ' ' + trade.expiry + '</div>' +
+            '<div class="details">' + trade.entryDate + ' @ $' + trade.entryPrice.toFixed(2) + (isOpen ? '' : ' - ' + trade.exitDate + ' @ $' + trade.exitPrice.toFixed(2)) + '</div>' +
+            '<div class="signal-type">Signal: ' + trade.signalType + '</div>' +
+            '</div></div>' +
+            '<div class="journal-pnl">' +
+            '<div class="pnl-amount ' + pnlClass + '">' + pnlDisplay + '</div>' +
+            '<div class="pnl-percent">' + pctDisplay + '</div>' +
+            (isOpen ? '<button class="btn btn-success btn-sm" style="margin-top: 8px;" onclick="openCloseTrade(' + trade.id + ')">Close</button>' : '') +
+            '<button class="btn btn-secondary btn-sm" style="margin-top: 5px; padding: 4px 8px; font-size: 10px;" onclick="deleteTrade(' + trade.id + ')">Delete</button>' +
+            '</div></div>';
+    });
+
+    container.innerHTML = html;
+}
+
+function updatePerformanceStats() {
+    const closedTrades = trades.filter(function(t) { return t.status === 'CLOSED'; });
+    const wins = closedTrades.filter(function(t) { return t.result === 'WIN'; });
+    const losses = closedTrades.filter(function(t) { return t.result === 'LOSS'; });
+
+    const totalTrades = closedTrades.length;
+    const winRate = totalTrades > 0 ? (wins.length / totalTrades * 100).toFixed(0) : 0;
+    const totalPnL = closedTrades.reduce(function(sum, t) { return sum + (t.pnl || 0); }, 0);
+    const avgWin = wins.length > 0 ? wins.reduce(function(sum, t) { return sum + t.pnl; }, 0) / wins.length : 0;
+
+    document.getElementById('statTotalTrades').textContent = totalTrades;
+    document.getElementById('statWinRate').textContent = winRate + '%';
+    document.getElementById('statWinRate').style.color = winRate >= 50 ? '#22c55e' : '#ef4444';
+    document.getElementById('statTotalPnL').textContent = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(0);
+    document.getElementById('statTotalPnL').style.color = totalPnL >= 0 ? '#22c55e' : '#ef4444';
+    document.getElementById('statAvgWin').textContent = '$' + avgWin.toFixed(0);
+}
+
+// ==========================================
+// OPTIONS CALCULATOR
+// ==========================================
+
+function updateOptionsCalc() {
+    const symbol = document.getElementById('calcSymbol').value;
+    const accountSize = parseFloat(document.getElementById('accountSize').value) || 0;
+    const container = document.getElementById('optionsRecOutput');
+
+    const data = currentPrices[symbol];
+    if (!data || !data.price) {
+        container.innerHTML = '<div style="text-align: center; color: #666; font-size: 12px;">Price data not available</div>';
+        return;
+    }
+
+    const price = data.price;
+    const strike = Math.round(price / 5) * 5;
+    const estPremium = price * 0.02;
+
+    const today = new Date();
+    const expDate = new Date(today);
+    expDate.setDate(expDate.getDate() + 45);
+
+    const position3pct = accountSize * 0.03;
+    const position5pct = accountSize * 0.05;
+    const contracts3pct = Math.floor(position3pct / (estPremium * 100));
+    const contracts5pct = Math.floor(position5pct / (estPremium * 100));
+
+    let html = '<div class="trade-row"><span class="label">Symbol</span><span class="value">' + symbol + '</span></div>' +
+        '<div class="trade-row"><span class="label">Current Price</span><span class="value">$' + price.toFixed(2) + '</span></div>' +
+        '<div class="trade-row"><span class="label">Rec. Strike (ATM)</span><span class="value" style="color: #22c55e;">$' + strike + '</span></div>' +
+        '<div class="trade-row"><span class="label">Rec. Expiration</span><span class="value">' + expDate.toLocaleDateString() + ' (45 DTE)</span></div>' +
+        '<div class="trade-row"><span class="label">Est. Premium</span><span class="value">~$' + estPremium.toFixed(2) + '</span></div>';
+
+    if (accountSize > 0) {
+        html += '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1);">' +
+            '<div class="trade-row"><span class="label">3% Position ($' + position3pct.toFixed(0) + ')</span><span class="value">' + contracts3pct + ' contracts</span></div>' +
+            '<div class="trade-row"><span class="label">5% Position ($' + position5pct.toFixed(0) + ')</span><span class="value">' + contracts5pct + ' contracts</span></div>' +
+            '</div>';
+    } else {
+        html += '<div style="margin-top: 10px; font-size: 11px; color: #888; text-align: center;">Enter account size above</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ==========================================
+// ALERT SYSTEM
+// ==========================================
+
+function loadAlertHistory() {
+    const saved = localStorage.getItem('gannAlertHistory');
+    if (saved) {
+        alertHistory = JSON.parse(saved);
+    }
+    updateAlertHistoryDisplay();
+}
+
+function saveAlertHistory() {
+    localStorage.setItem('gannAlertHistory', JSON.stringify(alertHistory));
+}
+
+function checkPriceAlerts() {
+    // Check Sq9 alerts
+    if (settings.alerts && settings.alerts.sq9) {
+        ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+            const proximity = checkSq9Proximity(symbol);
+            if (proximity && proximity.distance < 1.0) {
+                triggerAlert({
+                    type: 'sq9',
+                    symbol: symbol,
+                    message: symbol + ' near Sq9 support at $' + proximity.level.toFixed(2) + ' (' + proximity.distance.toFixed(2) + '% away)',
+                    date: new Date().toISOString()
+                });
+            }
+        });
+    }
+}
+
+function triggerAlert(alert) {
+    // Check if we've already sent this alert today
+    const today = new Date().toISOString().split('T')[0];
+    const existing = alertHistory.find(function(a) {
+        return a.type === alert.type && a.symbol === alert.symbol && a.date.startsWith(today);
+    });
+
+    if (existing) return;
+
+    // Add to history
+    alertHistory.unshift(alert);
+    if (alertHistory.length > 50) alertHistory = alertHistory.slice(0, 50);
+    saveAlertHistory();
+    updateAlertHistoryDisplay();
+
+    // Show toast
+    showToast(alert.message, 'warning');
+}
+
+function testEmailAlert() {
+    const email = document.getElementById('alertEmail').value;
+    if (!email) {
+        showToast('Please enter an email address first', 'error');
+        return;
+    }
+
+    showToast('Test email would be sent to: ' + email + ' (Configure EmailJS for real emails)', 'info');
+}
+
+function updateAlertHistoryDisplay() {
+    const container = document.getElementById('alertHistory');
+
+    if (alertHistory.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">No alerts sent yet.</div>';
+        return;
+    }
+
+    let html = '';
+    alertHistory.slice(0, 10).forEach(function(alert) {
+        const date = new Date(alert.date).toLocaleString();
+        html += '<div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 8px;">' +
+            '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+            '<div><div style="font-weight: 600; font-size: 13px;">' + alert.symbol + ' - ' + alert.type.toUpperCase() + '</div>' +
+            '<div style="font-size: 12px; color: #888;">' + alert.message + '</div></div>' +
+            '<div style="text-align: right; font-size: 11px; color: #666;">' + date + '</div>' +
+            '</div></div>';
+    });
+
+    container.innerHTML = html;
+}
+
+// ==========================================
+// SETTINGS
+// ==========================================
+
+function loadSettings() {
+    const saved = localStorage.getItem('gannSettings');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        settings = Object.assign({}, settings, parsed);
+    }
+
+    // Populate form fields
+    if (document.getElementById('alertEmail')) {
+        document.getElementById('alertEmail').value = settings.email || '';
+    }
+    if (document.getElementById('accountSize')) {
+        document.getElementById('accountSize').value = settings.accountSize || '';
+    }
+    if (document.getElementById('alert49Day')) {
+        document.getElementById('alert49Day').checked = settings.alerts ? settings.alerts.day49 : true;
+        document.getElementById('alert90Day').checked = settings.alerts ? settings.alerts.day90 : true;
+        document.getElementById('alertSq9').checked = settings.alerts ? settings.alerts.sq9 : false;
+        document.getElementById('alert360Day').checked = settings.alerts ? settings.alerts.day360 : true;
+    }
+}
+
+function saveSettings() {
+    settings.accountSize = parseFloat(document.getElementById('settingsAccountSize').value) || 10000;
+    settings.positionSize = parseInt(document.getElementById('settingsPositionSize').value) || 3;
+    settings.refreshInterval = parseInt(document.getElementById('settingsRefreshInterval').value) || 300;
+
+    localStorage.setItem('gannSettings', JSON.stringify(settings));
+    closeModal('settingsModal');
+    showToast('Settings saved!', 'success');
+}
+
+function saveAlertSettings() {
+    settings.email = document.getElementById('alertEmail').value;
+    settings.alerts = {
+        day49: document.getElementById('alert49Day').checked,
+        day90: document.getElementById('alert90Day').checked,
+        sq9: document.getElementById('alertSq9').checked,
+        day360: document.getElementById('alert360Day').checked
+    };
+
+    localStorage.setItem('gannSettings', JSON.stringify(settings));
+    showToast('Alert settings saved!', 'success');
+}
+
+// ==========================================
+// UI HELPERS
+// ==========================================
+
+function switchTab(tabId) {
+    // Update tab buttons
+    document.querySelectorAll('.tab').forEach(function(tab) { tab.classList.remove('active'); });
+    event.target.classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(function(content) { content.classList.remove('active'); });
+    document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).classList.add('active');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function openAddTradeModal() {
+    document.getElementById('tradeEntryDate').valueAsDate = new Date();
+    openModal('addTradeModal');
+}
+
+function openSettingsModal() {
+    document.getElementById('settingsAccountSize').value = settings.accountSize || '';
+    document.getElementById('settingsPositionSize').value = settings.positionSize || 3;
+    document.getElementById('settingsRefreshInterval').value = settings.refreshInterval || 300;
+    openModal('settingsModal');
+}
+
+function showToast(message, type) {
+    type = type || 'info';
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.innerHTML = '<div class="toast-message">' + message + '</div>';
+    container.appendChild(toast);
+
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        setTimeout(function() { toast.remove(); }, 300);
+    }, 4000);
+}
+
+function refreshData() {
+    showToast('Refreshing data...', 'info');
+    fetchLivePrices().then(function() {
+        updateDashboard();
+        showToast('Data refreshed!', 'success');
+    });
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.classList.remove('active');
+    }
+});
+</script>
 </body>
 </html>

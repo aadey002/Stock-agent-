@@ -6024,20 +6024,261 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
-                <!-- Full Dashboard Link -->
-                <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: #f8fafc; border: 2px dashed #e2e8f0;">
-                    <h3 style="font-size: 14px; margin-bottom: 15px; color: #1e293b;">🔮 Full Gann Cycles Dashboard</h3>
-                    <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">
-                        Access the full standalone dashboard with additional features:<br>
-                        • Alert Settings (Email/SMS)<br>
-                        • Trade Journal<br>
-                        • Options Calculator<br>
-                        • Extended Analysis
-                    </p>
-                    <a href="gann_cycles.html" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px; transition: all 0.2s;">
-                        Open Full Dashboard →
-                    </a>
+                <!-- Options Calculator -->
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 15px; color: #1e293b;">🧮 Options Calculator</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Symbol</label>
+                            <select id="gannOptSymbol" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b;">
+                                <option value="SPY">SPY - $598.27</option>
+                                <option value="QQQ">QQQ - $524.18</option>
+                                <option value="IWM">IWM - $248.20</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Direction</label>
+                            <select id="gannOptDirection" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b;">
+                                <option value="CALL">CALL (Bullish)</option>
+                                <option value="PUT">PUT (Bearish)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Strike ($)</label>
+                            <input type="number" id="gannOptStrike" value="600" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">DTE (Days)</label>
+                            <input type="number" id="gannOptDte" value="45" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Premium ($)</label>
+                            <input type="number" id="gannOptPremium" value="8.50" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Contracts</label>
+                            <input type="number" id="gannOptContracts" value="1" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                    </div>
+                    <button onclick="calculateGannOption()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 15px;">Calculate Risk/Reward</button>
+                    <div id="gannOptResult" style="background: #f8fafc; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 10px; color: #64748b;">Max Risk</div>
+                                <div id="gannOptMaxRisk" style="font-size: 16px; font-weight: 700; color: #dc2626;">$850</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 10px; color: #64748b;">Break Even</div>
+                                <div id="gannOptBreakeven" style="font-size: 16px; font-weight: 700; color: #1e293b;">$608.50</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 10px; color: #64748b;">Target (+100%)</div>
+                                <div id="gannOptTarget" style="font-size: 16px; font-weight: 700; color: #16a34a;">$1,700</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 10px; color: #64748b;">R:R Ratio</div>
+                                <div id="gannOptRatio" style="font-size: 16px; font-weight: 700; color: #8b5cf6;">2:1</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Trade Journal -->
+            <div class="card" style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 14px; margin: 0; color: #1e293b;">📝 Gann Cycle Trade Journal</h3>
+                    <button onclick="addGannTrade()" style="padding: 6px 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">+ Add Trade</button>
+                </div>
+
+                <!-- Add Trade Form (hidden by default) -->
+                <div id="gannTradeForm" style="display: none; background: #f8fafc; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px;">
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Date</label>
+                            <input type="date" id="gannTradeDate" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Symbol</label>
+                            <select id="gannTradeSymbol" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b;">
+                                <option>SPY</option>
+                                <option>QQQ</option>
+                                <option>IWM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Type</label>
+                            <select id="gannTradeType" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b;">
+                                <option>CALL</option>
+                                <option>PUT</option>
+                                <option>STOCK</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Cycle Trigger</label>
+                            <select id="gannTradeCycle" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b;">
+                                <option>49d Jubilee</option>
+                                <option>90d Quarter</option>
+                                <option>120d</option>
+                                <option>144d Sacred</option>
+                                <option>180d Half</option>
+                                <option>270d</option>
+                                <option>360d Year</option>
+                                <option>Sq9 Level</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Entry Price</label>
+                            <input type="number" id="gannTradeEntry" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Exit Price</label>
+                            <input type="number" id="gannTradeExit" step="0.01" placeholder="0.00" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Contracts/Shares</label>
+                            <input type="number" id="gannTradeQty" value="1" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Result</label>
+                            <select id="gannTradeResult" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b;">
+                                <option value="open">OPEN</option>
+                                <option value="win">WIN</option>
+                                <option value="loss">LOSS</option>
+                                <option value="breakeven">BREAKEVEN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Notes</label>
+                        <textarea id="gannTradeNotes" rows="2" placeholder="Trade reasoning, cycle analysis..." style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b; resize: none; box-sizing: border-box;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="saveGannTrade()" style="flex: 1; padding: 10px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Save Trade</button>
+                        <button onclick="cancelGannTrade()" style="flex: 1; padding: 10px; background: #e2e8f0; color: #64748b; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Trade Journal Stats -->
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <div id="gannJournalTotal" style="font-size: 18px; font-weight: 700; color: #1e293b;">0</div>
+                        <div style="font-size: 10px; color: #64748b;">Total Trades</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        <div id="gannJournalWins" style="font-size: 18px; font-weight: 700; color: #16a34a;">0</div>
+                        <div style="font-size: 10px; color: #64748b;">Wins</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+                        <div id="gannJournalLosses" style="font-size: 18px; font-weight: 700; color: #dc2626;">0</div>
+                        <div style="font-size: 10px; color: #64748b;">Losses</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <div id="gannJournalWinRate" style="font-size: 18px; font-weight: 700; color: #8b5cf6;">0%</div>
+                        <div style="font-size: 10px; color: #64748b;">Win Rate</div>
+                    </div>
+                    <div style="text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <div id="gannJournalPnL" style="font-size: 18px; font-weight: 700; color: #1e293b;">$0</div>
+                        <div style="font-size: 10px; color: #64748b;">Total P&L</div>
+                    </div>
+                </div>
+
+                <!-- Trade History Table -->
+                <div class="table-wrap">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Date</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Symbol</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Type</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Cycle</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Entry</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Exit</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">P&L</th>
+                                <th style="padding: 10px; text-align: left; color: #64748b;">Result</th>
+                                <th style="padding: 10px; text-align: center; color: #64748b;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gannTradeTableBody">
+                            <tr id="gannNoTradesRow">
+                                <td colspan="9" style="padding: 30px; text-align: center; color: #94a3b8;">
+                                    No trades recorded yet. Click "+ Add Trade" to log your first Gann cycle trade.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Alert Settings -->
+            <div class="card" style="margin-top: 20px;">
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: #1e293b;">🔔 Cycle Alert Settings</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div style="background: #f8fafc; border-radius: 10px; padding: 15px; border: 1px solid #e2e8f0;">
+                        <div style="font-weight: 600; font-size: 12px; color: #1e293b; margin-bottom: 10px;">Alert Timing</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannAlert7d" checked style="accent-color: #667eea;"> 7 days before cycle
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannAlert3d" checked style="accent-color: #667eea;"> 3 days before cycle
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannAlert1d" checked style="accent-color: #667eea;"> 1 day before cycle
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannAlertDay" checked style="accent-color: #667eea;"> On cycle day
+                            </label>
+                        </div>
+                    </div>
+                    <div style="background: #f8fafc; border-radius: 10px; padding: 15px; border: 1px solid #e2e8f0;">
+                        <div style="font-weight: 600; font-size: 12px; color: #1e293b; margin-bottom: 10px;">Cycles to Track</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle49" checked style="accent-color: #667eea;"> 49-day Jubilee
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle90" checked style="accent-color: #667eea;"> 90-day Quarter
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle144" checked style="accent-color: #667eea;"> 144-day Sacred
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle180" checked style="accent-color: #667eea;"> 180-day Half Year
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle270" checked style="accent-color: #667eea;"> 270-day (3/4 Year)
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannCycle360" checked style="accent-color: #667eea;"> 360-day Year
+                            </label>
+                        </div>
+                    </div>
+                    <div style="background: #f8fafc; border-radius: 10px; padding: 15px; border: 1px solid #e2e8f0;">
+                        <div style="font-weight: 600; font-size: 12px; color: #1e293b; margin-bottom: 10px;">Notification Method</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannNotifyBrowser" checked style="accent-color: #667eea;"> Browser notifications
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748b; cursor: pointer;">
+                                <input type="checkbox" id="gannNotifySound" style="accent-color: #667eea;"> Sound alert
+                            </label>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button onclick="saveGannAlertSettings()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Save Settings</button>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button onclick="testGannAlert()" style="width: 100%; padding: 10px; background: #e2e8f0; color: #64748b; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Test Alert</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Dashboard Link -->
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="gann_cycles.html" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px;">
+                    🔮 Open Full Standalone Dashboard →
+                </a>
             </div>
         </div>
 
@@ -22276,6 +22517,235 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Market conditions updated: ' + score + '/3');
     }
+
+    // ==========================================
+    // GANN CYCLES TAB - JAVASCRIPT FUNCTIONS
+    // ==========================================
+
+    // Gann Trades Storage
+    let gannTrades = [];
+
+    // Load Gann trades on page load
+    function loadGannTrades() {
+        const saved = localStorage.getItem('gannTradesData');
+        if (saved) {
+            gannTrades = JSON.parse(saved);
+            renderGannTrades();
+            updateGannJournalStats();
+        }
+    }
+
+    // Save Gann trades to localStorage
+    function saveGannTradesToStorage() {
+        localStorage.setItem('gannTradesData', JSON.stringify(gannTrades));
+    }
+
+    // Options Calculator
+    function calculateGannOption() {
+        const symbol = document.getElementById('gannOptSymbol').value;
+        const direction = document.getElementById('gannOptDirection').value;
+        const strike = parseFloat(document.getElementById('gannOptStrike').value) || 600;
+        const dte = parseInt(document.getElementById('gannOptDte').value) || 45;
+        const premium = parseFloat(document.getElementById('gannOptPremium').value) || 8.50;
+        const contracts = parseInt(document.getElementById('gannOptContracts').value) || 1;
+
+        const maxRisk = premium * 100 * contracts;
+        const breakeven = direction === 'CALL' ? strike + premium : strike - premium;
+        const target = maxRisk * 2; // 100% gain target
+        const ratio = '2:1';
+
+        document.getElementById('gannOptMaxRisk').textContent = '$' + maxRisk.toLocaleString();
+        document.getElementById('gannOptBreakeven').textContent = '$' + breakeven.toFixed(2);
+        document.getElementById('gannOptTarget').textContent = '$' + target.toLocaleString();
+        document.getElementById('gannOptRatio').textContent = ratio;
+    }
+
+    // Trade Journal Functions
+    function addGannTrade() {
+        const form = document.getElementById('gannTradeForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('gannTradeDate').value = today;
+    }
+
+    function cancelGannTrade() {
+        document.getElementById('gannTradeForm').style.display = 'none';
+    }
+
+    function saveGannTrade() {
+        const trade = {
+            id: Date.now(),
+            date: document.getElementById('gannTradeDate').value,
+            symbol: document.getElementById('gannTradeSymbol').value,
+            type: document.getElementById('gannTradeType').value,
+            cycle: document.getElementById('gannTradeCycle').value,
+            entry: parseFloat(document.getElementById('gannTradeEntry').value) || 0,
+            exit: parseFloat(document.getElementById('gannTradeExit').value) || 0,
+            qty: parseInt(document.getElementById('gannTradeQty').value) || 1,
+            result: document.getElementById('gannTradeResult').value,
+            notes: document.getElementById('gannTradeNotes').value
+        };
+
+        // Calculate P&L
+        if (trade.type === 'STOCK') {
+            trade.pnl = (trade.exit - trade.entry) * trade.qty;
+        } else {
+            trade.pnl = (trade.exit - trade.entry) * 100 * trade.qty;
+        }
+
+        gannTrades.unshift(trade);
+        saveGannTradesToStorage();
+        renderGannTrades();
+        updateGannJournalStats();
+        cancelGannTrade();
+
+        // Clear form
+        document.getElementById('gannTradeEntry').value = '';
+        document.getElementById('gannTradeExit').value = '';
+        document.getElementById('gannTradeNotes').value = '';
+    }
+
+    function deleteGannTrade(id) {
+        if (confirm('Delete this trade?')) {
+            gannTrades = gannTrades.filter(t => t.id !== id);
+            saveGannTradesToStorage();
+            renderGannTrades();
+            updateGannJournalStats();
+        }
+    }
+
+    function renderGannTrades() {
+        const tbody = document.getElementById('gannTradeTableBody');
+        const noTradesRow = document.getElementById('gannNoTradesRow');
+
+        if (gannTrades.length === 0) {
+            if (noTradesRow) noTradesRow.style.display = '';
+            return;
+        }
+
+        if (noTradesRow) noTradesRow.style.display = 'none';
+
+        let html = '';
+        gannTrades.forEach(trade => {
+            const pnlColor = trade.pnl >= 0 ? '#16a34a' : '#dc2626';
+            const pnlSign = trade.pnl >= 0 ? '+' : '';
+
+            let resultBadge = '';
+            if (trade.result === 'win') {
+                resultBadge = '<span style="background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 10px; font-size: 10px;">WIN</span>';
+            } else if (trade.result === 'loss') {
+                resultBadge = '<span style="background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 10px; font-size: 10px;">LOSS</span>';
+            } else if (trade.result === 'breakeven') {
+                resultBadge = '<span style="background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 10px; font-size: 10px;">BE</span>';
+            } else {
+                resultBadge = '<span style="background: #eff6ff; color: #3b82f6; padding: 2px 8px; border-radius: 10px; font-size: 10px;">OPEN</span>';
+            }
+
+            html += `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 10px;">${trade.date}</td>
+                    <td style="padding: 10px; font-weight: 600;">${trade.symbol}</td>
+                    <td style="padding: 10px;">${trade.type}</td>
+                    <td style="padding: 10px; font-size: 10px;">${trade.cycle}</td>
+                    <td style="padding: 10px;">$${trade.entry.toFixed(2)}</td>
+                    <td style="padding: 10px;">${trade.exit ? '$' + trade.exit.toFixed(2) : '-'}</td>
+                    <td style="padding: 10px; color: ${pnlColor}; font-weight: 600;">${pnlSign}$${trade.pnl.toFixed(0)}</td>
+                    <td style="padding: 10px;">${resultBadge}</td>
+                    <td style="padding: 10px; text-align: center;">
+                        <button onclick="deleteGannTrade(${trade.id})" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 14px;" title="Delete">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function updateGannJournalStats() {
+        const total = gannTrades.length;
+        const closedTrades = gannTrades.filter(t => t.result !== 'open');
+        const wins = closedTrades.filter(t => t.result === 'win').length;
+        const losses = closedTrades.filter(t => t.result === 'loss').length;
+        const winRate = closedTrades.length > 0 ? Math.round((wins / closedTrades.length) * 100) : 0;
+        const totalPnL = gannTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+
+        document.getElementById('gannJournalTotal').textContent = total;
+        document.getElementById('gannJournalWins').textContent = wins;
+        document.getElementById('gannJournalLosses').textContent = losses;
+        document.getElementById('gannJournalWinRate').textContent = winRate + '%';
+
+        const pnlEl = document.getElementById('gannJournalPnL');
+        pnlEl.textContent = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(0);
+        pnlEl.style.color = totalPnL >= 0 ? '#16a34a' : '#dc2626';
+    }
+
+    // Alert Settings
+    function saveGannAlertSettings() {
+        const settings = {
+            alert7d: document.getElementById('gannAlert7d').checked,
+            alert3d: document.getElementById('gannAlert3d').checked,
+            alert1d: document.getElementById('gannAlert1d').checked,
+            alertDay: document.getElementById('gannAlertDay').checked,
+            cycle49: document.getElementById('gannCycle49').checked,
+            cycle90: document.getElementById('gannCycle90').checked,
+            cycle144: document.getElementById('gannCycle144').checked,
+            cycle180: document.getElementById('gannCycle180').checked,
+            cycle270: document.getElementById('gannCycle270').checked,
+            cycle360: document.getElementById('gannCycle360').checked,
+            notifyBrowser: document.getElementById('gannNotifyBrowser').checked,
+            notifySound: document.getElementById('gannNotifySound').checked
+        };
+
+        localStorage.setItem('gannAlertSettings', JSON.stringify(settings));
+        alert('Alert settings saved!');
+    }
+
+    function testGannAlert() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    new Notification('Gann Cycle Alert Test', {
+                        body: '270-day cycle from Apr 7 LOW approaching on Jan 2, 2026!',
+                        icon: '🔮'
+                    });
+                } else {
+                    alert('Please enable browser notifications to receive cycle alerts.');
+                }
+            });
+        } else {
+            alert('Your browser does not support notifications.');
+        }
+    }
+
+    // Load Gann alert settings
+    function loadGannAlertSettings() {
+        const saved = localStorage.getItem('gannAlertSettings');
+        if (saved) {
+            const settings = JSON.parse(saved);
+            if (document.getElementById('gannAlert7d')) {
+                document.getElementById('gannAlert7d').checked = settings.alert7d ?? true;
+                document.getElementById('gannAlert3d').checked = settings.alert3d ?? true;
+                document.getElementById('gannAlert1d').checked = settings.alert1d ?? true;
+                document.getElementById('gannAlertDay').checked = settings.alertDay ?? true;
+                document.getElementById('gannCycle49').checked = settings.cycle49 ?? true;
+                document.getElementById('gannCycle90').checked = settings.cycle90 ?? true;
+                document.getElementById('gannCycle144').checked = settings.cycle144 ?? true;
+                document.getElementById('gannCycle180').checked = settings.cycle180 ?? true;
+                document.getElementById('gannCycle270').checked = settings.cycle270 ?? true;
+                document.getElementById('gannCycle360').checked = settings.cycle360 ?? true;
+                document.getElementById('gannNotifyBrowser').checked = settings.notifyBrowser ?? true;
+                document.getElementById('gannNotifySound').checked = settings.notifySound ?? false;
+            }
+        }
+    }
+
+    // Initialize Gann features when tab is shown
+    document.addEventListener('DOMContentLoaded', function() {
+        loadGannTrades();
+        loadGannAlertSettings();
+    });
 
 </script>
 </body>
