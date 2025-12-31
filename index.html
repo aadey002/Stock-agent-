@@ -4468,33 +4468,80 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
 
                 <!-- Single ETF Test -->
-                <div style="margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px; background: rgba(34,197,94,0.1); border-radius: 8px; border: 1px solid rgba(34,197,94,0.3);">
-                    <span style="font-size: 11px; color: #166534; font-weight: 600;">Test Single ETF:</span>
-                    <select id="singleETFSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.4); background: white; font-size: 11px; cursor: pointer;">
-                        <option value="SPY">SPY</option>
-                        <option value="QQQ">QQQ</option>
-                        <option value="IWM">IWM</option>
-                        <option value="XLF">XLF</option>
-                        <option value="XLE">XLE</option>
-                        <option value="XLK">XLK</option>
-                        <option value="XLV">XLV</option>
-                        <option value="XLI">XLI</option>
-                        <option value="XLB">XLB</option>
-                        <option value="XLU">XLU</option>
-                        <option value="XLP">XLP</option>
-                        <option value="XLY">XLY</option>
-                    </select>
-                    <span style="font-size: 10px; color: #666;">Tolerance:</span>
-                    <select id="singleETFTolerance" style="padding: 6px 8px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.4); background: white; font-size: 11px; cursor: pointer;">
-                        <option value="0.005">0.5%</option>
-                        <option value="0.0075">0.75%</option>
-                        <option value="0.01">1.0%</option>
-                        <option value="0.0125">1.25%</option>
-                        <option value="0.015" selected>1.5%</option>
-                        <option value="0.02">2.0%</option>
-                        <option value="0.025">2.5%</option>
-                    </select>
-                    <button onclick="runSingleETFTest()" style="padding: 6px 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">🎯 Run Test</button>
+                <div style="margin-bottom: 15px; padding: 12px; background: rgba(34,197,94,0.1); border-radius: 8px; border: 1px solid rgba(34,197,94,0.3);">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 11px; color: #166534; font-weight: 600;">🎯 Test Single ETF:</span>
+                        <select id="singleETFSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.4); background: white; font-size: 11px; cursor: pointer;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
+                        </select>
+                        <span style="font-size: 10px; color: #666;">Tolerance:</span>
+                        <select id="singleETFTolerance" style="padding: 6px 8px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.4); background: white; font-size: 11px; cursor: pointer;">
+                            <option value="0.005">0.5%</option>
+                            <option value="0.0075">0.75%</option>
+                            <option value="0.01">1.0%</option>
+                            <option value="0.0125">1.25%</option>
+                            <option value="0.015" selected>1.5%</option>
+                            <option value="0.02">2.0%</option>
+                            <option value="0.025">2.5%</option>
+                        </select>
+                        <button onclick="runSingleETFTest()" style="padding: 6px 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">🎯 Run Test</button>
+                    </div>
+
+                    <!-- Single ETF Results Display -->
+                    <div id="singleETFResults" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="font-size: 12px; font-weight: 600; color: #166534;">📊 <span id="singleETFSymbolTitle">SPY</span> Results @ <span id="singleETFTolTitle">1.5%</span> Tolerance</div>
+                        </div>
+
+                        <!-- Summary Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
+                            <div style="background: rgba(34,197,94,0.15); border-radius: 6px; padding: 10px; text-align: center;">
+                                <div style="font-size: 9px; color: #166534;">📈 Sq9 Support</div>
+                                <div id="singleETFSupport" style="font-size: 20px; font-weight: 700; color: #22c55e;">--%</div>
+                            </div>
+                            <div style="background: rgba(239,68,68,0.15); border-radius: 6px; padding: 10px; text-align: center;">
+                                <div style="font-size: 9px; color: #991b1b;">📉 Sq9 Resist</div>
+                                <div id="singleETFResist" style="font-size: 20px; font-weight: 700; color: #ef4444;">--%</div>
+                            </div>
+                            <div style="background: rgba(139,92,246,0.15); border-radius: 6px; padding: 10px; text-align: center;">
+                                <div style="font-size: 9px; color: #7c3aed;">⏰ 144-Day</div>
+                                <div id="singleETFCycle" style="font-size: 20px; font-weight: 700; color: #8b5cf6;">--%</div>
+                            </div>
+                            <div style="background: rgba(245,158,11,0.15); border-radius: 6px; padding: 10px; text-align: center;">
+                                <div style="font-size: 9px; color: #b45309;">🎯 Combined</div>
+                                <div id="singleETFCombined" style="font-size: 20px; font-weight: 700; color: #f59e0b;">--%</div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Table -->
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
+                                <thead style="background: #f0f0f0;">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">METRIC</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 2px solid #ddd;">WIN RATE</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 2px solid #ddd;">WINS</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 2px solid #ddd;">TOTAL</th>
+                                        <th style="padding: 8px; text-align: center; border-bottom: 2px solid #ddd;">EDGE vs 50%</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="singleETFTableBody">
+                                    <tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">Click "Run Test" to see results</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-bottom: 15px; padding: 10px; background: rgba(139,92,246,0.1); border-radius: 8px; font-size: 11px; color: #7c3aed;">
@@ -11071,18 +11118,58 @@ function testSingleETF(symbol, tolerance) {
     var cycle144Pct = results.cycle144.total > 0 ? Math.round(results.cycle144.wins / results.cycle144.total * 100) : 0;
     var combinedPct = results.combined.total > 0 ? Math.round(results.combined.wins / results.combined.total * 100) : 0;
 
-    var msg = '📊 ' + sym + ' Gann Backtest @ ' + (tol * 100) + '% Tolerance\n';
-    msg += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
-    msg += '📐 SQUARE OF 9:\n';
-    msg += '• Support Bounce: ' + supportPct + '% (' + results.support.bounces + '/' + results.support.tests + ')\n';
-    msg += '• Resistance Reject: ' + resistPct + '% (' + results.resist.rejects + '/' + results.resist.tests + ')\n\n';
-    msg += '⏰ TIME CYCLES:\n';
-    msg += '• 144-Day Reversal: ' + cycle144Pct + '% (' + results.cycle144.wins + '/' + results.cycle144.total + ')\n\n';
-    msg += '🎯 COMBINED (144 + Sq9 Support):\n';
-    msg += '• Win Rate: ' + combinedPct + '% (' + results.combined.wins + '/' + results.combined.total + ')\n';
+    // Update UI display
+    var resultsDiv = document.getElementById('singleETFResults');
+    if (resultsDiv) {
+        resultsDiv.style.display = 'block';
+
+        // Update title
+        var symbolTitle = document.getElementById('singleETFSymbolTitle');
+        var tolTitle = document.getElementById('singleETFTolTitle');
+        if (symbolTitle) symbolTitle.textContent = sym;
+        if (tolTitle) tolTitle.textContent = (tol * 100) + '%';
+
+        // Update summary cards
+        var el = document.getElementById('singleETFSupport');
+        if (el) el.textContent = supportPct + '%';
+        el = document.getElementById('singleETFResist');
+        if (el) el.textContent = resistPct + '%';
+        el = document.getElementById('singleETFCycle');
+        if (el) el.textContent = cycle144Pct + '%';
+        el = document.getElementById('singleETFCombined');
+        if (el) el.textContent = combinedPct + '%';
+
+        // Build table rows
+        var tableBody = document.getElementById('singleETFTableBody');
+        if (tableBody) {
+            var rows = [
+                { name: '📈 Sq9 Support Bounce', pct: supportPct, wins: results.support.bounces, total: results.support.tests, color: '#22c55e' },
+                { name: '📉 Sq9 Resistance Reject', pct: resistPct, wins: results.resist.rejects, total: results.resist.tests, color: '#ef4444' },
+                { name: '⏰ 144-Day Cycle Reversal', pct: cycle144Pct, wins: results.cycle144.wins, total: results.cycle144.total, color: '#8b5cf6' },
+                { name: '🎯 Combined (144 + Support)', pct: combinedPct, wins: results.combined.wins, total: results.combined.total, color: '#f59e0b' }
+            ];
+
+            var html = '';
+            for (var r = 0; r < rows.length; r++) {
+                var row = rows[r];
+                var edge = row.pct - 50;
+                var edgeColor = edge > 0 ? '#22c55e' : (edge < 0 ? '#ef4444' : '#666');
+                var edgeSign = edge > 0 ? '+' : '';
+                var pctBg = row.pct >= 55 ? 'rgba(34,197,94,0.2)' : (row.pct >= 50 ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)');
+
+                html += '<tr style="border-bottom: 1px solid #eee;">';
+                html += '<td style="padding: 8px; font-weight: 500;">' + row.name + '</td>';
+                html += '<td style="padding: 8px; text-align: center; background: ' + pctBg + '; font-weight: 700; color: ' + row.color + ';">' + row.pct + '%</td>';
+                html += '<td style="padding: 8px; text-align: center;">' + row.wins + '</td>';
+                html += '<td style="padding: 8px; text-align: center;">' + row.total + '</td>';
+                html += '<td style="padding: 8px; text-align: center; font-weight: 600; color: ' + edgeColor + ';">' + edgeSign + edge + '%</td>';
+                html += '</tr>';
+            }
+            tableBody.innerHTML = html;
+        }
+    }
 
     console.log(sym + ' Results:', results);
-    alert(msg);
     return results;
 }
 
