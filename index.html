@@ -4604,6 +4604,70 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="font-size: 10px; color: #7c3aed; margin-top: 5px;">Target: >55% = Edge Found</div>
                 </div>
             </div>
+
+            <!-- Biblical Numbers Section -->
+            <div class="card" style="margin-top: 20px; background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(37,99,235,0.1)); border: 1px solid rgba(124,58,237,0.3);">
+                <div class="card-title" style="color: #7c3aed;">📖 Gann Biblical Numbers Analysis</div>
+
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.1)); border-radius: 8px;">
+                    <div style="font-size: 11px; color: #666; line-height: 1.6;">
+                        <strong>Biblical Numbers from "Tunnel Thru the Air":</strong><br>
+                        7 (Creation) • 12 (Tribes) • 40 (Flood/Moses) • 49 (Jubilee) • 144 (Sacred 12×12) • 360 (Prophetic Year)<br>
+                        <em>"The Bible contains the key to the process by which you may know all there is to know"</em> - W.D. Gann
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <button onclick="backtestBiblicalNumbers()" style="padding: 12px 24px; background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        📖 Backtest Biblical Numbers on SPY
+                    </button>
+                </div>
+
+                <div id="biblicalResultsContainer">
+                    <div style="text-align: center; padding: 30px; color: #999; font-size: 12px;">
+                        Click the button above to test Gann's Biblical cycles on SPY
+                    </div>
+                </div>
+
+                <!-- Key Biblical Cycles Reference -->
+                <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 11px; font-weight: 600; color: #666; margin-bottom: 8px;">📜 Key Gann Biblical Cycles:</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 10px;">
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">7 Days</div>
+                            <div style="color: #999;">Creation</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">40 Days</div>
+                            <div style="color: #999;">Flood</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">49 Days</div>
+                            <div style="color: #999;">7×7 Jubilee</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #d4a017;">144 Days</div>
+                            <div style="color: #999;">12×12 Sacred</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">150 Days</div>
+                            <div style="color: #999;">Flood Duration</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">180 Days</div>
+                            <div style="color: #999;">Half Year</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">216 Days</div>
+                            <div style="color: #999;">6×6×6</div>
+                        </div>
+                        <div style="padding: 6px; background: white; border-radius: 4px; text-align: center;">
+                            <div style="font-weight: 600; color: #7c3aed;">360 Days</div>
+                            <div style="color: #999;">Prophetic Year</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- MULTI-CHARTS TAB -->
@@ -11462,6 +11526,412 @@ function backtestPivotGann() {
 
     window.lastPivotGannResults = results;
     return results;
+}
+
+// ==========================================
+// GANN BIBLICAL NUMBERS BACKTEST
+// ==========================================
+
+function backtestBiblicalNumbers() {
+    var data = allSymbolsData['SPY'];
+    if (!data || data.length < 400) {
+        alert('Not enough SPY data (need 400+ days)');
+        return;
+    }
+
+    // Show loading
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'biblicalLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 400px;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">📖</div><div style="font-size: 14px; font-weight: 600;">Testing Gann Biblical Numbers...</div><div id="biblicalProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing SPY with sacred cycles</div>';
+    document.body.appendChild(loadingDiv);
+
+    // ==========================================
+    // BIBLICAL NUMBERS FROM GANN
+    // ==========================================
+    var biblicalCycles = [
+        // Creation & Sacred Numbers
+        { days: 7, name: '7 Days (Creation)', source: 'Genesis 1-2' },
+        { days: 12, name: '12 Days (Tribes/Apostles)', source: '12 Tribes' },
+        { days: 21, name: '21 Days (3×7)', source: 'Daniel 10:13' },
+        { days: 28, name: '28 Days (4×7, Lunar)', source: 'Lunar Month' },
+
+        // Flood & Wilderness
+        { days: 40, name: '40 Days (Flood/Moses)', source: 'Genesis 7:4' },
+        { days: 49, name: '49 Days (7×7 Jubilee)', source: 'Leviticus 25' },
+        { days: 50, name: '50 Days (Pentecost)', source: 'Leviticus 23:16' },
+
+        // Gann's Important Numbers
+        { days: 52, name: '52 Days (Weeks/Year)', source: 'Gann Square' },
+        { days: 60, name: '60 Days (Babylonian)', source: 'Daniel' },
+        { days: 72, name: '72 Days (360÷5)', source: 'Circle Division' },
+        { days: 90, name: '90 Days (Quarter)', source: '360÷4' },
+
+        // Sacred Geometry
+        { days: 120, name: '120 Days (1/3 Year)', source: 'Genesis 6:3' },
+        { days: 144, name: '144 Days (12×12 SACRED)', source: 'Revelation 7' },
+        { days: 150, name: '150 Days (Flood Duration)', source: 'Genesis 7:24' },
+
+        // Half & Full Cycles
+        { days: 180, name: '180 Days (Half Year)', source: '360÷2' },
+        { days: 216, name: '216 Days (6×6×6)', source: 'Revelation 13:18' },
+        { days: 252, name: '252 Days (Trading Year)', source: 'Market Days' },
+
+        // Prophetic Cycles
+        { days: 270, name: '270 Days (3/4 Year)', source: '360×0.75' },
+        { days: 288, name: '288 Days (2×144)', source: 'Double Sacred' },
+        { days: 360, name: '360 Days (Prophetic Year)', source: 'Ezekiel 4:6' }
+    ];
+
+    // Weekly cycles (in trading days)
+    var weeklyCycles = [
+        { days: 5, name: '1 Week (5 trading)', source: 'Weekly' },
+        { days: 10, name: '2 Weeks', source: 'Bi-weekly' },
+        { days: 15, name: '3 Weeks', source: 'Tri-weekly' },
+        { days: 25, name: '5 Weeks', source: '5 Week' },
+        { days: 35, name: '7 Weeks (Death Zone)', source: 'Gann Fatal' },
+        { days: 45, name: '9 Weeks', source: '9 Week' },
+        { days: 65, name: '13 Weeks (Quarter)', source: '13 Week' },
+        { days: 130, name: '26 Weeks (Half Year)', source: '26 Week' }
+    ];
+
+    var results = {
+        calendarDays: {},
+        tradingDays: {},
+        bestCycles: []
+    };
+
+    // Find all swing pivots (local highs and lows)
+    var pivots = [];
+    for (var i = 10; i < data.length - 10; i++) {
+        var high = parseFloat(data[i].High);
+        var low = parseFloat(data[i].Low);
+        var isHigh = true, isLow = true;
+
+        for (var j = i - 10; j <= i + 10; j++) {
+            if (j === i) continue;
+            if (parseFloat(data[j].High) > high) isHigh = false;
+            if (parseFloat(data[j].Low) < low) isLow = false;
+        }
+
+        if (isHigh) pivots.push({ type: 'HIGH', index: i, price: high, date: data[i].Date });
+        if (isLow) pivots.push({ type: 'LOW', index: i, price: low, date: data[i].Date });
+    }
+
+    console.log('Found ' + pivots.length + ' pivots');
+
+    // ==========================================
+    // TEST 1: Calendar Day Cycles from Pivots
+    // ==========================================
+    var prog = document.getElementById('biblicalProgress');
+    if (prog) prog.textContent = 'Testing calendar day cycles...';
+
+    for (var c = 0; c < biblicalCycles.length; c++) {
+        var cycle = biblicalCycles[c];
+        results.calendarDays[cycle.days] = {
+            name: cycle.name,
+            source: cycle.source,
+            reversals: 0,
+            total: 0,
+            signals: []
+        };
+
+        // Test from each pivot
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var pivotDate = new Date(pivot.date);
+
+            // Find the bar that is 'cycle.days' calendar days after pivot
+            for (var i = pivot.index + 1; i < data.length - 5; i++) {
+                var currentDate = new Date(data[i].Date);
+                var daysDiff = Math.floor((currentDate - pivotDate) / (1000 * 60 * 60 * 24));
+
+                // Check if within ±2 days of cycle length
+                if (Math.abs(daysDiff - cycle.days) <= 2) {
+                    var price = parseFloat(data[i].Close);
+                    var futurePrice = parseFloat(data[i + 5].Close);
+                    var priorPrice = parseFloat(data[i - 5].Close);
+
+                    if (!price || !futurePrice || !priorPrice) continue;
+
+                    results.calendarDays[cycle.days].total++;
+
+                    // Check for reversal (trend change)
+                    var wasUp = price > priorPrice;
+                    var wentDown = futurePrice < price * 0.995;
+                    var wentUp = futurePrice > price * 1.005;
+
+                    var reversal = (wasUp && wentDown) || (!wasUp && wentUp);
+
+                    if (reversal) {
+                        results.calendarDays[cycle.days].reversals++;
+                        results.calendarDays[cycle.days].signals.push({
+                            pivotDate: pivot.date,
+                            pivotType: pivot.type,
+                            signalDate: data[i].Date,
+                            daysFromPivot: daysDiff,
+                            price: price,
+                            outcome: wasUp ? 'REVERSED DOWN' : 'REVERSED UP'
+                        });
+                    }
+
+                    break; // Only count once per pivot
+                }
+
+                if (daysDiff > cycle.days + 5) break;
+            }
+        }
+    }
+
+    // ==========================================
+    // TEST 2: Trading Day Cycles (Bars from Pivot)
+    // ==========================================
+    if (prog) prog.textContent = 'Testing trading day cycles...';
+
+    for (var c = 0; c < weeklyCycles.length; c++) {
+        var cycle = weeklyCycles[c];
+        results.tradingDays[cycle.days] = {
+            name: cycle.name,
+            source: cycle.source,
+            reversals: 0,
+            total: 0
+        };
+
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var targetIndex = pivot.index + cycle.days;
+
+            if (targetIndex >= data.length - 5) continue;
+
+            var price = parseFloat(data[targetIndex].Close);
+            var futurePrice = parseFloat(data[targetIndex + 5].Close);
+            var priorPrice = parseFloat(data[targetIndex - 5].Close);
+
+            if (!price || !futurePrice || !priorPrice) continue;
+
+            results.tradingDays[cycle.days].total++;
+
+            var wasUp = price > priorPrice;
+            var wentDown = futurePrice < price * 0.995;
+            var wentUp = futurePrice > price * 1.005;
+
+            if ((wasUp && wentDown) || (!wasUp && wentUp)) {
+                results.tradingDays[cycle.days].reversals++;
+            }
+        }
+    }
+
+    // ==========================================
+    // TEST 3: Sq9 + Biblical Cycle Confluence
+    // ==========================================
+    if (prog) prog.textContent = 'Testing Sq9 + Biblical confluence...';
+
+    var sq9Biblical = {
+        support144: { wins: 0, total: 0 },
+        support49: { wins: 0, total: 0 },
+        support40: { wins: 0, total: 0 },
+        resist144: { wins: 0, total: 0 }
+    };
+
+    for (var p = 0; p < pivots.length; p++) {
+        var pivot = pivots[p];
+        var pivotDate = new Date(pivot.date);
+
+        // Check at 40, 49, and 144 days from pivot
+        var checkDays = [40, 49, 144];
+
+        for (var cd = 0; cd < checkDays.length; cd++) {
+            var targetDays = checkDays[cd];
+
+            for (var i = pivot.index + 1; i < data.length - 5; i++) {
+                var currentDate = new Date(data[i].Date);
+                var daysDiff = Math.floor((currentDate - pivotDate) / (1000 * 60 * 60 * 24));
+
+                if (Math.abs(daysDiff - targetDays) <= 2) {
+                    var price = parseFloat(data[i].Close);
+                    var futurePrice = parseFloat(data[i + 5].Close);
+
+                    if (!price || !futurePrice) break;
+
+                    // Check if also at Sq9 level
+                    var sqrt = Math.sqrt(price);
+                    var sq9Support90 = Math.pow(sqrt - 0.5, 2);
+                    var sq9Support180 = Math.pow(sqrt - 1.0, 2);
+                    var sq9Resist90 = Math.pow(sqrt + 0.5, 2);
+
+                    var nearSupport =
+                        Math.abs(price - sq9Support90) / price < 0.01 ||
+                        Math.abs(price - sq9Support180) / price < 0.015;
+
+                    var nearResist = Math.abs(price - sq9Resist90) / price < 0.01;
+
+                    if (nearSupport) {
+                        var key = 'support' + targetDays;
+                        if (sq9Biblical[key]) {
+                            sq9Biblical[key].total++;
+                            if (futurePrice > price) sq9Biblical[key].wins++;
+                        }
+                    }
+
+                    if (nearResist && targetDays === 144) {
+                        sq9Biblical.resist144.total++;
+                        if (futurePrice < price) sq9Biblical.resist144.wins++;
+                    }
+
+                    break;
+                }
+
+                if (daysDiff > targetDays + 5) break;
+            }
+        }
+    }
+
+    results.sq9Biblical = sq9Biblical;
+
+    // ==========================================
+    // CALCULATE RANKINGS
+    // ==========================================
+
+    // Rank calendar day cycles
+    var calendarRanked = [];
+    for (var days in results.calendarDays) {
+        var r = results.calendarDays[days];
+        var pct = r.total > 0 ? Math.round(r.reversals / r.total * 100) : 0;
+        calendarRanked.push({
+            days: days,
+            name: r.name,
+            source: r.source,
+            pct: pct,
+            reversals: r.reversals,
+            total: r.total
+        });
+    }
+    calendarRanked.sort(function(a, b) { return b.pct - a.pct; });
+
+    // Rank trading day cycles
+    var tradingRanked = [];
+    for (var days in results.tradingDays) {
+        var r = results.tradingDays[days];
+        var pct = r.total > 0 ? Math.round(r.reversals / r.total * 100) : 0;
+        tradingRanked.push({
+            days: days,
+            name: r.name,
+            pct: pct,
+            reversals: r.reversals,
+            total: r.total
+        });
+    }
+    tradingRanked.sort(function(a, b) { return b.pct - a.pct; });
+
+    // Remove loading
+    var loadEl = document.getElementById('biblicalLoading');
+    if (loadEl) loadEl.remove();
+
+    // ==========================================
+    // DISPLAY RESULTS
+    // ==========================================
+
+    var msg = '📖 GANN BIBLICAL NUMBERS BACKTEST - SPY\n';
+    msg += '==========================================\n\n';
+
+    msg += '📅 CALENDAR DAY CYCLES (from pivots):\n';
+    msg += '─────────────────────────────────────\n';
+
+    for (var i = 0; i < Math.min(calendarRanked.length, 15); i++) {
+        var r = calendarRanked[i];
+        var icon = r.pct >= 55 ? '✅' : (r.pct >= 50 ? '➖' : '❌');
+        var highlight = (r.days == 144 || r.days == 49 || r.days == 40) ? ' ⭐' : '';
+        msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + highlight + '\n';
+    }
+
+    msg += '\n📊 TRADING DAY CYCLES (bars from pivot):\n';
+    msg += '─────────────────────────────────────\n';
+
+    for (var i = 0; i < tradingRanked.length; i++) {
+        var r = tradingRanked[i];
+        var icon = r.pct >= 55 ? '✅' : (r.pct >= 50 ? '➖' : '❌');
+        var highlight = r.days == 35 ? ' ⚠️ DEATH ZONE' : '';
+        msg += icon + ' ' + r.days + ' bars: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + highlight + '\n';
+    }
+
+    msg += '\n🎯 SQ9 + BIBLICAL CONFLUENCE:\n';
+    msg += '─────────────────────────────────────\n';
+
+    var pct40 = sq9Biblical.support40.total > 0 ? Math.round(sq9Biblical.support40.wins / sq9Biblical.support40.total * 100) : 0;
+    var pct49 = sq9Biblical.support49.total > 0 ? Math.round(sq9Biblical.support49.wins / sq9Biblical.support49.total * 100) : 0;
+    var pct144 = sq9Biblical.support144.total > 0 ? Math.round(sq9Biblical.support144.wins / sq9Biblical.support144.total * 100) : 0;
+    var pctR144 = sq9Biblical.resist144.total > 0 ? Math.round(sq9Biblical.resist144.wins / sq9Biblical.resist144.total * 100) : 0;
+
+    msg += '• Sq9 Support + 40 days: ' + pct40 + '% (' + sq9Biblical.support40.wins + '/' + sq9Biblical.support40.total + ')\n';
+    msg += '• Sq9 Support + 49 days: ' + pct49 + '% (' + sq9Biblical.support49.wins + '/' + sq9Biblical.support49.total + ')\n';
+    msg += '• Sq9 Support + 144 days: ' + pct144 + '% (' + sq9Biblical.support144.wins + '/' + sq9Biblical.support144.total + ') ⭐\n';
+    msg += '• Sq9 Resist + 144 days: ' + pctR144 + '% (' + sq9Biblical.resist144.wins + '/' + sq9Biblical.resist144.total + ')\n';
+
+    msg += '\n🏆 TOP 5 BIBLICAL CYCLES:\n';
+    msg += '─────────────────────────────────────\n';
+    for (var i = 0; i < Math.min(5, calendarRanked.length); i++) {
+        var r = calendarRanked[i];
+        if (r.total >= 10) {
+            msg += (i + 1) + '. ' + r.days + ' days (' + r.name + '): ' + r.pct + '%\n';
+        }
+    }
+
+    console.log('Biblical Numbers Results:', results);
+    console.log('Calendar Ranked:', calendarRanked);
+    console.log('Trading Ranked:', tradingRanked);
+
+    alert(msg);
+
+    // Store results
+    window.biblicalResults = results;
+    window.biblicalRanked = calendarRanked;
+
+    // Update display if elements exist
+    updateBiblicalDisplay(calendarRanked, tradingRanked, sq9Biblical);
+
+    return results;
+}
+
+// Update Biblical display elements
+function updateBiblicalDisplay(calendarRanked, tradingRanked, sq9Biblical) {
+    var container = document.getElementById('biblicalResultsContainer');
+    if (!container) return;
+
+    var html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">';
+
+    // Top Calendar Cycles
+    html += '<div style="background: rgba(139,92,246,0.1); border-radius: 10px; padding: 15px;">';
+    html += '<div style="font-size: 12px; font-weight: 600; color: #7c3aed; margin-bottom: 10px;">📅 Top Calendar Day Cycles</div>';
+
+    for (var i = 0; i < Math.min(8, calendarRanked.length); i++) {
+        var r = calendarRanked[i];
+        if (r.total < 5) continue;
+        var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308' : '#ef4444');
+        html += '<div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">';
+        html += '<span>' + r.days + ' days</span>';
+        html += '<span style="font-weight: 600; color: ' + color + ';">' + r.pct + '%</span>';
+        html += '</div>';
+    }
+    html += '</div>';
+
+    // Top Trading Day Cycles
+    html += '<div style="background: rgba(59,130,246,0.1); border-radius: 10px; padding: 15px;">';
+    html += '<div style="font-size: 12px; font-weight: 600; color: #2563eb; margin-bottom: 10px;">📊 Top Trading Day Cycles</div>';
+
+    for (var i = 0; i < Math.min(8, tradingRanked.length); i++) {
+        var r = tradingRanked[i];
+        if (r.total < 5) continue;
+        var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308' : '#ef4444');
+        html += '<div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">';
+        html += '<span>' + r.days + ' bars - ' + r.name + '</span>';
+        html += '<span style="font-weight: 600; color: ' + color + ';">' + r.pct + '%</span>';
+        html += '</div>';
+    }
+    html += '</div>';
+
+    html += '</div>';
+
+    container.innerHTML = html;
 }
 
 // Quick test at specific tolerance
