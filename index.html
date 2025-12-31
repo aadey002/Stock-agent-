@@ -4450,7 +4450,21 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <div class="card" style="margin-top: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(124,58,237,0.1)); border: 1px solid rgba(139,92,246,0.3);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div class="card-title" style="margin: 0; color: #8b5cf6;">🔮 TRUE Gann Backtest (Sq9 + Time Cycles)</div>
-                    <button onclick="backtestRealGann()" style="padding: 10px 20px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔮 Run Backtest</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button onclick="backtestRealGann()" style="padding: 10px 20px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔮 Run Backtest</button>
+                        <button onclick="backtestSq9Tolerances()" style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔬 Find Optimal Tolerance</button>
+                    </div>
+                </div>
+
+                <!-- Quick Tolerance Test Buttons -->
+                <div style="margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <span style="font-size: 11px; color: #666;">Quick Sq9 Test:</span>
+                    <button onclick="quickSq9Test(0.005)" style="padding: 6px 12px; background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.4); border-radius: 4px; cursor: pointer; font-size: 11px;">0.5%</button>
+                    <button onclick="quickSq9Test(0.0075)" style="padding: 6px 12px; background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.4); border-radius: 4px; cursor: pointer; font-size: 11px;">0.75%</button>
+                    <button onclick="quickSq9Test(0.01)" style="padding: 6px 12px; background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.4); border-radius: 4px; cursor: pointer; font-size: 11px;">1.0%</button>
+                    <button onclick="quickSq9Test(0.0125)" style="padding: 6px 12px; background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.4); border-radius: 4px; cursor: pointer; font-size: 11px;">1.25%</button>
+                    <button onclick="quickSq9Test(0.015)" style="padding: 6px 12px; background: rgba(139,92,246,0.3); color: #7c3aed; border: 1px solid rgba(139,92,246,0.6); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">1.5% ✓</button>
+                    <button onclick="quickSq9Test(0.02)" style="padding: 6px 12px; background: rgba(139,92,246,0.2); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.4); border-radius: 4px; cursor: pointer; font-size: 11px;">2.0%</button>
                 </div>
 
                 <div style="margin-bottom: 15px; padding: 10px; background: rgba(139,92,246,0.1); border-radius: 8px; font-size: 11px; color: #7c3aed;">
@@ -10818,6 +10832,192 @@ function backtestRealGann() {
     }
 
     setTimeout(processNextSymbol, 100);
+    return results;
+}
+
+// Test different Sq9 tolerance levels to find optimal threshold
+function backtestSq9Tolerances() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var tolerances = [0.005, 0.0075, 0.01, 0.0125, 0.015, 0.02, 0.025, 0.03];
+
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'toleranceTestLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 350px;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔬</div><div style="font-size: 14px; font-weight: 600;">Testing Sq9 Tolerances...</div><div id="toleranceProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Finding optimal threshold</div>';
+    document.body.appendChild(loadingDiv);
+
+    var results = {};
+
+    for (var t = 0; t < tolerances.length; t++) {
+        var tol = tolerances[t];
+        var tolPct = (tol * 100).toFixed(2) + '%';
+
+        results[tolPct] = {
+            support: { bounces: 0, tests: 0 },
+            resist: { rejections: 0, tests: 0 },
+            combined144: { wins: 0, total: 0 }
+        };
+
+        var prog = document.getElementById('toleranceProgress');
+        if (prog) prog.textContent = 'Testing ' + tolPct + ' tolerance...';
+
+        for (var s = 0; s < symbols.length; s++) {
+            var sym = symbols[s];
+            var data = allSymbolsData[sym];
+            if (!data || data.length < 100) continue;
+
+            var refDate = new Date(data[0].Date.split(' ')[0]);
+
+            for (var i = 30; i < data.length - 5; i++) {
+                var today = data[i];
+                var price = parseFloat(today.Close);
+                if (!price) continue;
+
+                var futureClose = parseFloat(data[i + 5].Close);
+                if (!futureClose) continue;
+
+                // 20-day swing pivots
+                var swingLow = Infinity, swingHigh = 0;
+                for (var k = i - 20; k < i; k++) {
+                    var kLow = parseFloat(data[k].Low) || Infinity;
+                    var kHigh = parseFloat(data[k].High) || 0;
+                    if (kLow < swingLow) swingLow = kLow;
+                    if (kHigh > swingHigh) swingHigh = kHigh;
+                }
+
+                var sqrtLow = Math.sqrt(swingLow);
+                var sqrtHigh = Math.sqrt(swingHigh);
+
+                var sq9Levels = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
+                var nearSupport = false, nearResist = false;
+
+                for (var lvl = 0; lvl < sq9Levels.length; lvl++) {
+                    var supportLevel = Math.pow(sqrtHigh - sq9Levels[lvl], 2);
+                    var resistLevel = Math.pow(sqrtLow + sq9Levels[lvl], 2);
+                    if (supportLevel > 0 && Math.abs(price - supportLevel) / price < tol) nearSupport = true;
+                    if (Math.abs(price - resistLevel) / price < tol) nearResist = true;
+                }
+
+                var currentDate = new Date(today.Date.split(' ')[0]);
+                var daysSinceRef = Math.floor((currentDate - refDate) / (1000 * 60 * 60 * 24));
+                var cycle144Position = daysSinceRef % 144;
+                var near144Turn = cycle144Position <= 3 || (144 - cycle144Position) <= 3;
+
+                if (nearSupport) {
+                    results[tolPct].support.tests++;
+                    if (futureClose > price) results[tolPct].support.bounces++;
+                }
+
+                if (nearResist) {
+                    results[tolPct].resist.tests++;
+                    if (futureClose < price) results[tolPct].resist.rejections++;
+                }
+
+                if (near144Turn && nearSupport) {
+                    results[tolPct].combined144.total++;
+                    if (futureClose > price) results[tolPct].combined144.wins++;
+                }
+            }
+        }
+    }
+
+    var loadEl = document.getElementById('toleranceTestLoading');
+    if (loadEl) loadEl.remove();
+
+    var msg = '🔬 SQ9 TOLERANCE OPTIMIZATION\n';
+    msg += '================================\n\n';
+    msg += 'Tolerance | Support | Resist | 144+Sq9 | Signals\n';
+    msg += '----------|---------|--------|---------|--------\n';
+
+    var bestSupport = { tol: '', pct: 0, count: 0 };
+    var best144 = { tol: '', pct: 0, count: 0 };
+
+    for (var t = 0; t < tolerances.length; t++) {
+        var tol = tolerances[t];
+        var tolPct = (tol * 100).toFixed(2) + '%';
+        var r = results[tolPct];
+
+        var supportPct = r.support.tests > 0 ? Math.round(r.support.bounces / r.support.tests * 100) : 0;
+        var resistPct = r.resist.tests > 0 ? Math.round(r.resist.rejections / r.resist.tests * 100) : 0;
+        var cycle144Pct = r.combined144.total > 0 ? Math.round(r.combined144.wins / r.combined144.total * 100) : 0;
+
+        msg += tolPct.padEnd(9) + ' | ' + (supportPct + '%').padEnd(7) + ' | ' + (resistPct + '%').padEnd(6) + ' | ' + (cycle144Pct + '%').padEnd(7) + ' | ' + r.combined144.total + '\n';
+
+        if (supportPct > bestSupport.pct && r.support.tests >= 100) {
+            bestSupport = { tol: tolPct, pct: supportPct, count: r.support.tests };
+        }
+        if (cycle144Pct > best144.pct && r.combined144.total >= 10) {
+            best144 = { tol: tolPct, pct: cycle144Pct, count: r.combined144.total };
+        }
+    }
+
+    msg += '\n🏆 OPTIMAL THRESHOLDS:\n';
+    msg += '• Best Sq9 Support: ' + bestSupport.tol + ' → ' + bestSupport.pct + '% (' + bestSupport.count + ' signals)\n';
+    msg += '• Best 144+Sq9: ' + best144.tol + ' → ' + best144.pct + '% (' + best144.count + ' signals)\n';
+
+    console.log('Tolerance Test Results:', results);
+    alert(msg);
+    window.toleranceTestResults = results;
+    return results;
+}
+
+// Quick test at specific tolerance
+function quickSq9Test(tolerance) {
+    var tol = tolerance || 0.01;
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    var results = { support: { bounces: 0, tests: 0 }, cycle144: { wins: 0, total: 0 } };
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = allSymbolsData[sym];
+        if (!data || data.length < 100) continue;
+
+        var refDate = new Date(data[0].Date.split(' ')[0]);
+
+        for (var i = 30; i < data.length - 5; i++) {
+            var price = parseFloat(data[i].Close);
+            var futureClose = parseFloat(data[i + 5].Close);
+            if (!price || !futureClose) continue;
+
+            var swingHigh = 0;
+            for (var k = i - 20; k < i; k++) {
+                var kHigh = parseFloat(data[k].High) || 0;
+                if (kHigh > swingHigh) swingHigh = kHigh;
+            }
+
+            var sqrtHigh = Math.sqrt(swingHigh);
+            var sq9Levels = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
+            var nearSupport = false;
+
+            for (var lvl = 0; lvl < sq9Levels.length; lvl++) {
+                var supportLevel = Math.pow(sqrtHigh - sq9Levels[lvl], 2);
+                if (supportLevel > 0 && Math.abs(price - supportLevel) / price < tol) nearSupport = true;
+            }
+
+            var currentDate = new Date(data[i].Date.split(' ')[0]);
+            var daysSinceRef = Math.floor((currentDate - refDate) / (1000 * 60 * 60 * 24));
+            var near144Turn = (daysSinceRef % 144) <= 3 || (144 - (daysSinceRef % 144)) <= 3;
+
+            if (nearSupport) {
+                results.support.tests++;
+                if (futureClose > price) results.support.bounces++;
+            }
+
+            if (near144Turn && nearSupport) {
+                results.cycle144.total++;
+                if (futureClose > price) results.cycle144.wins++;
+            }
+        }
+    }
+
+    var supportPct = results.support.tests > 0 ? Math.round(results.support.bounces / results.support.tests * 100) : 0;
+    var cycle144Pct = results.cycle144.total > 0 ? Math.round(results.cycle144.wins / results.cycle144.total * 100) : 0;
+
+    alert('Quick Test @ ' + (tol * 100) + '% Tolerance\n\n' +
+        'Sq9 Support Bounce: ' + supportPct + '% (' + results.support.bounces + '/' + results.support.tests + ')\n' +
+        '144-Day + Support: ' + cycle144Pct + '% (' + results.cycle144.wins + '/' + results.cycle144.total + ')');
+
     return results;
 }
 
