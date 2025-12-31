@@ -1603,6 +1603,342 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
     font-weight: 600;
 }
 
+/* ==========================================
+   GANN CYCLE OPPORTUNITIES ROADMAP
+   ========================================== */
+
+.gann-roadmap-section {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.gann-roadmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.gann-roadmap-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gann-roadmap-title h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1f2937;
+    margin: 0;
+}
+
+.gann-roadmap-title .pivot-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gann-roadmap-title .pivot-badge.high {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+.gann-roadmap-title .pivot-badge.low {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+
+.gann-roadmap-pivot-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 13px;
+}
+
+.gann-roadmap-pivot-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gann-roadmap-pivot-info .info-label {
+    color: #6b7280;
+}
+
+.gann-roadmap-pivot-info .info-value {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.gann-roadmap-pivot-info .info-value.price {
+    color: #7c3aed;
+    font-size: 16px;
+}
+
+.gann-roadmap-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.gann-roadmap-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.gann-roadmap-summary-item .icon { font-size: 16px; }
+.gann-roadmap-summary-item .label { font-size: 11px; color: #6b7280; }
+.gann-roadmap-summary-item .value { font-size: 14px; font-weight: 700; color: #1f2937; }
+.gann-roadmap-summary-item .value.success { color: #16a34a; }
+.gann-roadmap-summary-item .value.warning { color: #d97706; }
+.gann-roadmap-summary-item .value.danger { color: #dc2626; }
+.gann-roadmap-summary-item .value.info { color: #7c3aed; }
+
+.gann-roadmap-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.gann-roadmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1400px;
+    font-size: 12px;
+}
+
+.gann-roadmap-table thead {
+    background: linear-gradient(135deg, #1e3a5f, #2d1b4e);
+    color: white;
+}
+
+.gann-roadmap-table th {
+    padding: 14px 10px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border-bottom: 2px solid #0f172a;
+}
+
+.gann-roadmap-table th:first-child { border-radius: 10px 0 0 0; }
+.gann-roadmap-table th:last-child { border-radius: 0 10px 0 0; }
+
+.gann-roadmap-table tbody tr { transition: all 0.2s; }
+.gann-roadmap-table tbody tr:hover { background: #f8fafc; }
+.gann-roadmap-table tbody tr.row-past { background: #ffffff; }
+.gann-roadmap-table tbody tr.row-active {
+    background: linear-gradient(135deg, #fefce8, #fef9c3);
+    border-left: 4px solid #f59e0b;
+}
+.gann-roadmap-table tbody tr.row-future {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    opacity: 0.9;
+}
+
+.gann-roadmap-table td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.gann-cycle-cell { display: flex; align-items: center; gap: 8px; }
+
+.gann-cycle-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gann-cycle-icon.jubilee { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; }
+.gann-cycle-icon.quarter { background: linear-gradient(135deg, #ffedd5, #fed7aa); color: #ea580c; }
+.gann-cycle-icon.third { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
+.gann-cycle-icon.sacred { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #9333ea; }
+.gann-cycle-icon.half { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #7c3aed; }
+.gann-cycle-icon.threequarter { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
+.gann-cycle-icon.annual { background: linear-gradient(135deg, #cffafe, #a5f3fc); color: #0891b2; }
+
+.gann-cycle-name-cell { font-weight: 700; color: #1f2937; font-size: 12px; }
+.gann-cycle-days-cell { font-size: 10px; color: #6b7280; }
+
+.gann-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.gann-status-badge.past { background: #dcfce7; color: #16a34a; }
+.gann-status-badge.active {
+    background: #fef3c7;
+    color: #d97706;
+    animation: roadmapPulse 2s infinite;
+}
+
+@keyframes roadmapPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+}
+
+.gann-status-badge.future { background: #ede9fe; color: #7c3aed; }
+
+.gann-expected-move { display: flex; align-items: center; gap: 6px; }
+.gann-expected-move .direction { font-weight: 700; font-size: 12px; }
+.gann-expected-move .direction.low { color: #16a34a; }
+.gann-expected-move .direction.high { color: #dc2626; }
+.gann-expected-move .from { font-size: 10px; color: #6b7280; }
+
+.gann-actual-result { display: flex; flex-direction: column; gap: 3px; }
+.gann-actual-result .result-status { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px; }
+.gann-actual-result .result-status.correct { color: #16a34a; }
+.gann-actual-result .result-status.incorrect { color: #dc2626; }
+.gann-actual-result .result-status.pending { color: #d97706; }
+.gann-actual-result .result-status.predicted { color: #7c3aed; }
+.gann-actual-result .result-price { font-weight: 700; font-size: 13px; color: #1f2937; }
+
+.gann-move-percent { font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 6px; }
+.gann-move-percent.positive { background: #dcfce7; color: #16a34a; }
+.gann-move-percent.negative { background: #fee2e2; color: #dc2626; }
+.gann-move-percent.neutral { background: #f3f4f6; color: #6b7280; }
+
+.gann-sq9-cell { text-align: center; }
+.gann-sq9-level-cell { font-weight: 700; font-size: 12px; color: #7c3aed; }
+.gann-sq9-percent { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 600; }
+.gann-sq9-percent.close { background: #dcfce7; color: #16a34a; }
+.gann-sq9-percent.medium { background: #fef3c7; color: #d97706; }
+.gann-sq9-percent.far { background: #f3f4f6; color: #6b7280; }
+
+.gann-next-cycle { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #6b7280; }
+.gann-next-cycle .arrow { color: #d1d5db; }
+.gann-next-cycle .name { font-weight: 600; color: #374151; }
+
+.gann-pred-cell { text-align: center; }
+.gann-pred-date { font-size: 11px; color: #6b7280; }
+.gann-pred-price { font-weight: 700; font-size: 12px; color: #7c3aed; }
+.gann-pred-na { color: #d1d5db; font-size: 11px; }
+
+.gann-alignment { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.gann-alignment-bars { display: flex; gap: 3px; }
+.gann-alignment-bar { width: 8px; height: 20px; border-radius: 3px; background: #e5e7eb; }
+.gann-alignment-bar.filled { background: linear-gradient(180deg, #22c55e, #16a34a); }
+.gann-alignment-bar.filled.warning { background: linear-gradient(180deg, #f59e0b, #d97706); }
+.gann-alignment-bar.filled.danger { background: linear-gradient(180deg, #ef4444, #dc2626); }
+.gann-alignment-score { font-size: 10px; font-weight: 600; color: #6b7280; }
+
+.gann-action { display: flex; align-items: center; justify-content: center; }
+.gann-action-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.gann-action-badge.buy { background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 2px solid #86efac; }
+.gann-action-badge.sell { background: linear-gradient(135deg, #fee2e2, #fecaca); border: 2px solid #fca5a5; }
+.gann-action-badge.caution { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #fcd34d; }
+.gann-action-badge.avoid { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border: 2px solid #d1d5db; }
+.gann-action-badge.wait { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border: 2px solid #c4b5fd; }
+
+.gann-current-price-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #1e3a5f, #2d1b4e);
+    border-radius: 10px;
+    margin-top: 15px;
+    color: white;
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.gann-current-price-bar .price-item { display: flex; align-items: center; gap: 8px; }
+.gann-current-price-bar .price-label { opacity: 0.8; }
+.gann-current-price-bar .price-value { font-weight: 700; font-size: 14px; }
+.gann-current-price-bar .price-value.support { color: #4ade80; }
+.gann-current-price-bar .price-value.resist { color: #f87171; }
+
+.gann-etf-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+.gann-etf-tab {
+    padding: 12px 25px;
+    border: 2px solid #e5e7eb;
+    background: #ffffff;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.gann-etf-tab:hover { border-color: #8b5cf6; background: #f5f3ff; }
+.gann-etf-tab.active { background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-color: #7c3aed; color: white; }
+.gann-etf-tab .etf-accuracy { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.2); }
+.gann-etf-tab.active .etf-accuracy { background: rgba(255,255,255,0.3); }
+
+.gann-pivot-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.gann-pivot-tab {
+    padding: 8px 16px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.gann-pivot-tab:hover { border-color: #8b5cf6; }
+.gann-pivot-tab.active { background: #8b5cf6; border-color: #8b5cf6; color: white; }
+.gann-pivot-tab.ath { border-left: 3px solid #dc2626; }
+.gann-pivot-tab.atl { border-left: 3px solid #16a34a; }
+
+.gann-roadmap-legend {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    background: #f9fafb;
+    border-radius: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    font-size: 11px;
+}
+.gann-legend-item { display: flex; align-items: center; gap: 6px; color: #6b7280; }
+.gann-legend-icon { font-size: 14px; }
+
 .gann-sq9-alert {
     margin-top: 15px;
     padding: 12px;
@@ -8408,6 +8744,56 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="margin-top: 10px;">
                             <button onclick="testGannAlert()" style="width: 100%; padding: 10px; background: #e2e8f0; color: #64748b; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Test Alert</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GANN CYCLE OPPORTUNITIES ROADMAP -->
+            <div class="card gann-roadmap-section" style="margin-top: 20px;">
+                <div class="gann-roadmap-header">
+                    <h3>🗓️ Gann Cycle Opportunities Roadmap</h3>
+                    <span class="gann-roadmap-subtitle">Biblical cycles from confirmed major pivots with Sq9 targets</span>
+                </div>
+
+                <!-- ETF Selection Tabs -->
+                <div class="gann-etf-tabs" id="gannRoadmapEtfTabs">
+                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">📊 SPY</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">💻 QQQ</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">🏭 IWM</button>
+                </div>
+
+                <!-- Pivot Selection Tabs -->
+                <div class="gann-pivot-tabs" id="gannRoadmapPivotTabs">
+                    <button class="gann-pivot-tab ath" onclick="selectRoadmapPivot('HIGH')">📈 From Major HIGH</button>
+                    <button class="gann-pivot-tab atl active" onclick="selectRoadmapPivot('LOW')">📉 From Major LOW</button>
+                </div>
+
+                <!-- Roadmap Container -->
+                <div id="gannRoadmapContainer">
+                    <!-- Roadmap table will be rendered here -->
+                </div>
+
+                <!-- Legend -->
+                <div class="gann-roadmap-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #10b981, #059669);"></span>
+                        <span>✅ CONFIRMED - Price hit Sq9 zone</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></span>
+                        <span>⏳ ACTIVE - Cycle window open</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"></span>
+                        <span>🔮 UPCOMING - Future opportunity</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #ef4444, #dc2626);"></span>
+                        <span>❌ MISSED - Cycle passed, no hit</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: linear-gradient(135deg, #94a3b8, #64748b);"></span>
+                        <span>⏸️ EXPIRED - Cycle complete</span>
                     </div>
                 </div>
             </div>
@@ -26127,6 +26513,254 @@ function showTrackerToast(message, type) {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+// ============================================
+// GANN CYCLE OPPORTUNITIES ROADMAP
+// ============================================
+
+// Roadmap state
+let roadmapSelectedETF = 'SPY';
+let roadmapSelectedPivot = 'LOW';
+
+// CORRECT Gann Pivots - Confirmed Reversals
+const gannRoadmapData = {
+    SPY: {
+        HIGH: { date: '2025-02-19', price: 614.42, label: 'Pre-Crash ATH' },
+        LOW: { date: '2025-04-07', price: 481.80, label: 'Crash Bottom' }
+    },
+    QQQ: {
+        HIGH: { date: '2025-02-19', price: 540.81, label: 'Pre-Crash ATH' },
+        LOW: { date: '2025-04-07', price: 402.39, label: 'Crash Bottom' }
+    },
+    IWM: {
+        HIGH: { date: '2024-11-25', price: 231.55, label: 'Prior ATH' },
+        LOW: { date: '2025-04-07', price: 171.73, label: 'Crash Bottom' }
+    }
+};
+
+// Biblical Cycles
+const roadmapBiblicalCycles = [
+    { days: 49, name: 'Jubilee', significance: 'Sabbatical completion - 7x7' },
+    { days: 90, name: 'Quarter', significance: 'Quarterly cycle - 90° angle' },
+    { days: 120, name: 'Third', significance: '1/3 year - major division' },
+    { days: 144, name: 'Sacred', significance: '12x12 - sacred geometry' },
+    { days: 180, name: 'Half', significance: '180° opposition - half year' },
+    { days: 270, name: '3/4 Year', significance: '270° - three quarters' },
+    { days: 360, name: 'Annual', significance: '360° full circle - year' }
+];
+
+// Square of 9 calculation for roadmap
+function calcRoadmapSq9(price, rotations) {
+    const sqrt = Math.sqrt(price);
+    const adjusted = sqrt + (rotations * 2);
+    return adjusted * adjusted;
+}
+
+// Get nearest Sq9 levels
+function getRoadmapSq9Levels(price) {
+    const levels = [];
+    for (let r = -4; r <= 4; r++) {
+        if (r !== 0) {
+            levels.push({
+                rotation: r,
+                price: calcRoadmapSq9(price, r),
+                direction: r > 0 ? 'resistance' : 'support'
+            });
+        }
+    }
+    return levels.sort((a, b) => a.price - b.price);
+}
+
+// Get Sq9 proximity status
+function getSq9Proximity(currentPrice, pivotPrice, pivotType) {
+    const levels = getRoadmapSq9Levels(pivotPrice);
+    let nearest = null;
+    let minDist = Infinity;
+
+    for (const level of levels) {
+        const dist = Math.abs(currentPrice - level.price);
+        if (dist < minDist) {
+            minDist = dist;
+            nearest = level;
+        }
+    }
+
+    if (nearest) {
+        const pctFromLevel = ((currentPrice - nearest.price) / nearest.price * 100).toFixed(2);
+        const withinZone = Math.abs(pctFromLevel) <= 1.5;
+        return {
+            level: nearest.price.toFixed(2),
+            rotation: nearest.rotation,
+            pctAway: pctFromLevel,
+            withinZone: withinZone,
+            direction: nearest.direction
+        };
+    }
+    return null;
+}
+
+// Calculate expected move based on pivot type
+function getExpectedMove(pivotType) {
+    return pivotType === 'HIGH' ? 'Bearish' : 'Bullish';
+}
+
+// Get cycle status
+function getCycleStatus(cycleDate, pivotType) {
+    const today = new Date();
+    const cDate = new Date(cycleDate);
+    const daysUntil = Math.floor((cDate - today) / (1000 * 60 * 60 * 24));
+
+    if (daysUntil > 7) {
+        return { status: 'upcoming', label: '🔮 UPCOMING', class: 'upcoming' };
+    } else if (daysUntil >= -3 && daysUntil <= 7) {
+        return { status: 'active', label: '⏳ ACTIVE', class: 'active' };
+    } else {
+        return { status: 'expired', label: '⏸️ EXPIRED', class: 'expired' };
+    }
+}
+
+// Select ETF
+function selectRoadmapETF(etf) {
+    roadmapSelectedETF = etf;
+
+    // Update tab styling
+    document.querySelectorAll('#gannRoadmapEtfTabs .gann-etf-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    renderGannRoadmap();
+}
+
+// Select Pivot
+function selectRoadmapPivot(pivot) {
+    roadmapSelectedPivot = pivot;
+
+    // Update tab styling
+    document.querySelectorAll('#gannRoadmapPivotTabs .gann-pivot-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    renderGannRoadmap();
+}
+
+// Main render function
+function renderGannRoadmap() {
+    const container = document.getElementById('gannRoadmapContainer');
+    if (!container) return;
+
+    const etfData = gannRoadmapData[roadmapSelectedETF];
+    const pivotData = etfData[roadmapSelectedPivot];
+    const pivotDate = new Date(pivotData.date);
+
+    // Get current price from global data if available
+    let currentPrice = pivotData.price;
+    if (typeof stockData !== 'undefined' && stockData[roadmapSelectedETF]) {
+        const etfStockData = stockData[roadmapSelectedETF];
+        if (etfStockData.length > 0) {
+            currentPrice = etfStockData[etfStockData.length - 1].close;
+        }
+    }
+
+    // Build table HTML
+    let html = `
+        <div class="roadmap-pivot-info">
+            <div class="pivot-detail">
+                <span class="pivot-label">${roadmapSelectedETF} ${roadmapSelectedPivot}</span>
+                <span class="pivot-value">$${pivotData.price.toFixed(2)}</span>
+                <span class="pivot-date">${pivotData.date} - ${pivotData.label}</span>
+            </div>
+            <div class="pivot-detail">
+                <span class="pivot-label">Current Price</span>
+                <span class="pivot-value">$${currentPrice.toFixed(2)}</span>
+                <span class="pivot-date">Expected: ${getExpectedMove(roadmapSelectedPivot)} from pivot</span>
+            </div>
+        </div>
+
+        <div class="gann-roadmap-table-wrapper">
+            <table class="gann-roadmap-table">
+                <thead>
+                    <tr>
+                        <th>Cycle</th>
+                        <th>Days</th>
+                        <th>Target Date</th>
+                        <th>Days Away</th>
+                        <th>Status</th>
+                        <th>Sq9 Support</th>
+                        <th>Sq9 Resistance</th>
+                        <th>Current vs Sq9</th>
+                        <th>Significance</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    const today = new Date();
+
+    roadmapBiblicalCycles.forEach(cycle => {
+        const targetDate = new Date(pivotDate);
+        targetDate.setDate(targetDate.getDate() + cycle.days);
+
+        const daysAway = Math.floor((targetDate - today) / (1000 * 60 * 60 * 24));
+        const statusInfo = getCycleStatus(targetDate, roadmapSelectedPivot);
+
+        // Calculate Sq9 levels
+        const sq9Levels = getRoadmapSq9Levels(pivotData.price);
+        const supports = sq9Levels.filter(l => l.direction === 'support').slice(-2);
+        const resistances = sq9Levels.filter(l => l.direction === 'resistance').slice(0, 2);
+
+        // Get proximity
+        const proximity = getSq9Proximity(currentPrice, pivotData.price, roadmapSelectedPivot);
+        let proximityHtml = '-';
+        if (proximity) {
+            const color = proximity.withinZone ? '#10b981' : (Math.abs(proximity.pctAway) < 3 ? '#f59e0b' : '#64748b');
+            proximityHtml = `<span style="color: ${color}; font-weight: 600;">
+                $${proximity.level} (${proximity.pctAway > 0 ? '+' : ''}${proximity.pctAway}%)
+                ${proximity.withinZone ? '✓' : ''}
+            </span>`;
+        }
+
+        const dateStr = targetDate.toISOString().split('T')[0];
+        const daysAwayStr = daysAway > 0 ? `+${daysAway}d` : `${daysAway}d`;
+        const daysAwayColor = daysAway <= 7 && daysAway >= -3 ? '#f59e0b' : (daysAway > 7 ? '#6366f1' : '#94a3b8');
+
+        html += `
+            <tr class="roadmap-row ${statusInfo.class}">
+                <td><span class="cycle-name">${cycle.name}</span></td>
+                <td><span class="cycle-days">${cycle.days}</span></td>
+                <td><span class="cycle-date">${dateStr}</span></td>
+                <td><span class="days-away" style="color: ${daysAwayColor};">${daysAwayStr}</span></td>
+                <td><span class="roadmap-status ${statusInfo.class}">${statusInfo.label}</span></td>
+                <td class="sq9-cell">
+                    ${supports.map(s => `<span class="sq9-support">$${s.price.toFixed(2)}</span>`).join(' ')}
+                </td>
+                <td class="sq9-cell">
+                    ${resistances.map(r => `<span class="sq9-resistance">$${r.price.toFixed(2)}</span>`).join(' ')}
+                </td>
+                <td>${proximityHtml}</td>
+                <td><span class="cycle-significance">${cycle.significance}</span></td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
+// Initialize roadmap on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        if (document.getElementById('gannRoadmapContainer')) {
+            renderGannRoadmap();
+        }
+    }, 1000);
+});
 
 </script>
 </body>
