@@ -26654,12 +26654,12 @@ function renderGannRoadmap() {
     const pivotData = etfData[roadmapSelectedPivot];
     const pivotDate = new Date(pivotData.date);
 
-    // Get current price from global data if available
+    // Get current price from global allSymbolsData
     let currentPrice = pivotData.price;
-    if (typeof stockData !== 'undefined' && stockData[roadmapSelectedETF]) {
-        const etfStockData = stockData[roadmapSelectedETF];
-        if (etfStockData.length > 0) {
-            currentPrice = etfStockData[etfStockData.length - 1].close;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[roadmapSelectedETF]) {
+        const etfData2 = allSymbolsData[roadmapSelectedETF];
+        if (etfData2 && etfData2.length > 0) {
+            currentPrice = parseFloat(etfData2[etfData2.length - 1].Close) || pivotData.price;
         }
     }
 
