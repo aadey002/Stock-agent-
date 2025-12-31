@@ -10668,24 +10668,55 @@ function backtestRealGann() {
             // ============================================
             // TEST 1: Square of 9 Support/Resistance
             // ============================================
+            // Use 20-day swing high/low as reference pivots
 
-            var sqrt = Math.sqrt(price);
+            var swingLow = Infinity, swingHigh = 0;
+            for (var k = i - 20; k < i; k++) {
+                var kLow = parseFloat(data[k].Low) || Infinity;
+                var kHigh = parseFloat(data[k].High) || 0;
+                if (kLow < swingLow) swingLow = kLow;
+                if (kHigh > swingHigh) swingHigh = kHigh;
+            }
 
-            // Calculate nearest Sq9 levels
-            var sq9Support90 = Math.pow(sqrt - 0.5, 2);   // -90 deg
-            var sq9Support180 = Math.pow(sqrt - 1.0, 2);  // -180 deg
-            var sq9Resist90 = Math.pow(sqrt + 0.5, 2);    // +90 deg
-            var sq9Resist180 = Math.pow(sqrt + 1.0, 2);   // +180 deg
+            // Calculate Sq9 RESISTANCE levels from swing LOW (price rising from low)
+            var sqrtLow = Math.sqrt(swingLow);
+            var sq9ResistLevels = [
+                Math.pow(sqrtLow + 0.25, 2),  // +45 deg
+                Math.pow(sqrtLow + 0.5, 2),   // +90 deg
+                Math.pow(sqrtLow + 0.75, 2),  // +135 deg
+                Math.pow(sqrtLow + 1.0, 2),   // +180 deg
+                Math.pow(sqrtLow + 1.5, 2),   // +270 deg
+                Math.pow(sqrtLow + 2.0, 2)    // +360 deg
+            ];
 
-            // Check if price is near Sq9 support (within 0.5%)
-            var nearSupport90 = Math.abs(price - sq9Support90) / price < 0.005;
-            var nearSupport180 = Math.abs(price - sq9Support180) / price < 0.01;
-            var nearSupport = nearSupport90 || nearSupport180;
+            // Calculate Sq9 SUPPORT levels from swing HIGH (price falling from high)
+            var sqrtHigh = Math.sqrt(swingHigh);
+            var sq9SupportLevels = [
+                Math.pow(sqrtHigh - 0.25, 2),  // -45 deg
+                Math.pow(sqrtHigh - 0.5, 2),   // -90 deg
+                Math.pow(sqrtHigh - 0.75, 2),  // -135 deg
+                Math.pow(sqrtHigh - 1.0, 2),   // -180 deg
+                Math.pow(sqrtHigh - 1.5, 2),   // -270 deg
+                Math.pow(sqrtHigh - 2.0, 2)    // -360 deg
+            ];
 
-            // Check if price is near Sq9 resistance (within 0.5%)
-            var nearResist90 = Math.abs(price - sq9Resist90) / price < 0.005;
-            var nearResist180 = Math.abs(price - sq9Resist180) / price < 0.01;
-            var nearResist = nearResist90 || nearResist180;
+            // Check if price is near any Sq9 SUPPORT level (within 0.5%)
+            var nearSupport = false;
+            for (var lvl = 0; lvl < sq9SupportLevels.length; lvl++) {
+                if (sq9SupportLevels[lvl] > 0 && Math.abs(price - sq9SupportLevels[lvl]) / price < 0.005) {
+                    nearSupport = true;
+                    break;
+                }
+            }
+
+            // Check if price is near any Sq9 RESISTANCE level (within 0.5%)
+            var nearResist = false;
+            for (var lvl = 0; lvl < sq9ResistLevels.length; lvl++) {
+                if (Math.abs(price - sq9ResistLevels[lvl]) / price < 0.005) {
+                    nearResist = true;
+                    break;
+                }
+            }
 
             // Test support: Did price bounce (go up) after touching support?
             if (nearSupport) {
