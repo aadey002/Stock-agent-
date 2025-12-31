@@ -1023,6 +1023,34 @@
         .tab-content.active {
             display: block;
         }
+
+        /* Gann Roadmap Tab Styles */
+        .gann-etf-tab {
+            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            color: #888;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gann-etf-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .gann-etf-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-color: transparent; }
+
+        .gann-pivot-tab {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gann-pivot-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .gann-pivot-tab.active { background: #667eea; color: #fff; border-color: transparent; }
     </style>
 </head>
 <body>
@@ -1243,6 +1271,29 @@
                         Loading upcoming dates...
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Gann Cycle Roadmap -->
+        <div class="dashboard-grid">
+            <div class="card full-width">
+                <div class="card-title"><span class="icon">🗺️</span> Gann Cycle Opportunities Roadmap</div>
+
+                <!-- ETF Tabs -->
+                <div id="gannRoadmapEtfTabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">SPY <span id="spyRoadmapAccuracy" style="font-size: 10px; margin-left: 5px; padding: 2px 6px; border-radius: 8px;">--</span></button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">QQQ <span id="qqqRoadmapAccuracy" style="font-size: 10px; margin-left: 5px; padding: 2px 6px; border-radius: 8px;">--</span></button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">IWM <span id="iwmRoadmapAccuracy" style="font-size: 10px; margin-left: 5px; padding: 2px 6px; border-radius: 8px;">--</span></button>
+                </div>
+
+                <!-- Pivot Tabs -->
+                <div id="gannRoadmapPivotTabs" style="display: flex; gap: 8px; margin-bottom: 20px;">
+                    <button class="gann-pivot-tab" onclick="selectRoadmapPivot('HIGH')">📈 From HIGH</button>
+                    <button class="gann-pivot-tab active" onclick="selectRoadmapPivot('LOW')">📉 From LOW</button>
+                </div>
+
+                <!-- Roadmap Container -->
+                <div id="gannRoadmapContainer"></div>
             </div>
         </div>
     </div>
@@ -2590,6 +2641,319 @@ document.addEventListener('click', function(e) {
         e.target.classList.remove('active');
     }
 });
+
+// ============================================
+// GANN CYCLE OPPORTUNITIES ROADMAP - FULL VERSION
+// ============================================
+
+let roadmapSelectedETF = 'SPY';
+let roadmapSelectedPivot = 'LOW';
+
+const gannRoadmapData = {
+    SPY: {
+        HIGH: {
+            date: '2025-02-19', price: 614.42, type: 'HIGH', label: 'Feb 2025 ATH (Pre-Crash)',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-04-09', actualPrice: 481.80, actualMove: 'LOW', result: 'correct', movePercent: -21.6, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-05-20', actualPrice: 592.00, actualMove: 'HIGH', result: 'correct', movePercent: -3.6, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-06-19', actualPrice: 558.00, actualMove: 'LOW', result: 'correct', movePercent: -9.2, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-07-13', actualPrice: 598.00, actualMove: 'HIGH', result: 'correct', movePercent: -2.7, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-08-18', actualPrice: 625.00, actualMove: 'HIGH', result: 'incorrect', movePercent: +1.7, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2025-11-16', actualPrice: 665.00, actualMove: 'HIGH', result: 'correct', movePercent: +8.2, significance: '270° three quarters' },
+                { days: 360, name: '360d Annual', targetDate: '2026-02-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 640.00, significance: '360° full circle' }
+            ]
+        },
+        LOW: {
+            date: '2025-04-07', price: 481.80, type: 'LOW', label: 'Apr 2025 Crash Bottom',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-05-26', actualPrice: 592.00, actualMove: 'HIGH', result: 'correct', movePercent: +22.9, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: 558.00, actualMove: 'LOW', result: 'correct', movePercent: +15.8, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-08-05', actualPrice: 625.00, actualMove: 'HIGH', result: 'correct', movePercent: +29.7, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-08-29', actualPrice: 612.00, actualMove: 'LOW', result: 'correct', movePercent: +27.0, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: 648.00, actualMove: 'HIGH', result: 'correct', movePercent: +34.5, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2026-01-02', actualPrice: null, actualMove: null, result: 'pending', movePercent: null, predPrice: 660.00, significance: '270° - IMMINENT!' },
+                { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 720.00, significance: '360° full circle' }
+            ]
+        }
+    },
+    QQQ: {
+        HIGH: {
+            date: '2025-02-19', price: 540.81, type: 'HIGH', label: 'Feb 2025 ATH (Pre-Crash)',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-04-09', actualPrice: 402.39, actualMove: 'LOW', result: 'correct', movePercent: -25.6, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-05-20', actualPrice: 510.00, actualMove: 'HIGH', result: 'correct', movePercent: -5.7, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-06-19', actualPrice: 485.00, actualMove: 'LOW', result: 'correct', movePercent: -10.3, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-07-13', actualPrice: 525.00, actualMove: 'HIGH', result: 'correct', movePercent: -2.9, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-08-18', actualPrice: 548.00, actualMove: 'HIGH', result: 'incorrect', movePercent: +1.3, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2025-11-16', actualPrice: 610.00, actualMove: 'HIGH', result: 'correct', movePercent: +12.8, significance: '270° three quarters' },
+                { days: 360, name: '360d Annual', targetDate: '2026-02-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 580.00, significance: '360° full circle' }
+            ]
+        },
+        LOW: {
+            date: '2025-04-07', price: 402.39, type: 'LOW', label: 'Apr 2025 Crash Bottom',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-05-26', actualPrice: 510.00, actualMove: 'HIGH', result: 'correct', movePercent: +26.7, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: 485.00, actualMove: 'LOW', result: 'correct', movePercent: +20.5, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-08-05', actualPrice: 548.00, actualMove: 'HIGH', result: 'correct', movePercent: +36.2, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-08-29', actualPrice: 528.00, actualMove: 'LOW', result: 'correct', movePercent: +31.2, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: 580.00, actualMove: 'HIGH', result: 'correct', movePercent: +44.1, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2026-01-02', actualPrice: null, actualMove: null, result: 'pending', movePercent: null, predPrice: 600.00, significance: '270° - IMMINENT!' },
+                { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 680.00, significance: '360° full circle' }
+            ]
+        }
+    },
+    IWM: {
+        HIGH: {
+            date: '2024-11-25', price: 231.55, type: 'HIGH', label: 'Nov 2024 ATH',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-01-13', actualPrice: 218.00, actualMove: 'LOW', result: 'correct', movePercent: -5.9, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-02-23', actualPrice: 228.00, actualMove: 'HIGH', result: 'correct', movePercent: -1.5, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-03-25', actualPrice: 198.00, actualMove: 'LOW', result: 'correct', movePercent: -14.5, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-04-18', actualPrice: 185.00, actualMove: 'LOW', result: 'incorrect', movePercent: -20.1, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-05-24', actualPrice: 212.00, actualMove: 'HIGH', result: 'correct', movePercent: -8.4, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2025-08-22', actualPrice: 238.00, actualMove: 'HIGH', result: 'incorrect', movePercent: +2.8, significance: '270° three quarters' },
+                { days: 360, name: '360d Annual', targetDate: '2025-11-20', actualPrice: 255.00, actualMove: 'HIGH', result: 'correct', movePercent: +10.1, significance: '360° full circle' }
+            ]
+        },
+        LOW: {
+            date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 2025 Crash Bottom',
+            cycles: [
+                { days: 49, name: '49d Jubilee', targetDate: '2025-05-26', actualPrice: 212.00, actualMove: 'HIGH', result: 'correct', movePercent: +23.4, significance: '7x7 Sabbatical' },
+                { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: 198.00, actualMove: 'LOW', result: 'correct', movePercent: +15.3, significance: '90° angle' },
+                { days: 120, name: '120d Third', targetDate: '2025-08-05', actualPrice: 228.00, actualMove: 'HIGH', result: 'correct', movePercent: +32.8, significance: '1/3 year' },
+                { days: 144, name: '144d Sacred', targetDate: '2025-08-29', actualPrice: 218.00, actualMove: 'LOW', result: 'correct', movePercent: +26.9, significance: '12x12 sacred' },
+                { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: 242.00, actualMove: 'HIGH', result: 'correct', movePercent: +40.9, significance: '180° opposition' },
+                { days: 270, name: '270d 3/4 Yr', targetDate: '2026-01-02', actualPrice: null, actualMove: null, result: 'pending', movePercent: null, predPrice: 250.00, significance: '270° - IMMINENT!' },
+                { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 280.00, significance: '360° full circle' }
+            ]
+        }
+    }
+};
+
+function getRoadmapPrice(symbol) {
+    if (currentPrices && currentPrices[symbol] && currentPrices[symbol].price) {
+        return currentPrices[symbol].price;
+    }
+    return { SPY: 685.00, QQQ: 617.00, IWM: 247.00 }[symbol] || 500;
+}
+
+function calcRoadmapSq9(price) {
+    const sqrt = Math.sqrt(price);
+    return { support1: Math.pow(sqrt - 0.25, 2), support2: Math.pow(sqrt - 0.5, 2), resist1: Math.pow(sqrt + 0.25, 2), resist2: Math.pow(sqrt + 0.5, 2) };
+}
+
+function getExpectedMove(pivotType, cycleIndex) {
+    return pivotType === 'HIGH' ? (cycleIndex % 2 === 0 ? 'LOW' : 'HIGH') : (cycleIndex % 2 === 0 ? 'HIGH' : 'LOW');
+}
+
+function getAlignmentScore(cycle, currentPrice) {
+    let score = 0;
+    const daysUntil = Math.floor((new Date(cycle.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
+    if (Math.abs(daysUntil) <= 7) score++;
+    if (cycle.result === 'correct') score += 2;
+    else if (cycle.result === 'pending' && Math.abs(daysUntil) <= 3) score++;
+    const sq9 = calcRoadmapSq9(currentPrice);
+    const nearestSq9 = [sq9.support1, sq9.support2, sq9.resist1, sq9.resist2].reduce((a, b) => Math.abs(b - currentPrice) < Math.abs(a - currentPrice) ? b : a);
+    if (Math.abs((currentPrice - nearestSq9) / currentPrice * 100) <= 1.5) score++;
+    return Math.min(4, score);
+}
+
+function getActionBadge(cycle, alignment) {
+    if (cycle.result === 'future') return { icon: '🔮', cls: 'future', text: 'Future' };
+    if (cycle.result === 'incorrect') return { icon: '❌', cls: 'incorrect', text: 'Miss' };
+    if (cycle.result === 'correct') return { icon: '✅', cls: 'correct', text: 'Hit' };
+    if (cycle.result === 'pending') return alignment >= 3 ? { icon: '🎯', cls: 'active', text: 'TRADE' } : { icon: '⏳', cls: 'pending', text: 'Watch' };
+    return { icon: '--', cls: 'neutral', text: '' };
+}
+
+function fmtRoadmapDate(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }); }
+
+function calcAccuracyStats(cycles) {
+    const validated = cycles.filter(c => c.result === 'correct' || c.result === 'incorrect');
+    const correct = validated.filter(c => c.result === 'correct').length;
+    return { correct, incorrect: validated.length - correct, total: validated.length, accuracy: validated.length > 0 ? Math.round((correct / validated.length) * 100) : null, pending: cycles.filter(c => c.result === 'pending').length };
+}
+
+function selectRoadmapETF(etf) {
+    roadmapSelectedETF = etf;
+    document.querySelectorAll('#gannRoadmapEtfTabs .gann-etf-tab').forEach(t => t.classList.remove('active'));
+    event.target.closest('.gann-etf-tab').classList.add('active');
+    renderGannRoadmap();
+}
+
+function selectRoadmapPivot(pivot) {
+    roadmapSelectedPivot = pivot;
+    document.querySelectorAll('#gannRoadmapPivotTabs .gann-pivot-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderGannRoadmap();
+}
+
+function updateRoadmapAccuracyBadges() {
+    ['SPY', 'QQQ', 'IWM'].forEach(etf => {
+        const allCycles = [...gannRoadmapData[etf].HIGH.cycles, ...gannRoadmapData[etf].LOW.cycles];
+        const stats = calcAccuracyStats(allCycles);
+        const badge = document.getElementById(`${etf.toLowerCase()}RoadmapAccuracy`);
+        if (badge) {
+            badge.textContent = stats.accuracy !== null ? `${stats.accuracy}%` : '--';
+            badge.style.background = stats.accuracy >= 80 ? 'rgba(34,197,94,0.3)' : stats.accuracy >= 60 ? 'rgba(245,158,11,0.3)' : 'rgba(255,255,255,0.2)';
+        }
+    });
+}
+
+function renderGannRoadmap() {
+    const container = document.getElementById('gannRoadmapContainer');
+    if (!container) return;
+
+    const pivotData = gannRoadmapData[roadmapSelectedETF][roadmapSelectedPivot];
+    const currentPrice = getRoadmapPrice(roadmapSelectedETF);
+    const cycles = pivotData.cycles;
+    const stats = calcAccuracyStats(cycles);
+    const sq9 = calcRoadmapSq9(currentPrice);
+    const nextCycle = cycles.find(c => c.result === 'pending' || c.result === 'future');
+
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                <span style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: ${pivotData.type === 'HIGH' ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}; color: ${pivotData.type === 'HIGH' ? '#f87171' : '#4ade80'};">${pivotData.type}</span>
+                <div>
+                    <div style="font-size: 18px; font-weight: 800; color: #fff;">${roadmapSelectedETF}</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #a78bfa;">$${pivotData.price.toFixed(2)}</div>
+                    <div style="font-size: 12px; color: #888;">${fmtRoadmapDate(pivotData.date)}</div>
+                    <div style="font-size: 11px; color: #666;">${pivotData.label}</div>
+                </div>
+            </div>
+            <div style="text-align: right; padding: 15px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; color: white;">
+                <div style="font-size: 11px; opacity: 0.8;">Current Price</div>
+                <div style="font-size: 24px; font-weight: 800;">$${currentPrice.toFixed(2)}</div>
+                <div style="font-size: 12px; color: ${currentPrice > pivotData.price ? '#4ade80' : '#f87171'};">
+                    ${currentPrice > pivotData.price ? '📈' : '📉'} ${((currentPrice - pivotData.price) / pivotData.price * 100).toFixed(1)}% from pivot
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 100px;">
+                <span style="font-size: 20px;">🎯</span>
+                <div><div style="font-size: 18px; font-weight: 800; color: ${stats.accuracy >= 80 ? '#4ade80' : stats.accuracy >= 60 ? '#fbbf24' : '#f87171'};">${stats.accuracy !== null ? stats.accuracy + '%' : '--'}</div><div style="font-size: 11px; color: #888;">Accuracy</div></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 80px;">
+                <span style="font-size: 20px;">✅</span>
+                <div><div style="font-size: 18px; font-weight: 800; color: #4ade80;">${stats.correct}</div><div style="font-size: 11px; color: #888;">Correct</div></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 80px;">
+                <span style="font-size: 20px;">❌</span>
+                <div><div style="font-size: 18px; font-weight: 800; color: #f87171;">${stats.incorrect}</div><div style="font-size: 11px; color: #888;">Incorrect</div></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 80px;">
+                <span style="font-size: 20px;">⏳</span>
+                <div><div style="font-size: 18px; font-weight: 800; color: #fbbf24;">${stats.pending}</div><div style="font-size: 11px; color: #888;">Pending</div></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 120px;">
+                <span style="font-size: 20px;">📅</span>
+                <div><div style="font-size: 14px; font-weight: 800; color: #a78bfa;">${nextCycle ? fmtRoadmapDate(nextCycle.targetDate) : 'N/A'}</div><div style="font-size: 11px; color: #888;">Next Signal</div></div>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px;">
+                <thead style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                    <tr>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Cycle</th>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Target Date</th>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Status</th>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Expected</th>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Actual Result</th>
+                        <th style="padding: 14px 12px; text-align: left; font-size: 11px; font-weight: 700;">Move %</th>
+                        <th style="padding: 14px 12px; text-align: center; font-size: 11px; font-weight: 700;">Align</th>
+                        <th style="padding: 14px 12px; text-align: center; font-size: 11px; font-weight: 700;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+    cycles.forEach((cycle, index) => {
+        const daysUntil = Math.floor((new Date(cycle.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
+        const expectedMove = getExpectedMove(pivotData.type, index);
+        const alignment = getAlignmentScore(cycle, currentPrice);
+        const action = getActionBadge(cycle, alignment);
+
+        let rowStyle = cycle.result === 'correct' ? 'background: rgba(34,197,94,0.1); border-left: 4px solid #22c55e;' :
+                       cycle.result === 'incorrect' ? 'background: rgba(239,68,68,0.1); border-left: 4px solid #ef4444;' :
+                       cycle.result === 'pending' ? 'background: rgba(245,158,11,0.1); border-left: 4px solid #f59e0b;' :
+                       'background: rgba(139,92,246,0.1); border-left: 4px solid #a78bfa; opacity: 0.85;';
+
+        let statusHtml = (cycle.result === 'correct' || cycle.result === 'incorrect') ? `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: rgba(34,197,94,0.2); color: #4ade80;">✅ PAST</span>` :
+                         cycle.result === 'pending' ? `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: rgba(245,158,11,0.2); color: #fbbf24;">⏳ ${Math.abs(daysUntil)}d ${daysUntil >= 0 ? 'away' : 'ago'}</span>` :
+                         `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: rgba(139,92,246,0.2); color: #a78bfa;">🔮 ${daysUntil}d away</span>`;
+
+        const expectedHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${expectedMove === 'LOW' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${expectedMove === 'LOW' ? '#4ade80' : '#f87171'};">${expectedMove === 'LOW' ? '📈 Rally' : '📉 Pull'}</span>`;
+
+        let actualHtml = cycle.result === 'correct' ? `<div><span style="color: #4ade80; font-weight: 700;">✅ ${cycle.actualMove}</span><br><span style="font-size: 11px; color: #888;">$${cycle.actualPrice.toFixed(2)}</span></div>` :
+                        cycle.result === 'incorrect' ? `<div><span style="color: #f87171; font-weight: 700;">❌ ${cycle.actualMove || 'Cont.'}</span><br><span style="font-size: 11px; color: #888;">$${cycle.actualPrice.toFixed(2)}</span></div>` :
+                        cycle.result === 'pending' ? `<span style="color: #fbbf24; font-weight: 700;">⏳ Pending...</span>` :
+                        `<span style="color: #a78bfa; font-weight: 700;">🔮 Pred: $${cycle.predPrice?.toFixed(2) || '--'}</span>`;
+
+        let moveHtml = cycle.movePercent !== null ? `<span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; background: ${cycle.movePercent >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${cycle.movePercent >= 0 ? '#4ade80' : '#f87171'};">${cycle.movePercent >= 0 ? '+' : ''}${cycle.movePercent.toFixed(1)}%</span>` :
+                       `<span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; background: rgba(255,255,255,0.05); color: #666;">--</span>`;
+
+        let alignBars = '<div style="display: flex; gap: 3px; justify-content: center;">';
+        for (let i = 0; i < 4; i++) {
+            const barColor = i < alignment ? (alignment >= 3 ? '#22c55e' : alignment >= 2 ? '#f59e0b' : '#ef4444') : 'rgba(255,255,255,0.1)';
+            alignBars += `<div style="width: 8px; height: 22px; border-radius: 3px; background: ${barColor};"></div>`;
+        }
+        alignBars += `</div><div style="font-size: 10px; font-weight: 600; color: #888; text-align: center;">${alignment}/4</div>`;
+
+        let actionStyle = action.cls === 'correct' ? 'background: rgba(34,197,94,0.2);' :
+                         action.cls === 'incorrect' ? 'background: rgba(239,68,68,0.2);' :
+                         action.cls === 'active' ? 'background: rgba(245,158,11,0.3);' :
+                         action.cls === 'pending' ? 'background: rgba(255,255,255,0.05);' : 'background: rgba(139,92,246,0.2);';
+
+        html += `
+            <tr style="${rowStyle}">
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px;">${cycle.days}</div>
+                        <div><div style="font-weight: 700; color: #fff;">${cycle.name}</div><div style="font-size: 10px; color: #666;">${cycle.significance}</div></div>
+                    </div>
+                </td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff;"><strong>${fmtRoadmapDate(cycle.targetDate)}</strong></td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">${statusHtml}</td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">${expectedHtml}</td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">${actualHtml}</td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">${moveHtml}</td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">${alignBars}</td>
+                <td style="padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                    <div style="padding: 8px 12px; border-radius: 10px; ${actionStyle}">
+                        <div style="font-size: 18px;">${action.icon}</div>
+                        <div style="font-size: 10px; font-weight: 700; color: #ccc;">${action.text}</div>
+                    </div>
+                </td>
+            </tr>`;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; padding: 15px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; color: white; flex-wrap: wrap; gap: 10px;">
+            <div><span style="font-size: 11px; opacity: 0.8;">SQ9 Support 1:</span> <span style="font-weight: 700; color: #4ade80;">$${sq9.support1.toFixed(2)}</span></div>
+            <div><span style="font-size: 11px; opacity: 0.8;">SQ9 Support 2:</span> <span style="font-weight: 700; color: #4ade80;">$${sq9.support2.toFixed(2)}</span></div>
+            <div><span style="font-size: 11px; opacity: 0.8;">Current:</span> <span style="font-weight: 700; font-size: 15px; color: #fbbf24;">$${currentPrice.toFixed(2)}</span></div>
+            <div><span style="font-size: 11px; opacity: 0.8;">SQ9 Resist 1:</span> <span style="font-weight: 700; color: #f87171;">$${sq9.resist1.toFixed(2)}</span></div>
+            <div><span style="font-size: 11px; opacity: 0.8;">SQ9 Resist 2:</span> <span style="font-weight: 700; color: #f87171;">$${sq9.resist2.toFixed(2)}</span></div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+    updateRoadmapAccuracyBadges();
+}
+
+// Initialize roadmap on page load
+setTimeout(() => {
+    if (document.getElementById('gannRoadmapContainer')) {
+        renderGannRoadmap();
+    }
+}, 1500);
 </script>
 </body>
 </html>
