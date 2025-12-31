@@ -8163,15 +8163,15 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
                         <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                             <div style="font-size: 10px; color: #64748b;">SPY</div>
-                            <div id="gannSpyPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$598.27</div>
+                            <div id="gannDashSpyPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$--</div>
                         </div>
                         <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                             <div style="font-size: 10px; color: #64748b;">QQQ</div>
-                            <div id="gannQqqPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$524.18</div>
+                            <div id="gannDashQqqPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$--</div>
                         </div>
                         <div style="text-align: center; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                             <div style="font-size: 10px; color: #64748b;">IWM</div>
-                            <div id="gannIwmPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$248.20</div>
+                            <div id="gannDashIwmPrice" style="font-size: 16px; font-weight: 700; color: #1e293b;">$--</div>
                         </div>
                     </div>
                     <div style="text-align: center; padding: 15px; background: #fffbeb; border-radius: 10px; border: 1px solid #fcd34d;">
@@ -8323,7 +8323,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <h3 style="font-size: 14px; margin-bottom: 15px; color: #1e293b;">📐 Sq9 Support/Resistance - SPY</h3>
                     <div style="text-align: center; margin-bottom: 15px;">
                         <div style="font-size: 11px; color: #64748b;">Current Price</div>
-                        <div id="gannSq9Price" style="font-size: 24px; font-weight: 700; color: #1e293b;">$598.27</div>
+                        <div id="gannDashSq9Price" style="font-size: 24px; font-weight: 700; color: #1e293b;">$--</div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <div style="background: #f0fdf4; border-radius: 8px; padding: 10px; border: 1px solid #bbf7d0;">
@@ -8405,7 +8405,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <tbody id="gannEtfTableBody">
                             <tr style="border-bottom: 1px solid #f1f5f9;">
                                 <td style="padding: 12px 10px; font-weight: 600;">SPY</td>
-                                <td style="padding: 12px 10px; color: #64748b;">$598.27</td>
+                                <td id="gannDashTableSpyPrice" style="padding: 12px 10px; color: #64748b;">$--</td>
                                 <td style="padding: 12px 10px;">
                                     <div style="display: flex; align-items: center; gap: 5px;">
                                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
@@ -8423,7 +8423,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             </tr>
                             <tr style="border-bottom: 1px solid #f1f5f9;">
                                 <td style="padding: 12px 10px; font-weight: 600;">QQQ</td>
-                                <td style="padding: 12px 10px; color: #64748b;">$524.18</td>
+                                <td id="gannDashTableQqqPrice" style="padding: 12px 10px; color: #64748b;">$--</td>
                                 <td style="padding: 12px 10px;">
                                     <div style="display: flex; align-items: center; gap: 5px;">
                                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
@@ -8441,7 +8441,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             </tr>
                             <tr>
                                 <td style="padding: 12px 10px; font-weight: 600;">IWM</td>
-                                <td style="padding: 12px 10px; color: #64748b;">$248.20</td>
+                                <td id="gannDashTableIwmPrice" style="padding: 12px 10px; color: #64748b;">$--</td>
                                 <td style="padding: 12px 10px;">
                                     <div style="display: flex; align-items: center; gap: 5px;">
                                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
@@ -8505,9 +8505,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div>
                             <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Symbol</label>
                             <select id="gannOptSymbol" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b;">
-                                <option value="SPY">SPY - $598.27</option>
-                                <option value="QQQ">QQQ - $524.18</option>
-                                <option value="IWM">IWM - $248.20</option>
+                                <option value="SPY" id="gannOptSpyOption">SPY</option>
+                                <option value="QQQ" id="gannOptQqqOption">QQQ</option>
+                                <option value="IWM" id="gannOptIwmOption">IWM</option>
                             </select>
                         </div>
                         <div>
@@ -12271,6 +12271,10 @@ async function loadAllSymbolsData() {
                 allSymbolsData[symbol] = parseCSV(await r.text());
             }
         } catch (e) { console.error(`Error loading ${symbol}:`, e); }
+    }
+    // Update Gann dashboard prices after data loads
+    if (typeof updateGannDashboardPrices === 'function') {
+        updateGannDashboardPrices();
     }
 }
 
@@ -26772,13 +26776,66 @@ function renderGannRoadmap() {
     container.innerHTML = html;
 }
 
+// Update Gann Dashboard widget prices from allSymbolsData
+function updateGannDashboardPrices() {
+    const symbols = ['SPY', 'QQQ', 'IWM'];
+
+    symbols.forEach(sym => {
+        let price = null;
+
+        // Get price from allSymbolsData
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym]) {
+            const data = allSymbolsData[sym];
+            if (data && data.length > 0) {
+                price = parseFloat(data[data.length - 1].Close);
+            }
+        }
+
+        if (price && !isNaN(price) && price > 0) {
+            const formattedPrice = '$' + price.toFixed(2);
+            const symLower = sym.charAt(0).toUpperCase() + sym.slice(1).toLowerCase();
+
+            // Update Market Status widget
+            const dashPrice = document.getElementById('gannDash' + symLower + 'Price');
+            if (dashPrice) dashPrice.textContent = formattedPrice;
+
+            // Update ETF table
+            const tablePrice = document.getElementById('gannDashTable' + symLower + 'Price');
+            if (tablePrice) tablePrice.textContent = formattedPrice;
+
+            // Update select options
+            const optOption = document.getElementById('gannOpt' + symLower + 'Option');
+            if (optOption) optOption.textContent = sym + ' - ' + formattedPrice;
+        }
+    });
+
+    // Update Sq9 price (uses SPY)
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData['SPY']) {
+        const spyData = allSymbolsData['SPY'];
+        if (spyData && spyData.length > 0) {
+            const spyPrice = parseFloat(spyData[spyData.length - 1].Close);
+            if (spyPrice && !isNaN(spyPrice)) {
+                const sq9El = document.getElementById('gannDashSq9Price');
+                if (sq9El) sq9El.textContent = '$' + spyPrice.toFixed(2);
+            }
+        }
+    }
+}
+
 // Initialize roadmap on page load
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         if (document.getElementById('gannRoadmapContainer')) {
             renderGannRoadmap();
         }
+        // Update Gann dashboard prices
+        updateGannDashboardPrices();
     }, 1000);
+
+    // Also update prices after data loads (retry a few times)
+    setTimeout(updateGannDashboardPrices, 2000);
+    setTimeout(updateGannDashboardPrices, 4000);
+    setTimeout(updateGannDashboardPrices, 8000);
 });
 
 </script>
