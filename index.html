@@ -4453,6 +4453,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button onclick="backtestRealGann()" style="padding: 10px 20px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔮 Run Backtest</button>
                         <button onclick="backtestSq9Tolerances()" style="padding: 10px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔬 Find Optimal Tolerance</button>
+                        <button onclick="backtestPivotGann()" style="padding: 10px 20px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📍 Pivot-Based Gann</button>
                     </div>
                 </div>
 
@@ -11179,6 +11180,288 @@ function runSingleETFTest() {
     var symbol = select ? select.value : 'SPY';
     var tol = parseFloat(document.getElementById('singleETFTolerance')?.value) || 0.015;
     testSingleETF(symbol, tol);
+}
+
+// ==========================================
+// TRUE GANN - Pivot-Based Analysis
+// ==========================================
+
+function backtestPivotGann() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'pivotGannLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 350px;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Testing Pivot-Based Gann...</div><div id="pivotGannProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Finding pivots and testing...</div>';
+    document.body.appendChild(loadingDiv);
+
+    var results = {
+        // Price = Time squaring
+        priceTimeSquare: { wins: 0, total: 0, signals: [] },
+
+        // Sq9 from pivot highs (resistance)
+        sq9FromPivotHigh: { wins: 0, total: 0 },
+
+        // Sq9 from pivot lows (support)
+        sq9FromPivotLow: { wins: 0, total: 0 },
+
+        // Anniversary dates (90, 180, 360 days from pivot)
+        anniversary90: { reversals: 0, total: 0 },
+        anniversary180: { reversals: 0, total: 0 },
+        anniversary360: { reversals: 0, total: 0 },
+
+        // Gann 1x1 angle respect
+        gannAngle1x1: { bounces: 0, total: 0 },
+
+        // Combined: Sq9 from pivot + anniversary
+        combined: { wins: 0, total: 0 }
+    };
+
+    for (var s = 0; s < symbols.length; s++) {
+        var sym = symbols[s];
+        var data = allSymbolsData[sym];
+        if (!data || data.length < 200) continue;
+
+        var prog = document.getElementById('pivotGannProgress');
+        if (prog) prog.textContent = 'Processing ' + sym + '...';
+
+        // ============================================
+        // STEP 1: Find Major Pivots (20-day swing points)
+        // ============================================
+        var pivots = [];
+
+        for (var i = 20; i < data.length - 20; i++) {
+            var high = parseFloat(data[i].High);
+            var low = parseFloat(data[i].Low);
+
+            // Check if this is a swing high (highest high in 20 bars each side)
+            var isSwingHigh = true;
+            var isSwingLow = true;
+
+            for (var j = i - 20; j <= i + 20; j++) {
+                if (j === i) continue;
+                if (parseFloat(data[j].High) > high) isSwingHigh = false;
+                if (parseFloat(data[j].Low) < low) isSwingLow = false;
+            }
+
+            if (isSwingHigh) {
+                pivots.push({ type: 'HIGH', index: i, price: high, date: data[i].Date });
+            }
+            if (isSwingLow) {
+                pivots.push({ type: 'LOW', index: i, price: low, date: data[i].Date });
+            }
+        }
+
+        // ============================================
+        // STEP 2: Test Price = Time Squaring
+        // ============================================
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+
+            // Look forward from pivot
+            for (var d = 10; d <= 100; d++) {
+                var futureIndex = pivot.index + d;
+                if (futureIndex >= data.length - 5) break;
+
+                var currentPrice = parseFloat(data[futureIndex].Close);
+                var priceMove = Math.abs(currentPrice - pivot.price);
+
+                // Price = Time: when price move ≈ days elapsed (scaled)
+                // Use 0.1% per day as scale factor
+                var expectedMove = pivot.price * 0.001 * d;
+                var priceTimeRatio = priceMove / expectedMove;
+
+                // Check if we're at a "square" (ratio near 1.0, 2.0, or 0.5)
+                var isSquare =
+                    (priceTimeRatio > 0.9 && priceTimeRatio < 1.1) ||
+                    (priceTimeRatio > 1.9 && priceTimeRatio < 2.1) ||
+                    (priceTimeRatio > 0.45 && priceTimeRatio < 0.55);
+
+                if (isSquare) {
+                    var futureClose = parseFloat(data[futureIndex + 5].Close);
+                    var wasUptrend = currentPrice > pivot.price;
+
+                    results.priceTimeSquare.total++;
+
+                    // Expect reversal at square
+                    var wentDown = futureClose < currentPrice * 0.99;
+                    var wentUp = futureClose > currentPrice * 1.01;
+                    var reversal = (wasUptrend && wentDown) || (!wasUptrend && wentUp);
+
+                    if (reversal) {
+                        results.priceTimeSquare.wins++;
+                    }
+                }
+            }
+        }
+
+        // ============================================
+        // STEP 3: Test Sq9 Levels FROM Pivot Prices
+        // ============================================
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var sqrt = Math.sqrt(pivot.price);
+
+            // Calculate Sq9 levels from this pivot
+            var sq9Levels = [];
+            for (var angle = 1; angle <= 4; angle++) {
+                sq9Levels.push({
+                    support: Math.pow(sqrt - (angle * 0.5), 2),
+                    resistance: Math.pow(sqrt + (angle * 0.5), 2)
+                });
+            }
+
+            // Look for price touching these levels in the future
+            for (var d = 5; d < 200; d++) {
+                var futureIndex = pivot.index + d;
+                if (futureIndex >= data.length - 5) break;
+
+                var price = parseFloat(data[futureIndex].Close);
+                var futureClose = parseFloat(data[futureIndex + 5].Close);
+
+                // Check each Sq9 level
+                for (var lvl = 0; lvl < sq9Levels.length; lvl++) {
+                    var level = sq9Levels[lvl];
+
+                    // Test support from pivot LOW
+                    if (pivot.type === 'LOW') {
+                        if (Math.abs(price - level.support) / price < 0.01) {
+                            results.sq9FromPivotLow.total++;
+                            if (futureClose > price) {
+                                results.sq9FromPivotLow.wins++;
+                            }
+                        }
+                    }
+
+                    // Test resistance from pivot HIGH
+                    if (pivot.type === 'HIGH') {
+                        if (Math.abs(price - level.resistance) / price < 0.01) {
+                            results.sq9FromPivotHigh.total++;
+                            if (futureClose < price) {
+                                results.sq9FromPivotHigh.wins++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ============================================
+        // STEP 4: Test Anniversary Dates from Pivots
+        // ============================================
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var anniversaries = [90, 180, 360];
+
+            for (var a = 0; a < anniversaries.length; a++) {
+                var days = anniversaries[a];
+                var annivIndex = pivot.index + days;
+
+                if (annivIndex >= data.length - 5) continue;
+
+                var price = parseFloat(data[annivIndex].Close);
+                var futureClose = parseFloat(data[annivIndex + 5].Close);
+                var priorPrice = parseFloat(data[annivIndex - 10].Close);
+
+                var wasUptrend = price > priorPrice;
+                var wentDown = futureClose < price * 0.99;
+                var wentUp = futureClose > price * 1.01;
+                var reversal = (wasUptrend && wentDown) || (!wasUptrend && wentUp);
+
+                var key = 'anniversary' + days;
+                results[key].total++;
+                if (reversal) {
+                    results[key].reversals++;
+                }
+            }
+        }
+
+        // ============================================
+        // STEP 5: Test Gann 1x1 Angle
+        // ============================================
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var scaleFactor = pivot.price * 0.001; // 0.1% per day
+
+            for (var d = 20; d < 200; d++) {
+                var futureIndex = pivot.index + d;
+                if (futureIndex >= data.length - 5) break;
+
+                var price = parseFloat(data[futureIndex].Close);
+                var futureClose = parseFloat(data[futureIndex + 5].Close);
+
+                // 1x1 angle price from pivot
+                var angle1x1Price;
+                if (pivot.type === 'LOW') {
+                    angle1x1Price = pivot.price + (scaleFactor * d);
+                } else {
+                    angle1x1Price = pivot.price - (scaleFactor * d);
+                }
+
+                // Check if price is near 1x1 line
+                if (Math.abs(price - angle1x1Price) / price < 0.01) {
+                    results.gannAngle1x1.total++;
+
+                    // Expect bounce off 1x1 line
+                    if (pivot.type === 'LOW' && futureClose > price) {
+                        results.gannAngle1x1.bounces++;
+                    } else if (pivot.type === 'HIGH' && futureClose < price) {
+                        results.gannAngle1x1.bounces++;
+                    }
+                }
+            }
+        }
+    }
+
+    // Remove loading
+    var loadEl = document.getElementById('pivotGannLoading');
+    if (loadEl) loadEl.remove();
+
+    // Calculate percentages
+    var pct = function(r) { return r.total > 0 ? Math.round(r.wins / r.total * 100) : 0; };
+    var revPct = function(r) { return r.total > 0 ? Math.round(r.reversals / r.total * 100) : 0; };
+    var bouncePct = function(r) { return r.total > 0 ? Math.round(r.bounces / r.total * 100) : 0; };
+
+    var msg = '🔮 PIVOT-BASED GANN BACKTEST\n';
+    msg += '================================\n\n';
+
+    msg += '⏱️ PRICE = TIME SQUARING:\n';
+    msg += '• Reversal at square: ' + pct(results.priceTimeSquare) + '% (' + results.priceTimeSquare.wins + '/' + results.priceTimeSquare.total + ')\n\n';
+
+    msg += '📐 SQ9 FROM PIVOT PRICES:\n';
+    msg += '• From Pivot LOW (support): ' + pct(results.sq9FromPivotLow) + '% (' + results.sq9FromPivotLow.wins + '/' + results.sq9FromPivotLow.total + ')\n';
+    msg += '• From Pivot HIGH (resist): ' + pct(results.sq9FromPivotHigh) + '% (' + results.sq9FromPivotHigh.wins + '/' + results.sq9FromPivotHigh.total + ')\n\n';
+
+    msg += '📅 ANNIVERSARY DATES FROM PIVOTS:\n';
+    msg += '• 90 days: ' + revPct(results.anniversary90) + '% (' + results.anniversary90.reversals + '/' + results.anniversary90.total + ')\n';
+    msg += '• 180 days: ' + revPct(results.anniversary180) + '% (' + results.anniversary180.reversals + '/' + results.anniversary180.total + ')\n';
+    msg += '• 360 days: ' + revPct(results.anniversary360) + '% (' + results.anniversary360.reversals + '/' + results.anniversary360.total + ')\n\n';
+
+    msg += '📏 GANN 1x1 ANGLE:\n';
+    msg += '• Bounce off 1x1: ' + bouncePct(results.gannAngle1x1) + '% (' + results.gannAngle1x1.bounces + '/' + results.gannAngle1x1.total + ')\n\n';
+
+    // Find best method
+    var methods = [
+        { name: 'Price=Time Square', pct: pct(results.priceTimeSquare) },
+        { name: 'Sq9 from Pivot Low', pct: pct(results.sq9FromPivotLow) },
+        { name: 'Sq9 from Pivot High', pct: pct(results.sq9FromPivotHigh) },
+        { name: '90-day Anniversary', pct: revPct(results.anniversary90) },
+        { name: '180-day Anniversary', pct: revPct(results.anniversary180) },
+        { name: '360-day Anniversary', pct: revPct(results.anniversary360) },
+        { name: 'Gann 1x1 Angle', pct: bouncePct(results.gannAngle1x1) }
+    ].sort(function(a, b) { return b.pct - a.pct; });
+
+    msg += '🏆 RANKED BY ACCURACY:\n';
+    for (var i = 0; i < methods.length; i++) {
+        var icon = methods[i].pct >= 55 ? '✅' : (methods[i].pct >= 50 ? '➖' : '❌');
+        msg += icon + ' ' + methods[i].name + ': ' + methods[i].pct + '%\n';
+    }
+
+    console.log('Pivot Gann Results:', results);
+    alert(msg);
+
+    window.lastPivotGannResults = results;
+    return results;
 }
 
 // Quick test at specific tolerance
