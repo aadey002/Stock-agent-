@@ -26647,13 +26647,26 @@ function selectRoadmapPivot(pivot) {
 
 // Get current price from existing DOM elements
 function getRoadmapPrice(symbol) {
-    // Reads from existing elements like #gannSpyPrice, #gannQqqPrice, #gannIwmPrice
-    const priceEl = document.getElementById('gann' + symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase() + 'Price');
-    if (priceEl) {
-        const val = parseFloat(priceEl.textContent.replace(/[$,]/g, ''));
+    // Try multiple sources for the price
+    const elementId = 'gann' + symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase() + 'Price';
+
+    // Use querySelectorAll to find ALL elements with this ID (handles duplicates)
+    const allElements = document.querySelectorAll('[id="' + elementId + '"]');
+    for (const el of allElements) {
+        const val = parseFloat(el.textContent.replace(/[$,]/g, ''));
         if (!isNaN(val) && val > 0) return val;
     }
-    // Fallback if element not found
+
+    // Try allSymbolsData as backup
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        const data = allSymbolsData[symbol];
+        if (data && data.length > 0) {
+            const price = parseFloat(data[data.length - 1].Close);
+            if (!isNaN(price) && price > 0) return price;
+        }
+    }
+
+    // Final fallback
     return { SPY: 598.27, QQQ: 524.18, IWM: 248.20 }[symbol] || 500;
 }
 
