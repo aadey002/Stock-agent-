@@ -25590,7 +25590,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 
 // Data structures
-let gannPredictions = [];
+let gannCyclePreds = [];
 const GANN_PREDICTIONS_KEY = 'gannCyclePredictions';
 
 // Major pivots data (same as cycle dashboard)
@@ -25637,12 +25637,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadGannPredictions() {
     const saved = localStorage.getItem(GANN_PREDICTIONS_KEY);
     if (saved) {
-        gannPredictions = JSON.parse(saved);
+        gannCyclePreds = JSON.parse(saved);
     }
 }
 
 function saveGannPredictions() {
-    localStorage.setItem(GANN_PREDICTIONS_KEY, JSON.stringify(gannPredictions));
+    localStorage.setItem(GANN_PREDICTIONS_KEY, JSON.stringify(gannCyclePreds));
 }
 
 function daysBetweenTracker(date1, date2) {
@@ -25673,7 +25673,7 @@ function scanForNewPredictions() {
                 // Auto-log predictions for cycles within 7 days past to 14 days future
                 if (daysUntil >= -7 && daysUntil <= 14) {
                     // Check if already logged
-                    const exists = gannPredictions.find(p =>
+                    const exists = gannCyclePreds.find(p =>
                         p.symbol === symbol &&
                         p.cycleDays === cycle.days &&
                         p.pivotDate === pivot.date
@@ -25700,7 +25700,7 @@ function scanForNewPredictions() {
                             validatedDate: null
                         };
 
-                        gannPredictions.push(prediction);
+                        gannCyclePreds.push(prediction);
                         newCount++;
                     }
                 }
@@ -25723,7 +25723,7 @@ function validatePendingPredictions() {
     const todayStr = today.toISOString().split('T')[0];
     let validatedCount = 0;
 
-    gannPredictions.forEach(pred => {
+    gannCyclePreds.forEach(pred => {
         if (pred.result !== 'pending') return;
 
         const targetDate = new Date(pred.targetDate);
@@ -25760,7 +25760,7 @@ function validatePendingPredictions() {
 
 // Manual validation
 function manualValidate(predId, result) {
-    const pred = gannPredictions.find(p => p.id === predId);
+    const pred = gannCyclePreds.find(p => p.id === predId);
     if (pred) {
         pred.result = result;
         pred.validatedDate = new Date().toISOString().split('T')[0];
@@ -25773,7 +25773,7 @@ function manualValidate(predId, result) {
 // Delete prediction
 function deletePrediction(predId) {
     if (confirm('Delete this prediction?')) {
-        gannPredictions = gannPredictions.filter(p => p.id !== predId);
+        gannCyclePreds = gannCyclePreds.filter(p => p.id !== predId);
         saveGannPredictions();
         updatePredictionTracker();
     }
@@ -25789,16 +25789,16 @@ function updatePredictionTracker() {
 }
 
 function updatePerfSummary() {
-    const total = gannPredictions.length;
-    const correct = gannPredictions.filter(p => p.result === 'correct').length;
-    const incorrect = gannPredictions.filter(p => p.result === 'incorrect').length;
-    const pending = gannPredictions.filter(p => p.result === 'pending').length;
+    const total = gannCyclePreds.length;
+    const correct = gannCyclePreds.filter(p => p.result === 'correct').length;
+    const incorrect = gannCyclePreds.filter(p => p.result === 'incorrect').length;
+    const pending = gannCyclePreds.filter(p => p.result === 'pending').length;
     const validated = correct + incorrect;
 
     const accuracy = validated > 0 ? ((correct / validated) * 100).toFixed(1) : '--';
 
     // Calculate average move
-    const withMoves = gannPredictions.filter(p => p.movePercent !== null);
+    const withMoves = gannCyclePreds.filter(p => p.movePercent !== null);
     const avgMove = withMoves.length > 0
         ? (withMoves.reduce((sum, p) => sum + Math.abs(p.movePercent), 0) / withMoves.length).toFixed(2)
         : '--';
@@ -25813,7 +25813,7 @@ function updatePerfSummary() {
     el('gannAvgMove', avgMove === '--' ? '--' : avgMove + '%');
 
     // Rolling accuracy (last 20)
-    const recent = gannPredictions
+    const recent = gannCyclePreds
         .filter(p => p.result !== 'pending')
         .slice(-20);
     const recentCorrect = recent.filter(p => p.result === 'correct').length;
@@ -25833,7 +25833,7 @@ function updateCycleBreakdown() {
     const elClass = (id, cls) => { const e = document.getElementById(id); if (e) e.className = cls; };
 
     // 49-Day
-    const preds49 = gannPredictions.filter(p => p.cycleDays === 49);
+    const preds49 = gannCyclePreds.filter(p => p.cycleDays === 49);
     const correct49 = preds49.filter(p => p.result === 'correct').length;
     const validated49 = preds49.filter(p => p.result !== 'pending').length;
     const rate49 = validated49 > 0 ? ((correct49 / validated49) * 100).toFixed(0) : '--';
@@ -25845,7 +25845,7 @@ function updateCycleBreakdown() {
     elClass('gann49Badge', 'gann-cycle-type-badge ' + (rate49 >= 70 ? 'high' : rate49 >= 50 ? 'medium' : 'low'));
 
     // 90-Day
-    const preds90 = gannPredictions.filter(p => [90, 120].includes(p.cycleDays));
+    const preds90 = gannCyclePreds.filter(p => [90, 120].includes(p.cycleDays));
     const correct90 = preds90.filter(p => p.result === 'correct').length;
     const validated90 = preds90.filter(p => p.result !== 'pending').length;
     const rate90 = validated90 > 0 ? ((correct90 / validated90) * 100).toFixed(0) : '--';
@@ -25857,7 +25857,7 @@ function updateCycleBreakdown() {
     elClass('gann90Badge', 'gann-cycle-type-badge ' + (rate90 >= 70 ? 'high' : rate90 >= 50 ? 'medium' : 'low'));
 
     // 180-Day
-    const preds180 = gannPredictions.filter(p => [144, 180, 270].includes(p.cycleDays));
+    const preds180 = gannCyclePreds.filter(p => [144, 180, 270].includes(p.cycleDays));
     const correct180 = preds180.filter(p => p.result === 'correct').length;
     const validated180 = preds180.filter(p => p.result !== 'pending').length;
     const rate180 = validated180 > 0 ? ((correct180 / validated180) * 100).toFixed(0) : '--';
@@ -25869,7 +25869,7 @@ function updateCycleBreakdown() {
     elClass('gann180Badge', 'gann-cycle-type-badge ' + (rate180 >= 70 ? 'high' : rate180 >= 50 ? 'medium' : 'low'));
 
     // 360-Day
-    const preds360 = gannPredictions.filter(p => p.cycleDays === 360);
+    const preds360 = gannCyclePreds.filter(p => p.cycleDays === 360);
     const correct360 = preds360.filter(p => p.result === 'correct').length;
     const validated360 = preds360.filter(p => p.result !== 'pending').length;
     const rate360 = validated360 > 0 ? ((correct360 / validated360) * 100).toFixed(0) : '--';
@@ -25884,7 +25884,7 @@ function updateCycleBreakdown() {
 function updateActivePredictions() {
     const container = document.getElementById('gannActivePredGrid');
     if (!container) return;
-    const active = gannPredictions.filter(p => p.result === 'pending');
+    const active = gannCyclePreds.filter(p => p.result === 'pending');
 
     if (active.length === 0) {
         container.innerHTML = `
@@ -25939,7 +25939,7 @@ function updatePredictionsTable(filter) {
     const tbody = document.getElementById('gannPredictionsTableBody');
     if (!tbody) return;
 
-    let filtered = [...gannPredictions];
+    let filtered = [...gannCyclePreds];
     if (filter === 'correct') filtered = filtered.filter(p => p.result === 'correct');
     else if (filter === 'incorrect') filtered = filtered.filter(p => p.result === 'incorrect');
     else if (filter === 'pending') filtered = filtered.filter(p => p.result === 'pending');
@@ -26020,7 +26020,7 @@ function filterPredictions(filter) {
 
 function updateConfidenceStats() {
     const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-    const validated = gannPredictions.filter(p => p.result !== 'pending');
+    const validated = gannCyclePreds.filter(p => p.result !== 'pending');
     const correct = validated.filter(p => p.result === 'correct').length;
     const total = validated.length;
 
@@ -26061,13 +26061,13 @@ function updateConfidenceStats() {
 
 // Export to CSV
 function exportPredictionData() {
-    if (gannPredictions.length === 0) {
+    if (gannCyclePreds.length === 0) {
         showTrackerToast('No predictions to export!', 'warning');
         return;
     }
 
     const headers = ['Symbol', 'Cycle', 'Days', 'Pivot Date', 'Pivot Price', 'Pivot Type', 'Target Date', 'Expected', 'Price at Target', '3-Day Move %', 'Result', 'Logged', 'Validated'];
-    const rows = gannPredictions.map(p => [
+    const rows = gannCyclePreds.map(p => [
         p.symbol,
         p.cycleName,
         p.cycleDays,
