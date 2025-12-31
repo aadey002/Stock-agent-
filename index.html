@@ -4617,9 +4617,12 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
                     <button onclick="backtestBiblicalNumbers()" style="padding: 12px 24px; background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
-                        📖 Backtest Biblical Numbers on SPY
+                        📖 Test 2 Years (2023-2025)
+                    </button>
+                    <button onclick="backtestBiblicalFull()" style="padding: 12px 24px; background: linear-gradient(135deg, #d4a017, #b8860b); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        📜 Test 32 Years (1993-2025)
                     </button>
                 </div>
 
@@ -11890,6 +11893,210 @@ function backtestBiblicalNumbers() {
     updateBiblicalDisplay(calendarRanked, tradingRanked, sq9Biblical);
 
     return results;
+}
+
+// Load full SPY history (1993-2025) and run biblical backtest
+function backtestBiblicalFull() {
+    var loadingDiv = document.createElement('div');
+    loadingDiv.id = 'biblicalFullLoading';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 400px;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">📖</div><div style="font-size: 14px; font-weight: 600;">Loading Full SPY History (1993-2025)...</div><div id="biblicalFullProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Fetching 32 years of data...</div>';
+    document.body.appendChild(loadingDiv);
+
+    // Load SPY_full.csv
+    fetch('data/SPY_full.csv')
+        .then(function(response) {
+            if (!response.ok) throw new Error('SPY_full.csv not found. Run the download script first.');
+            return response.text();
+        })
+        .then(function(csvText) {
+            var prog = document.getElementById('biblicalFullProgress');
+            if (prog) prog.textContent = 'Parsing data...';
+
+            var lines = csvText.trim().split('\n');
+            var headers = lines[0].split(',');
+            var fullData = [];
+
+            for (var i = 1; i < lines.length; i++) {
+                var parts = lines[i].split(',');
+                if (parts.length >= 6) {
+                    fullData.push({
+                        Date: parts[0],
+                        Open: parts[1],
+                        High: parts[2],
+                        Low: parts[3],
+                        Close: parts[4],
+                        Volume: parts[5]
+                    });
+                }
+            }
+
+            console.log('Loaded ' + fullData.length + ' rows of full SPY history');
+            if (prog) prog.textContent = 'Running backtest on ' + fullData.length + ' days...';
+
+            // Store in global and run backtest
+            window.spyFullData = fullData;
+
+            // Run the biblical backtest with full data
+            setTimeout(function() {
+                runBiblicalBacktestOnData(fullData, 'SPY (1993-2025)');
+            }, 100);
+        })
+        .catch(function(err) {
+            var loadEl = document.getElementById('biblicalFullLoading');
+            if (loadEl) loadEl.remove();
+            alert('Error loading full data: ' + err.message + '\n\nMake sure SPY_full.csv exists in the data folder.');
+        });
+}
+
+// Run biblical backtest on provided data array
+function runBiblicalBacktestOnData(data, label) {
+    if (!data || data.length < 400) {
+        alert('Not enough data (need 400+ days)');
+        var loadEl = document.getElementById('biblicalFullLoading');
+        if (loadEl) loadEl.remove();
+        return;
+    }
+
+    var prog = document.getElementById('biblicalFullProgress');
+
+    // Biblical cycles (same as before)
+    var biblicalCycles = [
+        { days: 7, name: '7 Days (Creation)' },
+        { days: 12, name: '12 Days (Tribes)' },
+        { days: 21, name: '21 Days (3×7)' },
+        { days: 28, name: '28 Days (Lunar)' },
+        { days: 40, name: '40 Days (Flood)' },
+        { days: 49, name: '49 Days (Jubilee)' },
+        { days: 50, name: '50 Days (Pentecost)' },
+        { days: 52, name: '52 Days (Weeks)' },
+        { days: 60, name: '60 Days (Babylon)' },
+        { days: 72, name: '72 Days (Circle)' },
+        { days: 90, name: '90 Days (Quarter)' },
+        { days: 120, name: '120 Days (1/3 Year)' },
+        { days: 144, name: '144 Days (Sacred)' },
+        { days: 150, name: '150 Days (Flood)' },
+        { days: 180, name: '180 Days (Half)' },
+        { days: 216, name: '216 Days (6×6×6)' },
+        { days: 252, name: '252 Days (Trade Yr)' },
+        { days: 270, name: '270 Days (3/4 Yr)' },
+        { days: 288, name: '288 Days (2×144)' },
+        { days: 360, name: '360 Days (Prophetic)' }
+    ];
+
+    var results = {};
+
+    // Find pivots (10-day swing points for more signals)
+    if (prog) prog.textContent = 'Finding pivots in ' + data.length + ' days...';
+    var pivots = [];
+    for (var i = 10; i < data.length - 10; i++) {
+        var high = parseFloat(data[i].High);
+        var low = parseFloat(data[i].Low);
+        var isHigh = true, isLow = true;
+
+        for (var j = i - 10; j <= i + 10; j++) {
+            if (j === i) continue;
+            if (parseFloat(data[j].High) > high) isHigh = false;
+            if (parseFloat(data[j].Low) < low) isLow = false;
+        }
+
+        if (isHigh) pivots.push({ type: 'HIGH', index: i, date: data[i].Date });
+        if (isLow) pivots.push({ type: 'LOW', index: i, date: data[i].Date });
+    }
+
+    console.log('Found ' + pivots.length + ' pivots in full history');
+
+    // Test each cycle
+    if (prog) prog.textContent = 'Testing ' + biblicalCycles.length + ' cycles across ' + pivots.length + ' pivots...';
+
+    for (var c = 0; c < biblicalCycles.length; c++) {
+        var cycle = biblicalCycles[c];
+        results[cycle.days] = { name: cycle.name, reversals: 0, total: 0 };
+
+        for (var p = 0; p < pivots.length; p++) {
+            var pivot = pivots[p];
+            var pivotDate = new Date(pivot.date);
+
+            for (var i = pivot.index + 1; i < data.length - 5; i++) {
+                var currentDate = new Date(data[i].Date);
+                var daysDiff = Math.floor((currentDate - pivotDate) / (1000 * 60 * 60 * 24));
+
+                if (Math.abs(daysDiff - cycle.days) <= 2) {
+                    var price = parseFloat(data[i].Close);
+                    var futurePrice = parseFloat(data[i + 5].Close);
+                    var priorPrice = parseFloat(data[i - 5].Close);
+
+                    if (!price || !futurePrice || !priorPrice) continue;
+
+                    results[cycle.days].total++;
+
+                    var wasUp = price > priorPrice;
+                    var wentDown = futurePrice < price * 0.995;
+                    var wentUp = futurePrice > price * 1.005;
+
+                    if ((wasUp && wentDown) || (!wasUp && wentUp)) {
+                        results[cycle.days].reversals++;
+                    }
+
+                    break;
+                }
+
+                if (daysDiff > cycle.days + 5) break;
+            }
+        }
+    }
+
+    // Remove loading
+    var loadEl = document.getElementById('biblicalFullLoading');
+    if (loadEl) loadEl.remove();
+
+    // Rank results
+    var ranked = [];
+    for (var days in results) {
+        var r = results[days];
+        var pct = r.total > 0 ? Math.round(r.reversals / r.total * 100) : 0;
+        ranked.push({ days: days, name: r.name, pct: pct, reversals: r.reversals, total: r.total });
+    }
+    ranked.sort(function(a, b) { return b.pct - a.pct; });
+
+    // Display results
+    var msg = '📖 GANN BIBLICAL NUMBERS - ' + label + '\n';
+    msg += '════════════════════════════════════════\n';
+    msg += '📊 ' + data.length + ' trading days | ' + pivots.length + ' pivots found\n\n';
+
+    msg += '📅 CALENDAR DAY CYCLES (ranked by accuracy):\n';
+    msg += '────────────────────────────────────────\n';
+
+    for (var i = 0; i < ranked.length; i++) {
+        var r = ranked[i];
+        var icon = r.pct >= 55 ? '✅' : (r.pct >= 50 ? '➖' : '❌');
+        var star = (r.days == 144 || r.days == 49 || r.days == 40 || r.days == 360) ? ' ⭐' : '';
+        msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + star + '\n';
+    }
+
+    msg += '\n🏆 TOP 5 CYCLES (32 years of data):\n';
+    msg += '────────────────────────────────────────\n';
+    for (var i = 0; i < Math.min(5, ranked.length); i++) {
+        var r = ranked[i];
+        msg += (i + 1) + '. ' + r.days + ' days: ' + r.pct + '% (' + r.total + ' signals)\n';
+    }
+
+    var edgeCycles = ranked.filter(function(r) { return r.pct >= 55 && r.total >= 50; });
+    if (edgeCycles.length > 0) {
+        msg += '\n🎯 TRADEABLE EDGES (55%+ with 50+ signals):\n';
+        msg += '────────────────────────────────────────\n';
+        for (var i = 0; i < edgeCycles.length; i++) {
+            msg += '• ' + edgeCycles[i].days + ' days: ' + edgeCycles[i].pct + '%\n';
+        }
+    } else {
+        msg += '\n⚠️ No cycles hit 55% with 50+ signals\n';
+    }
+
+    console.log('Full Biblical Backtest Results:', ranked);
+    alert(msg);
+
+    window.biblicalFullResults = ranked;
+    return ranked;
 }
 
 // Update Biblical display elements
