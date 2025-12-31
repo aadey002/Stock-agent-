@@ -10596,68 +10596,66 @@ function clearAndBackfillAgentPredictions(startDate) {
 }
 
 // ==========================================
-// TRUE GANN BACKTEST - Sq9 + Time Cycles
+// TRUE GANN BACKTEST - Sq9 + Time Cycles (ALL 12 ETFs)
 // ==========================================
 
 function backtestRealGann() {
-    var data = allSymbolsData['SPY'];
-    if (!data || data.length < 100) {
-        alert('Not enough SPY data. Please wait for data to load.');
-        return;
-    }
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
     // Show loading
     var loadingDiv = document.createElement('div');
     loadingDiv.id = 'gannBacktestLoading';
-    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 300px;';
-    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing Square of 9 + Time Cycles</div>';
+    loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 350px;';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing 12 ETFs x 2 Years</div>';
     document.body.appendChild(loadingDiv);
 
     var results = {
-        // Square of 9 Level Tests
         sq9Support: { bounces: 0, breaks: 0, tests: 0 },
         sq9Resistance: { rejections: 0, breaks: 0, tests: 0 },
-
-        // Time Cycle Tests (did reversal happen within X days of cycle turn?)
         cycle30: { reversals: 0, total: 0 },
         cycle45: { reversals: 0, total: 0 },
         cycle90: { reversals: 0, total: 0 },
         cycle144: { reversals: 0, total: 0 },
         cycle180: { reversals: 0, total: 0 },
-
-        // Combined: Sq9 level + Near cycle turn
         combined: { wins: 0, total: 0 },
-
-        // Track all signals for detailed analysis
+        bySymbol: {},
         signals: []
     };
 
-    // Reference date for cycles (start of data)
-    var refDate = new Date(data[0].Date.split(' ')[0]);
+    var symbolIndex = 0;
 
-    // Process asynchronously to prevent browser freeze
-    var i = 30;
+    function processNextSymbol() {
+        if (symbolIndex >= symbols.length) {
+            finishBacktest();
+            return;
+        }
 
-    function processChunk() {
-        var chunkEnd = Math.min(i + 50, data.length - 5);
+        var sym = symbols[symbolIndex];
+        var data = allSymbolsData[sym];
 
-        for (; i < chunkEnd; i++) {
+        var prog = document.getElementById('gannBacktestProgress');
+        if (prog) prog.textContent = 'Processing ' + sym + ' (' + (symbolIndex + 1) + '/12)...';
+
+        if (!data || data.length < 100) {
+            console.log(sym + ': Not enough data, skipping');
+            symbolIndex++;
+            setTimeout(processNextSymbol, 10);
+            return;
+        }
+
+        results.bySymbol[sym] = { sq9Support: 0, sq9Resist: 0, cycle144: 0, total: 0 };
+
+        var refDate = new Date(data[0].Date.split(' ')[0]);
+
+        for (var i = 30; i < data.length - 5; i++) {
             var today = data[i];
             var price = parseFloat(today.Close);
-            var high = parseFloat(today.High);
-            var low = parseFloat(today.Low);
-
             if (!price) continue;
 
-            // Get next 5 days for outcome checking
             var future = [];
             for (var f = 1; f <= 5; f++) {
                 if (i + f < data.length) {
-                    future.push({
-                        close: parseFloat(data[i + f].Close),
-                        high: parseFloat(data[i + f].High),
-                        low: parseFloat(data[i + f].Low)
-                    });
+                    future.push({ close: parseFloat(data[i + f].Close) });
                 }
             }
             if (future.length < 5) continue;
@@ -10665,11 +10663,7 @@ function backtestRealGann() {
             var futureClose = future[4].close;
             var move5day = ((futureClose - price) / price * 100);
 
-            // ============================================
-            // TEST 1: Square of 9 Support/Resistance
-            // ============================================
-            // Use 20-day swing high/low as reference pivots
-
+            // Sq9 from 20-day swing pivots
             var swingLow = Infinity, swingHigh = 0;
             for (var k = i - 20; k < i; k++) {
                 var kLow = parseFloat(data[k].Low) || Infinity;
@@ -10678,74 +10672,37 @@ function backtestRealGann() {
                 if (kHigh > swingHigh) swingHigh = kHigh;
             }
 
-            // Calculate Sq9 RESISTANCE levels from swing LOW (price rising from low)
             var sqrtLow = Math.sqrt(swingLow);
-            var sq9ResistLevels = [
-                Math.pow(sqrtLow + 0.25, 2),  // +45 deg
-                Math.pow(sqrtLow + 0.5, 2),   // +90 deg
-                Math.pow(sqrtLow + 0.75, 2),  // +135 deg
-                Math.pow(sqrtLow + 1.0, 2),   // +180 deg
-                Math.pow(sqrtLow + 1.5, 2),   // +270 deg
-                Math.pow(sqrtLow + 2.0, 2)    // +360 deg
-            ];
-
-            // Calculate Sq9 SUPPORT levels from swing HIGH (price falling from high)
             var sqrtHigh = Math.sqrt(swingHigh);
-            var sq9SupportLevels = [
-                Math.pow(sqrtHigh - 0.25, 2),  // -45 deg
-                Math.pow(sqrtHigh - 0.5, 2),   // -90 deg
-                Math.pow(sqrtHigh - 0.75, 2),  // -135 deg
-                Math.pow(sqrtHigh - 1.0, 2),   // -180 deg
-                Math.pow(sqrtHigh - 1.5, 2),   // -270 deg
-                Math.pow(sqrtHigh - 2.0, 2)    // -360 deg
-            ];
 
-            // Check if price is near any Sq9 SUPPORT level (within 1%)
-            var nearSupport = false;
-            for (var lvl = 0; lvl < sq9SupportLevels.length; lvl++) {
-                if (sq9SupportLevels[lvl] > 0 && Math.abs(price - sq9SupportLevels[lvl]) / price < 0.01) {
-                    nearSupport = true;
-                    break;
-                }
+            // Check multiple Sq9 levels with 1.5% tolerance
+            var sq9Levels = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0];
+            var nearSupport = false, nearResist = false;
+
+            for (var lvl = 0; lvl < sq9Levels.length; lvl++) {
+                var supportLevel = Math.pow(sqrtHigh - sq9Levels[lvl], 2);
+                var resistLevel = Math.pow(sqrtLow + sq9Levels[lvl], 2);
+
+                if (supportLevel > 0 && Math.abs(price - supportLevel) / price < 0.015) nearSupport = true;
+                if (Math.abs(price - resistLevel) / price < 0.015) nearResist = true;
             }
 
-            // Check if price is near any Sq9 RESISTANCE level (within 1%)
-            var nearResist = false;
-            for (var lvl = 0; lvl < sq9ResistLevels.length; lvl++) {
-                if (Math.abs(price - sq9ResistLevels[lvl]) / price < 0.01) {
-                    nearResist = true;
-                    break;
-                }
-            }
-
-            // Test support: Did price bounce (go up) after touching support?
             if (nearSupport) {
                 results.sq9Support.tests++;
-                if (futureClose > price) {
-                    results.sq9Support.bounces++;
-                } else {
-                    results.sq9Support.breaks++;
-                }
+                if (futureClose > price) results.sq9Support.bounces++;
+                else results.sq9Support.breaks++;
             }
 
-            // Test resistance: Did price reject (go down) after touching resistance?
             if (nearResist) {
                 results.sq9Resistance.tests++;
-                if (futureClose < price) {
-                    results.sq9Resistance.rejections++;
-                } else {
-                    results.sq9Resistance.breaks++;
-                }
+                if (futureClose < price) results.sq9Resistance.rejections++;
+                else results.sq9Resistance.breaks++;
             }
 
-            // ============================================
-            // TEST 2: Time Cycles - Reversals at Turn Dates
-            // ============================================
-
+            // Time Cycles
             var currentDate = new Date(today.Date.split(' ')[0]);
             var daysSinceRef = Math.floor((currentDate - refDate) / (1000 * 60 * 60 * 24));
 
-            // Check each cycle
             var cycles = [
                 { name: 'cycle30', days: 30 },
                 { name: 'cycle45', days: 45 },
@@ -10756,35 +10713,28 @@ function backtestRealGann() {
 
             var nearAnyCycleTurn = false;
 
-            cycles.forEach(function(cycle) {
+            for (var c = 0; c < cycles.length; c++) {
+                var cycle = cycles[c];
                 var position = daysSinceRef % cycle.days;
-                var nearTurn = position <= 2 || (cycle.days - position) <= 2;
+                var nearTurn = position <= 3 || (cycle.days - position) <= 3;
 
                 if (nearTurn) {
                     nearAnyCycleTurn = true;
                     results[cycle.name].total++;
 
-                    // Check if reversal happened (price changed direction by > 1%)
-                    var wasGoingUp = parseFloat(data[i - 5].Close) < price;
-                    var wentDown = futureClose < price * 0.99;
-                    var wentUp = futureClose > price * 1.01;
+                    var priorPrice = i >= 10 ? parseFloat(data[i - 10].Close) : price;
+                    var wasGoingUp = price > priorPrice;
+                    var reversed = (wasGoingUp && futureClose < price * 0.99) || (!wasGoingUp && futureClose > price * 1.01);
 
-                    var reversal = (wasGoingUp && wentDown) || (!wasGoingUp && wentUp);
-
-                    if (reversal || Math.abs(move5day) > 2) {
+                    if (reversed || Math.abs(move5day) > 2) {
                         results[cycle.name].reversals++;
                     }
                 }
-            });
+            }
 
-            // ============================================
-            // TEST 3: Combined - Sq9 Level + Cycle Turn
-            // ============================================
-
+            // Combined signal
             if ((nearSupport || nearResist) && nearAnyCycleTurn) {
                 results.combined.total++;
-
-                // Predict direction based on level
                 var predictUp = nearSupport;
                 var actualUp = futureClose > price;
 
@@ -10793,42 +10743,29 @@ function backtestRealGann() {
                 }
 
                 results.signals.push({
+                    symbol: sym,
                     date: today.Date.split(' ')[0],
-                    price: price,
-                    nearSupport: nearSupport,
-                    nearResist: nearResist,
-                    nearCycle: nearAnyCycleTurn,
+                    price: price.toFixed(2),
+                    type: nearSupport ? 'SUPPORT' : 'RESIST',
                     prediction: predictUp ? 'UP' : 'DOWN',
                     actual: actualUp ? 'UP' : 'DOWN',
-                    move5day: move5day.toFixed(2),
+                    move: move5day.toFixed(2) + '%',
                     correct: predictUp === actualUp
                 });
             }
         }
 
-        // Update progress
-        var prog = document.getElementById('gannBacktestProgress');
-        if (prog) prog.textContent = 'Processed ' + i + ' / ' + data.length + ' days...';
-
-        if (i < data.length - 5) {
-            setTimeout(processChunk, 10);
-        } else {
-            finishBacktest();
-        }
+        symbolIndex++;
+        setTimeout(processNextSymbol, 10);
     }
 
     function finishBacktest() {
-        // Remove loading
         var loadEl = document.getElementById('gannBacktestLoading');
         if (loadEl) loadEl.remove();
 
-        // Calculate percentages
-        var sq9SupportPct = results.sq9Support.tests > 0 ?
-            Math.round(results.sq9Support.bounces / results.sq9Support.tests * 100) : 0;
-        var sq9ResistPct = results.sq9Resistance.tests > 0 ?
-            Math.round(results.sq9Resistance.rejections / results.sq9Resistance.tests * 100) : 0;
-        var combinedPct = results.combined.total > 0 ?
-            Math.round(results.combined.wins / results.combined.total * 100) : 0;
+        var sq9SupportPct = results.sq9Support.tests > 0 ? Math.round(results.sq9Support.bounces / results.sq9Support.tests * 100) : 0;
+        var sq9ResistPct = results.sq9Resistance.tests > 0 ? Math.round(results.sq9Resistance.rejections / results.sq9Resistance.tests * 100) : 0;
+        var combinedPct = results.combined.total > 0 ? Math.round(results.combined.wins / results.combined.total * 100) : 0;
 
         var cycle30Pct = results.cycle30.total > 0 ? Math.round(results.cycle30.reversals / results.cycle30.total * 100) : 0;
         var cycle45Pct = results.cycle45.total > 0 ? Math.round(results.cycle45.reversals / results.cycle45.total * 100) : 0;
@@ -10836,7 +10773,6 @@ function backtestRealGann() {
         var cycle144Pct = results.cycle144.total > 0 ? Math.round(results.cycle144.reversals / results.cycle144.total * 100) : 0;
         var cycle180Pct = results.cycle180.total > 0 ? Math.round(results.cycle180.reversals / results.cycle180.total * 100) : 0;
 
-        // Update UI display
         updateGannBacktestDisplay(results, {
             sq9SupportPct: sq9SupportPct,
             sq9ResistPct: sq9ResistPct,
@@ -10848,15 +10784,14 @@ function backtestRealGann() {
             cycle180Pct: cycle180Pct
         });
 
-        // Display results
-        var msg = '🔮 TRUE GANN BACKTEST RESULTS\n';
-        msg += '================================\n\n';
+        var msg = '🔮 TRUE GANN BACKTEST - 12 ETFs x 2 YEARS\n';
+        msg += '==========================================\n\n';
 
         msg += '📐 SQUARE OF 9 LEVELS:\n';
-        msg += '• Support Bounce Rate: ' + sq9SupportPct + '% (' + results.sq9Support.bounces + '/' + results.sq9Support.tests + ')\n';
-        msg += '• Resistance Reject Rate: ' + sq9ResistPct + '% (' + results.sq9Resistance.rejections + '/' + results.sq9Resistance.tests + ')\n\n';
+        msg += '• Support Bounce: ' + sq9SupportPct + '% (' + results.sq9Support.bounces + '/' + results.sq9Support.tests + ')\n';
+        msg += '• Resist Reject: ' + sq9ResistPct + '% (' + results.sq9Resistance.rejections + '/' + results.sq9Resistance.tests + ')\n\n';
 
-        msg += '⏰ TIME CYCLES (Reversals at Turn):\n';
+        msg += '⏰ TIME CYCLES (Reversals):\n';
         msg += '• 30-Day: ' + cycle30Pct + '% (' + results.cycle30.reversals + '/' + results.cycle30.total + ')\n';
         msg += '• 45-Day: ' + cycle45Pct + '% (' + results.cycle45.reversals + '/' + results.cycle45.total + ')\n';
         msg += '• 90-Day: ' + cycle90Pct + '% (' + results.cycle90.reversals + '/' + results.cycle90.total + ')\n';
@@ -10866,26 +10801,23 @@ function backtestRealGann() {
         msg += '🎯 COMBINED (Sq9 + Cycle):\n';
         msg += '• Win Rate: ' + combinedPct + '% (' + results.combined.wins + '/' + results.combined.total + ')\n\n';
 
-        if (combinedPct > 55) {
-            msg += '✅ EDGE FOUND! Combined signals > 55%';
-        } else if (sq9SupportPct > 55 || sq9ResistPct > 55) {
-            msg += '✅ Sq9 levels show edge!';
+        var best = Math.max(sq9SupportPct, sq9ResistPct, cycle144Pct, combinedPct);
+        if (best > 55) {
+            msg += '✅ EDGE FOUND! Best: ' + best + '%';
+        } else if (best > 50) {
+            msg += '➖ Slight edge detected: ' + best + '%';
         } else {
-            msg += '⚠️ Results near random (50%)';
+            msg += '⚠️ No significant edge found';
         }
 
-        console.log('TRUE Gann Results:', results);
+        console.log('TRUE Gann Results (12 ETFs):', results);
         console.log('Combined signals:', results.signals);
 
         alert(msg);
-
-        // Store results for display
         window.lastGannBacktest = results;
     }
 
-    // Start processing
-    setTimeout(processChunk, 100);
-
+    setTimeout(processNextSymbol, 100);
     return results;
 }
 
