@@ -26645,6 +26645,18 @@ function selectRoadmapPivot(pivot) {
     renderGannRoadmap();
 }
 
+// Get current price from existing DOM elements
+function getRoadmapPrice(symbol) {
+    // Reads from existing elements like #gannSpyPrice, #gannQqqPrice, #gannIwmPrice
+    const priceEl = document.getElementById('gann' + symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase() + 'Price');
+    if (priceEl) {
+        const val = parseFloat(priceEl.textContent.replace(/[$,]/g, ''));
+        if (!isNaN(val) && val > 0) return val;
+    }
+    // Fallback if element not found
+    return { SPY: 598.27, QQQ: 524.18, IWM: 248.20 }[symbol] || 500;
+}
+
 // Main render function
 function renderGannRoadmap() {
     const container = document.getElementById('gannRoadmapContainer');
@@ -26654,14 +26666,8 @@ function renderGannRoadmap() {
     const pivotData = etfData[roadmapSelectedPivot];
     const pivotDate = new Date(pivotData.date);
 
-    // Get current price from global allSymbolsData
-    let currentPrice = pivotData.price;
-    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[roadmapSelectedETF]) {
-        const etfData2 = allSymbolsData[roadmapSelectedETF];
-        if (etfData2 && etfData2.length > 0) {
-            currentPrice = parseFloat(etfData2[etfData2.length - 1].Close) || pivotData.price;
-        }
-    }
+    // Get current price from DOM elements
+    const currentPrice = getRoadmapPrice(roadmapSelectedETF);
 
     // Build table HTML
     let html = `
