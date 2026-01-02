@@ -5606,6 +5606,141 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- SQ9 Entry Signal Monitor -->
+            <div class="sq9-monitor" id="sq9Monitor">
+                <div class="sq9-monitor-header">
+                    <div class="sq9-monitor-title">🎯 SQ9 Entry Signal Monitor</div>
+                    <div class="sq9-etf-tabs" id="sq9EtfTabs">
+                        <button class="sq9-etf-tab active" onclick="selectSq9Etf('SPY')">SPY</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('QQQ')">QQQ</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('IWM')">IWM</button>
+                    </div>
+                </div>
+
+                <!-- Info Bar -->
+                <div class="sq9-info-bar">
+                    <div class="sq9-info-item">
+                        <div class="sq9-info-label">PIVOT</div>
+                        <div class="sq9-info-value" id="sq9PivotPrice">$481.80</div>
+                        <div class="sq9-info-label" id="sq9PivotDate">Apr 7 LOW</div>
+                    </div>
+                    <div class="sq9-info-item">
+                        <div class="sq9-info-label">CURRENT</div>
+                        <div class="sq9-info-value" id="sq9CurrentPrice">$683.26</div>
+                        <div class="sq9-info-label" id="sq9FromPivot">+41.8%</div>
+                    </div>
+                    <div class="sq9-info-item">
+                        <div class="sq9-info-label">NEAREST LEVEL</div>
+                        <div class="sq9-info-value" id="sq9NearestLevel">$685.42</div>
+                    </div>
+                    <div class="sq9-bias-badge neutral" id="sq9BiasBadge">⏳ NEUTRAL</div>
+                </div>
+
+                <div style="font-size: 12px; text-align: center; margin-bottom: 15px; opacity: 0.8;" id="sq9SetupDesc">
+                    Price in NO-TRADE ZONE → Wait for approach to Support or Resistance
+                </div>
+
+                <!-- Levels Table -->
+                <table class="sq9-levels-table">
+                    <thead>
+                        <tr>
+                            <th>TYPE</th>
+                            <th>ROT</th>
+                            <th>LEVEL</th>
+                            <th>DIST</th>
+                            <th>TOUCH</th>
+                            <th>CANDLE</th>
+                            <th>VOL</th>
+                            <th>RSI</th>
+                            <th>CLOSE</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sq9LevelsBody">
+                        <tr><td colspan="10" style="text-align: center; padding: 20px;">Loading SQ9 levels...</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Checklist Panel -->
+                <div class="sq9-checklist-panel" id="sq9ChecklistPanel" style="display: none;">
+                    <div class="sq9-checklist-title">
+                        📋 Entry Checklist for <span id="sq9ChecklistLevel">$685.42</span> <span id="sq9ChecklistType">RESISTANCE</span>
+                    </div>
+                    <div class="sq9-checklist-grid">
+                        <div class="sq9-check-item failed" id="sq9Check1">
+                            <div class="sq9-check-icon">⬜</div>
+                            <div class="sq9-check-name">Touched</div>
+                            <div class="sq9-check-detail" id="sq9Check1Detail">Waiting...</div>
+                        </div>
+                        <div class="sq9-check-item failed" id="sq9Check2">
+                            <div class="sq9-check-icon">⬜</div>
+                            <div class="sq9-check-name">Candle</div>
+                            <div class="sq9-check-detail" id="sq9Check2Detail">Need pattern</div>
+                        </div>
+                        <div class="sq9-check-item failed" id="sq9Check3">
+                            <div class="sq9-check-icon">⬜</div>
+                            <div class="sq9-check-name">Volume</div>
+                            <div class="sq9-check-detail" id="sq9Check3Detail">Need high vol</div>
+                        </div>
+                        <div class="sq9-check-item failed" id="sq9Check4">
+                            <div class="sq9-check-icon">⬜</div>
+                            <div class="sq9-check-name">RSI</div>
+                            <div class="sq9-check-detail" id="sq9Check4Detail">Need confirm</div>
+                        </div>
+                        <div class="sq9-check-item failed" id="sq9Check5">
+                            <div class="sq9-check-icon">⬜</div>
+                            <div class="sq9-check-name">Closed</div>
+                            <div class="sq9-check-detail" id="sq9Check5Detail">Need close</div>
+                        </div>
+                    </div>
+                    <div class="sq9-progress-container">
+                        <div class="sq9-progress-bar">
+                            <div class="sq9-progress-fill low" id="sq9ProgressFill" style="width: 0%;"></div>
+                        </div>
+                        <div class="sq9-progress-text">
+                            <span id="sq9ProgressText">0/5 Checks</span>
+                            <span id="sq9StatusText">⏳ Waiting for setup</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entry Zone Alert -->
+                <div class="sq9-entry-zone waiting" id="sq9EntryZone">
+                    <div class="sq9-entry-title" id="sq9EntryTitle">⏳ NO ACTIVE SETUP</div>
+                    <div id="sq9EntryMessage">Price is between SQ9 levels - wait for approach to Support or Resistance</div>
+                    <div class="sq9-trade-details" id="sq9TradeDetails" style="display: none;">
+                        <div class="sq9-trade-item">
+                            <div class="sq9-trade-label">ACTION</div>
+                            <div class="sq9-trade-value" id="sq9TradeAction">--</div>
+                        </div>
+                        <div class="sq9-trade-item">
+                            <div class="sq9-trade-label">STRIKE</div>
+                            <div class="sq9-trade-value" id="sq9TradeStrike">--</div>
+                        </div>
+                        <div class="sq9-trade-item">
+                            <div class="sq9-trade-label">TARGET</div>
+                            <div class="sq9-trade-value" style="color: #4ade80;" id="sq9TradeTarget">--</div>
+                        </div>
+                        <div class="sq9-trade-item">
+                            <div class="sq9-trade-label">STOP</div>
+                            <div class="sq9-trade-value" style="color: #f87171;" id="sq9TradeStop">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Log -->
+                <div class="sq9-alert-log">
+                    <div class="sq9-alert-log-title">📜 Recent Alerts</div>
+                    <div id="sq9AlertLog">
+                        <div class="sq9-alert-item">
+                            <span class="sq9-alert-time">--:-- --</span>
+                            <span class="sq9-alert-icon">⏳</span>
+                            <span class="sq9-alert-message">Waiting for price to approach SQ9 level...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Signal Confluence Score -->
             <div class="signal-confluence-card">
                 <div style="text-align: center;">
