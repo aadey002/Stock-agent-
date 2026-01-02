@@ -3008,6 +3008,523 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
     margin: 0 auto 20px;
 }
 
+/* ============================================
+   SQ9 ENTRY SIGNAL MONITOR STYLES
+   ============================================ */
+
+/* SQ9 Monitor Container */
+.sq9-monitor {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.sq9-monitor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sq9-monitor-title {
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sq9-etf-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.sq9-etf-tab {
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sq9-etf-tab:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.sq9-etf-tab.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+    color: white;
+}
+
+/* Pivot & Current Price Info */
+.sq9-info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sq9-info-item {
+    text-align: center;
+}
+
+.sq9-info-label {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.sq9-info-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.sq9-bias-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sq9-bias-badge.call {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.sq9-bias-badge.put {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.sq9-bias-badge.neutral {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* SQ9 Levels Table */
+.sq9-levels-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.sq9-levels-table th {
+    padding: 12px 8px;
+    text-align: left;
+    background: rgba(0,0,0,0.3);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sq9-levels-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sq9-levels-table tr.active-level {
+    background: rgba(245,158,11,0.2);
+    animation: sq9RowPulse 2s infinite;
+}
+
+.sq9-levels-table tr.ready-level {
+    background: rgba(34,197,94,0.3);
+    animation: sq9ReadyPulse 1.5s infinite;
+}
+
+.sq9-levels-table tr.closed-level {
+    background: rgba(239,68,68,0.15);
+    opacity: 0.7;
+}
+
+.sq9-levels-table tr.current-price-row {
+    background: linear-gradient(90deg, rgba(59,130,246,0.3), rgba(139,92,246,0.3));
+}
+
+.sq9-levels-table tr.current-price-row td {
+    padding: 8px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 14px;
+}
+
+@keyframes sq9RowPulse {
+    0%, 100% { box-shadow: inset 0 0 0 0 rgba(245,158,11,0.3); }
+    50% { box-shadow: inset 0 0 20px 0 rgba(245,158,11,0.2); }
+}
+
+@keyframes sq9ReadyPulse {
+    0%, 100% { box-shadow: inset 0 0 0 0 rgba(34,197,94,0.4); transform: scale(1); }
+    50% { box-shadow: inset 0 0 25px 0 rgba(34,197,94,0.3); }
+}
+
+.sq9-level-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.sq9-level-type.resist {
+    background: rgba(239,68,68,0.3);
+    color: #fca5a5;
+}
+
+.sq9-level-type.support {
+    background: rgba(34,197,94,0.3);
+    color: #86efac;
+}
+
+.sq9-check-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.sq9-check-box.checked {
+    background: rgba(34,197,94,0.3);
+    color: #4ade80;
+}
+
+.sq9-check-box.unchecked {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
+}
+
+.sq9-check-box.na {
+    background: transparent;
+    color: rgba(255,255,255,0.2);
+}
+
+.sq9-status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.sq9-status-badge.ready {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    animation: statusPulse 1s infinite;
+}
+
+.sq9-status-badge.watching {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.sq9-status-badge.partial {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+}
+
+.sq9-status-badge.closed {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.sq9-status-badge.target {
+    background: rgba(34,197,94,0.2);
+    color: #4ade80;
+}
+
+@keyframes statusPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Checklist Panel */
+.sq9-checklist-panel {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.sq9-checklist-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sq9-checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .sq9-checklist-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.sq9-check-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+}
+
+.sq9-check-item.passed {
+    background: rgba(34,197,94,0.2);
+    border-color: rgba(34,197,94,0.5);
+}
+
+.sq9-check-item.failed {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.sq9-check-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.sq9-check-name {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.sq9-check-detail {
+    font-size: 9px;
+    opacity: 0.7;
+}
+
+/* Progress Bar */
+.sq9-progress-container {
+    margin-bottom: 15px;
+}
+
+.sq9-progress-bar {
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.sq9-progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s;
+}
+
+.sq9-progress-fill.low {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.sq9-progress-fill.medium {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.sq9-progress-fill.high {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.sq9-progress-text {
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Entry Zone Alert */
+.sq9-entry-zone {
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sq9-entry-zone.ready {
+    background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.3));
+    border: 2px solid #22c55e;
+    animation: entryZonePulse 2s infinite;
+}
+
+.sq9-entry-zone.closed {
+    background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.2));
+    border: 2px solid #ef4444;
+}
+
+.sq9-entry-zone.waiting {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+@keyframes entryZonePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50% { box-shadow: 0 0 30px 10px rgba(34,197,94,0.2); }
+}
+
+.sq9-entry-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.sq9-trade-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .sq9-trade-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.sq9-trade-item {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.sq9-trade-label {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.sq9-trade-value {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Alert Log */
+.sq9-alert-log {
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.sq9-alert-log-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.sq9-alert-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 11px;
+}
+
+.sq9-alert-item:last-child {
+    border-bottom: none;
+}
+
+.sq9-alert-time {
+    color: rgba(255,255,255,0.5);
+    min-width: 70px;
+}
+
+.sq9-alert-icon {
+    font-size: 14px;
+}
+
+.sq9-alert-message {
+    flex: 1;
+}
+
+/* Opportunities Table SQ9 Column */
+.opp-sq9-cell {
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    min-width: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.opp-sq9-cell:hover {
+    transform: scale(1.02);
+}
+
+.opp-sq9-cell.ready {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border: 2px solid #22c55e;
+    animation: oppSq9Pulse 1.5s infinite;
+}
+
+.opp-sq9-cell.watching {
+    background: linear-gradient(135deg, #fef9c3, #fef08a);
+    border: 1px solid #eab308;
+}
+
+.opp-sq9-cell.partial {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+}
+
+.opp-sq9-cell.closed {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border: 1px solid #ef4444;
+}
+
+.opp-sq9-cell.none {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #9ca3af;
+}
+
+@keyframes oppSq9Pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50% { box-shadow: 0 0 10px 3px rgba(34,197,94,0.2); }
+}
+
+.opp-sq9-status {
+    font-weight: 700;
+    display: block;
+}
+
+.opp-sq9-level {
+    font-size: 9px;
+    opacity: 0.8;
+    display: block;
+    margin-top: 2px;
+}
+
+.opp-sq9-cell.ready .opp-sq9-status { color: #16a34a; }
+.opp-sq9-cell.watching .opp-sq9-status { color: #ca8a04; }
+.opp-sq9-cell.partial .opp-sq9-status { color: #6b7280; }
+.opp-sq9-cell.closed .opp-sq9-status { color: #dc2626; }
+
     </style>
 </head>
 <body>
