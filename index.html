@@ -26372,6 +26372,632 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(updateGannDashboardPrices, 8000);
 });
 
+// ============================================
+// SQ9 ENTRY SIGNAL MONITOR SYSTEM
+// ============================================
+
+// SQ9 Monitor State
+let sq9SelectedEtf = 'SPY';
+let sq9AlertLog = [];
+let sq9EntryZones = {};
+
+// Pivot Data for SQ9 Calculations
+const sq9PivotData = {
+    SPY: { date: '2025-04-07', price: 481.80, type: 'LOW', label: 'Apr 7 LOW' },
+    QQQ: { date: '2025-04-07', price: 402.39, type: 'LOW', label: 'Apr 7 LOW' },
+    IWM: { date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 7 LOW' }
+};
+
+// Calculate SQ9 levels from pivot
+function calcSq9LevelsFromPivot(pivotPrice, currentPrice) {
+    const sqrtPivot = Math.sqrt(pivotPrice);
+    const levels = [];
+
+    // Calculate rotations (each 0.5 = 180 degrees)
+    for (let r = 4; r <= 12; r += 0.5) {
+        const price = Math.pow(sqrtPivot + r * 0.5, 2);
+        const dist = ((price - currentPrice) / currentPrice * 100);
+
+        // Only include levels within reasonable range (-10% to +10%)
+        if (dist >= -10 && dist <= 10) {
+            levels.push({
+                rotation: r,
+                price: price,
+                distance: dist,
+                type: price > currentPrice ? 'resist' : 'support'
+            });
+        }
+    }
+
+    return levels.sort((a, b) => b.price - a.price);
+}
+
+// Find nearest SQ9 level
+function findNearestSq9Level(levels, currentPrice) {
+    let nearest = null;
+    let minDist = Infinity;
+
+    for (const level of levels) {
+        const dist = Math.abs(level.price - currentPrice);
+        if (dist < minDist) {
+            minDist = dist;
+            nearest = level;
+        }
+    }
+
+    return nearest;
+}
+
+// Determine trade direction based on nearest level
+function getSq9TradeDirection(nearest, currentPrice) {
+    if (!nearest) return 'neutral';
+
+    const distPct = Math.abs(nearest.distance);
+
+    // Only active if within 2% of a level
+    if (distPct > 2) return 'neutral';
+
+    // If price is BELOW level and level is above = approaching resistance = PUT
+    // If price is ABOVE level and level is below = approaching support = CALL
+    if (nearest.type === 'resist') {
+        return 'put';
+    } else {
+        return 'call';
+    }
+}
+
+// Initialize entry zone tracking for an ETF
+function initSq9EntryZone(symbol) {
+    if (!sq9EntryZones[symbol]) {
+        sq9EntryZones[symbol] = {
+            status: 'none', // none, partial, watching, ready, closed
+            direction: null,
+            level: null,
+            checks: { touched: false, candle: false, volume: false, rsi: false, closed: false },
+            checkCount: 0,
+            openedAt: null,
+            closedAt: null,
+            closedReason: null
+        };
+    }
+    return sq9EntryZones[symbol];
+}
+
+// Simulate check status (in real implementation, this would use live data)
+function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
+    const zone = initSq9EntryZone(symbol);
+    const distPct = Math.abs((currentPrice - levelPrice) / levelPrice * 100);
+
+    // Reset if price moved away
+    if (distPct > 3) {
+        zone.status = 'none';
+        zone.checks = { touched: false, candle: false, volume: false, rsi: false, closed: false };
+        zone.checkCount = 0;
+        return zone;
+    }
+
+    // Simulate checks based on distance and randomness for demo
+    // In production, these would be calculated from real market data
+
+    // Check 1: Touched (within 0.5% of level)
+    zone.checks.touched = distPct <= 0.5;
+
+    // Check 2: Candle pattern (simulated based on distance)
+    zone.checks.candle = distPct <= 0.3 && Math.random() > 0.3;
+
+    // Check 3: Volume (simulated)
+    zone.checks.volume = zone.checks.touched && Math.random() > 0.4;
+
+    // Check 4: RSI (simulated)
+    zone.checks.rsi = zone.checks.touched && Math.random() > 0.5;
+
+    // Check 5: Closed beyond level
+    if (direction === 'put') {
+        zone.checks.closed = currentPrice < levelPrice && zone.checks.candle;
+    } else {
+        zone.checks.closed = currentPrice > levelPrice && zone.checks.candle;
+    }
+
+    // Count checks
+    zone.checkCount = Object.values(zone.checks).filter(v => v).length;
+
+    // Determine status
+    if (zone.checkCount === 5) {
+        if (zone.status !== 'ready') {
+            zone.openedAt = new Date();
+            addSq9Alert(symbol, '🎯', `ENTRY ZONE OPEN - ${direction.toUpperCase()} at ${levelPrice.toFixed(2)}`);
+        }
+        zone.status = 'ready';
+    } else if (zone.checkCount >= 3) {
+        zone.status = 'watching';
+    } else if (zone.checkCount >= 1) {
+        zone.status = 'partial';
+    } else {
+        zone.status = 'none';
+    }
+
+    zone.direction = direction;
+    zone.level = levelPrice;
+
+    // Check if zone should close (price broke through)
+    const breakDistance = direction === 'put' ?
+        ((currentPrice - levelPrice) / levelPrice * 100) :
+        ((levelPrice - currentPrice) / levelPrice * 100);
+
+    if (zone.status === 'ready' && breakDistance > 1.5) {
+        zone.status = 'closed';
+        zone.closedAt = new Date();
+        zone.closedReason = `Price broke ${direction === 'put' ? 'above' : 'below'} ${(levelPrice * (direction === 'put' ? 1.015 : 0.985)).toFixed(2)}`;
+        addSq9Alert(symbol, '🔒', `ENTRY ZONE CLOSED - ${zone.closedReason}`);
+    }
+
+    return zone;
+}
+
+// Add alert to log
+function addSq9Alert(symbol, icon, message) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    sq9AlertLog.unshift({
+        symbol: symbol,
+        time: timeStr,
+        icon: icon,
+        message: message,
+        timestamp: now
+    });
+
+    // Keep only last 20 alerts
+    if (sq9AlertLog.length > 20) {
+        sq9AlertLog = sq9AlertLog.slice(0, 20);
+    }
+}
+
+// Select ETF tab
+function selectSq9Etf(symbol) {
+    sq9SelectedEtf = symbol;
+
+    // Update tab styling
+    document.querySelectorAll('#sq9EtfTabs .sq9-etf-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    updateSq9Monitor();
+}
+
+// Main update function
+function updateSq9Monitor() {
+    const symbol = sq9SelectedEtf;
+    const pivot = sq9PivotData[symbol];
+
+    // Get current price from allSymbolsData
+    let currentPrice = 683.26; // Default fallback
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        const data = allSymbolsData[symbol];
+        if (data && data.length > 0) {
+            currentPrice = parseFloat(data[data.length - 1].Close) || currentPrice;
+        }
+    }
+
+    // Calculate SQ9 levels
+    const levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+    const nearest = findNearestSq9Level(levels, currentPrice);
+    const direction = getSq9TradeDirection(nearest, currentPrice);
+
+    // Update entry zone tracking
+    const zone = nearest ?
+        simulateSq9Checks(symbol, direction, nearest.price, currentPrice) :
+        initSq9EntryZone(symbol);
+
+    // Update UI
+    updateSq9InfoBar(symbol, pivot, currentPrice, nearest, direction);
+    updateSq9LevelsTable(levels, currentPrice, nearest, zone);
+    updateSq9Checklist(zone, direction, nearest);
+    updateSq9EntryZone(zone, direction, nearest, currentPrice);
+    updateSq9AlertLog(symbol);
+}
+
+// Update info bar
+function updateSq9InfoBar(symbol, pivot, currentPrice, nearest, direction) {
+    const fromPivot = ((currentPrice - pivot.price) / pivot.price * 100);
+
+    const pivotPriceEl = document.getElementById('sq9PivotPrice');
+    const pivotDateEl = document.getElementById('sq9PivotDate');
+    const currentPriceEl = document.getElementById('sq9CurrentPrice');
+    const fromPivotEl = document.getElementById('sq9FromPivot');
+    const nearestLevelEl = document.getElementById('sq9NearestLevel');
+
+    if (pivotPriceEl) pivotPriceEl.textContent = '$' + pivot.price.toFixed(2);
+    if (pivotDateEl) pivotDateEl.textContent = pivot.label;
+    if (currentPriceEl) currentPriceEl.textContent = '$' + currentPrice.toFixed(2);
+    if (fromPivotEl) fromPivotEl.textContent = (fromPivot >= 0 ? '+' : '') + fromPivot.toFixed(1) + '%';
+    if (nearestLevelEl) nearestLevelEl.textContent = nearest ? '$' + nearest.price.toFixed(2) : '--';
+
+    const biasBadge = document.getElementById('sq9BiasBadge');
+    const setupDesc = document.getElementById('sq9SetupDesc');
+
+    if (biasBadge) {
+        if (direction === 'put') {
+            biasBadge.className = 'sq9-bias-badge put';
+            biasBadge.textContent = '📉 PUT SETUP';
+            if (setupDesc) setupDesc.textContent = 'Price approaching RESISTANCE → Watching for REJECTION → PUT setup';
+        } else if (direction === 'call') {
+            biasBadge.className = 'sq9-bias-badge call';
+            biasBadge.textContent = '📈 CALL SETUP';
+            if (setupDesc) setupDesc.textContent = 'Price approaching SUPPORT → Watching for BOUNCE → CALL setup';
+        } else {
+            biasBadge.className = 'sq9-bias-badge neutral';
+            biasBadge.textContent = '⏳ NEUTRAL';
+            if (setupDesc) setupDesc.textContent = 'Price in NO-TRADE ZONE → Wait for approach to Support or Resistance';
+        }
+    }
+}
+
+// Update levels table
+function updateSq9LevelsTable(levels, currentPrice, nearest, zone) {
+    const tbody = document.getElementById('sq9LevelsBody');
+    if (!tbody) return;
+
+    let html = '';
+    let insertedCurrentPrice = false;
+
+    levels.forEach(level => {
+        // Insert current price row at appropriate position
+        if (!insertedCurrentPrice && level.price < currentPrice) {
+            html += `<tr class="current-price-row">
+                <td colspan="10">═══ CURRENT: $${currentPrice.toFixed(2)} ═══</td>
+            </tr>`;
+            insertedCurrentPrice = true;
+        }
+
+        const isNearest = nearest && Math.abs(level.price - nearest.price) < 0.01;
+        const isActive = isNearest && zone.status !== 'none';
+        const isReady = isNearest && zone.status === 'ready';
+        const isClosed = isNearest && zone.status === 'closed';
+
+        let rowClass = '';
+        if (isReady) rowClass = 'ready-level';
+        else if (isClosed) rowClass = 'closed-level';
+        else if (isActive) rowClass = 'active-level';
+
+        const typeClass = level.type === 'resist' ? 'resist' : 'support';
+        const distStr = (level.distance >= 0 ? '+' : '') + level.distance.toFixed(1) + '%';
+
+        // Check boxes
+        const renderCheck = (passed, isActive) => {
+            if (!isActive) return '<span class="sq9-check-box na">──</span>';
+            return passed ?
+                '<span class="sq9-check-box checked">✅</span>' :
+                '<span class="sq9-check-box unchecked">⬜</span>';
+        };
+
+        // Status badge
+        let statusHtml = '';
+        if (isReady) {
+            statusHtml = '<span class="sq9-status-badge ready">🟢 READY</span>';
+        } else if (isClosed) {
+            statusHtml = '<span class="sq9-status-badge closed">🔒 CLOSED</span>';
+        } else if (zone.status === 'watching' && isNearest) {
+            statusHtml = `<span class="sq9-status-badge watching">🎯 ${zone.checkCount}/5</span>`;
+        } else if (zone.status === 'partial' && isNearest) {
+            statusHtml = `<span class="sq9-status-badge partial">⏳ ${zone.checkCount}/5</span>`;
+        } else if (level.type === 'support') {
+            statusHtml = '<span class="sq9-status-badge target">TARGET</span>';
+        } else {
+            statusHtml = '--';
+        }
+
+        html += `<tr class="${rowClass}">
+            <td><span class="sq9-level-type ${typeClass}">${level.type === 'resist' ? '🔴 R' : '🟢 S'}</span></td>
+            <td>+${level.rotation.toFixed(1)}</td>
+            <td style="font-weight: 700;">$${level.price.toFixed(2)}</td>
+            <td style="color: ${level.distance >= 0 ? '#f87171' : '#4ade80'};">${distStr}</td>
+            <td>${renderCheck(zone.checks.touched, isNearest)}</td>
+            <td>${renderCheck(zone.checks.candle, isNearest)}</td>
+            <td>${renderCheck(zone.checks.volume, isNearest)}</td>
+            <td>${renderCheck(zone.checks.rsi, isNearest)}</td>
+            <td>${renderCheck(zone.checks.closed, isNearest)}</td>
+            <td>${statusHtml}</td>
+        </tr>`;
+    });
+
+    // If current price not inserted yet (higher than all levels)
+    if (!insertedCurrentPrice) {
+        html = `<tr class="current-price-row">
+            <td colspan="10">═══ CURRENT: $${currentPrice.toFixed(2)} ═══</td>
+        </tr>` + html;
+    }
+
+    tbody.innerHTML = html;
+}
+
+// Update checklist panel
+function updateSq9Checklist(zone, direction, nearest) {
+    const checklistPanel = document.getElementById('sq9ChecklistPanel');
+    if (!checklistPanel) return;
+
+    if (!nearest) {
+        checklistPanel.style.display = 'none';
+        return;
+    }
+
+    checklistPanel.style.display = 'block';
+
+    const levelEl = document.getElementById('sq9ChecklistLevel');
+    const typeEl = document.getElementById('sq9ChecklistType');
+    if (levelEl) levelEl.textContent = '$' + nearest.price.toFixed(2);
+    if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE' : 'SUPPORT';
+
+    const checkConfig = direction === 'put' ?
+        { candle: 'Bearish', rsi: '>70', closed: 'Below' } :
+        { candle: 'Bullish', rsi: '<30', closed: 'Above' };
+
+    // Update each check item
+    const checks = [
+        { id: 'sq9Check1', key: 'touched', name: 'Touched', detail: zone.checks.touched ? 'Level reached ✓' : 'Waiting...' },
+        { id: 'sq9Check2', key: 'candle', name: 'Candle', detail: zone.checks.candle ? `${checkConfig.candle} pattern ✓` : `Need ${checkConfig.candle}` },
+        { id: 'sq9Check3', key: 'volume', name: 'Volume', detail: zone.checks.volume ? 'High volume ✓' : 'Need high vol' },
+        { id: 'sq9Check4', key: 'rsi', name: 'RSI', detail: zone.checks.rsi ? `RSI ${checkConfig.rsi} ✓` : `Need ${checkConfig.rsi}` },
+        { id: 'sq9Check5', key: 'closed', name: 'Closed', detail: zone.checks.closed ? `${checkConfig.closed} level ✓` : `Need ${checkConfig.closed.toLowerCase()}` }
+    ];
+
+    checks.forEach(check => {
+        const el = document.getElementById(check.id);
+        if (!el) return;
+        const passed = zone.checks[check.key];
+        el.className = 'sq9-check-item ' + (passed ? 'passed' : 'failed');
+        const iconEl = el.querySelector('.sq9-check-icon');
+        if (iconEl) iconEl.textContent = passed ? '✅' : '⬜';
+        const detailEl = document.getElementById(check.id + 'Detail');
+        if (detailEl) detailEl.textContent = check.detail;
+    });
+
+    // Update progress bar
+    const progress = (zone.checkCount / 5) * 100;
+    const progressFill = document.getElementById('sq9ProgressFill');
+    if (progressFill) {
+        progressFill.style.width = progress + '%';
+        progressFill.className = 'sq9-progress-fill ' + (progress >= 80 ? 'high' : progress >= 40 ? 'medium' : 'low');
+    }
+
+    const progressText = document.getElementById('sq9ProgressText');
+    const statusText = document.getElementById('sq9StatusText');
+    if (progressText) progressText.textContent = zone.checkCount + '/5 Checks';
+    if (statusText) {
+        statusText.textContent =
+            zone.status === 'ready' ? '🟢 ENTRY READY!' :
+            zone.status === 'closed' ? '🔒 ZONE CLOSED' :
+            zone.status === 'watching' ? '🎯 Almost ready...' :
+            zone.status === 'partial' ? '⏳ Monitoring...' : '⏳ Waiting for setup';
+    }
+}
+
+// Update entry zone alert
+function updateSq9EntryZone(zone, direction, nearest, currentPrice) {
+    const container = document.getElementById('sq9EntryZone');
+    const title = document.getElementById('sq9EntryTitle');
+    const message = document.getElementById('sq9EntryMessage');
+    const tradeDetails = document.getElementById('sq9TradeDetails');
+
+    if (!container || !title || !message) return;
+
+    if (zone.status === 'ready') {
+        container.className = 'sq9-entry-zone ready';
+        title.textContent = `🎯🎯🎯 ENTRY ZONE OPEN - ${direction.toUpperCase()} SIGNAL 🎯🎯🎯`;
+        message.textContent = 'ALL 5 CHECKS PASSED - Trade setup confirmed!';
+        if (tradeDetails) tradeDetails.style.display = 'grid';
+
+        // Calculate trade details
+        const isCall = direction === 'call';
+        const strike = Math.round(currentPrice / 5) * 5 + (isCall ? 0 : 0);
+        const targetLevel = findNextSq9Level(nearest, !isCall);
+        const stopLevel = findNextSq9Level(nearest, isCall);
+
+        const actionEl = document.getElementById('sq9TradeAction');
+        const strikeEl = document.getElementById('sq9TradeStrike');
+        const targetEl = document.getElementById('sq9TradeTarget');
+        const stopEl = document.getElementById('sq9TradeStop');
+
+        if (actionEl) actionEl.textContent = isCall ? 'BUY CALLS' : 'BUY PUTS';
+        if (strikeEl) strikeEl.textContent = strike + (isCall ? 'C' : 'P');
+        if (targetEl) targetEl.textContent = targetLevel ? '$' + targetLevel.toFixed(2) : '--';
+        if (stopEl) stopEl.textContent = stopLevel ? '$' + stopLevel.toFixed(2) : '--';
+
+    } else if (zone.status === 'closed') {
+        container.className = 'sq9-entry-zone closed';
+        title.textContent = '🔒 ENTRY ZONE CLOSED';
+        message.textContent = zone.closedReason || 'Price broke through level';
+        if (zone.closedAt) {
+            message.textContent += ' at ' + zone.closedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+        if (tradeDetails) tradeDetails.style.display = 'none';
+
+    } else {
+        container.className = 'sq9-entry-zone waiting';
+        if (zone.status === 'watching' || zone.status === 'partial') {
+            title.textContent = `⏳ ${zone.checkCount}/5 CHECKS - ${direction.toUpperCase()} SETUP FORMING`;
+            message.textContent = `Waiting for ${5 - zone.checkCount} more check(s) to confirm entry`;
+        } else {
+            title.textContent = '⏳ NO ACTIVE SETUP';
+            message.textContent = 'Price is between SQ9 levels - wait for approach to Support or Resistance';
+        }
+        if (tradeDetails) tradeDetails.style.display = 'none';
+    }
+}
+
+// Helper: Find next SQ9 level in direction
+function findNextSq9Level(currentLevel, goUp) {
+    if (!currentLevel) return null;
+    const sqrtBase = Math.sqrt(sq9PivotData[sq9SelectedEtf].price);
+    const nextRotation = currentLevel.rotation + (goUp ? 0.5 : -0.5);
+    return Math.pow(sqrtBase + nextRotation * 0.5, 2);
+}
+
+// Update alert log display
+function updateSq9AlertLog(symbol) {
+    const container = document.getElementById('sq9AlertLog');
+    if (!container) return;
+
+    const filtered = sq9AlertLog.filter(a => a.symbol === symbol).slice(0, 10);
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="sq9-alert-item">
+            <span class="sq9-alert-time">--:-- --</span>
+            <span class="sq9-alert-icon">⏳</span>
+            <span class="sq9-alert-message">Waiting for price to approach SQ9 level...</span>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map(alert => `
+        <div class="sq9-alert-item">
+            <span class="sq9-alert-time">${alert.time}</span>
+            <span class="sq9-alert-icon">${alert.icon}</span>
+            <span class="sq9-alert-message">${alert.message}</span>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// OPPORTUNITIES TABLE SQ9 COLUMN
+// ============================================
+
+// Get SQ9 status for opportunities table
+function getSq9StatusForOpp(symbol) {
+    const pivot = sq9PivotData[symbol];
+    if (!pivot) return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
+
+    // Get current price
+    let currentPrice = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        const data = allSymbolsData[symbol];
+        if (data && data.length > 0) {
+            currentPrice = parseFloat(data[data.length - 1].Close);
+        }
+    }
+
+    if (!currentPrice) return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
+
+    const levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+    const nearest = findNearestSq9Level(levels, currentPrice);
+    const direction = getSq9TradeDirection(nearest, currentPrice);
+
+    if (direction === 'neutral' || !nearest) {
+        return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
+    }
+
+    const zone = sq9EntryZones[symbol] || initSq9EntryZone(symbol);
+
+    return {
+        status: zone.status || 'partial',
+        direction: direction,
+        level: nearest.price,
+        checkCount: zone.checkCount || 0,
+        closedAt: zone.closedAt
+    };
+}
+
+// Render SQ9 cell for opportunities table
+function renderSq9OppCell(symbol) {
+    const sq9 = getSq9StatusForOpp(symbol);
+
+    if (sq9.status === 'none' || !sq9.direction) {
+        return `<div class="opp-sq9-cell none" onclick="viewSq9Detail('${symbol}')">
+            <span class="opp-sq9-status">⬜ --</span>
+            <span class="opp-sq9-level">No active level</span>
+        </div>`;
+    }
+
+    const dirIcon = sq9.direction === 'call' ? '📈' : '📉';
+    const dirText = sq9.direction.toUpperCase();
+
+    if (sq9.status === 'ready') {
+        return `<div class="opp-sq9-cell ready" onclick="viewSq9Detail('${symbol}')">
+            <span class="opp-sq9-status">🟢 ${dirText} 5/5 ✅</span>
+            <span class="opp-sq9-level">$${sq9.level.toFixed(2)} READY!</span>
+        </div>`;
+    }
+
+    if (sq9.status === 'closed') {
+        const timeStr = sq9.closedAt ? sq9.closedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+        return `<div class="opp-sq9-cell closed" onclick="viewSq9Detail('${symbol}')">
+            <span class="opp-sq9-status">🔒 ${dirText} CLOSED</span>
+            <span class="opp-sq9-level">@ ${timeStr}</span>
+        </div>`;
+    }
+
+    if (sq9.status === 'watching') {
+        return `<div class="opp-sq9-cell watching" onclick="viewSq9Detail('${symbol}')">
+            <span class="opp-sq9-status">🎯 ${dirText} ${sq9.checkCount}/5</span>
+            <span class="opp-sq9-level">Near $${sq9.level.toFixed(2)}</span>
+        </div>`;
+    }
+
+    // Partial
+    return `<div class="opp-sq9-cell partial" onclick="viewSq9Detail('${symbol}')">
+        <span class="opp-sq9-status">⏳ ${dirText} ${sq9.checkCount}/5</span>
+        <span class="opp-sq9-level">Near $${sq9.level.toFixed(2)}</span>
+    </div>`;
+}
+
+// Navigate to Daily Analysis with selected symbol
+function viewSq9Detail(symbol) {
+    // Set the ETF
+    sq9SelectedEtf = symbol;
+
+    // Switch to Daily Analysis tab
+    const dailyTab = document.querySelector('[data-tab="daily-analysis"]');
+    if (dailyTab) {
+        dailyTab.click();
+    }
+
+    // Update SQ9 monitor
+    setTimeout(() => {
+        // Update ETF tabs
+        document.querySelectorAll('#sq9EtfTabs .sq9-etf-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.textContent.trim() === symbol) {
+                tab.classList.add('active');
+            }
+        });
+
+        updateSq9Monitor();
+
+        // Scroll to SQ9 monitor
+        const monitor = document.getElementById('sq9Monitor');
+        if (monitor) {
+            monitor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100);
+}
+
+// Initialize SQ9 Monitor on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial update after data loads
+    setTimeout(() => {
+        if (document.getElementById('sq9Monitor')) {
+            updateSq9Monitor();
+        }
+    }, 2000);
+
+    // Refresh every 30 seconds
+    setInterval(() => {
+        if (document.getElementById('sq9Monitor')) {
+            updateSq9Monitor();
+        }
+    }, 30000);
+});
+
+// Update when Daily Analysis tab is clicked
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (this.dataset.tab === 'daily-analysis') {
+            setTimeout(updateSq9Monitor, 100);
+        }
+    });
+});
+
 </script>
 </body>
 </html>
