@@ -26744,7 +26744,7 @@ function renderGannRoadmap() {
             statusHtml = `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: #ede9fe; color: #7c3aed;">🔮 ${daysUntil}d away</span>`;
         }
 
-        const expectedHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${expectedMove === 'LOW' ? '#dcfce7' : '#fee2e2'}; color: ${expectedMove === 'LOW' ? '#16a34a' : '#dc2626'};">${expectedMove === 'LOW' ? '📈 Rally' : '📉 Pull'}</span>`;
+        const expectedHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${expectedMove === 'HIGH' ? '#dcfce7' : '#fee2e2'}; color: ${expectedMove === 'HIGH' ? '#16a34a' : '#dc2626'};">${expectedMove === 'HIGH' ? '📈 Rally' : '📉 Pullback'}</span>`;
 
         let actualHtml = '';
         if (cycle.result === 'correct') {
