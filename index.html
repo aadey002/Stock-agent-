@@ -9225,6 +9225,107 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- Multi-Timeframe SQ9 Analysis -->
+            <div style="background: linear-gradient(135deg, rgba(147,51,234,0.08), rgba(79,70,229,0.08)); border: 1px solid rgba(147,51,234,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📊 Multi-Timeframe SQ9 Analysis</div>
+                        <div style="font-size: 11px; color: var(--muted);">Confluence across 15min, 1hour, and Daily pivots</div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="sq9MtfSymbol" onchange="updateSq9Mtf()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; font-weight: 600;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="AMD">AMD</option>
+                            <option value="META">META</option>
+                        </select>
+                        <div style="font-size: 14px; font-weight: 600;">
+                            <span id="sq9MtfSymbolDisplay">SPY</span>:
+                            <span id="sq9MtfPriceDisplay" style="color: #3b82f6;">$--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeframe Grid -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px;">
+                    <!-- 15min Timeframe -->
+                    <div id="sq9Mtf15min" style="background: var(--bg); border: 2px solid transparent; border-radius: 10px; padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 12px; font-weight: 700; color: #8b5cf6;">⏱️ 15-MIN</span>
+                            <span id="sq9Mtf15minBias" style="padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #e5e7eb; color: #666;">NEUTRAL</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Session Pivot</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Nearest Level</div>
+                                <div id="sq9Mtf15minLevel" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Distance</div>
+                                <div id="sq9Mtf15minDist" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--muted);">Type: <span id="sq9Mtf15minType">--</span></div>
+                        <div id="sq9Mtf15minLevels" style="margin-top: 10px; font-size: 10px;"></div>
+                    </div>
+
+                    <!-- 1hour Timeframe -->
+                    <div id="sq9Mtf1hour" style="background: var(--bg); border: 2px solid transparent; border-radius: 10px; padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 12px; font-weight: 700; color: #3b82f6;">🕐 1-HOUR</span>
+                            <span id="sq9Mtf1hourBias" style="padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #e5e7eb; color: #666;">NEUTRAL</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Weekly Pivot</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Nearest Level</div>
+                                <div id="sq9Mtf1hourLevel" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Distance</div>
+                                <div id="sq9Mtf1hourDist" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--muted);">Type: <span id="sq9Mtf1hourType">--</span></div>
+                        <div id="sq9Mtf1hourLevels" style="margin-top: 10px; font-size: 10px;"></div>
+                    </div>
+
+                    <!-- Daily Timeframe -->
+                    <div id="sq9MtfDaily" style="background: var(--bg); border: 2px solid transparent; border-radius: 10px; padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 12px; font-weight: 700; color: #f59e0b;">📅 DAILY</span>
+                            <span id="sq9MtfDailyBias" style="padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #e5e7eb; color: #666;">NEUTRAL</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">52-Week Pivot</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Nearest Level</div>
+                                <div id="sq9MtfDailyLevel" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 9px; color: var(--muted);">Distance</div>
+                                <div id="sq9MtfDailyDist" style="font-size: 14px; font-weight: 700;">--</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--muted);">Type: <span id="sq9MtfDailyType">--</span></div>
+                        <div id="sq9MtfDailyLevels" style="margin-top: 10px; font-size: 10px;"></div>
+                    </div>
+                </div>
+
+                <!-- Alignment Status -->
+                <div id="sq9MtfAlignment" style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 15px; text-align: center;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span id="sq9MtfAlignmentTitle" style="font-size: 14px; font-weight: 700;">⏳ Waiting for Alignment</span>
+                        <span id="sq9MtfAlignmentBadge" style="padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; background: #e5e7eb; color: #666;">NEUTRAL</span>
+                    </div>
+                    <div id="sq9MtfAlignmentDesc" style="font-size: 12px; color: var(--muted);">Select a symbol to analyze multi-timeframe confluence</div>
+                </div>
+            </div>
+
             <!-- Selected Setup Detail -->
             <div style="background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px;" id="sq9DetailPanel">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -28997,6 +29098,270 @@ function generateAiAnalysis() {
 
     return html;
 }
+
+// ============================================
+// MULTI-TIMEFRAME SQ9 ANALYSIS
+// ============================================
+
+// Different pivots for different timeframes
+var sq9MtfPivots = {
+    SPY: {
+        '15min': { price: 679.82, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 665.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 481.80, date: '2025-04-07', label: '52-Week Low' }
+    },
+    QQQ: {
+        '15min': { price: 608.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 590.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 402.39, date: '2025-04-07', label: '52-Week Low' }
+    },
+    IWM: {
+        '15min': { price: 246.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 238.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 171.73, date: '2025-04-07', label: '52-Week Low' }
+    },
+    NVDA: {
+        '15min': { price: 138.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 128.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 86.50, date: '2025-04-07', label: '52-Week Low' }
+    },
+    TSLA: {
+        '15min': { price: 405.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 385.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 138.80, date: '2025-04-07', label: '52-Week Low' }
+    },
+    AAPL: {
+        '15min': { price: 245.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 238.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 169.50, date: '2025-04-07', label: '52-Week Low' }
+    },
+    AMD: {
+        '15min': { price: 115.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 108.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 95.80, date: '2025-04-07', label: '52-Week Low' }
+    },
+    META: {
+        '15min': { price: 605.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 580.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 480.50, date: '2025-04-07', label: '52-Week Low' }
+    }
+};
+
+function updateSq9Mtf() {
+    var symbol = document.getElementById('sq9MtfSymbol').value;
+    var pivots = sq9MtfPivots[symbol];
+
+    if (!pivots) {
+        console.log('No MTF pivots for ' + symbol);
+        return;
+    }
+
+    // Get current price
+    var currentPrice = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        var data = allSymbolsData[symbol];
+        if (data && data.length > 0) {
+            currentPrice = parseFloat(data[data.length - 1].Close);
+        }
+    }
+
+    // Fallback prices
+    if (!currentPrice) {
+        var fallbackPrices = { SPY: 683.17, QQQ: 613.12, IWM: 248.78, NVDA: 142.50, TSLA: 412.30, AAPL: 248.50, AMD: 118.30, META: 612.40 };
+        currentPrice = fallbackPrices[symbol] || 100;
+    }
+
+    // Update header
+    document.getElementById('sq9MtfSymbolDisplay').textContent = symbol;
+    document.getElementById('sq9MtfPriceDisplay').textContent = '$' + currentPrice.toFixed(2);
+
+    // Calculate levels for each timeframe
+    var timeframes = ['15min', '1hour', 'daily'];
+    var tfResults = {};
+
+    timeframes.forEach(function(tf) {
+        var pivot = pivots[tf];
+        var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+        var nearest = findNearestSq9Level(levels, currentPrice);
+        var direction = getSq9TradeDirection(nearest, currentPrice);
+
+        tfResults[tf] = {
+            pivot: pivot,
+            levels: levels,
+            nearest: nearest,
+            direction: direction,
+            distPct: nearest ? nearest.distance : 0
+        };
+
+        // Update UI
+        updateMtfTimeframeDisplay(tf, tfResults[tf], currentPrice);
+    });
+
+    // Check alignment
+    checkMtfAlignment(tfResults, currentPrice);
+}
+
+function updateMtfTimeframeDisplay(tf, result, currentPrice) {
+    var tfMap = { '15min': '15min', '1hour': '1hour', 'daily': 'Daily' };
+    var tfName = tfMap[tf];
+
+    var levelEl = document.getElementById('sq9Mtf' + tfName + 'Level');
+    var distEl = document.getElementById('sq9Mtf' + tfName + 'Dist');
+    var typeEl = document.getElementById('sq9Mtf' + tfName + 'Type');
+    var biasEl = document.getElementById('sq9Mtf' + tfName + 'Bias');
+    var levelsEl = document.getElementById('sq9Mtf' + tfName + 'Levels');
+    var containerEl = document.getElementById('sq9Mtf' + tfName);
+
+    if (!result.nearest) {
+        if (levelEl) levelEl.textContent = '--';
+        if (distEl) distEl.textContent = '--';
+        if (typeEl) typeEl.textContent = '--';
+        if (biasEl) { biasEl.textContent = 'NEUTRAL'; biasEl.style.background = '#e5e7eb'; biasEl.style.color = '#666'; }
+        return;
+    }
+
+    var nearest = result.nearest;
+    var direction = result.direction;
+
+    // Update stats
+    if (levelEl) levelEl.textContent = '$' + nearest.price.toFixed(2);
+    if (distEl) {
+        distEl.textContent = (nearest.distance >= 0 ? '+' : '') + nearest.distance.toFixed(2) + '%';
+        distEl.style.color = nearest.distance >= 0 ? '#ef4444' : '#22c55e';
+    }
+    if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE' : 'SUPPORT';
+
+    // Update bias badge
+    if (biasEl) {
+        if (direction === 'put') {
+            biasEl.textContent = '📉 PUT';
+            biasEl.style.background = '#fecaca';
+            biasEl.style.color = '#dc2626';
+        } else if (direction === 'call') {
+            biasEl.textContent = '📈 CALL';
+            biasEl.style.background = '#bbf7d0';
+            biasEl.style.color = '#16a34a';
+        } else {
+            biasEl.textContent = '⏳ WAIT';
+            biasEl.style.background = '#e5e7eb';
+            biasEl.style.color = '#666';
+        }
+    }
+
+    // Highlight container if near level
+    if (containerEl) {
+        if (Math.abs(nearest.distance) <= 1) {
+            containerEl.style.borderColor = direction === 'put' ? '#ef4444' : '#22c55e';
+            containerEl.style.background = direction === 'put' ? 'rgba(239,68,68,0.05)' : 'rgba(34,197,94,0.05)';
+        } else {
+            containerEl.style.borderColor = 'transparent';
+            containerEl.style.background = 'var(--bg)';
+        }
+    }
+
+    // Render mini level bars
+    if (levelsEl && result.levels) {
+        var levelsHtml = '';
+        var displayLevels = result.levels.slice(0, 6);
+
+        displayLevels.forEach(function(level) {
+            var isNearest = Math.abs(level.price - nearest.price) < 0.01;
+            var barColor = level.type === 'resist' ? '#ef4444' : '#22c55e';
+            var opacity = isNearest ? '1' : '0.4';
+
+            levelsHtml += '<div style="display: flex; align-items: center; gap: 5px; margin-bottom: 3px; opacity: ' + opacity + ';">' +
+                '<div style="width: 8px; height: 8px; border-radius: 2px; background: ' + barColor + ';"></div>' +
+                '<span>$' + level.price.toFixed(2) + '</span>' +
+                '<span style="color: ' + (level.distance >= 0 ? '#ef4444' : '#22c55e') + ';">(' + (level.distance >= 0 ? '+' : '') + level.distance.toFixed(1) + '%)</span>' +
+            '</div>';
+        });
+
+        levelsEl.innerHTML = levelsHtml;
+    }
+}
+
+function checkMtfAlignment(tfResults, currentPrice) {
+    var alignmentEl = document.getElementById('sq9MtfAlignment');
+    var titleEl = document.getElementById('sq9MtfAlignmentTitle');
+    var descEl = document.getElementById('sq9MtfAlignmentDesc');
+    var badgeEl = document.getElementById('sq9MtfAlignmentBadge');
+
+    var directions = {
+        '15min': tfResults['15min'].direction,
+        '1hour': tfResults['1hour'].direction,
+        'daily': tfResults['daily'].direction
+    };
+
+    var callCount = Object.values(directions).filter(function(d) { return d === 'call'; }).length;
+    var putCount = Object.values(directions).filter(function(d) { return d === 'put'; }).length;
+    var neutralCount = Object.values(directions).filter(function(d) { return d === 'neutral'; }).length;
+
+    var alignmentStrength = 0;
+    var alignmentDir = 'NEUTRAL';
+    var alignmentDesc = '';
+
+    // Check for alignment
+    if (callCount === 3) {
+        alignmentStrength = 3;
+        alignmentDir = 'CALL';
+        alignmentDesc = '🎯 PERFECT ALIGNMENT! All 3 timeframes show CALL setup at SQ9 support levels.';
+    } else if (putCount === 3) {
+        alignmentStrength = 3;
+        alignmentDir = 'PUT';
+        alignmentDesc = '🎯 PERFECT ALIGNMENT! All 3 timeframes show PUT setup at SQ9 resistance levels.';
+    } else if (callCount === 2 && neutralCount <= 1) {
+        alignmentStrength = 2;
+        alignmentDir = 'CALL';
+        alignmentDesc = '✅ Strong CALL bias. 2/3 timeframes aligned at support.';
+    } else if (putCount === 2 && neutralCount <= 1) {
+        alignmentStrength = 2;
+        alignmentDir = 'PUT';
+        alignmentDesc = '✅ Strong PUT bias. 2/3 timeframes aligned at resistance.';
+    } else if (neutralCount >= 2) {
+        alignmentStrength = 0;
+        alignmentDir = 'NEUTRAL';
+        alignmentDesc = '⏳ No clear setup. Price is between SQ9 levels on multiple timeframes.';
+    } else {
+        alignmentStrength = 1;
+        alignmentDir = 'MIXED';
+        alignmentDesc = '⚠️ Mixed signals. Timeframes showing conflicting directions.';
+    }
+
+    // Update UI
+    if (alignmentStrength === 3) {
+        alignmentEl.style.background = alignmentDir === 'CALL'
+            ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.15))'
+            : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.15))';
+        alignmentEl.style.borderColor = alignmentDir === 'CALL' ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)';
+        badgeEl.style.background = alignmentDir === 'CALL' ? '#22c55e' : '#ef4444';
+        badgeEl.style.color = 'white';
+        badgeEl.textContent = '3/3 ' + alignmentDir;
+    } else if (alignmentStrength === 2) {
+        alignmentEl.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1))';
+        alignmentEl.style.borderColor = 'rgba(245,158,11,0.3)';
+        badgeEl.style.background = '#f59e0b';
+        badgeEl.style.color = 'white';
+        badgeEl.textContent = '2/3 ' + alignmentDir;
+    } else {
+        alignmentEl.style.background = 'var(--bg)';
+        alignmentEl.style.borderColor = 'var(--border)';
+        badgeEl.style.background = '#e5e7eb';
+        badgeEl.style.color = '#666';
+        badgeEl.textContent = alignmentDir;
+    }
+
+    titleEl.textContent = alignmentStrength === 3 ? '🎯 PERFECT MTF ALIGNMENT!' : alignmentStrength === 2 ? '✅ Strong Alignment' : '⏳ Waiting for Alignment';
+    descEl.textContent = alignmentDesc;
+}
+
+// Initialize MTF on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (document.getElementById('sq9MtfSymbol')) {
+            updateSq9Mtf();
+        }
+    }, 3000);
+});
 
 </script>
 </body>
