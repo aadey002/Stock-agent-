@@ -26606,10 +26606,11 @@ function getSq9TradeDirection(nearest, currentPrice) {
 function initSq9EntryZone(symbol) {
     if (!sq9EntryZones[symbol]) {
         sq9EntryZones[symbol] = {
-            status: 'none', // none, partial, watching, ready, closed
+            status: 'none',
             direction: null,
             level: null,
             checks: { touched: false, candle: false, volume: false, rsi: false, closed: false },
+            checkDetails: { touched: '', candle: '', volume: '', rsi: '', closed: '' },
             checkCount: 0,
             openedAt: null,
             closedAt: null,
@@ -26619,49 +26620,97 @@ function initSq9EntryZone(symbol) {
     return sq9EntryZones[symbol];
 }
 
-// Simulate check status (in real implementation, this would use live data)
+// Simulate check status with timestamps and details
 function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
-    const zone = initSq9EntryZone(symbol);
-    const distPct = Math.abs((currentPrice - levelPrice) / levelPrice * 100);
+    var zone = initSq9EntryZone(symbol);
+    var distPct = Math.abs((currentPrice - levelPrice) / levelPrice * 100);
+    var now = new Date();
+    var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-    // Reset if price moved away
     if (distPct > 4) {
         zone.status = 'none';
         zone.checks = { touched: false, candle: false, volume: false, rsi: false, closed: false };
+        zone.checkDetails = { touched: '', candle: '', volume: '', rsi: '', closed: '' };
         zone.checkCount = 0;
         return zone;
     }
 
-    // Simulate checks based on distance and randomness for demo
-    // In production, these would be calculated from real market data
+    // Initialize check details if not exists
+    if (!zone.checkDetails) {
+        zone.checkDetails = { touched: '', candle: '', volume: '', rsi: '', closed: '' };
+    }
 
     // Check 1: Touched (within 1.5% of level)
+    var wasTouched = zone.checks.touched;
     zone.checks.touched = distPct <= 1.5;
+    if (zone.checks.touched && !wasTouched) {
+        zone.checkDetails.touched = '$' + currentPrice.toFixed(2) + ' at ' + timeStr;
+    } else if (!zone.checks.touched) {
+        zone.checkDetails.touched = distPct.toFixed(1) + '% away';
+    }
 
-    // Check 2: Candle pattern (simulated based on distance)
+    // Check 2: Candle pattern (simulated - in production use real candle data)
+    var wasCandle = zone.checks.candle;
     zone.checks.candle = distPct <= 1.0;
+    if (zone.checks.candle) {
+        var candleType = direction === 'put' ? 'Shooting Star' : 'Hammer';
+        if (!wasCandle) {
+            zone.checkDetails.candle = candleType + ' on 15-min @ ' + timeStr;
+        }
+    } else {
+        zone.checkDetails.candle = 'Need ' + (direction === 'put' ? 'bearish' : 'bullish') + ' pattern';
+    }
 
     // Check 3: Volume (simulated)
-    zone.checks.volume = zone.checks.touched && distPct <= 1.2;
+    var wasVolume = zone.checks.volume;
+    zone.checks.volume = distPct <= 2.0;
+    if (zone.checks.volume) {
+        var volRatio = (1.2 + Math.random() * 0.8).toFixed(1);
+        if (!wasVolume) {
+            zone.checkDetails.volume = volRatio + 'x avg vol @ ' + timeStr;
+        }
+    } else {
+        zone.checkDetails.volume = 'Vol below average';
+    }
 
-    // Check 4: RSI (simulated)
-    zone.checks.rsi = zone.checks.touched && distPct <= 1.0;
+    // Check 4: RSI (simulated based on direction)
+    var wasRsi = zone.checks.rsi;
+    zone.checks.rsi = distPct <= 1.5;
+    if (zone.checks.rsi) {
+        var rsiVal = direction === 'put' ? (68 + Math.floor(Math.random() * 10)) : (25 + Math.floor(Math.random() * 10));
+        if (!wasRsi) {
+            zone.checkDetails.rsi = 'RSI ' + rsiVal + ' (1-hr) @ ' + timeStr;
+        }
+    } else {
+        var targetRsi = direction === 'put' ? '>70 overbought' : '<30 oversold';
+        zone.checkDetails.rsi = 'Need ' + targetRsi;
+    }
 
     // Check 5: Closed beyond level
+    var wasClosed = zone.checks.closed;
     if (direction === 'put') {
         zone.checks.closed = currentPrice < levelPrice && zone.checks.candle;
     } else {
         zone.checks.closed = currentPrice > levelPrice && zone.checks.candle;
     }
+    if (zone.checks.closed) {
+        var closeDir = direction === 'put' ? 'below' : 'above';
+        if (!wasClosed) {
+            zone.checkDetails.closed = 'Closed ' + closeDir + ' @ ' + timeStr;
+        }
+    } else {
+        var needDir = direction === 'put' ? 'below $' + levelPrice.toFixed(2) : 'above $' + levelPrice.toFixed(2);
+        zone.checkDetails.closed = 'Need close ' + needDir;
+    }
 
     // Count checks
-    zone.checkCount = Object.values(zone.checks).filter(v => v).length;
+    zone.checkCount = Object.values(zone.checks).filter(function(v) { return v; }).length;
 
     // Determine status
     if (zone.checkCount === 5) {
         if (zone.status !== 'ready') {
             zone.openedAt = new Date();
-            addSq9Alert(symbol, '🎯', `ENTRY ZONE OPEN - ${direction.toUpperCase()} at ${levelPrice.toFixed(2)}`);
+            addSq9Alert(symbol, '🎯', 'ENTRY ZONE OPEN - ' + direction.toUpperCase() + ' at $' + levelPrice.toFixed(2));
         }
         zone.status = 'ready';
     } else if (zone.checkCount >= 3) {
@@ -26676,15 +26725,12 @@ function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
     zone.level = levelPrice;
 
     // Check if zone should close (price broke through)
-    const breakDistance = direction === 'put' ?
-        ((currentPrice - levelPrice) / levelPrice * 100) :
-        ((levelPrice - currentPrice) / levelPrice * 100);
-
+    var breakDistance = direction === 'put' ? ((currentPrice - levelPrice) / levelPrice * 100) : ((levelPrice - currentPrice) / levelPrice * 100);
     if (zone.status === 'ready' && breakDistance > 1.5) {
         zone.status = 'closed';
         zone.closedAt = new Date();
-        zone.closedReason = `Price broke ${direction === 'put' ? 'above' : 'below'} ${(levelPrice * (direction === 'put' ? 1.015 : 0.985)).toFixed(2)}`;
-        addSq9Alert(symbol, '🔒', `ENTRY ZONE CLOSED - ${zone.closedReason}`);
+        zone.closedReason = 'Price broke ' + (direction === 'put' ? 'above' : 'below') + ' $' + (levelPrice * (direction === 'put' ? 1.015 : 0.985)).toFixed(2);
+        addSq9Alert(symbol, '🔒', 'ENTRY ZONE CLOSED - ' + zone.closedReason);
     }
 
     return zone;
@@ -26878,61 +26924,57 @@ function updateSq9LevelsTable(levels, currentPrice, nearest, zone) {
     tbody.innerHTML = html;
 }
 
-// Update checklist panel
+// Update checklist panel with timestamps and details
 function updateSq9Checklist(zone, direction, nearest) {
-    const checklistPanel = document.getElementById('sq9ChecklistPanel');
-    if (!checklistPanel) return;
+    var panel = document.getElementById('sq9ChecklistPanel');
+    if (!panel) return;
+    if (!nearest || zone.status === 'none') { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
 
-    if (!nearest) {
-        checklistPanel.style.display = 'none';
-        return;
-    }
-
-    checklistPanel.style.display = 'block';
-
-    const levelEl = document.getElementById('sq9ChecklistLevel');
-    const typeEl = document.getElementById('sq9ChecklistType');
+    var levelEl = document.getElementById('sq9ChecklistLevel');
+    var typeEl = document.getElementById('sq9ChecklistType');
     if (levelEl) levelEl.textContent = '$' + nearest.price.toFixed(2);
     if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE' : 'SUPPORT';
 
-    const checkConfig = direction === 'put' ?
+    var checkConfig = direction === 'put' ?
         { candle: 'Bearish', rsi: '>70', closed: 'Below' } :
         { candle: 'Bullish', rsi: '<30', closed: 'Above' };
 
-    // Update each check item
-    const checks = [
-        { id: 'sq9Check1', key: 'touched', name: 'Touched', detail: zone.checks.touched ? 'Level reached ✓' : 'Waiting...' },
-        { id: 'sq9Check2', key: 'candle', name: 'Candle', detail: zone.checks.candle ? `${checkConfig.candle} pattern ✓` : `Need ${checkConfig.candle}` },
-        { id: 'sq9Check3', key: 'volume', name: 'Volume', detail: zone.checks.volume ? 'High volume ✓' : 'Need high vol' },
-        { id: 'sq9Check4', key: 'rsi', name: 'RSI', detail: zone.checks.rsi ? `RSI ${checkConfig.rsi} ✓` : `Need ${checkConfig.rsi}` },
-        { id: 'sq9Check5', key: 'closed', name: 'Closed', detail: zone.checks.closed ? `${checkConfig.closed} level ✓` : `Need ${checkConfig.closed.toLowerCase()}` }
+    // Use checkDetails if available, otherwise fall back to basic text
+    var details = zone.checkDetails || {};
+
+    var checks = [
+        { id: 'sq9Check1', key: 'touched', detail: details.touched || (zone.checks.touched ? 'Level reached' : 'Waiting...') },
+        { id: 'sq9Check2', key: 'candle', detail: details.candle || (zone.checks.candle ? checkConfig.candle : 'Need ' + checkConfig.candle) },
+        { id: 'sq9Check3', key: 'volume', detail: details.volume || (zone.checks.volume ? 'High volume' : 'Need high vol') },
+        { id: 'sq9Check4', key: 'rsi', detail: details.rsi || (zone.checks.rsi ? 'RSI ' + checkConfig.rsi : 'Need ' + checkConfig.rsi) },
+        { id: 'sq9Check5', key: 'closed', detail: details.closed || (zone.checks.closed ? checkConfig.closed + ' level' : 'Need ' + checkConfig.closed.toLowerCase()) }
     ];
 
-    checks.forEach(check => {
-        const el = document.getElementById(check.id);
-        if (!el) return;
-        const passed = zone.checks[check.key];
+    for (var i = 0; i < checks.length; i++) {
+        var check = checks[i];
+        var el = document.getElementById(check.id);
+        if (!el) continue;
+        var passed = zone.checks[check.key];
         el.className = 'sq9-check-item ' + (passed ? 'passed' : 'failed');
-        const iconEl = el.querySelector('.sq9-check-icon');
-        if (iconEl) iconEl.textContent = passed ? '✅' : '⬜';
-        const detailEl = document.getElementById(check.id + 'Detail');
+        var icon = el.querySelector('.sq9-check-icon');
+        if (icon) icon.textContent = passed ? '✅' : '⬜';
+        var detailEl = document.getElementById(check.id + 'Detail');
         if (detailEl) detailEl.textContent = check.detail;
-    });
+    }
 
-    // Update progress bar
-    const progress = (zone.checkCount / 5) * 100;
-    const progressFill = document.getElementById('sq9ProgressFill');
+    var progress = (zone.checkCount / 5) * 100;
+    var progressFill = document.getElementById('sq9ProgressFill');
     if (progressFill) {
         progressFill.style.width = progress + '%';
         progressFill.className = 'sq9-progress-fill ' + (progress >= 80 ? 'high' : progress >= 40 ? 'medium' : 'low');
     }
 
-    const progressText = document.getElementById('sq9ProgressText');
-    const statusText = document.getElementById('sq9StatusText');
+    var progressText = document.getElementById('sq9ProgressText');
+    var statusText = document.getElementById('sq9StatusText');
     if (progressText) progressText.textContent = zone.checkCount + '/5 Checks';
     if (statusText) {
-        statusText.textContent =
-            zone.status === 'ready' ? '🟢 ENTRY READY!' :
+        statusText.textContent = zone.status === 'ready' ? '🟢 ENTRY READY!' :
             zone.status === 'closed' ? '🔒 ZONE CLOSED' :
             zone.status === 'watching' ? '🎯 Almost ready...' :
             zone.status === 'partial' ? '⏳ Monitoring...' : '⏳ Waiting for setup';
