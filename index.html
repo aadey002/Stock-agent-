@@ -9506,6 +9506,14 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
 
                 <form id="sq9TradeForm" onsubmit="saveSq9Trade(event)">
+                    <!-- Trade Type Toggle -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button type="button" class="trade-type-btn active" data-type="stock" onclick="toggleTradeType('stock')" style="flex: 1; padding: 12px; border: 2px solid var(--primary); background: var(--primary); color: white; border-radius: 8px; font-weight: 700; cursor: pointer;">📊 Stock/ETF</button>
+                        <button type="button" class="trade-type-btn" data-type="option" onclick="toggleTradeType('option')" style="flex: 1; padding: 12px; border: 2px solid var(--border); background: white; color: var(--text); border-radius: 8px; font-weight: 700; cursor: pointer;">📜 Options Contract</button>
+                    </div>
+
+                    <input type="hidden" id="sq9TradeType" value="stock">
+
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div>
                             <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Symbol</label>
@@ -9519,28 +9527,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="XLE">XLE</option>
                                 <option value="XLK">XLK</option>
                                 <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
                                 <option value="NVDA">NVDA</option>
                                 <option value="TSLA">TSLA</option>
+                                <option value="AAPL">AAPL</option>
+                                <option value="AMD">AMD</option>
+                                <option value="META">META</option>
                                 <option value="AMZN">AMZN</option>
                                 <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
+                                <option value="MSFT">MSFT</option>
                             </select>
                         </div>
                         <div>
                             <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Direction</label>
                             <select id="sq9TradeDirection" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
                                 <option value="">Select...</option>
-                                <option value="CALL">📈 CALL</option>
-                                <option value="PUT">📉 PUT</option>
+                                <option value="CALL">📈 CALL / Long</option>
+                                <option value="PUT">📉 PUT / Short</option>
                             </select>
                         </div>
                         <div>
@@ -9548,7 +9550,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <input type="date" id="sq9TradeDate" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
                         </div>
                         <div>
-                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Entry Price</label>
+                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Underlying Price</label>
                             <input type="number" step="0.01" id="sq9TradeEntry" required placeholder="683.50" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
                         </div>
                         <div>
@@ -9561,8 +9563,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="5">5/5 - READY</option>
                                 <option value="4">4/5 - WATCHING</option>
                                 <option value="3">3/5 - EARLY</option>
-                                <option value="2">2/5 - PARTIAL</option>
-                                <option value="1">1/5 - PARTIAL</option>
                             </select>
                         </div>
                         <div>
@@ -9573,13 +9573,54 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Stop Price</label>
                             <input type="number" step="0.01" id="sq9TradeStop" required placeholder="699.60" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
                         </div>
-                        <div>
-                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Position Size ($)</label>
-                            <input type="number" step="1" id="sq9TradeSize" required placeholder="1000" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    </div>
+
+                    <!-- OPTIONS FIELDS (hidden by default) -->
+                    <div id="optionsFields" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <div style="font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--primary);">📜 Options Contract Details</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Strike Price</label>
+                                <input type="number" step="1" id="sq9OptionStrike" placeholder="685" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Expiration</label>
+                                <input type="date" id="sq9OptionExpiry" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;"># Contracts</label>
+                                <input type="number" step="1" id="sq9OptionContracts" placeholder="1" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Premium Paid ($)</label>
+                                <input type="number" step="0.01" id="sq9OptionPremium" placeholder="3.50" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Delta (optional)</label>
+                                <input type="number" step="0.01" id="sq9OptionDelta" placeholder="0.45" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">IV% (optional)</label>
+                                <input type="number" step="0.1" id="sq9OptionIV" placeholder="25.5" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
                         </div>
-                        <div>
-                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Option Strike</label>
-                            <input type="text" id="sq9TradeStrike" placeholder="685P" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                        <div style="background: rgba(245,158,11,0.1); border-radius: 6px; padding: 10px; margin-top: 10px; font-size: 11px;">
+                            <strong>💡 Tip:</strong> Total cost = Premium × Contracts × 100<br>
+                            <span id="optionCostCalc" style="color: var(--primary); font-weight: 600;">--</span>
+                        </div>
+                    </div>
+
+                    <!-- STOCK FIELDS -->
+                    <div id="stockFields" style="margin-top: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Position Size ($)</label>
+                                <input type="number" step="1" id="sq9TradeSize" placeholder="1000" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;"># Shares</label>
+                                <input type="number" step="1" id="sq9TradeShares" placeholder="10" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            </div>
                         </div>
                     </div>
 
@@ -28348,6 +28389,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load SQ9 trades from storage
     loadSq9Trades();
+
+    // Initialize option cost calculator
+    initOptionCostCalc();
 });
 
 // ============================================
@@ -28427,11 +28471,62 @@ function closeSq9TradeModal() {
 }
 
 // Save new trade
+// Toggle between stock and options trade type
+function toggleTradeType(type) {
+    document.getElementById('sq9TradeType').value = type;
+
+    // Update button styles
+    document.querySelectorAll('.trade-type-btn').forEach(function(btn) {
+        if (btn.dataset.type === type) {
+            btn.style.background = 'var(--primary)';
+            btn.style.borderColor = 'var(--primary)';
+            btn.style.color = 'white';
+        } else {
+            btn.style.background = 'white';
+            btn.style.borderColor = 'var(--border)';
+            btn.style.color = 'var(--text)';
+        }
+    });
+
+    // Show/hide fields
+    document.getElementById('optionsFields').style.display = type === 'option' ? 'block' : 'none';
+    document.getElementById('stockFields').style.display = type === 'stock' ? 'block' : 'none';
+}
+
+// Calculate option cost in real-time
+function initOptionCostCalc() {
+    var premiumEl = document.getElementById('sq9OptionPremium');
+    var contractsEl = document.getElementById('sq9OptionContracts');
+
+    if (premiumEl && contractsEl) {
+        var calcCost = function() {
+            var premium = parseFloat(premiumEl.value) || 0;
+            var contracts = parseInt(contractsEl.value) || 0;
+            var totalCost = premium * contracts * 100;
+
+            var calcEl = document.getElementById('optionCostCalc');
+            if (calcEl) {
+                if (totalCost > 0) {
+                    calcEl.textContent = 'Total Cost: $' + totalCost.toFixed(2) + ' (' + contracts + ' x $' + premium.toFixed(2) + ' x 100)';
+                } else {
+                    calcEl.textContent = '--';
+                }
+            }
+        };
+
+        premiumEl.addEventListener('input', calcCost);
+        contractsEl.addEventListener('input', calcCost);
+    }
+}
+
 function saveSq9Trade(event) {
     event.preventDefault();
 
+    var tradeType = document.getElementById('sq9TradeType').value;
+
     var trade = {
         id: Date.now(),
+        type: tradeType,
         symbol: document.getElementById('sq9TradeSymbol').value,
         direction: document.getElementById('sq9TradeDirection').value,
         entryDate: document.getElementById('sq9TradeDate').value,
@@ -28440,8 +28535,6 @@ function saveSq9Trade(event) {
         checks: parseInt(document.getElementById('sq9TradeChecks').value),
         target: parseFloat(document.getElementById('sq9TradeTarget').value),
         stop: parseFloat(document.getElementById('sq9TradeStop').value),
-        size: parseFloat(document.getElementById('sq9TradeSize').value),
-        strike: document.getElementById('sq9TradeStrike').value,
         notes: document.getElementById('sq9TradeNotes').value,
         status: 'open',
         exitDate: null,
@@ -28449,6 +28542,20 @@ function saveSq9Trade(event) {
         exitReason: null,
         pnl: null
     };
+
+    if (tradeType === 'option') {
+        trade.optionStrike = parseFloat(document.getElementById('sq9OptionStrike').value) || 0;
+        trade.optionExpiry = document.getElementById('sq9OptionExpiry').value;
+        trade.optionContracts = parseInt(document.getElementById('sq9OptionContracts').value) || 1;
+        trade.optionPremium = parseFloat(document.getElementById('sq9OptionPremium').value) || 0;
+        trade.optionDelta = parseFloat(document.getElementById('sq9OptionDelta').value) || 0;
+        trade.optionIV = parseFloat(document.getElementById('sq9OptionIV').value) || 0;
+        trade.size = trade.optionPremium * trade.optionContracts * 100; // Total cost
+        trade.strike = trade.optionStrike + (trade.direction === 'CALL' ? 'C' : 'P');
+    } else {
+        trade.size = parseFloat(document.getElementById('sq9TradeSize').value) || 0;
+        trade.shares = parseInt(document.getElementById('sq9TradeShares').value) || 0;
+    }
 
     sq9Trades.push(trade);
     saveSq9TradesToStorage();
@@ -28485,19 +28592,27 @@ function confirmCloseTrade() {
     trade.exitReason = exitReason;
     trade.status = 'closed';
 
-    // Calculate P&L
-    var priceChange = exitPrice - trade.entryPrice;
-    if (trade.direction === 'PUT') {
-        priceChange = trade.entryPrice - exitPrice; // Inverse for puts
+    // Calculate P&L based on trade type
+    if (trade.type === 'option') {
+        // Options P&L: (Exit Premium - Entry Premium) x Contracts x 100
+        var exitPremium = exitPrice; // Exit price is the premium received when selling
+        trade.pnl = (exitPremium - trade.optionPremium) * trade.optionContracts * 100;
+    } else {
+        // Stock P&L
+        var priceChange = exitPrice - trade.entryPrice;
+        if (trade.direction === 'PUT') {
+            priceChange = trade.entryPrice - exitPrice; // Inverse for puts/shorts
+        }
+        var pctChange = (priceChange / trade.entryPrice) * 100;
+        trade.pnl = (trade.size * pctChange / 100);
     }
-    var pctChange = (priceChange / trade.entryPrice) * 100;
-    trade.pnl = (trade.size * pctChange / 100);
 
     saveSq9TradesToStorage();
     updateSq9PerformanceDisplay();
     closeSq9CloseModal();
 
-    alert('Trade closed! P&L: $' + trade.pnl.toFixed(2));
+    var pnlStr = trade.pnl >= 0 ? '+$' + trade.pnl.toFixed(2) : '-$' + Math.abs(trade.pnl).toFixed(2);
+    alert('Trade closed! P&L: ' + pnlStr);
 }
 
 // Delete trade
@@ -28596,6 +28711,19 @@ function updateSq9TradeLogTable() {
         var t = filteredTrades[i];
         var dirColor = t.direction === 'CALL' ? '#22c55e' : '#ef4444';
         var pnlColor = t.pnl > 0 ? '#22c55e' : t.pnl < 0 ? '#ef4444' : '#666';
+
+        // Type icon and symbol display
+        var typeIcon = t.type === 'option' ? '📜' : '📊';
+        var symbolDisplay = t.symbol;
+        if (t.type === 'option' && t.optionStrike) {
+            symbolDisplay += ' ' + t.optionStrike + (t.direction === 'CALL' ? 'C' : 'P');
+        }
+
+        // Size display
+        var sizeDisplay = t.type === 'option'
+            ? t.optionContracts + ' x $' + (t.optionPremium || 0).toFixed(2)
+            : '$' + (t.size || 0).toFixed(0);
+
         var statusBadge = t.status === 'open'
             ? '<span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">OPEN</span>'
             : t.pnl > 0
@@ -28604,7 +28732,7 @@ function updateSq9TradeLogTable() {
 
         html += '<tr style="border-bottom: 1px solid var(--border);">' +
             '<td style="padding: 10px;">' + t.entryDate + '</td>' +
-            '<td style="padding: 10px;"><strong>' + t.symbol + '</strong></td>' +
+            '<td style="padding: 10px;"><strong>' + typeIcon + ' ' + symbolDisplay + '</strong></td>' +
             '<td style="padding: 10px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + t.direction + '</span></td>' +
             '<td style="padding: 10px;">$' + t.entryPrice.toFixed(2) + '</td>' +
             '<td style="padding: 10px;">$' + t.sq9Level.toFixed(2) + '</td>' +
