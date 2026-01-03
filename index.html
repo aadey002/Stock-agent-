@@ -27750,36 +27750,61 @@ function updateSq9AlertLog(symbol) {
 
 // Get SQ9 status for opportunities table
 function getSq9StatusForOpp(symbol) {
-    const pivot = sq9PivotData[symbol];
+    // Try both pivot data sources
+    var pivot = sq9PivotData[symbol] || sq9ExtendedPivots[symbol];
     if (!pivot) return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
 
-    // Get current price
-    let currentPrice = null;
-    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
-        const data = allSymbolsData[symbol];
-        if (data && data.length > 0) {
-            currentPrice = parseFloat(data[data.length - 1].Close);
-        }
+    // Get current price from allSymbolsData
+    var currentPrice = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        var symData = allSymbolsData[symbol];
+        currentPrice = parseFloat(symData[symData.length - 1].Close);
     }
 
-    if (!currentPrice) return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
-
-    const levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
-    const nearest = findNearestSq9Level(levels, currentPrice);
-    const direction = getSq9TradeDirection(nearest, currentPrice);
-
-    if (direction === 'neutral' || !nearest) {
+    if (!currentPrice || isNaN(currentPrice)) {
         return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
     }
 
-    const zone = sq9EntryZones[symbol] || initSq9EntryZone(symbol);
+    var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+    var nearest = findNearestSq9Level(levels, currentPrice);
+
+    if (!nearest) {
+        return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
+    }
+
+    var distPct = Math.abs(nearest.distance);
+
+    // Only include if within 4% of level
+    if (distPct > 4) {
+        return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
+    }
+
+    var direction = nearest.type === 'resist' ? 'put' : 'call';
+
+    // Calculate checks inline (same logic as runSq9Scan)
+    var checks = {
+        touched: distPct <= 1.5,
+        candle: distPct <= 1.0,
+        volume: distPct <= 2.0,
+        rsi: distPct <= 1.5,
+        closed: (direction === 'put' && currentPrice < nearest.price) || (direction === 'call' && currentPrice > nearest.price)
+    };
+
+    var checkCount = Object.values(checks).filter(function(v) { return v; }).length;
+
+    var status = 'partial';
+    if (checkCount === 5) {
+        status = 'ready';
+    } else if (checkCount >= 3) {
+        status = 'watching';
+    }
 
     return {
-        status: zone.status || 'partial',
+        status: status,
         direction: direction,
         level: nearest.price,
-        checkCount: zone.checkCount || 0,
-        closedAt: zone.closedAt
+        checkCount: checkCount,
+        closedAt: null
     };
 }
 
