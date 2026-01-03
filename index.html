@@ -23722,35 +23722,78 @@ function updateFibonacciLevels(data) {
 }
 
 function updateHighConsensusTrades(signals) {
-    const tableBody = document.getElementById('highConsensusTable');
+    var tableBody = document.getElementById('highConsensusTable');
     if (!tableBody) return;
-    
-    const lastBar = currentData[currentData.length - 1];
-    const price = parseFloat(lastBar.Close);
-    const atr = parseFloat(lastBar.ATR) || price * 0.015;
-    
-    const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
-    const consensus = signals.agentConsensus.count;
-    
-    if (consensus >= 3) {
-        const stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
-        const target = signal === 'CALL' ? price + atr * 2 : price - atr * 2;
-        const strike = getProperStrike(price);
-        
-        tableBody.innerHTML = `
-            <tr>
-                <td><strong>${currentSymbol}</strong></td>
-                <td><span class="badge ${signal === 'CALL' ? 'call' : 'put'}">${signal}</span></td>
-                <td><strong>${consensus}/4</strong></td>
-                <td>${signals.masterScore > 0 ? '+' : ''}${signals.masterScore.toFixed(1)}</td>
-                <td>$${(price - atr * 0.3).toFixed(2)} - $${(price + atr * 0.3).toFixed(2)}</td>
-                <td style="color: var(--danger);">$${stop.toFixed(2)}</td>
-                <td style="color: var(--success);">$${target.toFixed(2)}</td>
-                <td>$${strike} ${signal}</td>
-            </tr>
-        `;
+
+    var allSymbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var highConsensusRows = [];
+
+    // Scan ALL symbols for high consensus
+    for (var i = 0; i < allSymbols.length; i++) {
+        var sym = allSymbols[i];
+        var symData = allSymbolsData[sym];
+        if (!symData || symData.length < 2) continue;
+
+        var lastBar = symData[symData.length - 1];
+        var prevBar = symData[symData.length - 2];
+        var price = parseFloat(lastBar.Close);
+        var prevClose = parseFloat(prevBar.Close);
+        var atr = parseFloat(lastBar.ATR) || price * 0.015;
+
+        // Calculate signals for this symbol
+        var symSignals = calculateAllSignals(symData, price, prevClose);
+        var consensus = symSignals.agentConsensus ? symSignals.agentConsensus.count : 0;
+
+        if (consensus >= 3) {
+            var signal = symSignals.direction === 'BULLISH' ? 'CALL' : symSignals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
+            var stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
+            var target = signal === 'CALL' ? price + atr * 2 : price - atr * 2;
+            var strike = Math.round(price / 5) * 5;
+            var score = symSignals.masterScore || 0;
+
+            highConsensusRows.push({
+                symbol: sym,
+                signal: signal,
+                consensus: consensus,
+                score: score,
+                price: price,
+                entryLow: (price - atr * 0.3).toFixed(2),
+                entryHigh: (price + atr * 0.3).toFixed(2),
+                stop: stop.toFixed(2),
+                target: target.toFixed(2),
+                strike: strike + ' ' + signal
+            });
+        }
+    }
+
+    // Sort by consensus (highest first), then by score
+    highConsensusRows.sort(function(a, b) {
+        if (b.consensus !== a.consensus) return b.consensus - a.consensus;
+        return Math.abs(b.score) - Math.abs(a.score);
+    });
+
+    if (highConsensusRows.length > 0) {
+        var html = '';
+        for (var j = 0; j < highConsensusRows.length; j++) {
+            var row = highConsensusRows[j];
+            var badgeClass = row.signal === 'CALL' ? 'call' : row.signal === 'PUT' ? 'put' : 'hold';
+            var scoreColor = row.score > 0 ? 'var(--success)' : row.score < 0 ? 'var(--danger)' : 'var(--muted)';
+            var consensusIcon = row.consensus === 4 ? '🏆' : '✅';
+
+            html += '<tr>' +
+                '<td><strong>' + row.symbol + '</strong></td>' +
+                '<td><span style="background: ' + (row.signal === 'CALL' ? 'var(--success)' : 'var(--danger)') + '; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">' + row.signal + '</span></td>' +
+                '<td><strong>' + consensusIcon + ' ' + row.consensus + '/4</strong></td>' +
+                '<td style="color: ' + scoreColor + ';">' + (row.score > 0 ? '+' : '') + row.score.toFixed(1) + '</td>' +
+                '<td>$' + row.entryLow + ' - $' + row.entryHigh + '</td>' +
+                '<td style="color: var(--danger);">$' + row.stop + '</td>' +
+                '<td style="color: var(--success);">$' + row.target + '</td>' +
+                '<td>$' + row.strike + '</td>' +
+                '</tr>';
+        }
+        tableBody.innerHTML = html;
     } else {
-        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);">No high-consensus trades at this time</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding: 20px;">No ETFs with 3/4 or 4/4 consensus at this time.<br><span style="font-size: 11px;">Check Opportunities tab for individual signals.</span></td></tr>';
     }
 }
 
