@@ -9116,7 +9116,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         </div>
 
         <!-- SQ9 SCANNER TAB -->
-        <div id="sq9-scanner" class="tab-content" style="display: none;">
+        <div id="sq9-scanner" class="tab-content">
             <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 100%); border-radius: 12px; padding: 20px; color: white; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                     <div>
@@ -9238,7 +9238,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         </div>
 
         <!-- SQ9 PERFORMANCE TAB -->
-        <div id="sq9-performance" class="tab-content" style="display: none;">
+        <div id="sq9-performance" class="tab-content">
             <div style="background: linear-gradient(135deg, #1e3a5f 0%, #064e3b 100%); border-radius: 12px; padding: 20px; color: white; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                     <div>
@@ -10270,6 +10270,7 @@ function initTabs() {
             if (btn.dataset.tab === 'gann-analysis') {
                 updateGannAnalysis();
                 updateGannAnalysisForSymbol(currentSymbol);
+            }
 
             // Trigger Market Analysis update when tab is clicked
             if (btn.dataset.tab === 'market-analysis') {
@@ -10277,7 +10278,6 @@ function initTabs() {
                     updateMarketAnalysisTab();
                 }
             }
-        };
         };
     });
 }
