@@ -5824,6 +5824,93 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- GANN 8THS RETRACEMENT LEVELS (Rules 3 & 4) -->
+            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📐 Gann 8ths Retracement Levels</div>
+                        <div style="font-size: 11px; color: var(--muted);">Rule 3: Range divided by 8ths | Rule 4: 50% is critical</div>
+                    </div>
+                    <div id="gann8thsPosition" style="padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Range Info -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #666;">52W HIGH</div>
+                        <div id="gann8thsHigh" style="font-size: 14px; font-weight: 700; color: #22c55e;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #666;">52W LOW</div>
+                        <div id="gann8thsLow" style="font-size: 14px; font-weight: 700; color: #ef4444;">--</div>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.2); border: 2px solid #f59e0b; border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #d97706; font-weight: 600;">⭐ 50% LEVEL</div>
+                        <div id="gann8ths50" style="font-size: 14px; font-weight: 700; color: #d97706;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #666;">RANGE</div>
+                        <div id="gann8thsRange" style="font-size: 14px; font-weight: 700;">--</div>
+                    </div>
+                </div>
+
+                <!-- Visual Level Chart -->
+                <div style="background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 11px; font-weight: 600; margin-bottom: 10px;">Price Position in Range</div>
+                    <div id="gann8thsChart" style="position: relative; height: 40px; background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #22c55e 100%); border-radius: 6px;">
+                        <!-- Price marker populated by JS -->
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 9px; color: #666;">
+                        <span>0% (Bearish)</span>
+                        <span>50% (Pivot)</span>
+                        <span>100% (Bullish)</span>
+                    </div>
+                </div>
+
+                <!-- 8ths Levels Table -->
+                <div style="background: white; border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="background: rgba(245,158,11,0.1);">
+                                <th style="padding: 8px; text-align: left;">LEVEL</th>
+                                <th style="padding: 8px; text-align: right;">PRICE</th>
+                                <th style="padding: 8px; text-align: right;">DISTANCE</th>
+                                <th style="padding: 8px; text-align: center;">TYPE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gann8thsTable">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 50% Rule Explanation -->
+                <div style="background: rgba(245,158,11,0.1); border-radius: 8px; padding: 12px; margin-top: 15px;">
+                    <div style="font-size: 11px; font-weight: 600; color: #d97706; margin-bottom: 5px;">📋 Rule 4: The 50% Rule</div>
+                    <div style="font-size: 10px; color: #666;" id="gann50Explanation">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- GANN SQUARE CROSS DETECTION (Rule 5) -->
+            <div id="gannSquareCross" style="display: none; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.1)); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">⚡ Gann Square Cross Detected!</div>
+                        <div style="font-size: 11px; color: var(--muted);">Rule 5: Price crosses its own square = major reversal</div>
+                    </div>
+                    <div id="gannCrossType" style="padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div id="gannCrossDetails" style="background: white; border-radius: 8px; padding: 15px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
             <!-- Signal Confluence Score -->
             <div class="signal-confluence-card">
                 <div style="text-align: center;">
@@ -8068,13 +8155,43 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px;">
                         <h3 style="color: #f59e0b; margin-bottom: 15px;">💰 Price Rules</h3>
-                        <ol style="font-size: 12px; line-height: 2; padding-left: 20px;">
-                            <li><strong>Price moves in squares</strong> - Use Square of 9</li>
-                            <li><strong>Support/Resistance at 45 degree angles</strong> from pivot</li>
-                            <li><strong>Divide range by 8ths</strong> - Key retracement levels</li>
-                            <li><strong>Watch 50% retracement</strong> - Critical support/resistance</li>
-                            <li><strong>Price crosses its own square</strong> = major reversal</li>
-                        </ol>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">✅ ACTIVE</span>
+                                    <span style="font-weight: 600;">1. Price moves in squares</span>
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 5px;">Using Square of 9 levels • See SQ9 Scanner tab</div>
+                            </div>
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">✅ ACTIVE</span>
+                                    <span style="font-weight: 600;">2. Support/Resistance at 45° angles</span>
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 5px;">SQ9 levels are 45° angle projections from pivot • See Daily Analysis</div>
+                            </div>
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">✅ ACTIVE</span>
+                                    <span style="font-weight: 600;">3. Divide range by 8ths</span>
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 5px;">8ths retracement levels calculated • See Gann 8ths panel in Daily Analysis</div>
+                            </div>
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">✅ ACTIVE</span>
+                                    <span style="font-weight: 600;">4. Watch 50% retracement</span>
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 5px;">50% level highlighted as critical S/R • Controls bullish/bearish bias</div>
+                            </div>
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #22c55e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">✅ ACTIVE</span>
+                                    <span style="font-weight: 600;">5. Price crosses square = reversal</span>
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 5px;">SQ9 level breaks detected • Alerts shown in Daily Analysis</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -11774,6 +11891,11 @@ function updateDailyAnalysisForSymbol(symbol) {
                 updateSq9Monitor();
             }
         }
+    }
+
+    // Update Gann 8ths Retracement Panel (Rules 3, 4, 5)
+    if (typeof updateGann8thsPanel === 'function') {
+        updateGann8thsPanel();
     }
 
     console.log('Daily Analysis updated for ' + symbol);
@@ -27319,6 +27441,373 @@ function getSq9TradeDirection(nearest, currentPrice) {
         return 'call';
     }
 }
+
+// ============================================
+// GANN PRICE RULES 3, 4, 5 IMPLEMENTATION
+// ============================================
+
+// Rule 3: Divide range by 8ths - Key retracement levels
+function calculateGann8ths(symbol) {
+    var result = {
+        symbol: symbol,
+        high: 0,
+        low: 0,
+        range: 0,
+        levels: [],
+        currentPrice: 0,
+        nearestLevel: null,
+        position: '', // Above/Below 50%
+        trend: ''
+    };
+
+    // Get price data
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        priceData = allSymbolsData[symbol];
+    }
+
+    if (!priceData || priceData.length < 50) {
+        // Use known ranges as fallback
+        var knownRanges = {
+            'SPY': { high: 710.00, low: 481.80 },
+            'QQQ': { high: 540.00, low: 402.39 },
+            'IWM': { high: 265.00, low: 171.73 },
+            'DIA': { high: 450.00, low: 365.45 },
+            'XLF': { high: 52.00, low: 42.80 },
+            'XLE': { high: 98.00, low: 78.50 },
+            'XLK': { high: 240.00, low: 185.20 },
+            'NVDA': { high: 153.00, low: 86.50 },
+            'TSLA': { high: 490.00, low: 138.80 },
+            'AAPL': { high: 260.00, low: 169.50 },
+            'AMD': { high: 185.00, low: 95.80 },
+            'META': { high: 640.00, low: 480.50 }
+        };
+
+        if (knownRanges[symbol]) {
+            result.high = knownRanges[symbol].high;
+            result.low = knownRanges[symbol].low;
+        } else {
+            return result;
+        }
+    } else {
+        // Calculate 52-week high/low from data
+        var highs = priceData.map(function(bar) { return parseFloat(bar.High) || 0; });
+        var lows = priceData.map(function(bar) { return parseFloat(bar.Low) || 0; });
+
+        result.high = Math.max.apply(null, highs);
+        result.low = Math.min.apply(null, lows.filter(function(l) { return l > 0; }));
+    }
+
+    // Get current price
+    if (priceData && priceData.length > 0) {
+        result.currentPrice = parseFloat(priceData[priceData.length - 1].Close);
+    } else if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        result.currentPrice = parseFloat(allSymbolsData[symbol][allSymbolsData[symbol].length - 1].Close);
+    }
+
+    result.range = result.high - result.low;
+
+    // Calculate 8ths (0/8, 1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8)
+    var eighthLabels = [
+        { fraction: 0, name: '0/8 (Low)', pct: 0 },
+        { fraction: 1, name: '1/8', pct: 12.5 },
+        { fraction: 2, name: '2/8 (25%)', pct: 25 },
+        { fraction: 3, name: '3/8', pct: 37.5 },
+        { fraction: 4, name: '4/8 (50%)', pct: 50, critical: true },
+        { fraction: 5, name: '5/8', pct: 62.5 },
+        { fraction: 6, name: '6/8 (75%)', pct: 75 },
+        { fraction: 7, name: '7/8', pct: 87.5 },
+        { fraction: 8, name: '8/8 (High)', pct: 100 }
+    ];
+
+    for (var i = 0; i < eighthLabels.length; i++) {
+        var lvl = eighthLabels[i];
+        var price = result.low + (result.range * lvl.fraction / 8);
+        var distFromCurrent = result.currentPrice > 0 ? ((price - result.currentPrice) / result.currentPrice * 100) : 0;
+
+        result.levels.push({
+            fraction: lvl.fraction,
+            name: lvl.name,
+            pct: lvl.pct,
+            price: price,
+            distance: distFromCurrent,
+            critical: lvl.critical || false,
+            type: price > result.currentPrice ? 'RESIST' : 'SUPPORT'
+        });
+    }
+
+    // Find nearest level
+    var minDist = Infinity;
+    for (var j = 0; j < result.levels.length; j++) {
+        var absD = Math.abs(result.levels[j].distance);
+        if (absD < minDist) {
+            minDist = absD;
+            result.nearestLevel = result.levels[j];
+        }
+    }
+
+    // Determine position relative to 50%
+    var fiftyPct = result.low + (result.range * 0.5);
+    result.position = result.currentPrice > fiftyPct ? 'ABOVE 50%' : 'BELOW 50%';
+    result.trend = result.currentPrice > fiftyPct ? 'BULLISH BIAS' : 'BEARISH BIAS';
+    result.fiftyPctLevel = fiftyPct;
+
+    return result;
+}
+
+
+// Rule 5: Price crosses its own square = major reversal
+function detectSq9LevelCross(symbol) {
+    var result = {
+        symbol: symbol,
+        crossDetected: false,
+        crossType: '', // 'BULLISH_BREAK' or 'BEARISH_BREAK'
+        crossLevel: 0,
+        crossDate: '',
+        significance: '', // 'MAJOR' or 'MINOR'
+        priorLevel: null,
+        currentLevel: null,
+        message: ''
+    };
+
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        priceData = allSymbolsData[symbol];
+    }
+
+    if (!priceData || priceData.length < 5) return result;
+
+    var pivot = sq9ExtendedPivots[symbol];
+    if (!pivot) return result;
+
+    // Get last 5 bars
+    var recentBars = priceData.slice(-5);
+
+    // Calculate SQ9 levels
+    var currentPrice = parseFloat(recentBars[recentBars.length - 1].Close);
+    var prevClose = parseFloat(recentBars[recentBars.length - 2].Close);
+
+    var currentLevels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+    var prevLevels = calcSq9LevelsFromPivot(pivot.price, prevClose);
+
+    // Find which SQ9 level zone we're in now vs before
+    var currentNearest = findNearestSq9Level(currentLevels, currentPrice);
+    var prevNearest = findNearestSq9Level(prevLevels, prevClose);
+
+    if (!currentNearest || !prevNearest) return result;
+
+    // Check if we crossed a level
+    for (var i = 0; i < currentLevels.length; i++) {
+        var level = currentLevels[i];
+        var levelPrice = level.price;
+
+        // Check if price crossed this level
+        var crossedUp = prevClose < levelPrice && currentPrice >= levelPrice;
+        var crossedDown = prevClose > levelPrice && currentPrice <= levelPrice;
+
+        if (crossedUp || crossedDown) {
+            result.crossDetected = true;
+            result.crossLevel = levelPrice;
+            result.crossDate = recentBars[recentBars.length - 1].Date;
+            result.crossType = crossedUp ? 'BULLISH_BREAK' : 'BEARISH_BREAK';
+            result.priorLevel = prevNearest;
+            result.currentLevel = currentNearest;
+
+            // Determine significance
+            var rotationDiff = Math.abs(currentNearest.rotation - prevNearest.rotation);
+            result.significance = rotationDiff >= 1 ? 'MAJOR' : 'MINOR';
+
+            result.message = crossedUp
+                ? 'BULLISH BREAKOUT! Price crossed above SQ9 $' + levelPrice.toFixed(2)
+                : 'BEARISH BREAKDOWN! Price crossed below SQ9 $' + levelPrice.toFixed(2);
+
+            break;
+        }
+    }
+
+    // Also check for crossing the 50% Gann level
+    var gann8ths = calculateGann8ths(symbol);
+    if (gann8ths.fiftyPctLevel) {
+        var crossed50Up = prevClose < gann8ths.fiftyPctLevel && currentPrice >= gann8ths.fiftyPctLevel;
+        var crossed50Down = prevClose > gann8ths.fiftyPctLevel && currentPrice <= gann8ths.fiftyPctLevel;
+
+        if (crossed50Up || crossed50Down) {
+            result.crossed50Pct = true;
+            result.crossed50Type = crossed50Up ? 'BULLISH' : 'BEARISH';
+            result.crossed50Message = crossed50Up
+                ? 'Crossed ABOVE 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bullish control'
+                : 'Crossed BELOW 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bearish control';
+        }
+    }
+
+    return result;
+}
+
+
+// Update Gann 8ths Panel UI
+function updateGann8thsPanel() {
+    var symbol = currentSymbol || 'SPY';
+    var gann = calculateGann8ths(symbol);
+
+    if (!gann || gann.range === 0) return;
+
+    // Update range info
+    var el = function(id) { return document.getElementById(id); };
+
+    if (el('gann8thsHigh')) el('gann8thsHigh').textContent = '$' + gann.high.toFixed(2);
+    if (el('gann8thsLow')) el('gann8thsLow').textContent = '$' + gann.low.toFixed(2);
+    if (el('gann8ths50')) el('gann8ths50').textContent = '$' + gann.fiftyPctLevel.toFixed(2);
+    if (el('gann8thsRange')) el('gann8thsRange').textContent = '$' + gann.range.toFixed(2);
+
+    // Update position badge
+    var posEl = el('gann8thsPosition');
+    if (posEl) {
+        var isAbove = gann.position === 'ABOVE 50%';
+        posEl.textContent = gann.position + ' - ' + gann.trend;
+        posEl.style.background = isAbove ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
+        posEl.style.color = isAbove ? '#16a34a' : '#dc2626';
+    }
+
+    // Update visual chart
+    var chartEl = el('gann8thsChart');
+    if (chartEl && gann.currentPrice > 0) {
+        var pctInRange = ((gann.currentPrice - gann.low) / gann.range) * 100;
+        pctInRange = Math.max(0, Math.min(100, pctInRange));
+
+        chartEl.innerHTML = '' +
+            // 50% line
+            '<div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #000; z-index: 2;"></div>' +
+            '<div style="position: absolute; left: 50%; top: -15px; transform: translateX(-50%); font-size: 9px; font-weight: 600;">50%</div>' +
+            // Current price marker
+            '<div style="position: absolute; left: ' + pctInRange + '%; top: 50%; transform: translate(-50%, -50%); z-index: 3;">' +
+                '<div style="background: #1e3a5f; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap;">$' + gann.currentPrice.toFixed(2) + '</div>' +
+                '<div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid #1e3a5f; margin: 0 auto;"></div>' +
+            '</div>' +
+            // Level markers
+            '<div style="position: absolute; left: 25%; top: 100%; transform: translateX(-50%); font-size: 8px; color: #666; padding-top: 2px;">25%</div>' +
+            '<div style="position: absolute; left: 75%; top: 100%; transform: translateX(-50%); font-size: 8px; color: #666; padding-top: 2px;">75%</div>';
+    }
+
+    // Update levels table
+    var tableEl = el('gann8thsTable');
+    if (tableEl) {
+        var html = '';
+
+        for (var i = gann.levels.length - 1; i >= 0; i--) {
+            var lvl = gann.levels[i];
+            var isNearest = gann.nearestLevel && Math.abs(lvl.price - gann.nearestLevel.price) < 0.01;
+            var isCritical = lvl.critical;
+
+            var rowBg = isCritical ? 'rgba(245,158,11,0.15)' : isNearest ? 'rgba(59,130,246,0.1)' : 'transparent';
+            var rowBorder = isNearest ? '2px solid #3b82f6' : '1px solid var(--border)';
+
+            var typeColor = lvl.type === 'RESIST' ? '#ef4444' : '#22c55e';
+            var typeBg = lvl.type === 'RESIST' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+
+            var distColor = lvl.distance > 0 ? '#ef4444' : '#22c55e';
+            var distSign = lvl.distance > 0 ? '+' : '';
+
+            html += '<tr style="background: ' + rowBg + '; border-bottom: ' + rowBorder + ';">' +
+                '<td style="padding: 8px;">' +
+                    (isCritical ? '⭐ ' : '') +
+                    '<strong>' + lvl.name + '</strong>' +
+                    (isNearest ? ' <span style="background: #3b82f6; color: white; padding: 1px 5px; border-radius: 3px; font-size: 8px;">NEAREST</span>' : '') +
+                '</td>' +
+                '<td style="padding: 8px; text-align: right; font-weight: ' + (isCritical || isNearest ? '700' : '400') + ';">$' + lvl.price.toFixed(2) + '</td>' +
+                '<td style="padding: 8px; text-align: right; color: ' + distColor + ';">' + distSign + lvl.distance.toFixed(2) + '%</td>' +
+                '<td style="padding: 8px; text-align: center;"><span style="background: ' + typeBg + '; color: ' + typeColor + '; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + lvl.type + '</span></td>' +
+                '</tr>';
+        }
+
+        tableEl.innerHTML = html;
+    }
+
+    // Update 50% explanation
+    var explainEl = el('gann50Explanation');
+    if (explainEl) {
+        var isAbove50 = gann.currentPrice > gann.fiftyPctLevel;
+        var dist50 = ((gann.currentPrice - gann.fiftyPctLevel) / gann.fiftyPctLevel * 100).toFixed(2);
+
+        explainEl.innerHTML = '<strong>' + symbol + '</strong> is currently <strong style="color: ' + (isAbove50 ? '#22c55e' : '#ef4444') + ';">' + (isAbove50 ? 'ABOVE' : 'BELOW') + '</strong> the critical 50% level ($' + gann.fiftyPctLevel.toFixed(2) + ').<br><br>' +
+            (isAbove50
+                ? '📈 <strong>Bullish Control:</strong> Price is ' + Math.abs(dist50) + '% above the 50% level. The 50% level now acts as <strong>SUPPORT</strong>. Expect buyers to defend this level on pullbacks. A break below would signal shift to bearish control.'
+                : '📉 <strong>Bearish Control:</strong> Price is ' + Math.abs(dist50) + '% below the 50% level. The 50% level now acts as <strong>RESISTANCE</strong>. Expect sellers to defend this level on rallies. A break above would signal shift to bullish control.');
+    }
+
+    // Check for square cross (Rule 5)
+    updateGannSquareCross();
+}
+
+
+// Update Gann Square Cross detection panel
+function updateGannSquareCross() {
+    var symbol = currentSymbol || 'SPY';
+    var cross = detectSq9LevelCross(symbol);
+
+    var panelEl = document.getElementById('gannSquareCross');
+    var typeEl = document.getElementById('gannCrossType');
+    var detailsEl = document.getElementById('gannCrossDetails');
+
+    if (!panelEl) return;
+
+    if (cross.crossDetected || cross.crossed50Pct) {
+        panelEl.style.display = 'block';
+
+        if (typeEl) {
+            var isBullish = cross.crossType === 'BULLISH_BREAK' || cross.crossed50Type === 'BULLISH';
+            typeEl.textContent = isBullish ? '🚀 BULLISH BREAK' : '🔻 BEARISH BREAK';
+            typeEl.style.background = isBullish ? '#22c55e' : '#ef4444';
+            typeEl.style.color = 'white';
+        }
+
+        if (detailsEl) {
+            var html = '';
+
+            if (cross.crossDetected) {
+                html += '<div style="margin-bottom: 15px;">' +
+                    '<div style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">' + cross.message + '</div>' +
+                    '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">' +
+                        '<div style="background: var(--bg); border-radius: 6px; padding: 10px; text-align: center;">' +
+                            '<div style="font-size: 9px; color: #666;">CROSS LEVEL</div>' +
+                            '<div style="font-size: 16px; font-weight: 700;">$' + cross.crossLevel.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: var(--bg); border-radius: 6px; padding: 10px; text-align: center;">' +
+                            '<div style="font-size: 9px; color: #666;">SIGNIFICANCE</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: ' + (cross.significance === 'MAJOR' ? '#ef4444' : '#f59e0b') + ';">' + cross.significance + '</div>' +
+                        '</div>' +
+                        '<div style="background: var(--bg); border-radius: 6px; padding: 10px; text-align: center;">' +
+                            '<div style="font-size: 9px; color: #666;">DATE</div>' +
+                            '<div style="font-size: 14px; font-weight: 700;">' + cross.crossDate + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            if (cross.crossed50Pct) {
+                html += '<div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 12px;">' +
+                    '<div style="font-size: 12px; font-weight: 700; color: #d97706; margin-bottom: 5px;">⭐ 50% Level Cross!</div>' +
+                    '<div style="font-size: 11px;">' + cross.crossed50Message + '</div>' +
+                '</div>';
+            }
+
+            html += '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">' +
+                '<div style="font-size: 11px; font-weight: 600; margin-bottom: 8px;">📋 What This Means (Rule 5):</div>' +
+                '<div style="font-size: 10px; color: #666;">' +
+                    '• <strong>Major Reversal Signal:</strong> When price crosses its own "square" (SQ9 level), it often signals a significant trend change.<br>' +
+                    '• <strong>Confirmation:</strong> Watch for volume confirmation and follow-through in the breakout direction.<br>' +
+                    '• <strong>Trading Implication:</strong> ' + (cross.crossType === 'BULLISH_BREAK'
+                        ? 'Look for CALL opportunities on pullbacks to the broken level (now support).'
+                        : 'Look for PUT opportunities on rallies to the broken level (now resistance).') +
+                '</div>' +
+            '</div>';
+
+            detailsEl.innerHTML = html;
+        }
+    } else {
+        panelEl.style.display = 'none';
+    }
+}
+
 
 // Initialize entry zone tracking for an ETF
 function initSq9EntryZone(symbol) {
