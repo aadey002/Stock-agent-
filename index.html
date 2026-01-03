@@ -30295,6 +30295,17 @@ function updateSq9Widget() {
     } else {
         for (var i = 0; i < topSetups.length; i++) {
             var r = topSetups[i];
+
+            // Get REAL-TIME price from allSymbolsData if available
+            var currentPrice = r.price;
+            if (typeof allSymbolsData !== 'undefined' && allSymbolsData[r.symbol] && allSymbolsData[r.symbol].length > 0) {
+                var latestBar = allSymbolsData[r.symbol][allSymbolsData[r.symbol].length - 1];
+                currentPrice = parseFloat(latestBar.Close) || r.price;
+            }
+
+            // Recalculate distance from current price to SQ9 level
+            var currentDistance = ((currentPrice - r.sq9Level) / r.sq9Level) * 100;
+
             var dirColor = r.direction === 'CALL' ? '#22c55e' : '#ef4444';
             var statusBadge = '';
 
@@ -30308,9 +30319,9 @@ function updateSq9Widget() {
 
             tableHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
                 '<td style="padding: 8px;"><strong>' + r.symbol + '</strong></td>' +
-                '<td style="padding: 8px;">$' + r.price.toFixed(2) + '</td>' +
+                '<td style="padding: 8px;">$' + currentPrice.toFixed(2) + '</td>' +
                 '<td style="padding: 8px;">$' + r.sq9Level.toFixed(2) + '</td>' +
-                '<td style="padding: 8px; color: ' + (r.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (r.distance >= 0 ? '+' : '') + r.distance.toFixed(1) + '%</td>' +
+                '<td style="padding: 8px; color: ' + (currentDistance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (currentDistance >= 0 ? '+' : '') + currentDistance.toFixed(1) + '%</td>' +
                 '<td style="padding: 8px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + r.direction + '</span></td>' +
                 '<td style="padding: 8px;">' + statusBadge + '</td>' +
                 '<td style="padding: 8px;">' +
