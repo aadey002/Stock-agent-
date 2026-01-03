@@ -27813,15 +27813,48 @@ function getSq9StatusForOpp(symbol) {
     }
 
     var direction = nearest.type === 'resist' ? 'put' : 'call';
+    var dirUpper = direction.toUpperCase();
 
-    // Calculate checks inline (same logic as runSq9Scan)
+    // Get symbol data for real checks
+    var symData = allSymbolsData[symbol];
+    var lastBar = symData[symData.length - 1];
+
+    // Calculate REAL checks inline (same logic as runSq9Scan)
     var checks = {
-        touched: distPct <= 1.5,
-        candle: distPct <= 1.0,
-        volume: distPct <= 2.0,
-        rsi: distPct <= 1.5,
-        closed: (direction === 'put' && currentPrice < nearest.price) || (direction === 'call' && currentPrice > nearest.price)
+        touched: false,
+        candle: false,
+        volume: false,
+        rsi: false,
+        closed: false
     };
+
+    // 1. TOUCHED: Price within 1.5% of level
+    checks.touched = distPct <= 1.5;
+
+    // 2. CANDLE: Actual reversal pattern
+    var candleResult = detectCandlePattern(symData, dirUpper);
+    checks.candle = candleResult.detected;
+
+    // 3. VOLUME: 1.3x+ average
+    var volumeResult = analyzeVolume(symData);
+    var volMultiplier = parseFloat(volumeResult.multiplier) || 0;
+    checks.volume = volMultiplier >= 1.3;
+
+    // 4. RSI: Correct zone
+    var rsiResult = analyzeRSI(symData, dirUpper);
+    var rsiValue = parseFloat(rsiResult.value) || 50;
+    if (direction === 'put') {
+        checks.rsi = rsiValue >= 65;
+    } else {
+        checks.rsi = rsiValue <= 35;
+    }
+
+    // 5. CLOSED: Confirming candle
+    if (direction === 'put') {
+        checks.closed = currentPrice < nearest.price && parseFloat(lastBar.Close) < parseFloat(lastBar.Open);
+    } else {
+        checks.closed = currentPrice > nearest.price && parseFloat(lastBar.Close) > parseFloat(lastBar.Open);
+    }
 
     var checkCount = Object.values(checks).filter(function(v) { return v; }).length;
 
@@ -28018,14 +28051,47 @@ function runSq9Scan() {
 
         var direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
 
-        // Calculate checks based on distance
+        // Calculate REAL checks - not distance-based!
         var checks = {
-            touched: distPct <= 1.5,
-            candle: distPct <= 1.0,
-            volume: distPct <= 2.0,
-            rsi: distPct <= 1.5,
-            closed: (direction === 'PUT' && currentPrice < nearest.price) || (direction === 'CALL' && currentPrice > nearest.price)
+            touched: false,
+            candle: false,
+            volume: false,
+            rsi: false,
+            closed: false
         };
+
+        // Get actual data for this symbol
+        var symData = allSymbolsData[sym];
+        var lastBar = symData[symData.length - 1];
+        var prevBar = symData.length > 1 ? symData[symData.length - 2] : lastBar;
+
+        // 1. TOUCHED: Price came within 1.5% of level (this one is distance-based, that's correct)
+        checks.touched = distPct <= 1.5;
+
+        // 2. CANDLE: Detect actual reversal candle pattern
+        var candleResult = detectCandlePattern(symData, direction);
+        checks.candle = candleResult.detected;
+
+        // 3. VOLUME: Must be at least 1.3x average volume
+        var volumeResult = analyzeVolume(symData);
+        var volMultiplier = parseFloat(volumeResult.multiplier) || 0;
+        checks.volume = volMultiplier >= 1.3;
+
+        // 4. RSI: Must be in correct zone (overbought for PUT, oversold for CALL)
+        var rsiResult = analyzeRSI(symData, direction);
+        var rsiValue = parseFloat(rsiResult.value) || 50;
+        if (direction === 'PUT') {
+            checks.rsi = rsiValue >= 65; // Overbought zone for PUT
+        } else {
+            checks.rsi = rsiValue <= 35; // Oversold zone for CALL
+        }
+
+        // 5. CLOSED: Candle closed in the right direction relative to level
+        if (direction === 'PUT') {
+            checks.closed = currentPrice < nearest.price && parseFloat(lastBar.Close) < parseFloat(lastBar.Open);
+        } else {
+            checks.closed = currentPrice > nearest.price && parseFloat(lastBar.Close) > parseFloat(lastBar.Open);
+        }
 
         var checkCount = Object.values(checks).filter(function(v) { return v; }).length;
 
@@ -28503,39 +28569,61 @@ function analyzeSq9CheckDetails(symbol, result) {
 
     // Candle pattern analysis
     var candleInfo = detectCandlePattern(symData, result.direction);
-    if (result.checks.candle && candleInfo.pattern) {
-        details.candle = candleInfo.pattern + ' on ' + candleInfo.date;
-    } else if (candleInfo.pattern) {
-        details.candle = 'Forming: ' + candleInfo.pattern;
+    if (result.checks.candle && candleInfo.detected) {
+        details.candle = candleInfo.pattern + ' on ' + candleInfo.date + ' (' + candleInfo.strength + ')';
+    } else {
+        var neededPattern = result.direction === 'PUT'
+            ? 'Shooting Star, Bearish Engulfing, or Evening Star'
+            : 'Hammer, Bullish Engulfing, or Morning Star';
+        details.candle = 'No reversal pattern - need ' + neededPattern;
     }
 
     // Volume analysis
     var volInfo = analyzeVolume(symData);
+    var volMultiplier = volInfo.multiplier || volInfo.ratio || 0;
     if (result.checks.volume) {
-        details.volume = volInfo.ratio.toFixed(1) + 'x avg volume (' + formatLargeNumber(volInfo.current) + ')';
+        details.volume = volMultiplier.toFixed(1) + 'x avg volume (' + formatLargeNumber(volInfo.current) + ') - CONFIRMED';
     } else {
-        details.volume = volInfo.ratio.toFixed(1) + 'x avg (need 1.5x+)';
+        details.volume = volMultiplier.toFixed(1) + 'x avg (need 1.3x+ for confirmation)';
     }
 
     // RSI analysis
     var rsiInfo = analyzeRSI(symData, result.direction);
+    var rsiValue = rsiInfo.value || 50;
     if (result.checks.rsi) {
-        details.rsi = 'RSI ' + rsiInfo.value.toFixed(0) + ' (' + rsiInfo.zone + ')';
+        details.rsi = 'RSI ' + rsiValue.toFixed(0) + ' (' + rsiInfo.zone + ') - CONFIRMED';
     } else {
-        details.rsi = 'RSI ' + rsiInfo.value.toFixed(0) + ' (need ' + (result.direction === 'CALL' ? '<35' : '>65') + ')';
+        var neededRsi = result.direction === 'CALL' ? '≤35 (Oversold)' : '≥65 (Overbought)';
+        details.rsi = 'RSI ' + rsiValue.toFixed(0) + ' (' + rsiInfo.zone + ') - need ' + neededRsi;
     }
 
-    // Closed analysis
+    // Closed analysis - check for confirming candle
+    var closePrice = parseFloat(lastBar.Close);
+    var openPrice = parseFloat(lastBar.Open);
+    var isBearishCandle = closePrice < openPrice;
+    var isBullishCandle = closePrice > openPrice;
+
     if (result.checks.closed) {
-        var closePrice = parseFloat(lastBar.Close);
         if (result.direction === 'PUT') {
-            details.closed = 'Closed $' + (sq9Level - closePrice).toFixed(2) + ' below level';
+            details.closed = 'Bearish candle closed $' + (sq9Level - closePrice).toFixed(2) + ' below level - CONFIRMED';
         } else {
-            details.closed = 'Closed $' + (closePrice - sq9Level).toFixed(2) + ' above level';
+            details.closed = 'Bullish candle closed $' + (closePrice - sq9Level).toFixed(2) + ' above level - CONFIRMED';
         }
     } else {
-        var needed = result.direction === 'PUT' ? (sq9Level - parseFloat(lastBar.Close)) : (parseFloat(lastBar.Close) - sq9Level);
-        details.closed = 'Need $' + Math.abs(needed).toFixed(2) + ' more to confirm';
+        // Explain what's missing
+        if (result.direction === 'PUT') {
+            if (!isBearishCandle) {
+                details.closed = 'Need bearish candle (close < open) below $' + sq9Level.toFixed(2);
+            } else {
+                details.closed = 'Bearish candle formed but price at $' + closePrice.toFixed(2) + ' (need < $' + sq9Level.toFixed(2) + ')';
+            }
+        } else {
+            if (!isBullishCandle) {
+                details.closed = 'Need bullish candle (close > open) above $' + sq9Level.toFixed(2);
+            } else {
+                details.closed = 'Bullish candle formed but price at $' + closePrice.toFixed(2) + ' (need > $' + sq9Level.toFixed(2) + ')';
+            }
+        }
     }
 
     // Timeframe alignment
@@ -28577,7 +28665,17 @@ function analyzeSq9CheckDetails(symbol, result) {
 
 // Detect candle patterns from price data
 function detectCandlePattern(data, direction) {
-    if (!data || data.length < 3) return { pattern: null, date: null };
+    var nullResult = {
+        pattern: null,
+        date: null,
+        detected: false,
+        description: 'No pattern detected',
+        timeframe: 'Daily',
+        time: '--',
+        strength: 'NONE'
+    };
+
+    if (!data || data.length < 3) return nullResult;
 
     var last = data[data.length - 1];
     var prev = data[data.length - 2];
@@ -28597,32 +28695,46 @@ function detectCandlePattern(data, direction) {
     var prevBody = Math.abs(prevClose - prevOpen);
 
     var dateStr = new Date(last.Date || last.Datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    var timeStr = new Date(last.Date || last.Datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    var makeResult = function(pattern, strength) {
+        return {
+            pattern: pattern,
+            date: dateStr,
+            detected: true,
+            description: pattern + ' pattern detected',
+            timeframe: 'Daily',
+            time: timeStr,
+            strength: strength || 'MODERATE'
+        };
+    };
 
     // Hammer (bullish) - small body at top, long lower wick
     if (direction === 'CALL' && lowerWick > body * 2 && upperWick < body * 0.5 && close > open) {
-        return { pattern: 'Hammer', date: dateStr };
+        return makeResult('Hammer', 'STRONG');
     }
 
     // Inverted Hammer / Shooting Star (bearish) - small body at bottom, long upper wick
     if (direction === 'PUT' && upperWick > body * 2 && lowerWick < body * 0.5 && close < open) {
-        return { pattern: 'Shooting Star', date: dateStr };
+        return makeResult('Shooting Star', 'STRONG');
     }
 
     // Bullish Engulfing
     if (direction === 'CALL' && prevClose < prevOpen && close > open &&
         close > prevOpen && open < prevClose && body > prevBody) {
-        return { pattern: 'Bullish Engulfing', date: dateStr };
+        return makeResult('Bullish Engulfing', 'STRONG');
     }
 
     // Bearish Engulfing
     if (direction === 'PUT' && prevClose > prevOpen && close < open &&
         close < prevOpen && open > prevClose && body > prevBody) {
-        return { pattern: 'Bearish Engulfing', date: dateStr };
+        return makeResult('Bearish Engulfing', 'STRONG');
     }
 
-    // Doji - very small body
-    if (body < range * 0.1) {
-        return { pattern: 'Doji (Indecision)', date: dateStr };
+    // Doji - indecision, only counts if at a key level
+    if (body < range * 0.1 && range > 0) {
+        // Doji is neutral - don't count as a reversal signal
+        return nullResult;
     }
 
     // Morning Star (bullish 3-bar)
@@ -28630,7 +28742,7 @@ function detectCandlePattern(data, direction) {
         var prev2Close = parseFloat(prev2.Close);
         var prev2Open = parseFloat(prev2.Open);
         if (prev2Close < prev2Open && prevBody < Math.abs(prev2Close - prev2Open) * 0.3 && close > open && close > (prev2Close + prev2Open) / 2) {
-            return { pattern: 'Morning Star', date: dateStr };
+            return makeResult('Morning Star', 'STRONG');
         }
     }
 
@@ -28639,27 +28751,40 @@ function detectCandlePattern(data, direction) {
         var prev2Close = parseFloat(prev2.Close);
         var prev2Open = parseFloat(prev2.Open);
         if (prev2Close > prev2Open && prevBody < Math.abs(prev2Close - prev2Open) * 0.3 && close < open && close < (prev2Close + prev2Open) / 2) {
-            return { pattern: 'Evening Star', date: dateStr };
+            return makeResult('Evening Star', 'STRONG');
         }
     }
 
-    // Strong momentum bar
+    // Strong momentum bar in right direction
     if (body > range * 0.7) {
-        if (close > open) {
-            return { pattern: 'Strong Bull Bar', date: dateStr };
-        } else {
-            return { pattern: 'Strong Bear Bar', date: dateStr };
+        if (direction === 'CALL' && close > open) {
+            return makeResult('Strong Bull Bar', 'MODERATE');
+        } else if (direction === 'PUT' && close < open) {
+            return makeResult('Strong Bear Bar', 'MODERATE');
         }
     }
 
-    return { pattern: null, date: null };
+    return nullResult;
 }
 
 // Analyze volume relative to average
 function analyzeVolume(data) {
-    if (!data || data.length < 10) return { current: 0, average: 0, ratio: 0 };
+    var nullResult = {
+        current: 0,
+        average: 0,
+        ratio: 0,
+        multiplier: 0,
+        currentVol: '0',
+        description: 'No volume data',
+        timeframe: 'Daily',
+        time: '--',
+        strength: 'NONE'
+    };
 
-    var currentVol = parseFloat(data[data.length - 1].Volume) || 0;
+    if (!data || data.length < 10) return nullResult;
+
+    var lastBar = data[data.length - 1];
+    var currentVol = parseFloat(lastBar.Volume) || 0;
     var sum = 0;
     var count = Math.min(20, data.length - 1);
 
@@ -28670,16 +28795,46 @@ function analyzeVolume(data) {
     var avgVol = count > 0 ? sum / count : 0;
     var ratio = avgVol > 0 ? currentVol / avgVol : 0;
 
+    var timeStr = '--';
+    try {
+        timeStr = new Date(lastBar.Date || lastBar.Datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } catch(e) {}
+
+    var strength = 'NONE';
+    if (ratio >= 2.0) strength = 'STRONG';
+    else if (ratio >= 1.3) strength = 'MODERATE';
+    else if (ratio >= 1.0) strength = 'WEAK';
+
+    var volStr = formatLargeNumber(currentVol);
+    var avgStr = formatLargeNumber(avgVol);
+
     return {
         current: currentVol,
         average: avgVol,
-        ratio: ratio
+        ratio: ratio,
+        multiplier: ratio,
+        currentVol: volStr,
+        description: volStr + ' (' + ratio.toFixed(1) + 'x average of ' + avgStr + ')',
+        timeframe: 'Daily',
+        time: timeStr,
+        strength: strength
     };
 }
 
 // Analyze RSI value
 function analyzeRSI(data, direction) {
-    if (!data || data.length < 15) return { value: 50, zone: 'Neutral' };
+    var nullResult = {
+        value: 50,
+        zone: 'Neutral',
+        description: 'RSI at 50 (Neutral)',
+        timeframe: 'Daily (14-period)',
+        time: '--',
+        strength: 'NONE'
+    };
+
+    if (!data || data.length < 15) return nullResult;
+
+    var lastBar = data[data.length - 1];
 
     // Calculate simple RSI approximation
     var gains = 0;
@@ -28703,12 +28858,32 @@ function analyzeRSI(data, direction) {
     var rsi = 100 - (100 / (1 + rs));
 
     var zone = 'Neutral';
-    if (rsi < 30) zone = 'Oversold';
-    else if (rsi < 40) zone = 'Weak';
-    else if (rsi > 70) zone = 'Overbought';
-    else if (rsi > 60) zone = 'Strong';
+    if (rsi <= 30) zone = 'Oversold';
+    else if (rsi <= 35) zone = 'Weak';
+    else if (rsi >= 70) zone = 'Overbought';
+    else if (rsi >= 65) zone = 'Strong';
 
-    return { value: rsi, zone: zone };
+    var timeStr = '--';
+    try {
+        timeStr = new Date(lastBar.Date || lastBar.Datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } catch(e) {}
+
+    // Determine strength based on direction and RSI zone
+    var strength = 'NONE';
+    if (direction === 'CALL' && rsi <= 35) {
+        strength = rsi <= 30 ? 'STRONG' : 'MODERATE';
+    } else if (direction === 'PUT' && rsi >= 65) {
+        strength = rsi >= 70 ? 'STRONG' : 'MODERATE';
+    }
+
+    return {
+        value: rsi,
+        zone: zone,
+        description: 'RSI ' + rsi.toFixed(0) + ' (' + zone + ')',
+        timeframe: 'Daily (14-period)',
+        time: timeStr,
+        strength: strength
+    };
 }
 
 // Format large numbers for display
