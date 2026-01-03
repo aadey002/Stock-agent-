@@ -1,128 +1,151 @@
 #!/usr/bin/env python3
 """
-SQ9 Scanner - Automated Square of 9 Level Detection
-Scans multiple ETFs and stocks for SQ9 entry signals
-
-Usage:
-    python sq9_scanner.py                    # Scan all watchlist symbols
-    python sq9_scanner.py --symbol SPY       # Scan specific symbol
-    python sq9_scanner.py --ready            # Show only ready setups
-    python sq9_scanner.py --watching         # Show watching + ready setups
+SQ9 Daily Scanner - Runs at 3PM ET via GitHub Actions
+Scans 50 liquid symbols for Square of 9 setups
 """
 
-import math
 import json
-import argparse
+import csv
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
 import os
+import math
 
-# Try to import yfinance for live data
+# Try to import yfinance, fall back to sample data if not available
 try:
     import yfinance as yf
     HAS_YFINANCE = True
 except ImportError:
     HAS_YFINANCE = False
-    print("Warning: yfinance not installed. Using cached/sample data.")
-    print("Install with: pip install yfinance")
+    print("Warning: yfinance not installed, using sample data")
 
-# ===========================================
+# ============================================
 # CONFIGURATION
-# ===========================================
+# ============================================
 
-# Pivot data from confirmed major lows (Apr 7, 2025)
-PIVOT_DATA = {
+WATCHLIST = [
     # Index ETFs
+    'SPY', 'QQQ', 'IWM', 'DIA',
+    # Sector ETFs
+    'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY',
+    # Mega Caps
+    'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX',
+    # Additional Liquid Stocks
+    'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST', 'CRM',
+    'INTC', 'CSCO', 'ADBE', 'ORCL', 'PFE', 'MRK', 'ABBV', 'LLY', 'CVX', 'XOM'
+]
+
+# Known pivot points (Apr 2025 lows) - will be updated dynamically
+KNOWN_PIVOTS = {
     'SPY': {'price': 481.80, 'date': '2025-04-07', 'type': 'LOW'},
     'QQQ': {'price': 402.39, 'date': '2025-04-07', 'type': 'LOW'},
     'IWM': {'price': 171.73, 'date': '2025-04-07', 'type': 'LOW'},
-    'DIA': {'price': 364.42, 'date': '2025-04-07', 'type': 'LOW'},
-    # Sector ETFs
-    'XLF': {'price': 42.35, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLE': {'price': 78.12, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLK': {'price': 186.50, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLV': {'price': 131.25, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLI': {'price': 112.80, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLB': {'price': 79.45, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLU': {'price': 68.90, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLP': {'price': 75.20, 'date': '2025-04-07', 'type': 'LOW'},
-    'XLY': {'price': 175.30, 'date': '2025-04-07', 'type': 'LOW'},
+    'DIA': {'price': 365.45, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLF': {'price': 42.80, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLE': {'price': 78.50, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLK': {'price': 185.20, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLV': {'price': 131.40, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLI': {'price': 118.60, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLB': {'price': 80.25, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLU': {'price': 72.80, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLP': {'price': 76.90, 'date': '2025-04-07', 'type': 'LOW'},
+    'XLY': {'price': 172.30, 'date': '2025-04-07', 'type': 'LOW'},
 }
 
-# Check thresholds (in percentage)
-THRESHOLDS = {
-    'signal_active': 3.0,      # Within 3% to show signal
-    'zone_reset': 4.0,         # Beyond 4% resets zone
-    'touched': 1.5,            # Within 1.5% = touched
-    'candle': 1.0,             # Within 1.0% = candle pattern likely
-    'volume': 2.0,             # Within 2.0% = volume check
-    'rsi': 1.5,                # Within 1.5% = RSI check
-}
-
-# ===========================================
+# ============================================
 # SQ9 CALCULATION FUNCTIONS
-# ===========================================
+# ============================================
 
-def calc_sq9_levels(pivot_price: float, current_price: float, range_pct: float = 10.0) -> List[Dict]:
-    """
-    Calculate SQ9 levels from a pivot price.
-    Returns levels within range_pct of current price.
-    """
+def calc_sq9_levels(pivot_price, current_price, num_levels=20):
+    """Calculate SQ9 support/resistance levels from pivot"""
     sqrt_pivot = math.sqrt(pivot_price)
     levels = []
 
-    # Calculate rotations (each 0.5 = 180 degrees on the wheel)
-    for r in [x * 0.5 for x in range(8, 29)]:  # 4.0 to 14.0 in 0.5 steps
+    for r in [x * 0.5 for x in range(4, 40)]:  # Rotations from 2.0 to 20.0
         price = (sqrt_pivot + r * 0.5) ** 2
         dist_pct = ((price - current_price) / current_price) * 100
 
-        if -range_pct <= dist_pct <= range_pct:
+        # Only include levels within +/-15% of current price
+        if -15 <= dist_pct <= 15:
             levels.append({
                 'rotation': r,
-                'price': price,
-                'distance': dist_pct,
-                'type': 'resist' if price > current_price else 'support'
+                'price': round(price, 2),
+                'distance_pct': round(dist_pct, 2),
+                'type': 'RESIST' if price > current_price else 'SUPPORT'
             })
 
-    return sorted(levels, key=lambda x: -x['price'])
+    # Sort by absolute distance and return closest levels
+    levels.sort(key=lambda x: abs(x['distance_pct']))
+    return levels[:num_levels]
 
 
-def find_nearest_level(levels: List[Dict], current_price: float) -> Optional[Dict]:
-    """Find the nearest SQ9 level to current price."""
+def find_nearest_level(levels, current_price):
+    """Find the nearest SQ9 level to current price"""
     if not levels:
         return None
-
-    nearest = None
-    min_dist = float('inf')
-
-    for level in levels:
-        dist = abs(level['price'] - current_price)
-        if dist < min_dist:
-            min_dist = dist
-            nearest = level
-
-    return nearest
+    return min(levels, key=lambda x: abs(x['price'] - current_price))
 
 
-def get_trade_direction(nearest: Dict, current_price: float) -> str:
-    """Determine trade direction based on nearest level."""
-    if not nearest:
-        return 'NEUTRAL'
+def get_52_week_pivot(symbol):
+    """Get 52-week low as pivot price using yfinance"""
+    if not HAS_YFINANCE:
+        return KNOWN_PIVOTS.get(symbol, {}).get('price'), KNOWN_PIVOTS.get(symbol, {}).get('date')
 
-    dist_pct = abs(nearest['distance'])
-    if dist_pct > THRESHOLDS['signal_active']:
-        return 'NEUTRAL'
+    try:
+        ticker = yf.Ticker(symbol)
+        hist = ticker.history(period='1y')
+        if hist.empty:
+            # Fall back to known pivot
+            return KNOWN_PIVOTS.get(symbol, {}).get('price'), KNOWN_PIVOTS.get(symbol, {}).get('date')
 
-    return 'PUT' if nearest['type'] == 'resist' else 'CALL'
+        low_idx = hist['Low'].idxmin()
+        pivot_price = float(hist['Low'].min())
+        pivot_date = low_idx.strftime('%Y-%m-%d')
+
+        return pivot_price, pivot_date
+    except Exception as e:
+        print(f"  Warning: Error getting pivot for {symbol}: {e}")
+        return KNOWN_PIVOTS.get(symbol, {}).get('price'), KNOWN_PIVOTS.get(symbol, {}).get('date')
 
 
-def calculate_checks(dist_pct: float, direction: str, current_price: float, level_price: float) -> Dict:
-    """Calculate the 5 entry checks based on distance."""
+def get_current_price(symbol):
+    """Get current price using yfinance"""
+    if not HAS_YFINANCE:
+        # Return sample prices for testing
+        sample_prices = {
+            'SPY': 595.50, 'QQQ': 520.30, 'IWM': 225.80, 'DIA': 435.20,
+            'XLF': 48.50, 'XLE': 85.30, 'XLK': 225.40, 'XLV': 145.60,
+            'XLI': 128.90, 'XLB': 88.40, 'XLU': 75.20, 'XLP': 82.30,
+            'XLY': 195.80, 'AAPL': 248.50, 'MSFT': 428.90, 'NVDA': 142.50,
+            'TSLA': 412.30, 'AMZN': 228.50, 'GOOGL': 198.20, 'META': 612.40,
+            'JPM': 268.30, 'AMD': 118.30, 'NFLX': 935.40
+        }
+        return sample_prices.get(symbol), 0.0
+
+    try:
+        ticker = yf.Ticker(symbol)
+        hist = ticker.history(period='5d')
+        if hist.empty or len(hist) < 2:
+            return None, None
+
+        current = float(hist['Close'].iloc[-1])
+        prev = float(hist['Close'].iloc[-2])
+        change_pct = ((current - prev) / prev) * 100
+
+        return current, round(change_pct, 2)
+    except Exception as e:
+        print(f"  Warning: Error getting price for {symbol}: {e}")
+        return None, None
+
+
+def calculate_checks(distance_pct, direction, current_price, level_price):
+    """Calculate the 5-point checklist"""
+    dist = abs(distance_pct)
+
     checks = {
-        'touched': dist_pct <= THRESHOLDS['touched'],
-        'candle': dist_pct <= THRESHOLDS['candle'],
-        'volume': dist_pct <= THRESHOLDS['volume'],
-        'rsi': dist_pct <= THRESHOLDS['rsi'],
+        'touched': dist <= 1.5,
+        'candle': dist <= 1.0,
+        'volume': dist <= 2.0,
+        'rsi': dist <= 1.5,
         'closed': False
     }
 
@@ -135,276 +158,233 @@ def calculate_checks(dist_pct: float, direction: str, current_price: float, leve
     return checks
 
 
-def get_status(check_count: int) -> str:
-    """Get status based on check count."""
-    if check_count == 5:
-        return 'READY'
-    elif check_count >= 3:
-        return 'WATCHING'
-    elif check_count >= 1:
-        return 'PARTIAL'
-    return 'NONE'
+def calculate_targets(pivot_price, nearest_level, direction, current_price):
+    """Calculate target and stop based on SQ9 levels"""
+    sqrt_base = math.sqrt(pivot_price)
+    rotation = nearest_level['rotation']
 
-
-# ===========================================
-# DATA FETCHING
-# ===========================================
-
-def get_current_price(symbol: str) -> Optional[float]:
-    """Fetch current price for a symbol."""
-    if not HAS_YFINANCE:
-        # Return sample data if yfinance not available
-        sample_prices = {
-            'SPY': 595.50, 'QQQ': 520.30, 'IWM': 225.80, 'DIA': 435.20,
-            'XLF': 48.50, 'XLE': 85.30, 'XLK': 225.40, 'XLV': 145.60,
-            'XLI': 128.90, 'XLB': 88.40, 'XLU': 75.20, 'XLP': 82.30,
-            'XLY': 195.80
-        }
-        return sample_prices.get(symbol)
-
-    try:
-        ticker = yf.Ticker(symbol)
-        hist = ticker.history(period='1d')
-        if not hist.empty:
-            return float(hist['Close'].iloc[-1])
-    except Exception as e:
-        print(f"Error fetching {symbol}: {e}")
-
-    return None
-
-
-# ===========================================
-# SCANNER
-# ===========================================
-
-def scan_symbol(symbol: str) -> Optional[Dict]:
-    """Scan a single symbol for SQ9 setup."""
-    pivot = PIVOT_DATA.get(symbol)
-    if not pivot:
-        return None
-
-    current_price = get_current_price(symbol)
-    if not current_price:
-        return None
-
-    # Calculate SQ9 levels
-    levels = calc_sq9_levels(pivot['price'], current_price)
-    nearest = find_nearest_level(levels, current_price)
-
-    if not nearest:
-        return None
-
-    dist_pct = abs(nearest['distance'])
-
-    # Skip if too far from any level
-    if dist_pct > THRESHOLDS['zone_reset']:
-        return None
-
-    direction = get_trade_direction(nearest, current_price)
-    if direction == 'NEUTRAL':
-        return None
-
-    # Calculate checks
-    checks = calculate_checks(dist_pct, direction, current_price, nearest['price'])
-    check_count = sum(checks.values())
-    status = get_status(check_count)
-
-    if status == 'NONE':
-        return None
-
-    # Calculate target and stop
-    sqrt_base = math.sqrt(pivot['price'])
     if direction == 'CALL':
-        target_rot = nearest['rotation'] + 0.5
-        stop_rot = nearest['rotation'] - 0.5
-    else:
-        target_rot = nearest['rotation'] - 0.5
-        stop_rot = nearest['rotation'] + 0.5
+        target_rot = rotation + 0.5
+        stop_rot = rotation - 0.5
+    else:  # PUT
+        target_rot = rotation - 0.5
+        stop_rot = rotation + 0.5
 
     target_price = (sqrt_base + target_rot * 0.5) ** 2
     stop_price = (sqrt_base + stop_rot * 0.5) ** 2
 
-    # Fix for PUT direction
+    # Fix for PUT - ensure target is below and stop is above
     if direction == 'PUT':
         if target_price > current_price:
-            target_rot = nearest['rotation'] - 1.0
+            target_rot = rotation - 1.0
             target_price = (sqrt_base + target_rot * 0.5) ** 2
         if stop_price < current_price:
-            stop_rot = nearest['rotation'] + 1.0
+            stop_rot = rotation + 1.0
             stop_price = (sqrt_base + stop_rot * 0.5) ** 2
 
-    # Calculate risk/reward
-    risk = abs(stop_price - current_price)
-    reward = abs(target_price - current_price)
-    rr_ratio = reward / risk if risk > 0 else 0
-
-    # Missing checks
-    missing = [k.upper() for k, v in checks.items() if not v]
-
-    return {
-        'symbol': symbol,
-        'price': current_price,
-        'pivot': pivot['price'],
-        'sq9_level': nearest['price'],
-        'distance': nearest['distance'],
-        'direction': direction,
-        'checks': checks,
-        'check_count': check_count,
-        'status': status,
-        'target': target_price,
-        'stop': stop_price,
-        'rr_ratio': rr_ratio,
-        'missing': missing,
-        'rotation': nearest['rotation']
-    }
+    return round(target_price, 2), round(stop_price, 2)
 
 
-def run_scan(symbols: List[str] = None, filter_status: str = None) -> List[Dict]:
-    """Run scan on multiple symbols."""
-    if symbols is None:
-        symbols = list(PIVOT_DATA.keys())
+# ============================================
+# MAIN SCANNER FUNCTION
+# ============================================
 
+def scan_all_symbols():
+    """Scan all watchlist symbols for SQ9 setups"""
     results = []
+    scan_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     print(f"\n{'='*60}")
-    print(f"  SQ9 SCANNER - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"SQ9 DAILY SCANNER")
     print(f"{'='*60}")
-    print(f"Scanning {len(symbols)} symbols...\n")
+    print(f"Scan Time: {scan_time}")
+    print(f"Scanning {len(WATCHLIST)} symbols...")
+    print(f"{'='*60}\n")
 
-    for symbol in symbols:
-        result = scan_symbol(symbol)
-        if result:
-            # Apply filter if specified
-            if filter_status:
-                if filter_status == 'ready' and result['status'] != 'READY':
-                    continue
-                if filter_status == 'watching' and result['status'] not in ['READY', 'WATCHING']:
-                    continue
+    for symbol in WATCHLIST:
+        try:
+            # Get current price
+            current_price, change_pct = get_current_price(symbol)
+            if not current_price:
+                print(f"  X {symbol}: Could not get price")
+                continue
+
+            # Get pivot (prefer known pivot, fall back to 52-week low)
+            if symbol in KNOWN_PIVOTS:
+                pivot_price = KNOWN_PIVOTS[symbol]['price']
+                pivot_date = KNOWN_PIVOTS[symbol]['date']
+            else:
+                pivot_price, pivot_date = get_52_week_pivot(symbol)
+
+            if not pivot_price:
+                print(f"  X {symbol}: Could not get pivot")
+                continue
+
+            # Calculate SQ9 levels
+            levels = calc_sq9_levels(pivot_price, current_price)
+            if not levels:
+                continue
+
+            # Find nearest level
+            nearest = find_nearest_level(levels, current_price)
+            if not nearest:
+                continue
+
+            dist_pct = nearest['distance_pct']
+
+            # Only include if within 4% of a level
+            if abs(dist_pct) > 4.0:
+                continue
+
+            # Determine direction
+            direction = 'PUT' if nearest['type'] == 'RESIST' else 'CALL'
+
+            # Calculate checks
+            checks = calculate_checks(dist_pct, direction, current_price, nearest['price'])
+            check_count = sum(1 for v in checks.values() if v)
+
+            # Determine status
+            if check_count == 5:
+                status = 'READY'
+            elif check_count >= 3:
+                status = 'WATCHING'
+            else:
+                status = 'PARTIAL'
+
+            # Calculate targets
+            target_price, stop_price = calculate_targets(pivot_price, nearest, direction, current_price)
+
+            # Calculate risk/reward
+            risk = abs(stop_price - current_price)
+            reward = abs(target_price - current_price)
+            rr_ratio = round(reward / risk, 1) if risk > 0 else 0
+
+            # Missing checks
+            missing = [k.upper() for k, v in checks.items() if not v]
+
+            # Determine if ETF
+            is_etf = symbol.startswith('X') or symbol in ['SPY', 'QQQ', 'IWM', 'DIA']
+
+            result = {
+                'symbol': symbol,
+                'price': round(current_price, 2),
+                'change_pct': change_pct,
+                'pivot_price': round(pivot_price, 2),
+                'pivot_date': pivot_date,
+                'sq9_level': nearest['price'],
+                'sq9_type': nearest['type'],
+                'distance_pct': dist_pct,
+                'direction': direction,
+                'check_count': check_count,
+                'checks': checks,
+                'status': status,
+                'missing': missing,
+                'target': target_price,
+                'stop': stop_price,
+                'rr_ratio': rr_ratio,
+                'is_etf': is_etf,
+                'scan_time': scan_time
+            }
+
             results.append(result)
 
+            # Print status
+            status_icon = '[READY]' if status == 'READY' else '[WATCH]' if status == 'WATCHING' else '[PART]'
+            print(f"  {status_icon} {symbol:6s} ${current_price:>8.2f} -> ${nearest['price']:>8.2f} ({dist_pct:+.1f}%) {direction:4s} {check_count}/5 {status}")
+
+        except Exception as e:
+            print(f"  X {symbol}: Error - {str(e)}")
+            continue
+
     # Sort by check count (highest first), then by distance (closest first)
-    results.sort(key=lambda x: (-x['check_count'], abs(x['distance'])))
+    results.sort(key=lambda x: (-x['check_count'], abs(x['distance_pct'])))
 
     return results
 
 
-# ===========================================
-# OUTPUT FORMATTING
-# ===========================================
-
-def print_results(results: List[Dict]):
-    """Print scan results in formatted table."""
+def save_results(results):
+    """Save scan results to CSV and JSON files"""
     if not results:
-        print("\nNo active SQ9 setups found.")
+        print("\nNo SQ9 setups found")
         return
 
-    # Group by status
+    scan_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Prepare summary
     ready = [r for r in results if r['status'] == 'READY']
     watching = [r for r in results if r['status'] == 'WATCHING']
     partial = [r for r in results if r['status'] == 'PARTIAL']
+    calls = [r for r in results if r['direction'] == 'CALL']
+    puts = [r for r in results if r['direction'] == 'PUT']
 
-    # Summary
-    print(f"\n{'='*60}")
-    print(f"  SCAN SUMMARY")
-    print(f"{'='*60}")
-    print(f"  READY (5/5):    {len(ready)}")
-    print(f"  WATCHING (3-4): {len(watching)}")
-    print(f"  PARTIAL (1-2):  {len(partial)}")
-    print(f"  TOTAL:          {len(results)}")
-
-    # Ready setups
-    if ready:
-        print(f"\n{'='*60}")
-        print(f"  READY SETUPS - ENTER NOW!")
-        print(f"{'='*60}")
-        print(f"{'SYMBOL':<8} {'PRICE':>10} {'SQ9':>10} {'DIST':>8} {'DIR':>6} {'TARGET':>10} {'STOP':>10} {'R/R':>6}")
-        print(f"{'-'*76}")
-        for r in ready:
-            dist_str = f"{r['distance']:+.1f}%"
-            print(f"{r['symbol']:<8} ${r['price']:>9.2f} ${r['sq9_level']:>9.2f} {dist_str:>8} {r['direction']:>6} ${r['target']:>9.2f} ${r['stop']:>9.2f} {r['rr_ratio']:>5.1f}x")
-
-    # Watching setups
-    if watching:
-        print(f"\n{'='*60}")
-        print(f"  WATCHING SETUPS - Almost Ready")
-        print(f"{'='*60}")
-        print(f"{'SYMBOL':<8} {'PRICE':>10} {'SQ9':>10} {'DIST':>8} {'DIR':>6} {'CHECKS':>8} {'MISSING':<20}")
-        print(f"{'-'*76}")
-        for r in watching:
-            dist_str = f"{r['distance']:+.1f}%"
-            missing_str = ', '.join(r['missing'][:3])
-            print(f"{r['symbol']:<8} ${r['price']:>9.2f} ${r['sq9_level']:>9.2f} {dist_str:>8} {r['direction']:>6} {r['check_count']:>5}/5   {missing_str:<20}")
-
-    # Partial setups (compact)
-    if partial:
-        print(f"\n{'='*60}")
-        print(f"  APPROACHING - On Radar ({len(partial)} symbols)")
-        print(f"{'='*60}")
-        for r in partial:
-            print(f"  {r['symbol']}: ${r['price']:.2f} -> ${r['sq9_level']:.2f} ({abs(r['distance']):.1f}% away) [{r['direction']}] {r['check_count']}/5")
-
-
-def export_json(results: List[Dict], filename: str = 'sq9_scan_results.json'):
-    """Export results to JSON file."""
-    output = {
-        'scan_time': datetime.now().isoformat(),
-        'total_symbols': len(PIVOT_DATA),
-        'active_setups': len(results),
+    # Save JSON for dashboard
+    json_data = {
+        'scan_time': scan_time,
+        'total_scanned': len(WATCHLIST),
+        'setups_found': len(results),
+        'summary': {
+            'ready': len(ready),
+            'watching': len(watching),
+            'partial': len(partial),
+            'calls': len(calls),
+            'puts': len(puts)
+        },
         'results': results
     }
 
-    with open(filename, 'w') as f:
-        json.dump(output, f, indent=2)
+    with open('sq9_scanner.json', 'w') as f:
+        json.dump(json_data, f, indent=2)
+    print(f"\nSaved {len(results)} setups to sq9_scanner.json")
 
-    print(f"\nResults exported to {filename}")
+    # Save CSV for spreadsheet analysis
+    csv_columns = ['symbol', 'price', 'change_pct', 'pivot_price', 'pivot_date',
+                   'sq9_level', 'sq9_type', 'distance_pct', 'direction',
+                   'check_count', 'status', 'target', 'stop', 'rr_ratio', 'is_etf', 'scan_time']
 
+    with open('sq9_scanner.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=csv_columns, extrasaction='ignore')
+        writer.writeheader()
+        writer.writerows(results)
+    print(f"Saved to sq9_scanner.csv")
 
-# ===========================================
-# MAIN
-# ===========================================
-
-def main():
-    parser = argparse.ArgumentParser(description='SQ9 Scanner - Automated Square of 9 Level Detection')
-    parser.add_argument('--symbol', '-s', type=str, help='Scan specific symbol')
-    parser.add_argument('--ready', action='store_true', help='Show only READY setups')
-    parser.add_argument('--watching', action='store_true', help='Show READY and WATCHING setups')
-    parser.add_argument('--export', '-e', action='store_true', help='Export results to JSON')
-    parser.add_argument('--list', '-l', action='store_true', help='List all tracked symbols')
-
-    args = parser.parse_args()
-
-    # List symbols
-    if args.list:
-        print("\nTracked Symbols:")
-        print("-" * 40)
-        for sym, data in PIVOT_DATA.items():
-            print(f"  {sym}: ${data['price']:.2f} ({data['date']} {data['type']})")
-        return
-
-    # Determine filter
-    filter_status = None
-    if args.ready:
-        filter_status = 'ready'
-    elif args.watching:
-        filter_status = 'watching'
-
-    # Run scan
-    if args.symbol:
-        symbols = [args.symbol.upper()]
-    else:
-        symbols = None
-
-    results = run_scan(symbols, filter_status)
-    print_results(results)
-
-    # Export if requested
-    if args.export:
-        export_json(results)
-
+    # Print summary
     print(f"\n{'='*60}")
-    print(f"  Scan complete. {len(results)} active setups found.")
-    print(f"{'='*60}\n")
+    print(f"SCAN SUMMARY")
+    print(f"{'='*60}")
+    print(f"  READY (5/5):     {len(ready):3d}")
+    print(f"  WATCHING (3-4):  {len(watching):3d}")
+    print(f"  PARTIAL (1-2):   {len(partial):3d}")
+    print(f"  {'-'*30}")
+    print(f"  CALLS:           {len(calls):3d}")
+    print(f"  PUTS:            {len(puts):3d}")
+    print(f"{'='*60}")
 
+    # Print ready setups
+    if ready:
+        print(f"\nREADY SETUPS - ENTER NOW!")
+        print(f"{'-'*60}")
+        for r in ready:
+            print(f"  {r['symbol']:6s} {r['direction']:4s} @ ${r['price']:.2f} -> Target: ${r['target']:.2f} | Stop: ${r['stop']:.2f} | R:R 1:{r['rr_ratio']}")
+
+    # Print watching setups
+    if watching:
+        print(f"\nWATCHING - ALMOST READY")
+        print(f"{'-'*60}")
+        for r in watching[:10]:  # Top 10
+            missing_str = ', '.join(r['missing'])
+            print(f"  {r['symbol']:6s} {r['direction']:4s} {r['check_count']}/5 | Missing: {missing_str}")
+
+
+# ============================================
+# MAIN ENTRY POINT
+# ============================================
 
 if __name__ == '__main__':
-    main()
+    print("\n" + "="*60)
+    print("   SQ9 SCANNER - Square of 9 Level Detection")
+    print("="*60)
+
+    results = scan_all_symbols()
+    save_results(results)
+
+    print("\nScan complete!")
