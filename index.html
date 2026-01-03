@@ -28669,6 +28669,112 @@ function runSq9Backtest() {
     document.getElementById('sq9BacktestResults').innerHTML = html;
 }
 
+// ============================================
+// DYNAMIC PIVOT DETECTION
+// ============================================
+
+function detectDynamicPivots(symbol, priceData) {
+    if (!priceData || priceData.length < 50) return null;
+
+    var pivots = {
+        yearLow: { price: Infinity, date: null },
+        yearHigh: { price: -Infinity, date: null },
+        recentSwingLow: { price: Infinity, date: null },
+        recentSwingHigh: { price: -Infinity, date: null }
+    };
+
+    // Find 52-week high/low
+    var oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    for (var i = 0; i < priceData.length; i++) {
+        var bar = priceData[i];
+        var barDate = new Date(bar.Date);
+        var low = parseFloat(bar.Low);
+        var high = parseFloat(bar.High);
+
+        if (barDate >= oneYearAgo) {
+            if (low < pivots.yearLow.price) {
+                pivots.yearLow = { price: low, date: bar.Date };
+            }
+            if (high > pivots.yearHigh.price) {
+                pivots.yearHigh = { price: high, date: bar.Date };
+            }
+        }
+    }
+
+    // Find recent swing points (last 20 bars)
+    var recentBars = priceData.slice(-20);
+    for (var j = 2; j < recentBars.length - 2; j++) {
+        var curr = recentBars[j];
+        var prev1 = recentBars[j - 1];
+        var prev2 = recentBars[j - 2];
+        var next1 = recentBars[j + 1];
+        var next2 = recentBars[j + 2];
+
+        var currLow = parseFloat(curr.Low);
+        var currHigh = parseFloat(curr.High);
+
+        // Swing low
+        if (currLow < parseFloat(prev1.Low) && currLow < parseFloat(prev2.Low) &&
+            currLow < parseFloat(next1.Low) && currLow < parseFloat(next2.Low)) {
+            if (currLow < pivots.recentSwingLow.price) {
+                pivots.recentSwingLow = { price: currLow, date: curr.Date };
+            }
+        }
+
+        // Swing high
+        if (currHigh > parseFloat(prev1.High) && currHigh > parseFloat(prev2.High) &&
+            currHigh > parseFloat(next1.High) && currHigh > parseFloat(next2.High)) {
+            if (currHigh > pivots.recentSwingHigh.price) {
+                pivots.recentSwingHigh = { price: currHigh, date: curr.Date };
+            }
+        }
+    }
+
+    return pivots;
+}
+
+function updateDynamicPivots() {
+    console.log('🔄 Updating dynamic pivots...');
+
+    var symbols = Object.keys(sq9ExtendedPivots);
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i];
+
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym]) {
+            var pivots = detectDynamicPivots(sym, allSymbolsData[sym]);
+
+            if (pivots && pivots.yearLow.price < Infinity) {
+                // Update with dynamic pivot
+                sq9ExtendedPivots[sym] = {
+                    price: pivots.yearLow.price,
+                    date: pivots.yearLow.date,
+                    type: 'DYNAMIC_LOW'
+                };
+                console.log('  📍 ' + sym + ': Updated pivot to $' + pivots.yearLow.price.toFixed(2) + ' (' + pivots.yearLow.date + ')');
+            }
+        }
+    }
+
+    console.log('✅ Dynamic pivot update complete');
+}
+
+// Update pivots when data loads
+function initDynamicPivots() {
+    // Wait for price data to be available
+    if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+        updateDynamicPivots();
+    } else {
+        // Retry in 5 seconds
+        setTimeout(initDynamicPivots, 5000);
+    }
+}
+
+// Initialize dynamic pivots after page load
+setTimeout(initDynamicPivots, 10000);
+
 </script>
 </body>
 </html>
