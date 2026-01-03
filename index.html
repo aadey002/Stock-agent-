@@ -28222,7 +28222,452 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Request notification permission
     requestNotificationPermission();
+
+    // Load SQ9 trades from storage
+    loadSq9Trades();
 });
+
+// ============================================
+// SQ9 PERFORMANCE TRACKING SYSTEM
+// ============================================
+
+const SQ9_TRADES_KEY = 'sq9Trades';
+var sq9Trades = [];
+var sq9EquityChart = null;
+
+// Load trades from localStorage
+function loadSq9Trades() {
+    try {
+        var saved = localStorage.getItem(SQ9_TRADES_KEY);
+        if (saved) {
+            sq9Trades = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error('Error loading SQ9 trades:', e);
+        sq9Trades = [];
+    }
+    updateSq9PerformanceDisplay();
+}
+
+// Save trades to localStorage
+function saveSq9TradesToStorage() {
+    try {
+        localStorage.setItem(SQ9_TRADES_KEY, JSON.stringify(sq9Trades));
+    } catch (e) {
+        console.error('Error saving SQ9 trades:', e);
+    }
+}
+
+// Open trade log modal
+function openSq9TradeModal(prefillData) {
+    var modal = document.getElementById('sq9TradeModal');
+    modal.style.display = 'flex';
+
+    // Set default date to today
+    document.getElementById('sq9TradeDate').value = new Date().toISOString().split('T')[0];
+
+    // Prefill from scanner if data provided
+    if (prefillData) {
+        document.getElementById('sq9TradeSymbol').value = prefillData.symbol || '';
+        document.getElementById('sq9TradeDirection').value = prefillData.direction || '';
+        document.getElementById('sq9TradeEntry').value = prefillData.price || '';
+        document.getElementById('sq9TradeLevel').value = prefillData.sq9Level || '';
+        document.getElementById('sq9TradeChecks').value = prefillData.checkCount || '5';
+        document.getElementById('sq9TradeTarget').value = prefillData.target || '';
+        document.getElementById('sq9TradeStop').value = prefillData.stop || '';
+    }
+}
+
+function closeSq9TradeModal() {
+    document.getElementById('sq9TradeModal').style.display = 'none';
+    document.getElementById('sq9TradeForm').reset();
+}
+
+// Save new trade
+function saveSq9Trade(event) {
+    event.preventDefault();
+
+    var trade = {
+        id: Date.now(),
+        symbol: document.getElementById('sq9TradeSymbol').value,
+        direction: document.getElementById('sq9TradeDirection').value,
+        entryDate: document.getElementById('sq9TradeDate').value,
+        entryPrice: parseFloat(document.getElementById('sq9TradeEntry').value),
+        sq9Level: parseFloat(document.getElementById('sq9TradeLevel').value),
+        checks: parseInt(document.getElementById('sq9TradeChecks').value),
+        target: parseFloat(document.getElementById('sq9TradeTarget').value),
+        stop: parseFloat(document.getElementById('sq9TradeStop').value),
+        size: parseFloat(document.getElementById('sq9TradeSize').value),
+        strike: document.getElementById('sq9TradeStrike').value,
+        notes: document.getElementById('sq9TradeNotes').value,
+        status: 'open',
+        exitDate: null,
+        exitPrice: null,
+        exitReason: null,
+        pnl: null
+    };
+
+    sq9Trades.push(trade);
+    saveSq9TradesToStorage();
+    updateSq9PerformanceDisplay();
+    closeSq9TradeModal();
+
+    alert('Trade logged successfully!');
+}
+
+// Open close trade modal
+function openSq9CloseModal(tradeId) {
+    var modal = document.getElementById('sq9CloseModal');
+    modal.style.display = 'flex';
+    document.getElementById('sq9CloseTradeId').value = tradeId;
+    document.getElementById('sq9CloseDate').value = new Date().toISOString().split('T')[0];
+}
+
+function closeSq9CloseModal() {
+    document.getElementById('sq9CloseModal').style.display = 'none';
+}
+
+// Confirm close trade
+function confirmCloseTrade() {
+    var tradeId = parseInt(document.getElementById('sq9CloseTradeId').value);
+    var exitDate = document.getElementById('sq9CloseDate').value;
+    var exitPrice = parseFloat(document.getElementById('sq9ClosePrice').value);
+    var exitReason = document.getElementById('sq9CloseReason').value;
+
+    var trade = sq9Trades.find(function(t) { return t.id === tradeId; });
+    if (!trade) return;
+
+    trade.exitDate = exitDate;
+    trade.exitPrice = exitPrice;
+    trade.exitReason = exitReason;
+    trade.status = 'closed';
+
+    // Calculate P&L
+    var priceChange = exitPrice - trade.entryPrice;
+    if (trade.direction === 'PUT') {
+        priceChange = trade.entryPrice - exitPrice; // Inverse for puts
+    }
+    var pctChange = (priceChange / trade.entryPrice) * 100;
+    trade.pnl = (trade.size * pctChange / 100);
+
+    saveSq9TradesToStorage();
+    updateSq9PerformanceDisplay();
+    closeSq9CloseModal();
+
+    alert('Trade closed! P&L: $' + trade.pnl.toFixed(2));
+}
+
+// Delete trade
+function deleteSq9Trade(tradeId) {
+    if (!confirm('Are you sure you want to delete this trade?')) return;
+
+    sq9Trades = sq9Trades.filter(function(t) { return t.id !== tradeId; });
+    saveSq9TradesToStorage();
+    updateSq9PerformanceDisplay();
+}
+
+// Filter trades
+function filterSq9Trades() {
+    updateSq9PerformanceDisplay();
+}
+
+// Update all performance displays
+function updateSq9PerformanceDisplay() {
+    var closedTrades = sq9Trades.filter(function(t) { return t.status === 'closed'; });
+    var openTrades = sq9Trades.filter(function(t) { return t.status === 'open'; });
+
+    var wins = closedTrades.filter(function(t) { return t.pnl > 0; });
+    var losses = closedTrades.filter(function(t) { return t.pnl <= 0; });
+
+    var totalPnL = closedTrades.reduce(function(sum, t) { return sum + (t.pnl || 0); }, 0);
+    var avgWin = wins.length > 0 ? wins.reduce(function(sum, t) { return sum + t.pnl; }, 0) / wins.length : 0;
+    var avgLoss = losses.length > 0 ? Math.abs(losses.reduce(function(sum, t) { return sum + t.pnl; }, 0) / losses.length) : 0;
+    var winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length * 100) : 0;
+
+    // Update summary cards
+    var el = function(id) { return document.getElementById(id); };
+    if (el('sq9TotalTrades')) el('sq9TotalTrades').textContent = sq9Trades.length;
+    if (el('sq9WinRate')) el('sq9WinRate').textContent = winRate.toFixed(0) + '%';
+    if (el('sq9Wins')) el('sq9Wins').textContent = wins.length;
+    if (el('sq9Losses')) el('sq9Losses').textContent = losses.length;
+    if (el('sq9TotalPnL')) {
+        el('sq9TotalPnL').textContent = (totalPnL >= 0 ? '+$' : '-$') + Math.abs(totalPnL).toFixed(0);
+        el('sq9TotalPnL').style.color = totalPnL >= 0 ? '#22c55e' : '#ef4444';
+    }
+    if (el('sq9AvgWin')) el('sq9AvgWin').textContent = '+$' + avgWin.toFixed(0);
+    if (el('sq9AvgLoss')) el('sq9AvgLoss').textContent = '-$' + avgLoss.toFixed(0);
+
+    // Update by direction
+    var callTrades = closedTrades.filter(function(t) { return t.direction === 'CALL'; });
+    var putTrades = closedTrades.filter(function(t) { return t.direction === 'PUT'; });
+    var callWins = callTrades.filter(function(t) { return t.pnl > 0; });
+    var putWins = putTrades.filter(function(t) { return t.pnl > 0; });
+
+    if (el('sq9CallWinRate')) el('sq9CallWinRate').textContent = (callTrades.length > 0 ? (callWins.length / callTrades.length * 100).toFixed(0) : 0) + '%';
+    if (el('sq9CallRecord')) el('sq9CallRecord').textContent = callWins.length + 'W - ' + (callTrades.length - callWins.length) + 'L';
+    if (el('sq9PutWinRate')) el('sq9PutWinRate').textContent = (putTrades.length > 0 ? (putWins.length / putTrades.length * 100).toFixed(0) : 0) + '%';
+    if (el('sq9PutRecord')) el('sq9PutRecord').textContent = putWins.length + 'W - ' + (putTrades.length - putWins.length) + 'L';
+
+    // Update by check count
+    for (var c = 3; c <= 5; c++) {
+        var checkTrades = closedTrades.filter(function(t) { return t.checks === c; });
+        var checkWins = checkTrades.filter(function(t) { return t.pnl > 0; });
+        var checkWinRate = checkTrades.length > 0 ? (checkWins.length / checkTrades.length * 100).toFixed(0) : 0;
+        if (el('sq9Ready' + c + 'WinRate')) el('sq9Ready' + c + 'WinRate').textContent = checkWinRate + '%';
+    }
+
+    // Update trade log table
+    updateSq9TradeLogTable();
+
+    // Update equity chart
+    updateSq9EquityChart();
+}
+
+function updateSq9TradeLogTable() {
+    var filter = document.getElementById('sq9TradeFilter') ? document.getElementById('sq9TradeFilter').value : 'all';
+
+    var filteredTrades = sq9Trades.filter(function(t) {
+        if (filter === 'all') return true;
+        if (filter === 'open') return t.status === 'open';
+        if (filter === 'closed') return t.status === 'closed';
+        if (filter === 'win') return t.status === 'closed' && t.pnl > 0;
+        if (filter === 'loss') return t.status === 'closed' && t.pnl <= 0;
+        return true;
+    });
+
+    // Sort by date (newest first)
+    filteredTrades.sort(function(a, b) {
+        return new Date(b.entryDate) - new Date(a.entryDate);
+    });
+
+    var tbody = document.getElementById('sq9TradeLogTable');
+    if (!tbody) return;
+
+    if (filteredTrades.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align: center; padding: 30px; color: #999;">No trades match your filter.</td></tr>';
+        return;
+    }
+
+    var html = '';
+    for (var i = 0; i < filteredTrades.length; i++) {
+        var t = filteredTrades[i];
+        var dirColor = t.direction === 'CALL' ? '#22c55e' : '#ef4444';
+        var pnlColor = t.pnl > 0 ? '#22c55e' : t.pnl < 0 ? '#ef4444' : '#666';
+        var statusBadge = t.status === 'open'
+            ? '<span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">OPEN</span>'
+            : t.pnl > 0
+                ? '<span style="background: #22c55e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">WIN ✓</span>'
+                : '<span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">LOSS ✗</span>';
+
+        html += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px;">' + t.entryDate + '</td>' +
+            '<td style="padding: 10px;"><strong>' + t.symbol + '</strong></td>' +
+            '<td style="padding: 10px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + t.direction + '</span></td>' +
+            '<td style="padding: 10px;">$' + t.entryPrice.toFixed(2) + '</td>' +
+            '<td style="padding: 10px;">$' + t.sq9Level.toFixed(2) + '</td>' +
+            '<td style="padding: 10px;">' + t.checks + '/5</td>' +
+            '<td style="padding: 10px; color: #22c55e;">$' + t.target.toFixed(2) + '</td>' +
+            '<td style="padding: 10px; color: #ef4444;">$' + t.stop.toFixed(2) + '</td>' +
+            '<td style="padding: 10px;">' + (t.exitPrice ? '$' + t.exitPrice.toFixed(2) : '--') + '</td>' +
+            '<td style="padding: 10px; font-weight: 700; color: ' + pnlColor + ';">' + (t.pnl !== null ? (t.pnl >= 0 ? '+$' : '-$') + Math.abs(t.pnl).toFixed(0) : '--') + '</td>' +
+            '<td style="padding: 10px;">' + statusBadge + '</td>' +
+            '<td style="padding: 10px;">' +
+                (t.status === 'open'
+                    ? '<button onclick="openSq9CloseModal(' + t.id + ')" style="padding: 3px 8px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 5px;">Close</button>'
+                    : '') +
+                '<button onclick="deleteSq9Trade(' + t.id + ')" style="padding: 3px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">🗑</button>' +
+            '</td>' +
+            '</tr>';
+    }
+
+    tbody.innerHTML = html;
+}
+
+function updateSq9EquityChart() {
+    var canvas = document.getElementById('sq9EquityChart');
+    if (!canvas) return;
+
+    var closedTrades = sq9Trades
+        .filter(function(t) { return t.status === 'closed'; })
+        .sort(function(a, b) { return new Date(a.exitDate) - new Date(b.exitDate); });
+
+    if (closedTrades.length === 0) {
+        // Show empty state
+        var ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = 250;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Close trades to see equity curve', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+
+    // Calculate cumulative P&L
+    var labels = ['Start'];
+    var data = [0];
+    var cumulative = 0;
+
+    for (var i = 0; i < closedTrades.length; i++) {
+        cumulative += closedTrades[i].pnl;
+        labels.push(closedTrades[i].exitDate);
+        data.push(cumulative);
+    }
+
+    // Destroy existing chart
+    if (sq9EquityChart) {
+        sq9EquityChart.destroy();
+    }
+
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.log('Chart.js not loaded, skipping equity chart');
+        return;
+    }
+
+    // Create new chart
+    sq9EquityChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cumulative P&L',
+                data: data,
+                borderColor: cumulative >= 0 ? '#22c55e' : '#ef4444',
+                backgroundColor: cumulative >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: cumulative >= 0 ? '#22c55e' : '#ef4444'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return '$' + value; }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Export performance data
+function exportSq9Performance() {
+    var csv = 'Date,Symbol,Direction,Entry,SQ9 Level,Checks,Target,Stop,Exit,P&L,Status\n';
+
+    for (var i = 0; i < sq9Trades.length; i++) {
+        var t = sq9Trades[i];
+        csv += t.entryDate + ',' + t.symbol + ',' + t.direction + ',' + t.entryPrice + ',' +
+               t.sq9Level + ',' + t.checks + ',' + t.target + ',' + t.stop + ',' +
+               (t.exitPrice || '') + ',' + (t.pnl !== null ? t.pnl.toFixed(2) : '') + ',' + t.status + '\n';
+    }
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'sq9_performance_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+// Run SQ9 Backtest on historical data
+function runSq9Backtest() {
+    // Show backtest panel
+    var panel = document.getElementById('sq9BacktestPanel');
+    panel.style.display = 'block';
+
+    // Calculate stats from actual trades
+    var closedTrades = sq9Trades.filter(function(t) { return t.status === 'closed'; });
+
+    if (closedTrades.length < 3) {
+        document.getElementById('sq9BacktestResults').innerHTML =
+            '<div style="text-align: center; padding: 20px; color: #666;">' +
+            '<div style="font-size: 32px; margin-bottom: 10px;">📊</div>' +
+            '<div>Need at least 3 closed trades to run backtest analysis.</div>' +
+            '<div style="font-size: 12px; margin-top: 10px;">Current: ' + closedTrades.length + ' closed trades</div>' +
+            '</div>';
+        return;
+    }
+
+    var wins = closedTrades.filter(function(t) { return t.pnl > 0; });
+    var losses = closedTrades.filter(function(t) { return t.pnl <= 0; });
+    var winRate = (wins.length / closedTrades.length * 100).toFixed(1);
+    var totalPnL = closedTrades.reduce(function(sum, t) { return sum + t.pnl; }, 0);
+    var avgWin = wins.length > 0 ? wins.reduce(function(sum, t) { return sum + t.pnl; }, 0) / wins.length : 0;
+    var avgLoss = losses.length > 0 ? Math.abs(losses.reduce(function(sum, t) { return sum + t.pnl; }, 0) / losses.length) : 0;
+    var profitFactor = avgLoss > 0 ? (avgWin * wins.length) / (avgLoss * losses.length) : 0;
+
+    // Performance by check count
+    var checkStats = [];
+    for (var c = 3; c <= 5; c++) {
+        var checkTrades = closedTrades.filter(function(t) { return t.checks === c; });
+        var checkWins = checkTrades.filter(function(t) { return t.pnl > 0; });
+        checkStats.push({
+            checks: c,
+            total: checkTrades.length,
+            wins: checkWins.length,
+            winRate: checkTrades.length > 0 ? (checkWins.length / checkTrades.length * 100).toFixed(0) : 0
+        });
+    }
+
+    var html = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">' +
+        '<div style="background: rgba(255,255,255,0.5); border-radius: 8px; padding: 15px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #666;">TOTAL TRADES</div>' +
+        '<div style="font-size: 24px; font-weight: 800;">' + closedTrades.length + '</div>' +
+        '</div>' +
+        '<div style="background: rgba(34,197,94,0.2); border-radius: 8px; padding: 15px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #166534;">WIN RATE</div>' +
+        '<div style="font-size: 24px; font-weight: 800; color: #22c55e;">' + winRate + '%</div>' +
+        '</div>' +
+        '<div style="background: rgba(59,130,246,0.2); border-radius: 8px; padding: 15px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #1e40af;">PROFIT FACTOR</div>' +
+        '<div style="font-size: 24px; font-weight: 800; color: #3b82f6;">' + profitFactor.toFixed(2) + '</div>' +
+        '</div>' +
+        '<div style="background: ' + (totalPnL >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 15px; text-align: center;">' +
+        '<div style="font-size: 10px; color: ' + (totalPnL >= 0 ? '#166534' : '#991b1b') + ';">TOTAL P&L</div>' +
+        '<div style="font-size: 24px; font-weight: 800; color: ' + (totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (totalPnL >= 0 ? '+$' : '-$') + Math.abs(totalPnL).toFixed(0) + '</div>' +
+        '</div>' +
+        '</div>';
+
+    html += '<div style="font-weight: 600; margin-bottom: 10px;">📊 Performance by Entry Quality:</div>' +
+        '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">';
+
+    for (var j = 0; j < checkStats.length; j++) {
+        var s = checkStats[j];
+        html += '<div style="background: rgba(255,255,255,0.5); border-radius: 6px; padding: 10px; text-align: center;">' +
+            '<div style="font-size: 11px; color: #666;">' + s.checks + '/5 CHECKS</div>' +
+            '<div style="font-size: 18px; font-weight: 700;">' + s.winRate + '%</div>' +
+            '<div style="font-size: 10px; color: #999;">' + s.wins + 'W / ' + (s.total - s.wins) + 'L</div>' +
+            '</div>';
+    }
+    html += '</div>';
+
+    html += '<div style="margin-top: 15px; padding: 10px; background: rgba(59,130,246,0.1); border-radius: 6px; font-size: 12px;">' +
+        '💡 <strong>Insight:</strong> ';
+
+    if (checkStats[2].total > 0 && parseFloat(checkStats[2].winRate) > parseFloat(checkStats[0].winRate)) {
+        html += '5/5 READY entries show higher win rates. Consider waiting for full confirmation.';
+    } else if (winRate >= 60) {
+        html += 'Strong overall performance! Your SQ9 strategy is working well.';
+    } else if (winRate >= 50) {
+        html += 'Solid performance. Focus on higher quality setups to improve win rate.';
+    } else {
+        html += 'Review your entry criteria. Consider only taking 5/5 or 4/5 setups.';
+    }
+    html += '</div>';
+
+    document.getElementById('sq9BacktestResults').innerHTML = html;
+}
 
 </script>
 </body>
