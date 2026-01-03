@@ -3698,6 +3698,22 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
         <!-- OVERVIEW TAB -->
         <div id="overview" class="tab-content active">
 
+            <!-- CRITICAL GANN ALERT BANNER -->
+            <div id="gannCriticalBanner" style="display: none; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border-radius: 10px; padding: 15px 20px; margin-bottom: 20px; animation: gannPulse 2s infinite;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 28px;">⚡</div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700;" id="gannCriticalTitle">GANN SQUARE CROSS DETECTED!</div>
+                            <div style="font-size: 12px; opacity: 0.9;" id="gannCriticalSubtitle">Major reversal signal - Review immediately</div>
+                        </div>
+                    </div>
+                    <div id="gannCriticalSymbols" style="display: flex; gap: 8px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
             <!-- Market Conditions Guard Rail -->
             <div id="marketConditionsGuard" class="card" style="margin-bottom: 20px; border: 2px solid #3b82f6;">
                 <div style="padding: 15px; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
@@ -3792,6 +3808,75 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                             <tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">Loading scanner results...</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- GANN PRICE RULES ALERTS (Rules 3, 4, 5) -->
+            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📐 Gann Price Rule Alerts</div>
+                        <div style="font-size: 11px; color: var(--muted);">Rules 3, 4 & 5: 8ths Levels, 50% Critical, Square Crosses</div>
+                    </div>
+                    <button onclick="refreshGannAlerts()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                </div>
+
+                <!-- Summary Cards -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #f59e0b;" id="gannNear8thCount">0</div>
+                        <div style="font-size: 10px; color: #666;">Near 8th Level</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #8b5cf6;" id="gannNear50Count">0</div>
+                        <div style="font-size: 10px; color: #666;">Near 50% Level</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #22c55e;" id="gannBullishCrossCount">0</div>
+                        <div style="font-size: 10px; color: #666;">Bullish Crosses</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 800; color: #ef4444;" id="gannBearishCrossCount">0</div>
+                        <div style="font-size: 10px; color: #666;">Bearish Crosses</div>
+                    </div>
+                </div>
+
+                <!-- Active Alerts Container -->
+                <div id="gannAlertsContainer">
+                    <!-- Rule 5: Square Cross Alerts (Most Important) -->
+                    <div id="gannSquareCrossAlerts" style="display: none; margin-bottom: 15px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #8b5cf6; margin-bottom: 8px;">⚡ Rule 5: Square Cross Signals (Major Reversals)</div>
+                        <div id="gannSquareCrossAlertsList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Rule 4: 50% Level Alerts -->
+                    <div id="gann50Alerts" style="display: none; margin-bottom: 15px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #d97706; margin-bottom: 8px;">⭐ Rule 4: Near 50% Critical Level</div>
+                        <div id="gann50AlertsList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Rule 3: 8ths Level Alerts -->
+                    <div id="gann8thAlerts" style="display: none; margin-bottom: 15px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">📐 Rule 3: Near Key 8th Levels</div>
+                        <div id="gann8thAlertsList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- No Alerts Message -->
+                    <div id="gannNoAlerts" style="text-align: center; padding: 20px; color: #999;">
+                        <div style="font-size: 24px; margin-bottom: 10px;">📊</div>
+                        <div>No active Gann alerts. Scanning all symbols...</div>
+                    </div>
+                </div>
+
+                <!-- View All Link -->
+                <div style="text-align: center; margin-top: 10px;">
+                    <a href="#" onclick="showTab('daily')" style="color: #f59e0b; font-size: 11px; text-decoration: none;">View Details in Daily Analysis →</a>
                 </div>
             </div>
 
@@ -12496,6 +12581,10 @@ const overviewTab = document.querySelector('[data-tab="overview"]');
 if (overviewTab) {
     overviewTab.addEventListener('click', function() {
         setTimeout(loadOverviewData, 100);
+        // Refresh Gann Alerts when Overview tab is shown
+        setTimeout(function() {
+            if (typeof refreshGannAlerts === 'function') refreshGannAlerts();
+        }, 500);
     });
 }
 
@@ -13282,6 +13371,11 @@ async function loadAllData() {
 
 // Load all symbols data for AI and cross-symbol analysis                await loadAllSymbolsData();
                 setTimeout(updateAllSymbolGannDataFromCSV, 500);
+
+                // Refresh Gann Alerts after all data is loaded
+                setTimeout(function() {
+                    if (typeof refreshGannAlerts === 'function') refreshGannAlerts();
+                }, 1000);
             }
         }
     } catch (e) { console.error('Error:', e); }
@@ -27805,6 +27899,327 @@ function updateGannSquareCross() {
         }
     } else {
         panelEl.style.display = 'none';
+    }
+}
+
+
+// ============================================
+// GANN ALERTS FOR OVERVIEW TAB
+// ============================================
+
+function refreshGannAlerts() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'NVDA', 'TSLA', 'AAPL', 'AMD', 'META'];
+
+    var alerts = {
+        near8th: [],
+        near50: [],
+        bullishCross: [],
+        bearishCross: []
+    };
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i];
+
+        // Get current price
+        var currentPrice = null;
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym] && allSymbolsData[sym].length > 0) {
+            currentPrice = parseFloat(allSymbolsData[sym][allSymbolsData[sym].length - 1].Close);
+        }
+
+        if (!currentPrice) continue;
+
+        // Rule 3 & 4: Calculate 8ths and check proximity
+        var gann8ths = calculateGann8ths(sym);
+        if (gann8ths && gann8ths.levels && gann8ths.levels.length > 0) {
+
+            // Check proximity to each level
+            for (var j = 0; j < gann8ths.levels.length; j++) {
+                var level = gann8ths.levels[j];
+                var distAbs = Math.abs(level.distance);
+
+                // Rule 4: Near 50% level (within 2%)
+                if (level.critical && distAbs <= 2) {
+                    alerts.near50.push({
+                        symbol: sym,
+                        price: currentPrice,
+                        level: level.price,
+                        levelName: '50% Level',
+                        distance: level.distance,
+                        type: level.type,
+                        position: gann8ths.position,
+                        trend: gann8ths.trend
+                    });
+                }
+                // Rule 3: Near other 8th levels (within 1.5%)
+                else if (!level.critical && distAbs <= 1.5 && level.fraction !== 0 && level.fraction !== 8) {
+                    alerts.near8th.push({
+                        symbol: sym,
+                        price: currentPrice,
+                        level: level.price,
+                        levelName: level.name,
+                        distance: level.distance,
+                        type: level.type
+                    });
+                }
+            }
+        }
+
+        // Rule 5: Check for square crosses
+        var cross = detectSq9LevelCross(sym);
+        if (cross.crossDetected) {
+            if (cross.crossType === 'BULLISH_BREAK') {
+                alerts.bullishCross.push({
+                    symbol: sym,
+                    price: currentPrice,
+                    crossLevel: cross.crossLevel,
+                    significance: cross.significance,
+                    message: cross.message,
+                    date: cross.crossDate
+                });
+            } else {
+                alerts.bearishCross.push({
+                    symbol: sym,
+                    price: currentPrice,
+                    crossLevel: cross.crossLevel,
+                    significance: cross.significance,
+                    message: cross.message,
+                    date: cross.crossDate
+                });
+            }
+        }
+
+        // Also check 50% cross
+        if (cross.crossed50Pct) {
+            if (cross.crossed50Type === 'BULLISH') {
+                alerts.bullishCross.push({
+                    symbol: sym,
+                    price: currentPrice,
+                    crossLevel: gann8ths ? gann8ths.fiftyPctLevel : 0,
+                    significance: 'MAJOR',
+                    message: cross.crossed50Message,
+                    date: 'Today',
+                    is50Cross: true
+                });
+            } else {
+                alerts.bearishCross.push({
+                    symbol: sym,
+                    price: currentPrice,
+                    crossLevel: gann8ths ? gann8ths.fiftyPctLevel : 0,
+                    significance: 'MAJOR',
+                    message: cross.crossed50Message,
+                    date: 'Today',
+                    is50Cross: true
+                });
+            }
+        }
+    }
+
+    // Update counts
+    var el8 = document.getElementById('gannNear8thCount');
+    var el50 = document.getElementById('gannNear50Count');
+    var elBull = document.getElementById('gannBullishCrossCount');
+    var elBear = document.getElementById('gannBearishCrossCount');
+
+    if (el8) el8.textContent = alerts.near8th.length;
+    if (el50) el50.textContent = alerts.near50.length;
+    if (elBull) elBull.textContent = alerts.bullishCross.length;
+    if (elBear) elBear.textContent = alerts.bearishCross.length;
+
+    // Render alerts
+    renderGannAlerts(alerts);
+}
+
+
+function renderGannAlerts(alerts) {
+    var hasAlerts = false;
+
+    // Rule 5: Square Cross Alerts (Most Important - show first)
+    var crossContainer = document.getElementById('gannSquareCrossAlerts');
+    var crossList = document.getElementById('gannSquareCrossAlertsList');
+
+    if (crossContainer && crossList && (alerts.bullishCross.length > 0 || alerts.bearishCross.length > 0)) {
+        hasAlerts = true;
+        crossContainer.style.display = 'block';
+
+        var html = '';
+
+        // Bullish crosses
+        alerts.bullishCross.forEach(function(alert) {
+            html += '<div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<div style="font-size: 24px;">🚀</div>' +
+                    '<div>' +
+                        '<div style="font-weight: 700; font-size: 13px;">' + alert.symbol + ' <span style="color: #22c55e;">BULLISH BREAK</span></div>' +
+                        '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed above 50% level' : 'Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
+                        '<div style="font-size: 10px; color: #999;">' + alert.date + ' • ' + alert.significance + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="text-align: right;">' +
+                    '<div style="font-size: 14px; font-weight: 700;">$' + alert.price.toFixed(2) + '</div>' +
+                    '<button onclick="currentSymbol=\'' + alert.symbol + '\';changeSymbol();showTab(\'daily\');" style="padding: 4px 10px; background: #22c55e; color: white; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; margin-top: 4px;">VIEW</button>' +
+                '</div>' +
+            '</div>';
+        });
+
+        // Bearish crosses
+        alerts.bearishCross.forEach(function(alert) {
+            html += '<div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<div style="font-size: 24px;">🔻</div>' +
+                    '<div>' +
+                        '<div style="font-weight: 700; font-size: 13px;">' + alert.symbol + ' <span style="color: #ef4444;">BEARISH BREAK</span></div>' +
+                        '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed below 50% level' : 'Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
+                        '<div style="font-size: 10px; color: #999;">' + alert.date + ' • ' + alert.significance + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="text-align: right;">' +
+                    '<div style="font-size: 14px; font-weight: 700;">$' + alert.price.toFixed(2) + '</div>' +
+                    '<button onclick="currentSymbol=\'' + alert.symbol + '\';changeSymbol();showTab(\'daily\');" style="padding: 4px 10px; background: #ef4444; color: white; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; margin-top: 4px;">VIEW</button>' +
+                '</div>' +
+            '</div>';
+        });
+
+        crossList.innerHTML = html;
+    } else if (crossContainer) {
+        crossContainer.style.display = 'none';
+    }
+
+    // Rule 4: 50% Level Alerts
+    var near50Container = document.getElementById('gann50Alerts');
+    var near50List = document.getElementById('gann50AlertsList');
+
+    if (near50Container && near50List && alerts.near50.length > 0) {
+        hasAlerts = true;
+        near50Container.style.display = 'block';
+
+        var html = '<div style="display: grid; gap: 8px;">';
+
+        alerts.near50.forEach(function(alert) {
+            var isAbove = alert.distance > 0;
+            var distSign = alert.distance > 0 ? '+' : '';
+            var trendColor = alert.trend === 'BULLISH BIAS' ? '#22c55e' : '#ef4444';
+
+            html += '<div style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 12px;">' +
+                    '<div style="font-size: 20px;">⭐</div>' +
+                    '<div>' +
+                        '<div style="font-weight: 700; font-size: 13px;">' + alert.symbol + '</div>' +
+                        '<div style="font-size: 11px; color: #666;">Near 50% level: $' + alert.level.toFixed(2) + '</div>' +
+                        '<div style="font-size: 10px;"><span style="color: ' + trendColor + '; font-weight: 600;">' + alert.trend + '</span> • ' + alert.position + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="text-align: right;">' +
+                    '<div style="font-size: 14px; font-weight: 700;">$' + alert.price.toFixed(2) + '</div>' +
+                    '<div style="font-size: 11px; color: ' + (isAbove ? '#ef4444' : '#22c55e') + ';">' + distSign + alert.distance.toFixed(2) + '%</div>' +
+                    '<button onclick="currentSymbol=\'' + alert.symbol + '\';changeSymbol();showTab(\'daily\');" style="padding: 4px 10px; background: #8b5cf6; color: white; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; margin-top: 4px;">VIEW</button>' +
+                '</div>' +
+            '</div>';
+        });
+
+        html += '</div>';
+        near50List.innerHTML = html;
+    } else if (near50Container) {
+        near50Container.style.display = 'none';
+    }
+
+    // Rule 3: 8ths Level Alerts
+    var near8thContainer = document.getElementById('gann8thAlerts');
+    var near8thList = document.getElementById('gann8thAlertsList');
+
+    if (near8thContainer && near8thList && alerts.near8th.length > 0) {
+        hasAlerts = true;
+        near8thContainer.style.display = 'block';
+
+        var html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">';
+
+        alerts.near8th.slice(0, 8).forEach(function(alert) {
+            var distSign = alert.distance > 0 ? '+' : '';
+            var typeColor = alert.type === 'RESIST' ? '#ef4444' : '#22c55e';
+            var typeBg = alert.type === 'RESIST' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+
+            html += '<div style="background: ' + typeBg + '; border: 1px solid ' + typeColor + '33; border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div>' +
+                    '<div style="font-weight: 700; font-size: 12px;">' + alert.symbol + '</div>' +
+                    '<div style="font-size: 10px; color: #666;">' + alert.levelName + ': $' + alert.level.toFixed(2) + '</div>' +
+                '</div>' +
+                '<div style="text-align: right;">' +
+                    '<div style="font-size: 12px; font-weight: 600;">$' + alert.price.toFixed(2) + '</div>' +
+                    '<div style="font-size: 10px; color: ' + typeColor + ';">' + distSign + alert.distance.toFixed(2) + '%</div>' +
+                '</div>' +
+            '</div>';
+        });
+
+        if (alerts.near8th.length > 8) {
+            html += '<div style="grid-column: span 2; text-align: center; font-size: 11px; color: #666; padding: 8px;">+' + (alerts.near8th.length - 8) + ' more alerts</div>';
+        }
+
+        html += '</div>';
+        near8thList.innerHTML = html;
+    } else if (near8thContainer) {
+        near8thContainer.style.display = 'none';
+    }
+
+    // Show/hide no alerts message
+    var noAlertsEl = document.getElementById('gannNoAlerts');
+    if (noAlertsEl) {
+        noAlertsEl.style.display = hasAlerts ? 'none' : 'block';
+    }
+
+    // Update critical banner
+    updateGannCriticalBanner(alerts);
+}
+
+
+function updateGannCriticalBanner(alerts) {
+    var banner = document.getElementById('gannCriticalBanner');
+    var symbolsEl = document.getElementById('gannCriticalSymbols');
+    var titleEl = document.getElementById('gannCriticalTitle');
+    var subtitleEl = document.getElementById('gannCriticalSubtitle');
+
+    if (!banner) return;
+
+    var criticalAlerts = [];
+
+    // Add all square crosses as critical
+    alerts.bullishCross.forEach(function(a) {
+        if (a.significance === 'MAJOR') {
+            criticalAlerts.push({ symbol: a.symbol, type: 'BULLISH', icon: '🚀' });
+        }
+    });
+
+    alerts.bearishCross.forEach(function(a) {
+        if (a.significance === 'MAJOR') {
+            criticalAlerts.push({ symbol: a.symbol, type: 'BEARISH', icon: '🔻' });
+        }
+    });
+
+    if (criticalAlerts.length > 0) {
+        banner.style.display = 'block';
+
+        var bullCount = criticalAlerts.filter(function(a) { return a.type === 'BULLISH'; }).length;
+        var bearCount = criticalAlerts.filter(function(a) { return a.type === 'BEARISH'; }).length;
+
+        titleEl.textContent = '⚡ ' + criticalAlerts.length + ' GANN SQUARE CROSS' + (criticalAlerts.length > 1 ? 'ES' : '') + ' DETECTED!';
+        subtitleEl.textContent = bullCount + ' Bullish, ' + bearCount + ' Bearish - Major reversal signals';
+
+        var symbolsHtml = '';
+        criticalAlerts.slice(0, 5).forEach(function(a) {
+            var bgColor = a.type === 'BULLISH' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+            symbolsHtml += '<button onclick="currentSymbol=\'' + a.symbol + '\';changeSymbol();showTab(\'daily\');" style="background: ' + bgColor + '; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">' + a.icon + ' ' + a.symbol + '</button>';
+        });
+
+        symbolsEl.innerHTML = symbolsHtml;
+
+        // Change banner color based on majority
+        if (bullCount > bearCount) {
+            banner.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+        } else if (bearCount > bullCount) {
+            banner.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        } else {
+            banner.style.background = 'linear-gradient(135deg, #8b5cf6, #6d28d9)';
+        }
+    } else {
+        banner.style.display = 'none';
     }
 }
 
