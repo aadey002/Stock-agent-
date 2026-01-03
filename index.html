@@ -27917,31 +27917,50 @@ function runSq9Scan() {
 
     document.getElementById('sq9ScanTime').textContent = timeStr;
 
-    for (var i = 0; i < sq9Watchlist.length; i++) {
-        var sym = sq9Watchlist[i];
+    // Use the same symbol list as opportunities table
+    var symbolsToScan = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX'];
+
+    console.log('🎯 SQ9 Scan starting... checking allSymbolsData availability');
+
+    for (var i = 0; i < symbolsToScan.length; i++) {
+        var sym = symbolsToScan[i];
         var pivot = sq9ExtendedPivots[sym];
         if (!pivot) continue;
 
+        // Get current price from allSymbolsData - SAME METHOD AS OPPORTUNITIES TAB
         var currentPrice = null;
-        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym]) {
-            var data = allSymbolsData[sym];
-            if (data && data.length > 0) {
-                currentPrice = parseFloat(data[data.length - 1].Close);
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym] && allSymbolsData[sym].length > 0) {
+            var symData = allSymbolsData[sym];
+            var lastBar = symData[symData.length - 1];
+            currentPrice = parseFloat(lastBar.Close);
+
+            // Validate price is reasonable (not 0, not null, not NaN)
+            if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0) {
+                console.log('⚠️ Invalid price for ' + sym + ':', currentPrice);
+                continue;
             }
         }
 
-        if (!currentPrice) continue;
+        if (!currentPrice) {
+            continue;
+        }
 
+        console.log('✅ ' + sym + ': $' + currentPrice.toFixed(2) + ' (pivot: $' + pivot.price.toFixed(2) + ')');
+
+        // Calculate SQ9 levels
         var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
         var nearest = findNearestSq9Level(levels, currentPrice);
 
         if (!nearest) continue;
 
         var distPct = Math.abs(nearest.distance);
+
+        // Only include if within 4% of level
         if (distPct > 4) continue;
 
         var direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
 
+        // Calculate checks based on distance
         var checks = {
             touched: distPct <= 1.5,
             candle: distPct <= 1.0,
@@ -27951,15 +27970,29 @@ function runSq9Scan() {
         };
 
         var checkCount = Object.values(checks).filter(function(v) { return v; }).length;
+
         var status = checkCount === 5 ? 'ready' : checkCount >= 3 ? 'watching' : 'partial';
 
+        // Calculate target and stop
         var sqrtBase = Math.sqrt(pivot.price);
-        var targetRot = nearest.rotation + (direction === 'CALL' ? 0.5 : -0.5);
-        var stopRot = nearest.rotation + (direction === 'CALL' ? -0.5 : 0.5);
-        var targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
-        var stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
+        var targetRot, stopRot, targetPrice, stopPrice;
 
+        if (direction === 'CALL') {
+            // CALL: target is higher, stop is lower
+            targetRot = nearest.rotation + 0.5;
+            stopRot = nearest.rotation - 0.5;
+        } else {
+            // PUT: target is lower, stop is higher
+            targetRot = nearest.rotation - 0.5;
+            stopRot = nearest.rotation + 0.5;
+        }
+
+        targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
+        stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
+
+        // Ensure target/stop make sense for direction
         if (direction === 'PUT') {
+            // For PUT, target must be BELOW current, stop must be ABOVE current
             if (targetPrice > currentPrice) {
                 targetRot = nearest.rotation - 1.0;
                 targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
@@ -27968,12 +28001,23 @@ function runSq9Scan() {
                 stopRot = nearest.rotation + 1.0;
                 stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
             }
+        } else {
+            // For CALL, target must be ABOVE current, stop must be BELOW current
+            if (targetPrice < currentPrice) {
+                targetRot = nearest.rotation + 1.0;
+                targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
+            }
+            if (stopPrice > currentPrice) {
+                stopRot = nearest.rotation - 1.0;
+                stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
+            }
         }
 
         var riskAmt = Math.abs(stopPrice - currentPrice);
         var rewardAmt = Math.abs(targetPrice - currentPrice);
         var rr = riskAmt > 0 ? (rewardAmt / riskAmt).toFixed(1) : '--';
 
+        // Determine missing checks
         var missing = [];
         if (!checks.touched) missing.push('Touch');
         if (!checks.candle) missing.push('Candle');
@@ -27999,12 +28043,14 @@ function runSq9Scan() {
         });
     }
 
+    // Sort by check count (highest first), then by distance (closest first)
     results.sort(function(a, b) {
         if (b.checkCount !== a.checkCount) return b.checkCount - a.checkCount;
         return Math.abs(a.distance) - Math.abs(b.distance);
     });
 
     sq9ScanResults = results;
+    console.log('📊 SQ9 Scan complete:', results.length, 'setups found');
     updateSq9ScannerDisplay();
 }
 
@@ -29311,20 +29357,26 @@ function updateSq9Mtf() {
         return;
     }
 
-    // Get current price
+    // Get current price from allSymbolsData - SAME AS OTHER TABS
     var currentPrice = null;
-    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
-        var data = allSymbolsData[symbol];
-        if (data && data.length > 0) {
-            currentPrice = parseFloat(data[data.length - 1].Close);
-        }
+
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        var symData = allSymbolsData[symbol];
+        var lastBar = symData[symData.length - 1];
+        currentPrice = parseFloat(lastBar.Close);
     }
 
-    // Fallback prices
-    if (!currentPrice) {
-        var fallbackPrices = { SPY: 683.17, QQQ: 613.12, IWM: 248.78, NVDA: 142.50, TSLA: 412.30, AAPL: 248.50, AMD: 118.30, META: 612.40 };
-        currentPrice = fallbackPrices[symbol] || 100;
+    // If still no price, try currentData for the selected symbol
+    if (!currentPrice && typeof currentData !== 'undefined' && currentData.length > 0 && currentSymbol === symbol) {
+        currentPrice = parseFloat(currentData[currentData.length - 1].Close);
     }
+
+    if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0) {
+        console.log('⚠️ No valid price for MTF:', symbol);
+        return;
+    }
+
+    console.log('📊 MTF Update:', symbol, '$' + currentPrice.toFixed(2));
 
     // Update header
     var symbolDisplay = document.getElementById('sq9MtfSymbolDisplay');
@@ -29517,10 +29569,19 @@ function checkMtfAlignment(tfResults, currentPrice) {
 
 // Initialize MTF on page load and tab switch
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial load with delay
+    // Initial load with delay - wait for data to be loaded
     setTimeout(function() {
-        if (document.getElementById('sq9MtfSymbol')) {
-            updateSq9Mtf();
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            if (document.getElementById('sq9MtfSymbol')) {
+                updateSq9Mtf();
+            }
+        } else {
+            console.log('⏳ Waiting for data to load before MTF update...');
+            setTimeout(function() {
+                if (document.getElementById('sq9MtfSymbol')) {
+                    updateSq9Mtf();
+                }
+            }, 3000);
         }
     }, 3000);
 
@@ -29529,13 +29590,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if (sq9TabBtn) {
         sq9TabBtn.addEventListener('click', function() {
             setTimeout(function() {
-                if (document.getElementById('sq9MtfSymbol')) {
-                    updateSq9Mtf();
+                // Run scan and MTF update when tab is clicked
+                if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+                    runSq9Scan();
+                    if (document.getElementById('sq9MtfSymbol')) {
+                        updateSq9Mtf();
+                    }
                 }
-            }, 200);
+            }, 300);
         });
     }
 });
+
+// Debug function to verify all prices
+function debugSq9Prices() {
+    console.log('========== SQ9 PRICE DEBUG ==========');
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK'];
+
+    symbols.forEach(function(sym) {
+        var price = null;
+        var source = 'NONE';
+
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym] && allSymbolsData[sym].length > 0) {
+            price = parseFloat(allSymbolsData[sym][allSymbolsData[sym].length - 1].Close);
+            source = 'allSymbolsData';
+        }
+
+        console.log(sym + ': $' + (price ? price.toFixed(2) : 'N/A') + ' (from ' + source + ')');
+    });
+    console.log('=====================================');
+}
 
 </script>
 </body>
