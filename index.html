@@ -29275,8 +29275,35 @@ var sq9MtfPivots = {
     }
 };
 
+// MTF-specific SQ9 level calculation (wider rotation range for close pivots)
+function calcMtfSq9Levels(pivotPrice, currentPrice) {
+    var sqrtPivot = Math.sqrt(pivotPrice);
+    var levels = [];
+
+    // Use wider range starting from 0.5 rotation for close pivots
+    for (var r = 0.5; r <= 20; r += 0.5) {
+        var price = Math.pow(sqrtPivot + r * 0.5, 2);
+        var dist = ((price - currentPrice) / currentPrice * 100);
+
+        // Only include levels within reasonable range (-15% to +15%)
+        if (dist >= -15 && dist <= 15) {
+            levels.push({
+                rotation: r,
+                price: price,
+                distance: dist,
+                type: price > currentPrice ? 'resist' : 'support'
+            });
+        }
+    }
+
+    return levels.sort(function(a, b) { return Math.abs(a.distance) - Math.abs(b.distance); });
+}
+
 function updateSq9Mtf() {
-    var symbol = document.getElementById('sq9MtfSymbol').value;
+    var symbolEl = document.getElementById('sq9MtfSymbol');
+    if (!symbolEl) return;
+
+    var symbol = symbolEl.value;
     var pivots = sq9MtfPivots[symbol];
 
     if (!pivots) {
@@ -29300,8 +29327,10 @@ function updateSq9Mtf() {
     }
 
     // Update header
-    document.getElementById('sq9MtfSymbolDisplay').textContent = symbol;
-    document.getElementById('sq9MtfPriceDisplay').textContent = '$' + currentPrice.toFixed(2);
+    var symbolDisplay = document.getElementById('sq9MtfSymbolDisplay');
+    var priceDisplay = document.getElementById('sq9MtfPriceDisplay');
+    if (symbolDisplay) symbolDisplay.textContent = symbol;
+    if (priceDisplay) priceDisplay.textContent = '$' + currentPrice.toFixed(2);
 
     // Calculate levels for each timeframe
     var timeframes = ['15min', '1hour', 'daily'];
@@ -29309,9 +29338,13 @@ function updateSq9Mtf() {
 
     timeframes.forEach(function(tf) {
         var pivot = pivots[tf];
-        var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
-        var nearest = findNearestSq9Level(levels, currentPrice);
-        var direction = getSq9TradeDirection(nearest, currentPrice);
+        var levels = calcMtfSq9Levels(pivot.price, currentPrice);
+        var nearest = levels.length > 0 ? levels[0] : null; // Already sorted by distance
+        var direction = 'neutral';
+
+        if (nearest && Math.abs(nearest.distance) <= 3) {
+            direction = nearest.type === 'resist' ? 'put' : 'call';
+        }
 
         tfResults[tf] = {
             pivot: pivot,
@@ -29482,13 +29515,26 @@ function checkMtfAlignment(tfResults, currentPrice) {
     descEl.textContent = alignmentDesc;
 }
 
-// Initialize MTF on page load
+// Initialize MTF on page load and tab switch
 document.addEventListener('DOMContentLoaded', function() {
+    // Initial load with delay
     setTimeout(function() {
         if (document.getElementById('sq9MtfSymbol')) {
             updateSq9Mtf();
         }
     }, 3000);
+
+    // Also trigger when SQ9 Scanner tab is clicked
+    var sq9TabBtn = document.querySelector('[data-tab="sq9-scanner"]');
+    if (sq9TabBtn) {
+        sq9TabBtn.addEventListener('click', function() {
+            setTimeout(function() {
+                if (document.getElementById('sq9MtfSymbol')) {
+                    updateSq9Mtf();
+                }
+            }, 200);
+        });
+    }
 });
 
 </script>
