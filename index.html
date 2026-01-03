@@ -27887,7 +27887,7 @@ function updateSq9ScannerDisplay() {
                 '<td style="padding: 10px; color: #22c55e;">$' + r.target.toFixed(2) + '</td>' +
                 '<td style="padding: 10px; color: #ef4444;">$' + r.stop.toFixed(2) + '</td>' +
                 '<td style="padding: 10px;">1:' + r.rr + '</td>' +
-                '<td style="padding: 10px;"><button onclick="event.stopPropagation(); viewSq9Detail(\'' + r.symbol + '\')" style="padding: 4px 10px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">TRADE</button></td>' +
+                '<td style="padding: 10px;"><button onclick="event.stopPropagation(); quickLogSq9Trade(\'' + r.symbol + '\')" style="padding: 4px 10px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">📝 LOG</button></td>' +
                 '</tr>';
         }
     }
@@ -28107,7 +28107,10 @@ function updateSq9Widget() {
                 '<td style="padding: 8px; color: ' + (r.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (r.distance >= 0 ? '+' : '') + r.distance.toFixed(1) + '%</td>' +
                 '<td style="padding: 8px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + r.direction + '</span></td>' +
                 '<td style="padding: 8px;">' + statusBadge + '</td>' +
-                '<td style="padding: 8px;"><button onclick="viewSq9Detail(\'' + r.symbol + '\')" style="padding: 3px 8px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">VIEW</button></td>' +
+                '<td style="padding: 8px;">' +
+                '<button onclick="quickLogSq9Trade(\'' + r.symbol + '\')" style="padding: 3px 8px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; margin-right: 4px;">📝</button>' +
+                '<button onclick="viewSq9Detail(\'' + r.symbol + '\')" style="padding: 3px 8px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">👁</button>' +
+                '</td>' +
                 '</tr>';
         }
     }
@@ -28256,6 +28259,26 @@ function saveSq9TradesToStorage() {
     } catch (e) {
         console.error('Error saving SQ9 trades:', e);
     }
+}
+
+// Quick log trade from scanner
+function quickLogSq9Trade(symbol) {
+    var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+    if (!result) {
+        alert('Setup not found for ' + symbol);
+        return;
+    }
+
+    // Open modal with prefilled data
+    openSq9TradeModal({
+        symbol: result.symbol,
+        direction: result.direction,
+        price: result.price,
+        sq9Level: result.sq9Level,
+        checkCount: result.checkCount,
+        target: result.target,
+        stop: result.stop
+    });
 }
 
 // Open trade log modal
