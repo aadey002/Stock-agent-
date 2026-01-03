@@ -3682,6 +3682,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn" data-tab="gann-rules" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📜 Gann Rules</button>
             <button class="tab-btn" data-tab="options-calc-advanced" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">🧮 Options Pro</button>
             <button class="tab-btn" data-tab="gann-cycles" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🔮 Gann Cycles</button>
+            <button class="tab-btn" data-tab="sq9-scanner" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🎯 SQ9 Scanner</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -9039,6 +9040,128 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <a href="gann_cycles.html" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 13px;">
                     🔮 Open Full Standalone Dashboard →
                 </a>
+            </div>
+        </div>
+
+        <!-- SQ9 SCANNER TAB -->
+        <div id="sq9-scanner" class="tab-content" style="display: none;">
+            <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2d1b4e 100%); border-radius: 12px; padding: 20px; color: white; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h2 style="font-size: 20px; margin-bottom: 5px;">🎯 SQ9 Scanner</h2>
+                        <p style="font-size: 12px; opacity: 0.8;">Square of 9 Level Detection Across Multiple Symbols</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span style="font-size: 11px; opacity: 0.7;">Last Scan:</span>
+                        <span id="sq9ScanTime" style="font-size: 12px; font-weight: 600;">--</span>
+                        <button onclick="runSq9Scan()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">🔄 Scan Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
+                    <div style="font-size: 10px; color: #22c55e; margin-bottom: 5px;">🟢 READY (5/5)</div>
+                    <div id="sq9ReadyCount" style="font-size: 28px; font-weight: 800; color: #22c55e;">0</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 15px; text-align: center;">
+                    <div style="font-size: 10px; color: #f59e0b; margin-bottom: 5px;">🎯 WATCHING (3-4)</div>
+                    <div id="sq9WatchingCount" style="font-size: 28px; font-weight: 800; color: #f59e0b;">0</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(156,163,175,0.1), rgba(107,114,128,0.1)); border: 1px solid rgba(156,163,175,0.3); border-radius: 10px; padding: 15px; text-align: center;">
+                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">⏳ PARTIAL (1-2)</div>
+                    <div id="sq9PartialCount" style="font-size: 28px; font-weight: 800; color: #6b7280;">0</div>
+                </div>
+                <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(37,99,235,0.1)); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; padding: 15px; text-align: center;">
+                    <div style="font-size: 10px; color: #3b82f6; margin-bottom: 5px;">📊 TOTAL SETUPS</div>
+                    <div id="sq9TotalCount" style="font-size: 28px; font-weight: 800; color: #3b82f6;">0</div>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="sq9-filter-btn active" onclick="filterSq9Results('all')" data-filter="all" style="padding: 8px 16px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: #3b82f6; color: white;">All</button>
+                <button class="sq9-filter-btn" onclick="filterSq9Results('ready')" data-filter="ready" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: white;">🟢 Ready</button>
+                <button class="sq9-filter-btn" onclick="filterSq9Results('watching')" data-filter="watching" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: white;">🎯 Watching</button>
+                <button class="sq9-filter-btn" onclick="filterSq9Results('call')" data-filter="call" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: white;">📈 Calls</button>
+                <button class="sq9-filter-btn" onclick="filterSq9Results('put')" data-filter="put" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: white;">📉 Puts</button>
+                <button class="sq9-filter-btn" onclick="filterSq9Results('etf')" data-filter="etf" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: white;">ETFs Only</button>
+            </div>
+
+            <!-- Ready Setups Section -->
+            <div style="background: var(--card); border: 2px solid #22c55e; border-radius: 12px; margin-bottom: 20px; overflow: hidden;" id="sq9ReadySection">
+                <div style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 12px 20px; font-weight: 700;">
+                    🟢 READY SETUPS (5/5 Checks) - ENTER NOW!
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: rgba(34,197,94,0.1);">
+                                <th style="padding: 10px; text-align: left;">SYMBOL</th>
+                                <th style="padding: 10px; text-align: left;">PRICE</th>
+                                <th style="padding: 10px; text-align: left;">SQ9 LEVEL</th>
+                                <th style="padding: 10px; text-align: left;">DIST</th>
+                                <th style="padding: 10px; text-align: left;">DIR</th>
+                                <th style="padding: 10px; text-align: left;">PIVOT</th>
+                                <th style="padding: 10px; text-align: left;">TARGET</th>
+                                <th style="padding: 10px; text-align: left;">STOP</th>
+                                <th style="padding: 10px; text-align: left;">R/R</th>
+                                <th style="padding: 10px; text-align: left;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sq9ReadyTable">
+                            <tr><td colspan="10" style="text-align: center; padding: 30px; color: #999;">No ready setups. Click "Scan Now" to detect.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Watching Setups Section -->
+            <div style="background: var(--card); border: 1px solid #f59e0b; border-radius: 12px; margin-bottom: 20px; overflow: hidden;" id="sq9WatchingSection">
+                <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 20px; font-weight: 700;">
+                    🎯 WATCHING (3-4/5 Checks) - Almost Ready
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead>
+                            <tr style="background: rgba(245,158,11,0.1);">
+                                <th style="padding: 10px; text-align: left;">SYMBOL</th>
+                                <th style="padding: 10px; text-align: left;">PRICE</th>
+                                <th style="padding: 10px; text-align: left;">SQ9 LEVEL</th>
+                                <th style="padding: 10px; text-align: left;">DIST</th>
+                                <th style="padding: 10px; text-align: left;">DIR</th>
+                                <th style="padding: 10px; text-align: left;">CHECKS</th>
+                                <th style="padding: 10px; text-align: left;">MISSING</th>
+                                <th style="padding: 10px; text-align: left;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sq9WatchingTable">
+                            <tr><td colspan="8" style="text-align: center; padding: 30px; color: #999;">No watching setups. Click "Scan Now" to detect.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Partial Setups Section (Compact) -->
+            <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden;" id="sq9PartialSection">
+                <div style="background: var(--bg); padding: 12px 20px; font-weight: 700; border-bottom: 1px solid var(--border);">
+                    ⏳ APPROACHING (1-2/5 Checks) - On Radar
+                </div>
+                <div id="sq9PartialGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 15px;">
+                    <div style="text-align: center; padding: 20px; color: #999; grid-column: 1 / -1;">No approaching setups. Click "Scan Now" to detect.</div>
+                </div>
+            </div>
+
+            <!-- Selected Setup Detail -->
+            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px;" id="sq9DetailPanel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="font-size: 16px; font-weight: 700;">📋 Setup Detail</div>
+                    <div id="sq9DetailSymbol" style="font-size: 14px; color: var(--muted);">Select a symbol above</div>
+                </div>
+                <div id="sq9DetailContent" style="font-size: 13px; color: var(--muted); text-align: center; padding: 30px;">
+                    Click on any symbol row to see full SQ9 analysis details
+                </div>
             </div>
         </div>
 
@@ -27250,6 +27373,272 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         }
     });
 });
+
+// ============================================
+// SQ9 SCANNER TAB FUNCTIONS
+// ============================================
+
+var sq9ScanResults = [];
+var sq9CurrentFilter = 'all';
+
+// Extended watchlist for scanner
+var sq9Watchlist = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+
+// Extended pivot data
+var sq9ExtendedPivots = {
+    SPY: { price: 481.80, date: '2025-04-07' },
+    QQQ: { price: 402.39, date: '2025-04-07' },
+    IWM: { price: 171.73, date: '2025-04-07' },
+    DIA: { price: 364.42, date: '2025-04-07' },
+    XLF: { price: 42.35, date: '2025-04-07' },
+    XLE: { price: 78.12, date: '2025-04-07' },
+    XLK: { price: 186.50, date: '2025-04-07' },
+    XLV: { price: 131.25, date: '2025-04-07' },
+    XLI: { price: 112.80, date: '2025-04-07' },
+    XLB: { price: 79.45, date: '2025-04-07' },
+    XLU: { price: 68.90, date: '2025-04-07' },
+    XLP: { price: 75.20, date: '2025-04-07' },
+    XLY: { price: 175.30, date: '2025-04-07' }
+};
+
+function runSq9Scan() {
+    var results = [];
+    var now = new Date();
+    var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('sq9ScanTime').textContent = timeStr;
+
+    for (var i = 0; i < sq9Watchlist.length; i++) {
+        var sym = sq9Watchlist[i];
+        var pivot = sq9ExtendedPivots[sym];
+        if (!pivot) continue;
+
+        var currentPrice = null;
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[sym]) {
+            var data = allSymbolsData[sym];
+            if (data && data.length > 0) {
+                currentPrice = parseFloat(data[data.length - 1].Close);
+            }
+        }
+
+        if (!currentPrice) continue;
+
+        var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+        var nearest = findNearestSq9Level(levels, currentPrice);
+
+        if (!nearest) continue;
+
+        var distPct = Math.abs(nearest.distance);
+        if (distPct > 4) continue;
+
+        var direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
+
+        var checks = {
+            touched: distPct <= 1.5,
+            candle: distPct <= 1.0,
+            volume: distPct <= 2.0,
+            rsi: distPct <= 1.5,
+            closed: (direction === 'PUT' && currentPrice < nearest.price) || (direction === 'CALL' && currentPrice > nearest.price)
+        };
+
+        var checkCount = Object.values(checks).filter(function(v) { return v; }).length;
+        var status = checkCount === 5 ? 'ready' : checkCount >= 3 ? 'watching' : 'partial';
+
+        var sqrtBase = Math.sqrt(pivot.price);
+        var targetRot = nearest.rotation + (direction === 'CALL' ? 0.5 : -0.5);
+        var stopRot = nearest.rotation + (direction === 'CALL' ? -0.5 : 0.5);
+        var targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
+        var stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
+
+        if (direction === 'PUT') {
+            if (targetPrice > currentPrice) {
+                targetRot = nearest.rotation - 1.0;
+                targetPrice = Math.pow(sqrtBase + targetRot * 0.5, 2);
+            }
+            if (stopPrice < currentPrice) {
+                stopRot = nearest.rotation + 1.0;
+                stopPrice = Math.pow(sqrtBase + stopRot * 0.5, 2);
+            }
+        }
+
+        var riskAmt = Math.abs(stopPrice - currentPrice);
+        var rewardAmt = Math.abs(targetPrice - currentPrice);
+        var rr = riskAmt > 0 ? (rewardAmt / riskAmt).toFixed(1) : '--';
+
+        var missing = [];
+        if (!checks.touched) missing.push('Touch');
+        if (!checks.candle) missing.push('Candle');
+        if (!checks.volume) missing.push('Volume');
+        if (!checks.rsi) missing.push('RSI');
+        if (!checks.closed) missing.push('Close');
+
+        results.push({
+            symbol: sym,
+            price: currentPrice,
+            sq9Level: nearest.price,
+            distance: nearest.distance,
+            direction: direction,
+            checks: checks,
+            checkCount: checkCount,
+            status: status,
+            pivot: pivot.price,
+            target: targetPrice,
+            stop: stopPrice,
+            rr: rr,
+            missing: missing,
+            isEtf: sym.startsWith('X') || ['SPY','QQQ','IWM','DIA'].includes(sym)
+        });
+    }
+
+    results.sort(function(a, b) {
+        if (b.checkCount !== a.checkCount) return b.checkCount - a.checkCount;
+        return Math.abs(a.distance) - Math.abs(b.distance);
+    });
+
+    sq9ScanResults = results;
+    updateSq9ScannerDisplay();
+}
+
+function updateSq9ScannerDisplay() {
+    var results = sq9ScanResults;
+
+    if (sq9CurrentFilter !== 'all') {
+        results = results.filter(function(r) {
+            if (sq9CurrentFilter === 'ready') return r.status === 'ready';
+            if (sq9CurrentFilter === 'watching') return r.status === 'watching';
+            if (sq9CurrentFilter === 'call') return r.direction === 'CALL';
+            if (sq9CurrentFilter === 'put') return r.direction === 'PUT';
+            if (sq9CurrentFilter === 'etf') return r.isEtf;
+            return true;
+        });
+    }
+
+    var ready = results.filter(function(r) { return r.status === 'ready'; });
+    var watching = results.filter(function(r) { return r.status === 'watching'; });
+    var partial = results.filter(function(r) { return r.status === 'partial'; });
+
+    document.getElementById('sq9ReadyCount').textContent = ready.length;
+    document.getElementById('sq9WatchingCount').textContent = watching.length;
+    document.getElementById('sq9PartialCount').textContent = partial.length;
+    document.getElementById('sq9TotalCount').textContent = results.length;
+
+    var readyHtml = '';
+    if (ready.length === 0) {
+        readyHtml = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #999;">No ready setups at this time</td></tr>';
+    } else {
+        for (var i = 0; i < ready.length; i++) {
+            var r = ready[i];
+            var dirColor = r.direction === 'CALL' ? '#22c55e' : '#ef4444';
+            readyHtml += '<tr onclick="showSq9Detail(\'' + r.symbol + '\')" style="cursor: pointer;">' +
+                '<td style="padding: 10px;"><strong>' + r.symbol + '</strong></td>' +
+                '<td style="padding: 10px;">$' + r.price.toFixed(2) + '</td>' +
+                '<td style="padding: 10px;">$' + r.sq9Level.toFixed(2) + '</td>' +
+                '<td style="padding: 10px; color: ' + (r.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (r.distance >= 0 ? '+' : '') + r.distance.toFixed(1) + '%</td>' +
+                '<td style="padding: 10px;"><span style="background: ' + dirColor + '; color: white; padding: 2px 8px; border-radius: 4px; font-weight: 700;">' + r.direction + '</span></td>' +
+                '<td style="padding: 10px;">$' + r.pivot.toFixed(2) + '</td>' +
+                '<td style="padding: 10px; color: #22c55e;">$' + r.target.toFixed(2) + '</td>' +
+                '<td style="padding: 10px; color: #ef4444;">$' + r.stop.toFixed(2) + '</td>' +
+                '<td style="padding: 10px;">1:' + r.rr + '</td>' +
+                '<td style="padding: 10px;"><button onclick="event.stopPropagation(); viewSq9Detail(\'' + r.symbol + '\')" style="padding: 4px 10px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">TRADE</button></td>' +
+                '</tr>';
+        }
+    }
+    document.getElementById('sq9ReadyTable').innerHTML = readyHtml;
+
+    var watchingHtml = '';
+    if (watching.length === 0) {
+        watchingHtml = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: #999;">No watching setups at this time</td></tr>';
+    } else {
+        for (var j = 0; j < watching.length; j++) {
+            var w = watching[j];
+            var wDirColor = w.direction === 'CALL' ? '#22c55e' : '#ef4444';
+            watchingHtml += '<tr onclick="showSq9Detail(\'' + w.symbol + '\')" style="cursor: pointer;">' +
+                '<td style="padding: 10px;"><strong>' + w.symbol + '</strong></td>' +
+                '<td style="padding: 10px;">$' + w.price.toFixed(2) + '</td>' +
+                '<td style="padding: 10px;">$' + w.sq9Level.toFixed(2) + '</td>' +
+                '<td style="padding: 10px; color: ' + (w.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (w.distance >= 0 ? '+' : '') + w.distance.toFixed(1) + '%</td>' +
+                '<td style="padding: 10px;"><span style="background: ' + wDirColor + '; color: white; padding: 2px 8px; border-radius: 4px; font-weight: 700;">' + w.direction + '</span></td>' +
+                '<td style="padding: 10px; font-weight: 700;">' + w.checkCount + '/5</td>' +
+                '<td style="padding: 10px; font-size: 11px; color: #666;">' + w.missing.join(', ') + '</td>' +
+                '<td style="padding: 10px;"><button onclick="event.stopPropagation(); viewSq9Detail(\'' + w.symbol + '\')" style="padding: 4px 10px; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">MONITOR</button></td>' +
+                '</tr>';
+        }
+    }
+    document.getElementById('sq9WatchingTable').innerHTML = watchingHtml;
+
+    var partialHtml = '';
+    if (partial.length === 0) {
+        partialHtml = '<div style="text-align: center; padding: 20px; color: #999; grid-column: 1 / -1;">No approaching setups at this time</div>';
+    } else {
+        for (var k = 0; k < partial.length; k++) {
+            var p = partial[k];
+            var pDirColor = p.direction === 'CALL' ? '#22c55e' : '#ef4444';
+            partialHtml += '<div onclick="showSq9Detail(\'' + p.symbol + '\')" style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div><strong>' + p.symbol + '</strong> $' + p.price.toFixed(2) + ' → $' + p.sq9Level.toFixed(2) + ' (' + Math.abs(p.distance).toFixed(1) + '%)</div>' +
+                '<div><span style="background: ' + pDirColor + '; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">' + p.direction + '</span> <span style="color: #666; font-size: 11px;">' + p.checkCount + '/5</span></div>' +
+                '</div>';
+        }
+    }
+    document.getElementById('sq9PartialGrid').innerHTML = partialHtml;
+}
+
+function filterSq9Results(filter) {
+    sq9CurrentFilter = filter;
+
+    document.querySelectorAll('.sq9-filter-btn').forEach(function(btn) {
+        if (btn.dataset.filter === filter) {
+            btn.style.background = '#3b82f6';
+            btn.style.color = 'white';
+            btn.style.border = 'none';
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = '#333';
+            btn.style.border = '1px solid #ddd';
+        }
+    });
+
+    updateSq9ScannerDisplay();
+}
+
+function showSq9Detail(symbol) {
+    var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+    if (!result) return;
+
+    document.getElementById('sq9DetailSymbol').textContent = symbol + ' - ' + result.direction + ' SETUP';
+
+    var checkIcons = {
+        touched: result.checks.touched ? '✅' : '⬜',
+        candle: result.checks.candle ? '✅' : '⬜',
+        volume: result.checks.volume ? '✅' : '⬜',
+        rsi: result.checks.rsi ? '✅' : '⬜',
+        closed: result.checks.closed ? '✅' : '⬜'
+    };
+
+    var html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">' +
+        '<div>' +
+        '<div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">PIVOT: $' + result.pivot.toFixed(2) + ' | CURRENT: $' + result.price.toFixed(2) + ' | SQ9: $' + result.sq9Level.toFixed(2) + ' (' + (result.distance >= 0 ? '+' : '') + result.distance.toFixed(1) + '%)</div>' +
+        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">' +
+        '<div style="padding: 8px; background: ' + (result.checks.touched ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' + checkIcons.touched + ' Touched Level</div>' +
+        '<div style="padding: 8px; background: ' + (result.checks.candle ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' + checkIcons.candle + ' Candle Pattern</div>' +
+        '<div style="padding: 8px; background: ' + (result.checks.volume ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' + checkIcons.volume + ' High Volume</div>' +
+        '<div style="padding: 8px; background: ' + (result.checks.rsi ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' + checkIcons.rsi + ' RSI Extreme</div>' +
+        '<div style="padding: 8px; background: ' + (result.checks.closed ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px; grid-column: span 2;">' + checkIcons.closed + ' Closed ' + (result.direction === 'PUT' ? 'Below' : 'Above') + ' Level</div>' +
+        '</div>' +
+        '<div style="margin-top: 10px; padding: 10px; background: var(--bg); border-radius: 6px;">Progress: <strong>' + result.checkCount + '/5</strong> - ' + (result.status === 'ready' ? '🟢 READY' : result.status === 'watching' ? '🎯 WATCHING' : '⏳ PARTIAL') + '</div>' +
+        '</div>' +
+        '<div style="background: ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') + '; padding: 15px; border-radius: 8px;">' +
+        '<div style="font-weight: 700; margin-bottom: 10px;">' + (result.direction === 'CALL' ? '📈 CALL SETUP' : '📉 PUT SETUP') + '</div>' +
+        '<div style="display: grid; gap: 8px; font-size: 13px;">' +
+        '<div><strong>TARGET:</strong> <span style="color: #22c55e;">$' + result.target.toFixed(2) + '</span></div>' +
+        '<div><strong>STOP:</strong> <span style="color: #ef4444;">$' + result.stop.toFixed(2) + '</span></div>' +
+        '<div><strong>RISK/REWARD:</strong> 1:' + result.rr + '</div>' +
+        '<div><strong>STRIKE:</strong> $' + (Math.round(result.price / 5) * 5) + ' ' + result.direction + '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+
+    document.getElementById('sq9DetailContent').innerHTML = html;
+}
 
 </script>
 </body>
