@@ -5610,10 +5610,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <div class="sq9-monitor" id="sq9Monitor">
                 <div class="sq9-monitor-header">
                     <div class="sq9-monitor-title">🎯 SQ9 Entry Signal Monitor</div>
-                    <div class="sq9-etf-tabs" id="sq9EtfTabs">
+                    <div class="sq9-etf-tabs" id="sq9EtfTabs" style="flex-wrap: wrap;">
                         <button class="sq9-etf-tab active" onclick="selectSq9Etf('SPY')">SPY</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('QQQ')">QQQ</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('IWM')">IWM</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLF')">XLF</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLE')">XLE</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLK')">XLK</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLV')">XLV</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLI')">XLI</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLB')">XLB</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLU')">XLU</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLP')">XLP</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLY')">XLY</button>
                     </div>
                 </div>
 
@@ -26520,7 +26529,16 @@ let sq9EntryZones = {};
 const sq9PivotData = {
     SPY: { date: '2025-04-07', price: 481.80, type: 'LOW', label: 'Apr 7 LOW' },
     QQQ: { date: '2025-04-07', price: 402.39, type: 'LOW', label: 'Apr 7 LOW' },
-    IWM: { date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 7 LOW' }
+    IWM: { date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 7 LOW' },
+    XLF: { date: '2025-04-07', price: 42.35, type: 'LOW', label: 'Apr 7 LOW' },
+    XLE: { date: '2025-04-07', price: 78.12, type: 'LOW', label: 'Apr 7 LOW' },
+    XLK: { date: '2025-04-07', price: 186.50, type: 'LOW', label: 'Apr 7 LOW' },
+    XLV: { date: '2025-04-07', price: 131.25, type: 'LOW', label: 'Apr 7 LOW' },
+    XLI: { date: '2025-04-07', price: 112.80, type: 'LOW', label: 'Apr 7 LOW' },
+    XLB: { date: '2025-04-07', price: 79.45, type: 'LOW', label: 'Apr 7 LOW' },
+    XLU: { date: '2025-04-07', price: 68.90, type: 'LOW', label: 'Apr 7 LOW' },
+    XLP: { date: '2025-04-07', price: 75.20, type: 'LOW', label: 'Apr 7 LOW' },
+    XLY: { date: '2025-04-07', price: 175.30, type: 'LOW', label: 'Apr 7 LOW' }
 };
 
 // Calculate SQ9 levels from pivot
