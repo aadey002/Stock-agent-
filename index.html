@@ -26724,8 +26724,18 @@ function updateSq9Monitor() {
     const symbol = sq9SelectedEtf;
     const pivot = sq9PivotData[symbol];
 
+    // Check if pivot data exists for this symbol
+    if (!pivot) {
+        console.warn('SQ9: No pivot data for ' + symbol);
+        const tbody = document.getElementById('sq9LevelsBody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #f87171;">No SQ9 pivot data available for ' + symbol + '</td></tr>';
+        }
+        return;
+    }
+
     // Get current price from allSymbolsData
-    let currentPrice = 683.26; // Default fallback
+    let currentPrice = pivot.price * 1.4; // Default fallback based on pivot
     if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
         const data = allSymbolsData[symbol];
         if (data && data.length > 0) {
