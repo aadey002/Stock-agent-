@@ -26998,9 +26998,11 @@ function updateSq9EntryZone(zone, direction, nearest, currentPrice) {
 
         // Calculate trade details
         const isCall = direction === 'call';
-        const strike = Math.round(currentPrice / 5) * 5 + (isCall ? 0 : 0);
-        const targetLevel = findNextSq9Level(nearest, !isCall);
-        const stopLevel = findNextSq9Level(nearest, isCall);
+        const strike = Math.round(currentPrice / 5) * 5;
+        // For CALL: target is HIGHER (next resistance up), stop is LOWER (support below)
+        // For PUT: target is LOWER (next support down), stop is HIGHER (resistance above)
+        const targetLevel = findNextSq9Level(nearest, isCall);  // CALL: go up, PUT: go down
+        const stopLevel = findNextSq9Level(nearest, !isCall);   // CALL: go down, PUT: go up
 
         const actionEl = document.getElementById('sq9TradeAction');
         const strikeEl = document.getElementById('sq9TradeStrike');
