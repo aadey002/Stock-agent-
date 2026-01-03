@@ -26590,8 +26590,8 @@ function getSq9TradeDirection(nearest, currentPrice) {
 
     const distPct = Math.abs(nearest.distance);
 
-    // Only active if within 2% of a level
-    if (distPct > 2) return 'neutral';
+    // Only active if within 3% of a level
+    if (distPct > 3) return 'neutral';
 
     // If price is BELOW level and level is above = approaching resistance = PUT
     // If price is ABOVE level and level is below = approaching support = CALL
@@ -26625,7 +26625,7 @@ function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
     const distPct = Math.abs((currentPrice - levelPrice) / levelPrice * 100);
 
     // Reset if price moved away
-    if (distPct > 3) {
+    if (distPct > 4) {
         zone.status = 'none';
         zone.checks = { touched: false, candle: false, volume: false, rsi: false, closed: false };
         zone.checkCount = 0;
@@ -26635,17 +26635,17 @@ function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
     // Simulate checks based on distance and randomness for demo
     // In production, these would be calculated from real market data
 
-    // Check 1: Touched (within 0.5% of level)
-    zone.checks.touched = distPct <= 0.5;
+    // Check 1: Touched (within 1.5% of level)
+    zone.checks.touched = distPct <= 1.5;
 
     // Check 2: Candle pattern (simulated based on distance)
-    zone.checks.candle = distPct <= 0.3 && Math.random() > 0.3;
+    zone.checks.candle = distPct <= 1.0;
 
     // Check 3: Volume (simulated)
-    zone.checks.volume = zone.checks.touched && Math.random() > 0.4;
+    zone.checks.volume = zone.checks.touched && distPct <= 1.2;
 
     // Check 4: RSI (simulated)
-    zone.checks.rsi = zone.checks.touched && Math.random() > 0.5;
+    zone.checks.rsi = zone.checks.touched && distPct <= 1.0;
 
     // Check 5: Closed beyond level
     if (direction === 'put') {
