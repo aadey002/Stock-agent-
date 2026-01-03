@@ -242,7 +242,16 @@
         .status-badge.critical { background: rgba(239,68,68,0.3); }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        
+
+        /* SQ9 Alert Animations */
+        @keyframes sq9Pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 0 20px 5px rgba(34, 197, 94, 0.2); }
+        }
+        .sq9-alert-pulse { animation: sq9Pulse 2s ease-in-out infinite; }
+        @keyframes sq9Flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .sq9-flash { animation: sq9Flash 0.5s ease-in-out 3; }
+
         .symbol-select select { padding: 5px 8px; border: none; border-radius: 5px; font-size: 11px; background: rgba(255,255,255,0.9); cursor: pointer; font-weight: 600; }
         .refresh-btn { padding: 5px 12px; background: #22c55e; color: white; border: none; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .refresh-btn:hover { background: #16a34a; transform: scale(1.02); }
@@ -3720,6 +3729,68 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                     <div id="marketConditionMessage" style="margin-top: 12px; padding: 10px; background: rgba(34,197,94,0.1); border-radius: 6px; font-size: 12px; color: #166534; text-align: center;">
                         ✅ Market conditions support trading. Proceed with normal positioning.
                     </div>
+                </div>
+            </div>
+
+            <!-- TODAY'S SQ9 SETUPS WIDGET -->
+            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">🎯</span>
+                        <div>
+                            <div style="font-size: 16px; font-weight: 700;">Today's SQ9 Setups</div>
+                            <div style="font-size: 11px; color: var(--muted);" id="sq9WidgetTime">Last scan: --</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="loadSq9ScannerResults()" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                        <button onclick="document.querySelector('[data-tab=sq9-scanner]').click()" style="padding: 6px 12px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">View All →</button>
+                    </div>
+                </div>
+
+                <!-- Ready Alerts -->
+                <div id="sq9ReadyAlerts" style="margin-bottom: 15px;">
+                    <!-- Will be populated by JS -->
+                </div>
+
+                <!-- Quick Summary -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: rgba(34,197,94,0.15); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #22c55e;">🟢 READY</div>
+                        <div id="sq9WidgetReady" style="font-size: 20px; font-weight: 800; color: #22c55e;">0</div>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.15); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #f59e0b;">🎯 WATCHING</div>
+                        <div id="sq9WidgetWatching" style="font-size: 20px; font-weight: 800; color: #f59e0b;">0</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.15); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #3b82f6;">📈 CALLS</div>
+                        <div id="sq9WidgetCalls" style="font-size: 20px; font-weight: 800; color: #3b82f6;">0</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.15); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 9px; color: #ef4444;">📉 PUTS</div>
+                        <div id="sq9WidgetPuts" style="font-size: 20px; font-weight: 800; color: #ef4444;">0</div>
+                    </div>
+                </div>
+
+                <!-- Top Setups Table -->
+                <div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="background: var(--bg);">
+                                <th style="padding: 8px; text-align: left;">SYMBOL</th>
+                                <th style="padding: 8px; text-align: left;">PRICE</th>
+                                <th style="padding: 8px; text-align: left;">SQ9 LVL</th>
+                                <th style="padding: 8px; text-align: left;">DIST</th>
+                                <th style="padding: 8px; text-align: left;">DIR</th>
+                                <th style="padding: 8px; text-align: left;">STATUS</th>
+                                <th style="padding: 8px; text-align: left;">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sq9WidgetTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">Loading scanner results...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -27641,11 +27712,18 @@ function showSq9Detail(symbol) {
 }
 
 // ============================================
-// LOAD SQ9 SCANNER RESULTS FROM JSON
+// SQ9 ALERT SYSTEM
 // ============================================
 
+var sq9AlertsEnabled = true;
+var sq9SoundEnabled = false;
+var sq9LastReadyCount = 0;
+
+// Create audio element for alerts
+var sq9AlertSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQcFUsro6tqPKwYs0fz19dBgAACO4////+iEAABN9////+2YAABZ7v///+6bAABU8v///+2WAABZ7v///+6bAAA=');
+
 function loadSq9ScannerResults() {
-    fetch('sq9_scanner.json')
+    fetch('sq9_scanner.json?t=' + Date.now())
         .then(function(response) {
             if (!response.ok) {
                 throw new Error('Scanner results not found');
@@ -27655,7 +27733,12 @@ function loadSq9ScannerResults() {
         .then(function(data) {
             console.log('📊 Loaded SQ9 Scanner results:', data.summary);
 
-            // Update scan time
+            // Update widget time
+            var widgetTimeEl = document.getElementById('sq9WidgetTime');
+            if (widgetTimeEl) {
+                widgetTimeEl.textContent = 'Last scan: ' + data.scan_time;
+            }
+
             var scanTimeEl = document.getElementById('sq9ScanTime');
             if (scanTimeEl) {
                 scanTimeEl.textContent = data.scan_time;
@@ -27676,23 +27759,192 @@ function loadSq9ScannerResults() {
                     target: r.target,
                     stop: r.stop,
                     rr: r.rr_ratio,
-                    missing: r.missing,
+                    missing: r.missing || [],
                     isEtf: r.is_etf
                 };
             });
 
+            // Update all displays
             updateSq9ScannerDisplay();
+            updateSq9Widget();
+
+            // Check for new READY alerts
+            var readyCount = data.summary.ready;
+            if (readyCount > sq9LastReadyCount && sq9LastReadyCount > 0) {
+                showSq9Alert(readyCount - sq9LastReadyCount);
+            }
+            sq9LastReadyCount = readyCount;
         })
         .catch(function(error) {
             console.log('⚠️ Could not load scanner results:', error.message);
-            // Will use live scan instead
+            // Run live scan as fallback
+            if (typeof runSq9Scan === 'function') {
+                runSq9Scan();
+                updateSq9Widget();
+            }
         });
 }
 
-// Load scanner results when tab is clicked
+function updateSq9Widget() {
+    if (!sq9ScanResults || sq9ScanResults.length === 0) return;
+
+    var ready = sq9ScanResults.filter(function(r) { return r.status === 'ready'; });
+    var watching = sq9ScanResults.filter(function(r) { return r.status === 'watching'; });
+    var calls = sq9ScanResults.filter(function(r) { return r.direction === 'CALL'; });
+    var puts = sq9ScanResults.filter(function(r) { return r.direction === 'PUT'; });
+
+    // Update counts
+    var el = function(id) { return document.getElementById(id); };
+    if (el('sq9WidgetReady')) el('sq9WidgetReady').textContent = ready.length;
+    if (el('sq9WidgetWatching')) el('sq9WidgetWatching').textContent = watching.length;
+    if (el('sq9WidgetCalls')) el('sq9WidgetCalls').textContent = calls.length;
+    if (el('sq9WidgetPuts')) el('sq9WidgetPuts').textContent = puts.length;
+
+    // Update ready alerts banner
+    updateSq9ReadyAlerts(ready);
+
+    // Update table (show top 8)
+    var topSetups = sq9ScanResults.slice(0, 8);
+    var tableHtml = '';
+
+    if (topSetups.length === 0) {
+        tableHtml = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No active SQ9 setups. Click Refresh to scan.</td></tr>';
+    } else {
+        for (var i = 0; i < topSetups.length; i++) {
+            var r = topSetups[i];
+            var dirColor = r.direction === 'CALL' ? '#22c55e' : '#ef4444';
+            var statusBadge = '';
+
+            if (r.status === 'ready') {
+                statusBadge = '<span style="background: #22c55e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700;">🟢 READY</span>';
+            } else if (r.status === 'watching') {
+                statusBadge = '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700;">🎯 ' + r.checkCount + '/5</span>';
+            } else {
+                statusBadge = '<span style="background: #e5e7eb; color: #666; padding: 2px 6px; border-radius: 4px; font-size: 9px;">⏳ ' + r.checkCount + '/5</span>';
+            }
+
+            tableHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
+                '<td style="padding: 8px;"><strong>' + r.symbol + '</strong></td>' +
+                '<td style="padding: 8px;">$' + r.price.toFixed(2) + '</td>' +
+                '<td style="padding: 8px;">$' + r.sq9Level.toFixed(2) + '</td>' +
+                '<td style="padding: 8px; color: ' + (r.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (r.distance >= 0 ? '+' : '') + r.distance.toFixed(1) + '%</td>' +
+                '<td style="padding: 8px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + r.direction + '</span></td>' +
+                '<td style="padding: 8px;">' + statusBadge + '</td>' +
+                '<td style="padding: 8px;"><button onclick="viewSq9Detail(\'' + r.symbol + '\')" style="padding: 3px 8px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px;">VIEW</button></td>' +
+                '</tr>';
+        }
+    }
+
+    var tableEl = document.getElementById('sq9WidgetTable');
+    if (tableEl) tableEl.innerHTML = tableHtml;
+}
+
+function updateSq9ReadyAlerts(ready) {
+    var alertsEl = document.getElementById('sq9ReadyAlerts');
+    if (!alertsEl) return;
+
+    if (ready.length === 0) {
+        alertsEl.innerHTML = '';
+        return;
+    }
+
+    var html = '<div class="sq9-alert-pulse" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 8px; padding: 12px;">' +
+        '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+        '<div style="display: flex; align-items: center; gap: 10px;">' +
+        '<span style="font-size: 24px;">🎯</span>' +
+        '<div>' +
+        '<div style="font-weight: 700;">' + ready.length + ' SETUP' + (ready.length > 1 ? 'S' : '') + ' READY!</div>' +
+        '<div style="font-size: 11px; opacity: 0.9;">';
+
+    var readySymbols = ready.map(function(r) { return r.symbol + ' ' + r.direction; });
+    html += readySymbols.join(' • ');
+
+    html += '</div></div></div>' +
+        '<button onclick="document.querySelector(\'[data-tab=sq9-scanner]\').click()" style="padding: 8px 16px; background: white; color: #22c55e; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">TRADE NOW →</button>' +
+        '</div></div>';
+
+    alertsEl.innerHTML = html;
+}
+
+function viewSq9Detail(symbol) {
+    // Switch to SQ9 Scanner tab and show detail
+    document.querySelector('[data-tab=sq9-scanner]').click();
+    setTimeout(function() {
+        showSq9Detail(symbol);
+    }, 100);
+}
+
+function showSq9Alert(newCount) {
+    if (!sq9AlertsEnabled) return;
+
+    // Play sound if enabled
+    if (sq9SoundEnabled) {
+        try {
+            sq9AlertSound.play();
+        } catch (e) {
+            console.log('Could not play alert sound');
+        }
+    }
+
+    // Show browser notification if permitted
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('🎯 SQ9 Alert!', {
+            body: newCount + ' new setup' + (newCount > 1 ? 's' : '') + ' ready to trade!',
+            icon: '🎯'
+        });
+    }
+
+    // Flash the widget
+    var widget = document.getElementById('sq9ReadyAlerts');
+    if (widget) {
+        widget.classList.add('sq9-flash');
+        setTimeout(function() {
+            widget.classList.remove('sq9-flash');
+        }, 1500);
+    }
+}
+
+function toggleSq9Sound() {
+    sq9SoundEnabled = !sq9SoundEnabled;
+    var toggle = document.getElementById('sq9SoundToggle');
+    if (toggle) toggle.checked = sq9SoundEnabled;
+}
+
+function requestNotificationPermission() {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                console.log('Browser notifications enabled!');
+            }
+        });
+    }
+}
+
+// Auto-refresh every 5 minutes during market hours
+function startSq9AutoRefresh() {
+    setInterval(function() {
+        var now = new Date();
+        var hour = now.getHours();
+        var day = now.getDay();
+
+        // Only refresh Mon-Fri 9:30 AM - 4:00 PM ET (adjust for your timezone)
+        if (day >= 1 && day <= 5 && hour >= 9 && hour < 16) {
+            console.log('🔄 Auto-refreshing SQ9 Scanner...');
+            loadSq9ScannerResults();
+        }
+    }, 5 * 60 * 1000); // Every 5 minutes
+}
+
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Try to load saved results first
-    setTimeout(loadSq9ScannerResults, 1000);
+    // Load scanner results after 2 seconds
+    setTimeout(loadSq9ScannerResults, 2000);
+
+    // Start auto-refresh
+    startSq9AutoRefresh();
+
+    // Request notification permission
+    requestNotificationPermission();
 });
 
 </script>
