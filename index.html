@@ -27640,6 +27640,61 @@ function showSq9Detail(symbol) {
     document.getElementById('sq9DetailContent').innerHTML = html;
 }
 
+// ============================================
+// LOAD SQ9 SCANNER RESULTS FROM JSON
+// ============================================
+
+function loadSq9ScannerResults() {
+    fetch('sq9_scanner.json')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Scanner results not found');
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('📊 Loaded SQ9 Scanner results:', data.summary);
+
+            // Update scan time
+            var scanTimeEl = document.getElementById('sq9ScanTime');
+            if (scanTimeEl) {
+                scanTimeEl.textContent = data.scan_time;
+            }
+
+            // Convert to internal format
+            sq9ScanResults = data.results.map(function(r) {
+                return {
+                    symbol: r.symbol,
+                    price: r.price,
+                    sq9Level: r.sq9_level,
+                    distance: r.distance_pct,
+                    direction: r.direction,
+                    checks: r.checks,
+                    checkCount: r.check_count,
+                    status: r.status.toLowerCase(),
+                    pivot: r.pivot_price,
+                    target: r.target,
+                    stop: r.stop,
+                    rr: r.rr_ratio,
+                    missing: r.missing,
+                    isEtf: r.is_etf
+                };
+            });
+
+            updateSq9ScannerDisplay();
+        })
+        .catch(function(error) {
+            console.log('⚠️ Could not load scanner results:', error.message);
+            // Will use live scan instead
+        });
+}
+
+// Load scanner results when tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to load saved results first
+    setTimeout(loadSq9ScannerResults, 1000);
+});
+
 </script>
 </body>
 </html>
