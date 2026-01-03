@@ -9326,6 +9326,39 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- ETF DURATION SUMMARY TABLE -->
+            <div style="background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 14px; font-weight: 700;">📊 SQ9 Level-to-Level Duration by Symbol</div>
+                    <button onclick="updateDurationTable()" style="padding: 5px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="background: var(--bg);">
+                                <th style="padding: 10px; text-align: left;">SYMBOL</th>
+                                <th style="padding: 10px; text-align: center;">AVG DAYS</th>
+                                <th style="padding: 10px; text-align: center;">MIN</th>
+                                <th style="padding: 10px; text-align: center;">MAX</th>
+                                <th style="padding: 10px; text-align: center;">SPEED</th>
+                                <th style="padding: 10px; text-align: center;">REC. DTE</th>
+                                <th style="padding: 10px; text-align: left;">EXPIRY TYPE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="durationTable">
+                            <tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">Loading duration data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 10px; color: #666;">
+                    <strong>Speed Legend:</strong>
+                    🚀 Very Fast (&lt;2 days) |
+                    ⚡ Fast (2-3 days) |
+                    📊 Normal (4-5 days) |
+                    🐢 Slow (6+ days)
+                </div>
+            </div>
+
             <!-- Selected Setup Detail -->
             <div style="background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px;" id="sq9DetailPanel">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -28272,16 +28305,6 @@ function showSq9Detail(symbol) {
         '<div style="display: flex; justify-content: space-between;"><strong>RISK/REWARD:</strong> <span style="color: ' + (result.rr >= 1.5 ? '#22c55e' : result.rr >= 1 ? '#f59e0b' : '#ef4444') + ';">1:' + result.rr + '</span></div>' +
         '</div>' +
 
-        // Suggested options
-        '<div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">' +
-        '<div style="font-weight: 600; margin-bottom: 8px; font-size: 12px;">SUGGESTED OPTIONS:</div>' +
-        '<div style="display: grid; gap: 6px; font-size: 12px;">' +
-        '<div style="display: flex; justify-content: space-between;"><span>ATM Strike:</span> <strong>$' + (Math.round(result.price / 5) * 5) + ' ' + result.direction + '</strong></div>' +
-        '<div style="display: flex; justify-content: space-between;"><span>OTM Strike:</span> <strong>$' + (result.direction === 'CALL' ? (Math.round(result.price / 5) * 5 + 5) : (Math.round(result.price / 5) * 5 - 5)) + ' ' + result.direction + '</strong></div>' +
-        '<div style="display: flex; justify-content: space-between;"><span>Exp Suggestion:</span> <strong>2-4 weeks</strong></div>' +
-        '</div>' +
-        '</div>' +
-
         // Timeframe alignment
         '<div style="margin-top: 12px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 6px;">' +
         '<div style="font-weight: 600; margin-bottom: 6px; font-size: 11px;">TIMEFRAME ALIGNMENT:</div>' +
@@ -28289,6 +28312,162 @@ function showSq9Detail(symbol) {
         '</div>' +
         '</div>' +
         '</div>';
+
+    // DURATION ANALYSIS & OPTIMAL EXPIRATION
+    var now = new Date();
+    var durationAnalysis = analyzeSq9LevelDurations(result.symbol);
+    var optimalExpiry = getNextExpiration(durationAnalysis.recommendedDTE);
+    var expiryStr = optimalExpiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    var expiryDTE = Math.ceil((optimalExpiry - now) / (1000 * 60 * 60 * 24));
+    var dirColor = result.direction === 'CALL' ? '#22c55e' : '#ef4444';
+
+    // Level-to-Level Duration Section
+    html += '<div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.1)); border: 1px solid rgba(139,92,246,0.3); border-radius: 10px; padding: 15px; margin-top: 20px;">' +
+        '<div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">📊 SQ9 Level-to-Level Duration Analysis</div>';
+
+    // Stats grid
+    html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">' +
+        '<div style="background: rgba(255,255,255,0.8); border-radius: 8px; padding: 12px; text-align: center;">' +
+            '<div style="font-size: 10px; color: var(--muted);">AVG DAYS</div>' +
+            '<div style="font-size: 22px; font-weight: 800; color: var(--primary);">' + durationAnalysis.avgDays + '</div>' +
+            '<div style="font-size: 9px; color: #666;">per level</div>' +
+        '</div>' +
+        '<div style="background: rgba(255,255,255,0.8); border-radius: 8px; padding: 12px; text-align: center;">' +
+            '<div style="font-size: 10px; color: var(--muted);">FASTEST</div>' +
+            '<div style="font-size: 22px; font-weight: 800; color: #22c55e;">' + durationAnalysis.minDays + '</div>' +
+            '<div style="font-size: 9px; color: #666;">days min</div>' +
+        '</div>' +
+        '<div style="background: rgba(255,255,255,0.8); border-radius: 8px; padding: 12px; text-align: center;">' +
+            '<div style="font-size: 10px; color: var(--muted);">SLOWEST</div>' +
+            '<div style="font-size: 22px; font-weight: 800; color: #ef4444;">' + durationAnalysis.maxDays + '</div>' +
+            '<div style="font-size: 9px; color: #666;">days max</div>' +
+        '</div>' +
+        '<div style="background: rgba(255,255,255,0.8); border-radius: 8px; padding: 12px; text-align: center;">' +
+            '<div style="font-size: 10px; color: var(--muted);">MEDIAN</div>' +
+            '<div style="font-size: 22px; font-weight: 800; color: #f59e0b;">' + durationAnalysis.medianDays + '</div>' +
+            '<div style="font-size: 9px; color: #666;">days typical</div>' +
+        '</div>' +
+    '</div>';
+
+    // Confidence indicator
+    var confColor = durationAnalysis.confidence === 'HIGH' ? '#22c55e' : durationAnalysis.confidence === 'MEDIUM' ? '#f59e0b' : '#6b7280';
+    var confBg = durationAnalysis.confidence === 'HIGH' ? 'rgba(34,197,94,0.1)' : durationAnalysis.confidence === 'MEDIUM' ? 'rgba(245,158,11,0.1)' : 'rgba(107,114,128,0.1)';
+
+    html += '<div style="background: ' + confBg + '; border-radius: 6px; padding: 8px 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">' +
+        '<span style="font-size: 11px;">Data Confidence: <strong style="color: ' + confColor + ';">' + durationAnalysis.confidence + '</strong></span>' +
+        '<span style="font-size: 10px; color: #666;">' + (durationAnalysis.sampleSize || 'N/A') + ' level transitions analyzed</span>' +
+    '</div>';
+
+    // Recent transitions table (if available)
+    if (durationAnalysis.transitions && durationAnalysis.transitions.length > 0) {
+        html += '<div style="margin-bottom: 15px;">' +
+            '<div style="font-size: 11px; font-weight: 600; margin-bottom: 8px;">Recent Level Transitions:</div>' +
+            '<div style="max-height: 120px; overflow-y: auto; font-size: 10px;">' +
+            '<table style="width: 100%; border-collapse: collapse;">' +
+            '<tr style="background: rgba(139,92,246,0.1);">' +
+                '<th style="padding: 4px; text-align: left;">From</th>' +
+                '<th style="padding: 4px; text-align: left;">To</th>' +
+                '<th style="padding: 4px; text-align: center;">Days</th>' +
+                '<th style="padding: 4px; text-align: center;">Dir</th>' +
+            '</tr>';
+
+        durationAnalysis.transitions.slice(-5).reverse().forEach(function(t) {
+            var transDir = t.direction === 'UP' ? '📈' : '📉';
+            var transDirColor = t.direction === 'UP' ? '#22c55e' : '#ef4444';
+            html += '<tr style="border-bottom: 1px solid rgba(139,92,246,0.1);">' +
+                '<td style="padding: 4px;">$' + t.fromLevel.toFixed(2) + '</td>' +
+                '<td style="padding: 4px;">$' + t.toLevel.toFixed(2) + '</td>' +
+                '<td style="padding: 4px; text-align: center; font-weight: 600;">' + t.days + '</td>' +
+                '<td style="padding: 4px; text-align: center; color: ' + transDirColor + ';">' + transDir + '</td>' +
+            '</tr>';
+        });
+
+        html += '</table></div></div>';
+    }
+
+    html += '</div>';
+
+    // OPTIMAL OPTION EXPIRATION RECOMMENDATION
+    html += '<div style="background: linear-gradient(135deg, ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.15), rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.15), rgba(220,38,38,0.1)') + '); border: 2px solid ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)') + '; border-radius: 10px; padding: 15px; margin-top: 15px;">' +
+        '<div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">💡 Optimal Option Selection</div>';
+
+    // Expiration recommendation with explanation
+    html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">' +
+        '<div style="background: rgba(255,255,255,0.9); border-radius: 8px; padding: 15px;">' +
+            '<div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">RECOMMENDED EXPIRATION</div>' +
+            '<div style="font-size: 20px; font-weight: 800; color: ' + dirColor + ';">' + expiryStr + '</div>' +
+            '<div style="font-size: 11px; color: #666;">' + expiryDTE + ' DTE (' + durationAnalysis.expiryType + ')</div>' +
+        '</div>' +
+        '<div style="background: rgba(255,255,255,0.9); border-radius: 8px; padding: 15px;">' +
+            '<div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">WHY THIS EXPIRATION?</div>' +
+            '<div style="font-size: 11px; color: var(--text);">' +
+                '<strong>' + result.symbol + '</strong> typically takes <strong>' + durationAnalysis.avgDays + ' days</strong> to move between SQ9 levels. ' +
+                'Adding 75% buffer = <strong>' + durationAnalysis.recommendedDTE + ' DTE</strong> minimum.' +
+            '</div>' +
+        '</div>' +
+    '</div>';
+
+    // Strike selection
+    var atmStrike, itmStrike, otmStrike;
+
+    if (result.direction === 'PUT') {
+        atmStrike = Math.floor(result.price / 5) * 5;
+        itmStrike = atmStrike + 5;
+        otmStrike = atmStrike - 5;
+    } else {
+        atmStrike = Math.ceil(result.price / 5) * 5;
+        itmStrike = atmStrike - 5;
+        otmStrike = atmStrike + 5;
+    }
+
+    html += '<div style="margin-bottom: 15px;">' +
+        '<div style="font-size: 11px; font-weight: 600; margin-bottom: 8px;">Strike Selection Guide:</div>' +
+        '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">' +
+            '<div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">' +
+                '<div style="font-size: 9px; color: #22c55e; font-weight: 600;">💰 CONSERVATIVE (ITM)</div>' +
+                '<div style="font-size: 16px; font-weight: 800;">$' + itmStrike + '</div>' +
+                '<div style="font-size: 9px; color: #666;">Higher premium, higher delta</div>' +
+                '<div style="font-size: 9px; color: #666;">~70 delta, less theta decay</div>' +
+            '</div>' +
+            '<div style="background: rgba(59,130,246,0.1); border: 2px solid rgba(59,130,246,0.4); border-radius: 8px; padding: 10px; text-align: center;">' +
+                '<div style="font-size: 9px; color: #3b82f6; font-weight: 600;">⭐ RECOMMENDED (ATM)</div>' +
+                '<div style="font-size: 16px; font-weight: 800;">$' + atmStrike + '</div>' +
+                '<div style="font-size: 9px; color: #666;">Balanced risk/reward</div>' +
+                '<div style="font-size: 9px; color: #666;">~50 delta, best gamma</div>' +
+            '</div>' +
+            '<div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 10px; text-align: center;">' +
+                '<div style="font-size: 9px; color: #f59e0b; font-weight: 600;">🎲 AGGRESSIVE (OTM)</div>' +
+                '<div style="font-size: 16px; font-weight: 800;">$' + otmStrike + '</div>' +
+                '<div style="font-size: 9px; color: #666;">Lower cost, lower probability</div>' +
+                '<div style="font-size: 9px; color: #666;">~30 delta, high theta decay</div>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
+
+    // Final recommendation box
+    var optionSymbol = result.symbol + ' $' + atmStrike + (result.direction === 'CALL' ? 'C' : 'P');
+
+    html += '<div style="background: ' + dirColor + '; color: white; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">' +
+        '<div>' +
+            '<div style="font-size: 11px; opacity: 0.9;">SUGGESTED TRADE</div>' +
+            '<div style="font-size: 20px; font-weight: 800;">' + optionSymbol + '</div>' +
+            '<div style="font-size: 12px; opacity: 0.9;">Exp: ' + expiryStr + ' (' + expiryDTE + ' DTE)</div>' +
+        '</div>' +
+        '<button onclick="quickLogSq9Trade(\'' + result.symbol + '\')" style="padding: 12px 24px; background: white; color: ' + dirColor + '; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer;">📝 LOG TRADE</button>' +
+    '</div>';
+
+    // Pro tips based on duration
+    html += '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">' +
+        '<div style="font-size: 11px; font-weight: 600; margin-bottom: 8px;">💡 Expiration Tips for ' + result.symbol + ':</div>' +
+        '<div style="font-size: 10px; color: var(--muted);">' +
+            '• <strong>Fast mover</strong> (' + durationAnalysis.minDays + '-' + durationAnalysis.avgDays + ' days): Can use shorter DTE for quick scalps<br>' +
+            '• <strong>Slow mover</strong> (' + durationAnalysis.avgDays + '-' + durationAnalysis.maxDays + ' days): Need longer DTE to avoid theta burn<br>' +
+            '• <strong>Rule of thumb</strong>: Exit by 50% DTE remaining to avoid accelerated decay<br>' +
+            '• <strong>Profit target</strong>: Close at 50-75% of max gain, don\'t hold for 100%' +
+        '</div>' +
+    '</div>';
+
+    html += '</div>';
 
     document.getElementById('sq9DetailContent').innerHTML = html;
 }
@@ -28538,6 +28717,328 @@ function formatLargeNumber(num) {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toString();
+}
+
+// ============================================
+// SQ9 LEVEL-TO-LEVEL DURATION ANALYSIS
+// ============================================
+
+function analyzeSq9LevelDurations(symbol) {
+    var result = {
+        symbol: symbol,
+        avgDays: 0,
+        minDays: 0,
+        maxDays: 0,
+        medianDays: 0,
+        transitions: [],
+        recommendedDTE: 7,
+        expiryType: 'Weekly',
+        confidence: 'LOW',
+        sampleSize: 0
+    };
+
+    // Get historical price data
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        priceData = allSymbolsData[symbol];
+    }
+
+    if (!priceData || priceData.length < 50) {
+        console.log('⚠️ Not enough data for duration analysis:', symbol);
+        // Use default estimates based on symbol volatility
+        var defaultDurations = {
+            'SPY': { avg: 4, min: 1, max: 10 },
+            'QQQ': { avg: 3, min: 1, max: 8 },
+            'IWM': { avg: 3, min: 1, max: 7 },
+            'DIA': { avg: 5, min: 2, max: 12 },
+            'XLF': { avg: 4, min: 1, max: 10 },
+            'XLE': { avg: 3, min: 1, max: 8 },
+            'XLK': { avg: 3, min: 1, max: 7 },
+            'XLV': { avg: 5, min: 2, max: 12 },
+            'NVDA': { avg: 2, min: 1, max: 5 },
+            'TSLA': { avg: 2, min: 1, max: 4 },
+            'AAPL': { avg: 4, min: 1, max: 8 },
+            'AMD': { avg: 2, min: 1, max: 5 },
+            'META': { avg: 3, min: 1, max: 6 }
+        };
+
+        var defaults = defaultDurations[symbol] || { avg: 4, min: 1, max: 10 };
+        result.avgDays = defaults.avg;
+        result.minDays = defaults.min;
+        result.maxDays = defaults.max;
+        result.medianDays = defaults.avg;
+        result.confidence = 'ESTIMATED';
+
+        // Calculate recommended DTE
+        var recommendedDays = Math.ceil(defaults.avg * 1.75);
+        if (recommendedDays <= 3) {
+            result.recommendedDTE = 3;
+            result.expiryType = '0-3 DTE (Mon/Wed/Fri)';
+        } else if (recommendedDays <= 7) {
+            result.recommendedDTE = 7;
+            result.expiryType = 'Weekly';
+        } else if (recommendedDays <= 14) {
+            result.recommendedDTE = 14;
+            result.expiryType = '2-Week';
+        } else if (recommendedDays <= 21) {
+            result.recommendedDTE = 21;
+            result.expiryType = '3-Week';
+        } else {
+            result.recommendedDTE = 30;
+            result.expiryType = 'Monthly';
+        }
+
+        return result;
+    }
+
+    // Get pivot for this symbol
+    var pivot = sq9ExtendedPivots[symbol] || sq9PivotData[symbol];
+    if (!pivot) return result;
+
+    // Calculate all SQ9 levels for this symbol
+    var currentPrice = parseFloat(priceData[priceData.length - 1].Close);
+    var allLevels = [];
+    var sqrtPivot = Math.sqrt(pivot.price);
+
+    // Generate levels from rotation 1 to 30
+    for (var r = 1; r <= 30; r++) {
+        var levelPrice = Math.pow(sqrtPivot + r * 0.5, 2);
+        if (levelPrice > pivot.price * 0.5 && levelPrice < pivot.price * 3) {
+            allLevels.push({
+                rotation: r,
+                price: levelPrice
+            });
+        }
+    }
+
+    // Sort levels by price
+    allLevels.sort(function(a, b) { return a.price - b.price; });
+
+    // Track level touches through history
+    var levelTouches = []; // Array of { date, level, price }
+    var touchThreshold = 0.01; // 1% threshold for "touching" a level
+
+    for (var i = 0; i < priceData.length; i++) {
+        var bar = priceData[i];
+        var high = parseFloat(bar.High);
+        var low = parseFloat(bar.Low);
+        var close = parseFloat(bar.Close);
+        var date = bar.Date || bar.Datetime;
+
+        // Check if price touched any SQ9 level
+        for (var j = 0; j < allLevels.length; j++) {
+            var level = allLevels[j];
+
+            // Check if high/low range crossed this level
+            if (low <= level.price * (1 + touchThreshold) && high >= level.price * (1 - touchThreshold)) {
+                // Price touched this level
+                var lastTouch = levelTouches.length > 0 ? levelTouches[levelTouches.length - 1] : null;
+
+                // Only record if different level than last touch
+                if (!lastTouch || lastTouch.rotation !== level.rotation) {
+                    levelTouches.push({
+                        date: date,
+                        dateObj: new Date(date),
+                        rotation: level.rotation,
+                        level: level.price,
+                        close: close
+                    });
+                }
+            }
+        }
+    }
+
+    // Calculate time between consecutive level touches
+    var durations = [];
+
+    for (var k = 1; k < levelTouches.length; k++) {
+        var prevTouch = levelTouches[k - 1];
+        var currTouch = levelTouches[k];
+
+        // Calculate days between touches
+        var daysDiff = Math.round((currTouch.dateObj - prevTouch.dateObj) / (1000 * 60 * 60 * 24));
+
+        // Only count if moved to a different level (not same level re-test)
+        if (Math.abs(currTouch.rotation - prevTouch.rotation) >= 1 && daysDiff > 0 && daysDiff < 60) {
+            var direction = currTouch.rotation > prevTouch.rotation ? 'UP' : 'DOWN';
+            var levelsMoved = Math.abs(currTouch.rotation - prevTouch.rotation);
+
+            durations.push({
+                fromDate: prevTouch.date,
+                toDate: currTouch.date,
+                fromLevel: prevTouch.level,
+                toLevel: currTouch.level,
+                days: daysDiff,
+                direction: direction,
+                levelsMoved: levelsMoved,
+                daysPerLevel: daysDiff / levelsMoved
+            });
+        }
+    }
+
+    if (durations.length === 0) {
+        // Use default estimates based on symbol volatility
+        var defaultDurations = {
+            'SPY': { avg: 4, min: 1, max: 10 },
+            'QQQ': { avg: 3, min: 1, max: 8 },
+            'IWM': { avg: 3, min: 1, max: 7 },
+            'DIA': { avg: 5, min: 2, max: 12 },
+            'XLF': { avg: 4, min: 1, max: 10 },
+            'XLE': { avg: 3, min: 1, max: 8 },
+            'XLK': { avg: 3, min: 1, max: 7 },
+            'XLV': { avg: 5, min: 2, max: 12 },
+            'NVDA': { avg: 2, min: 1, max: 5 },
+            'TSLA': { avg: 2, min: 1, max: 4 },
+            'AAPL': { avg: 4, min: 1, max: 8 },
+            'AMD': { avg: 2, min: 1, max: 5 },
+            'META': { avg: 3, min: 1, max: 6 }
+        };
+
+        var defaults = defaultDurations[symbol] || { avg: 4, min: 1, max: 10 };
+        result.avgDays = defaults.avg;
+        result.minDays = defaults.min;
+        result.maxDays = defaults.max;
+        result.medianDays = defaults.avg;
+        result.confidence = 'ESTIMATED';
+    } else {
+        // Calculate statistics
+        var sortedDays = durations.map(function(d) { return d.daysPerLevel; }).sort(function(a, b) { return a - b; });
+
+        var sum = sortedDays.reduce(function(a, b) { return a + b; }, 0);
+        result.avgDays = Math.round(sum / sortedDays.length * 10) / 10;
+        result.minDays = Math.round(sortedDays[0] * 10) / 10;
+        result.maxDays = Math.round(sortedDays[sortedDays.length - 1] * 10) / 10;
+        result.medianDays = Math.round(sortedDays[Math.floor(sortedDays.length / 2)] * 10) / 10;
+        result.transitions = durations.slice(-10); // Last 10 transitions
+        result.sampleSize = durations.length;
+        result.confidence = durations.length >= 20 ? 'HIGH' : durations.length >= 10 ? 'MEDIUM' : 'LOW';
+    }
+
+    // Calculate recommended DTE based on average days
+    // Add buffer: recommend 1.5x to 2x the average duration
+    var bufferMultiplier = 1.75;
+    var recommendedDays = Math.ceil(result.avgDays * bufferMultiplier);
+
+    // Round to standard option expirations
+    if (recommendedDays <= 3) {
+        result.recommendedDTE = 3;
+        result.expiryType = '0-3 DTE (Mon/Wed/Fri)';
+    } else if (recommendedDays <= 7) {
+        result.recommendedDTE = 7;
+        result.expiryType = 'Weekly';
+    } else if (recommendedDays <= 14) {
+        result.recommendedDTE = 14;
+        result.expiryType = '2-Week';
+    } else if (recommendedDays <= 21) {
+        result.recommendedDTE = 21;
+        result.expiryType = '3-Week';
+    } else {
+        result.recommendedDTE = 30;
+        result.expiryType = 'Monthly';
+    }
+
+    return result;
+}
+
+// Get next standard expiration date
+function getNextExpiration(dte) {
+    var today = new Date();
+    var expiry = new Date(today);
+
+    if (dte <= 3) {
+        // Find next Mon/Wed/Fri
+        var dayOfWeek = today.getDay();
+        var daysToAdd = 0;
+
+        if (dayOfWeek === 0) daysToAdd = 1; // Sun -> Mon
+        else if (dayOfWeek === 1) daysToAdd = 2; // Mon -> Wed
+        else if (dayOfWeek === 2) daysToAdd = 1; // Tue -> Wed
+        else if (dayOfWeek === 3) daysToAdd = 2; // Wed -> Fri
+        else if (dayOfWeek === 4) daysToAdd = 1; // Thu -> Fri
+        else if (dayOfWeek === 5) daysToAdd = 3; // Fri -> Mon
+        else if (dayOfWeek === 6) daysToAdd = 2; // Sat -> Mon
+
+        expiry.setDate(today.getDate() + daysToAdd);
+    } else if (dte <= 7) {
+        // Next Friday
+        var daysUntilFriday = (5 - today.getDay() + 7) % 7;
+        if (daysUntilFriday === 0) daysUntilFriday = 7;
+        expiry.setDate(today.getDate() + daysUntilFriday);
+    } else if (dte <= 14) {
+        // Friday 2 weeks out
+        var daysUntilFri = (5 - today.getDay() + 7) % 7;
+        if (daysUntilFri === 0) daysUntilFri = 7;
+        expiry.setDate(today.getDate() + daysUntilFri + 7);
+    } else if (dte <= 21) {
+        // Friday 3 weeks out
+        var daysToFri = (5 - today.getDay() + 7) % 7;
+        if (daysToFri === 0) daysToFri = 7;
+        expiry.setDate(today.getDate() + daysToFri + 14);
+    } else {
+        // Third Friday of next month (monthly)
+        var nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        var firstDay = nextMonth.getDay();
+        var thirdFriday = 15 + (5 - firstDay + 7) % 7;
+        if (thirdFriday < 15) thirdFriday += 7;
+        expiry = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), thirdFriday);
+    }
+
+    return expiry;
+}
+
+// Update duration table for all symbols
+function updateDurationTable() {
+    var tbody = document.getElementById('durationTable');
+    if (!tbody) return;
+
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'NVDA', 'TSLA', 'AAPL', 'AMD', 'META'];
+
+    var results = [];
+
+    symbols.forEach(function(sym) {
+        var analysis = analyzeSq9LevelDurations(sym);
+        analysis.symbol = sym;
+        results.push(analysis);
+    });
+
+    // Sort by average days (fastest first)
+    results.sort(function(a, b) { return a.avgDays - b.avgDays; });
+
+    var html = '';
+
+    results.forEach(function(r) {
+        var speedIcon = '';
+        var speedColor = '';
+
+        if (r.avgDays <= 2) {
+            speedIcon = '🚀';
+            speedColor = '#22c55e';
+        } else if (r.avgDays <= 3) {
+            speedIcon = '⚡';
+            speedColor = '#3b82f6';
+        } else if (r.avgDays <= 5) {
+            speedIcon = '📊';
+            speedColor = '#f59e0b';
+        } else {
+            speedIcon = '🐢';
+            speedColor = '#6b7280';
+        }
+
+        var isEtf = r.symbol.startsWith('X') || ['SPY', 'QQQ', 'IWM', 'DIA'].includes(r.symbol);
+        var symbolBg = isEtf ? 'rgba(59,130,246,0.1)' : 'rgba(139,92,246,0.1)';
+
+        html += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px; background: ' + symbolBg + '; font-weight: 700;">' + r.symbol + '</td>' +
+            '<td style="padding: 10px; text-align: center; font-weight: 700; color: ' + speedColor + ';">' + r.avgDays + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #22c55e;">' + r.minDays + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #ef4444;">' + r.maxDays + '</td>' +
+            '<td style="padding: 10px; text-align: center; font-size: 16px;">' + speedIcon + '</td>' +
+            '<td style="padding: 10px; text-align: center; font-weight: 600;">' + r.recommendedDTE + ' DTE</td>' +
+            '<td style="padding: 10px;">' + r.expiryType + '</td>' +
+        '</tr>';
+    });
+
+    tbody.innerHTML = html;
 }
 
 // ============================================
@@ -29941,11 +30442,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (document.getElementById('sq9MtfSymbol')) {
                         updateSq9Mtf();
                     }
+                    // Update duration table
+                    if (typeof updateDurationTable === 'function') {
+                        updateDurationTable();
+                    }
                 }
             }, 300);
         });
     }
 });
+
+// Quick log SQ9 trade from detail panel
+function quickLogSq9Trade(symbol) {
+    var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+    if (!result) return;
+
+    // Pre-fill the trade modal with current setup details
+    if (typeof openSq9TradeModal === 'function') {
+        openSq9TradeModal();
+
+        // Pre-fill fields
+        setTimeout(function() {
+            var symbolInput = document.getElementById('sq9TradeSymbol');
+            var directionSelect = document.getElementById('sq9TradeDirection');
+            var entryInput = document.getElementById('sq9TradeEntry');
+            var targetInput = document.getElementById('sq9TradeTarget');
+            var stopInput = document.getElementById('sq9TradeStop');
+            var checksInput = document.getElementById('sq9TradeChecks');
+
+            if (symbolInput) symbolInput.value = result.symbol;
+            if (directionSelect) directionSelect.value = result.direction;
+            if (entryInput) entryInput.value = result.price.toFixed(2);
+            if (targetInput) targetInput.value = result.target.toFixed(2);
+            if (stopInput) stopInput.value = result.stop.toFixed(2);
+            if (checksInput) checksInput.value = result.checkCount;
+        }, 100);
+    }
+}
 
 // Debug function to verify all prices
 function debugSq9Prices() {
