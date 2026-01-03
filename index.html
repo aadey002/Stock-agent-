@@ -9667,6 +9667,118 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- Historical Backtest Section -->
+            <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(109,40,217,0.1)); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700; color: #7c3aed;">📊 Historical Backtest Engine</div>
+                        <div style="font-size: 11px; color: var(--muted);">Test SQ9 strategy on actual price data</div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="toggleBacktestSettings()" style="padding: 8px 16px; background: rgba(139,92,246,0.2); color: #7c3aed; border: 1px solid rgba(139,92,246,0.3); border-radius: 6px; font-weight: 600; cursor: pointer;">⚙️ Settings</button>
+                        <button onclick="runHistoricalBacktest()" style="padding: 8px 16px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">▶️ Run Backtest</button>
+                        <button onclick="exportBacktestResults()" style="padding: 8px 16px; background: rgba(139,92,246,0.2); color: #7c3aed; border: 1px solid rgba(139,92,246,0.3); border-radius: 6px; font-weight: 600; cursor: pointer;">📥 Export</button>
+                    </div>
+                </div>
+
+                <!-- Settings Panel (collapsible) -->
+                <div id="backtestSettingsPanel" style="display: none; background: rgba(255,255,255,0.5); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Min Checks</label>
+                            <select id="backtestMinChecks" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+                                <option value="3">3/5 (Early)</option>
+                                <option value="4" selected>4/5 (Watch)</option>
+                                <option value="5">5/5 (Ready)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Lookback Period</label>
+                            <select id="backtestLookback" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+                                <option value="30">30 Days</option>
+                                <option value="60">60 Days</option>
+                                <option value="90">90 Days</option>
+                                <option value="180" selected>180 Days</option>
+                                <option value="365">1 Year</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Position Size</label>
+                            <select id="backtestPositionSize" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+                                <option value="500">$500</option>
+                                <option value="1000" selected>$1,000</option>
+                                <option value="2500">$2,500</option>
+                                <option value="5000">$5,000</option>
+                                <option value="10000">$10,000</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Use Stops</label>
+                            <div style="display: flex; align-items: center; gap: 8px; padding-top: 8px;">
+                                <input type="checkbox" id="backtestUseStops" checked style="width: 18px; height: 18px;">
+                                <span style="font-size: 12px;">Enable stop-loss exits</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Symbol Selection -->
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 8px;">Symbols to Backtest</label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(34,197,94,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="SPY" checked> SPY
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(34,197,94,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="QQQ" checked> QQQ
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(34,197,94,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="IWM" checked> IWM
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(34,197,94,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="DIA" checked> DIA
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(59,130,246,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="XLF"> XLF
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(59,130,246,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="XLE"> XLE
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(59,130,246,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="XLK"> XLK
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(59,130,246,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="XLV"> XLV
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="AAPL"> AAPL
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="NVDA"> NVDA
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="TSLA"> TSLA
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 4px;">
+                                <input type="checkbox" class="backtest-symbol-checkbox" value="AMD"> AMD
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical Backtest Results Panel -->
+                <div id="sq9HistoricalBacktestPanel" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 14px; font-weight: 600;">📈 Backtest Results</div>
+                        <button onclick="document.getElementById('sq9HistoricalBacktestPanel').style.display='none'" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--muted);">×</button>
+                    </div>
+                    <div id="sq9HistoricalBacktestResults">
+                        <div style="text-align: center; padding: 30px; color: var(--muted);">
+                            Click "Run Backtest" to analyze SQ9 strategy performance on historical data
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Trade Log Table -->
             <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
                 <div style="background: var(--bg); padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
@@ -30994,6 +31106,700 @@ function runSq9Backtest() {
     html += '</div>';
 
     document.getElementById('sq9BacktestResults').innerHTML = html;
+}
+
+// ============================================
+// SQ9 HISTORICAL BACKTEST ENGINE
+// ============================================
+
+var historicalBacktestResults = null;
+
+function runSq9HistoricalBacktest(settings) {
+    console.log('🔬 Starting SQ9 Historical Backtest...');
+
+    var symbols = settings.symbols || ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK'];
+    var lookbackDays = settings.lookbackDays || 180;
+    var minChecks = settings.minChecks || 4;
+    var useStops = settings.useStops !== false;
+    var positionSize = settings.positionSize || 1000;
+
+    var allTrades = [];
+    var symbolStats = {};
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i];
+        console.log('  📊 Backtesting ' + sym + '...');
+
+        var priceData = allSymbolsData[sym];
+        if (!priceData || priceData.length < 50) {
+            console.log('    ⚠️ Insufficient data for ' + sym);
+            continue;
+        }
+
+        // Get pivot for this symbol
+        var pivot = sq9ExtendedPivots[sym];
+        if (!pivot || !pivot.price) {
+            console.log('    ⚠️ No pivot found for ' + sym);
+            continue;
+        }
+
+        var trades = backtestSymbol(sym, priceData, pivot, {
+            minChecks: minChecks,
+            useStops: useStops,
+            positionSize: positionSize,
+            lookbackDays: lookbackDays
+        });
+
+        allTrades = allTrades.concat(trades);
+
+        // Calculate symbol stats
+        var wins = trades.filter(function(t) { return t.pnl > 0; });
+        symbolStats[sym] = {
+            totalTrades: trades.length,
+            wins: wins.length,
+            losses: trades.length - wins.length,
+            winRate: trades.length > 0 ? (wins.length / trades.length * 100).toFixed(1) : 0,
+            totalPnL: trades.reduce(function(sum, t) { return sum + t.pnl; }, 0)
+        };
+    }
+
+    // Sort trades by date
+    allTrades.sort(function(a, b) {
+        return new Date(a.entryDate) - new Date(b.entryDate);
+    });
+
+    // Calculate equity curve
+    var equity = positionSize * symbols.length;
+    var equityCurve = [{ date: allTrades[0] ? allTrades[0].entryDate : new Date().toISOString().split('T')[0], equity: equity }];
+
+    for (var j = 0; j < allTrades.length; j++) {
+        equity += allTrades[j].pnl;
+        equityCurve.push({
+            date: allTrades[j].exitDate,
+            equity: equity,
+            trade: allTrades[j]
+        });
+    }
+
+    historicalBacktestResults = {
+        settings: settings,
+        trades: allTrades,
+        symbolStats: symbolStats,
+        equityCurve: equityCurve,
+        summary: calculateBacktestSummary(allTrades, positionSize * symbols.length)
+    };
+
+    console.log('✅ Backtest complete: ' + allTrades.length + ' trades analyzed');
+    return historicalBacktestResults;
+}
+
+function backtestSymbol(symbol, priceData, pivot, settings) {
+    var trades = [];
+    var inTrade = false;
+    var currentTrade = null;
+
+    // Calculate how many bars to look back
+    var startIdx = Math.max(0, priceData.length - settings.lookbackDays);
+
+    for (var i = startIdx; i < priceData.length; i++) {
+        var bar = priceData[i];
+        var currentPrice = parseFloat(bar.Close);
+        var high = parseFloat(bar.High);
+        var low = parseFloat(bar.Low);
+        var date = bar.Date;
+
+        if (!inTrade) {
+            // Check for entry signal
+            var signal = checkEntrySignal(symbol, bar, priceData.slice(Math.max(0, i - 20), i + 1), pivot, settings);
+
+            if (signal && signal.checkCount >= settings.minChecks) {
+                inTrade = true;
+                currentTrade = {
+                    symbol: symbol,
+                    direction: signal.direction,
+                    entryDate: date,
+                    entryPrice: currentPrice,
+                    sq9Level: signal.sq9Level,
+                    checkCount: signal.checkCount,
+                    checks: signal.checks,
+                    target: signal.target,
+                    stop: signal.stop,
+                    positionSize: settings.positionSize
+                };
+            }
+        } else {
+            // Check for exit
+            var exitResult = checkTradeExit(currentTrade, bar, settings.useStops);
+
+            if (exitResult.exit) {
+                currentTrade.exitDate = date;
+                currentTrade.exitPrice = exitResult.price;
+                currentTrade.exitReason = exitResult.reason;
+
+                // Calculate P&L
+                if (currentTrade.direction === 'CALL') {
+                    currentTrade.pnl = (currentTrade.exitPrice - currentTrade.entryPrice) / currentTrade.entryPrice * settings.positionSize;
+                } else {
+                    currentTrade.pnl = (currentTrade.entryPrice - currentTrade.exitPrice) / currentTrade.entryPrice * settings.positionSize;
+                }
+
+                currentTrade.pnlPct = currentTrade.pnl / settings.positionSize * 100;
+                trades.push(currentTrade);
+                inTrade = false;
+                currentTrade = null;
+            }
+        }
+    }
+
+    // Close any open trade at last bar
+    if (inTrade && currentTrade) {
+        var lastBar = priceData[priceData.length - 1];
+        currentTrade.exitDate = lastBar.Date;
+        currentTrade.exitPrice = parseFloat(lastBar.Close);
+        currentTrade.exitReason = 'END';
+
+        if (currentTrade.direction === 'CALL') {
+            currentTrade.pnl = (currentTrade.exitPrice - currentTrade.entryPrice) / currentTrade.entryPrice * settings.positionSize;
+        } else {
+            currentTrade.pnl = (currentTrade.entryPrice - currentTrade.exitPrice) / currentTrade.entryPrice * settings.positionSize;
+        }
+        currentTrade.pnlPct = currentTrade.pnl / settings.positionSize * 100;
+        trades.push(currentTrade);
+    }
+
+    return trades;
+}
+
+function checkEntrySignal(symbol, bar, recentBars, pivot, settings) {
+    var currentPrice = parseFloat(bar.Close);
+    var high = parseFloat(bar.High);
+    var low = parseFloat(bar.Low);
+    var open = parseFloat(bar.Open);
+
+    // Calculate SQ9 levels from pivot
+    var levels = calcSq9LevelsFromPivot(pivot.price, currentPrice);
+    if (!levels || levels.length === 0) return null;
+
+    var nearest = findNearestSq9Level(levels, currentPrice);
+    if (!nearest) return null;
+
+    var distPct = Math.abs((currentPrice - nearest.price) / nearest.price * 100);
+
+    // Must be within 2% of level
+    if (distPct > 2.0) return null;
+
+    var direction = nearest.type === 'RESIST' ? 'PUT' : 'CALL';
+
+    // Calculate checks
+    var checks = {
+        touched: distPct <= 1.5,
+        candle: false,
+        volume: false,
+        rsi: false,
+        closed: false
+    };
+
+    // Candle pattern check - reversal pattern at level
+    if (direction === 'CALL') {
+        // Bullish reversal: low touched level, closed higher
+        checks.candle = low <= nearest.price * 1.01 && currentPrice > open;
+    } else {
+        // Bearish reversal: high touched level, closed lower
+        checks.candle = high >= nearest.price * 0.99 && currentPrice < open;
+    }
+
+    // Volume check - above average (simplified)
+    if (recentBars.length >= 10) {
+        var avgVolume = 0;
+        for (var v = 0; v < recentBars.length - 1; v++) {
+            avgVolume += parseFloat(recentBars[v].Volume) || 0;
+        }
+        avgVolume = avgVolume / (recentBars.length - 1);
+        var currentVolume = parseFloat(bar.Volume) || 0;
+        checks.volume = currentVolume > avgVolume * 0.8;
+    }
+
+    // RSI check - simplified using price momentum
+    if (recentBars.length >= 5) {
+        var momentum = 0;
+        for (var m = recentBars.length - 5; m < recentBars.length - 1; m++) {
+            momentum += parseFloat(recentBars[m + 1].Close) - parseFloat(recentBars[m].Close);
+        }
+        if (direction === 'CALL') {
+            checks.rsi = momentum < 0; // Oversold (price falling)
+        } else {
+            checks.rsi = momentum > 0; // Overbought (price rising)
+        }
+    }
+
+    // Closed beyond level check
+    if (direction === 'CALL') {
+        checks.closed = currentPrice > nearest.price && checks.candle;
+    } else {
+        checks.closed = currentPrice < nearest.price && checks.candle;
+    }
+
+    var checkCount = 0;
+    for (var c in checks) {
+        if (checks[c]) checkCount++;
+    }
+
+    if (checkCount < settings.minChecks) return null;
+
+    // Calculate target and stop
+    var sqrtPivot = Math.sqrt(pivot.price);
+    var rotation = nearest.rotation;
+    var targetRot, stopRot;
+
+    if (direction === 'CALL') {
+        targetRot = rotation + 0.5;
+        stopRot = rotation - 0.5;
+    } else {
+        targetRot = rotation - 0.5;
+        stopRot = rotation + 0.5;
+    }
+
+    var target = Math.pow(sqrtPivot + targetRot * 0.5, 2);
+    var stop = Math.pow(sqrtPivot + stopRot * 0.5, 2);
+
+    return {
+        direction: direction,
+        sq9Level: nearest.price,
+        rotation: rotation,
+        checkCount: checkCount,
+        checks: checks,
+        target: target,
+        stop: stop
+    };
+}
+
+function checkTradeExit(trade, bar, useStops) {
+    var high = parseFloat(bar.High);
+    var low = parseFloat(bar.Low);
+    var close = parseFloat(bar.Close);
+
+    if (trade.direction === 'CALL') {
+        // Check target hit
+        if (high >= trade.target) {
+            return { exit: true, price: trade.target, reason: 'TARGET' };
+        }
+        // Check stop hit
+        if (useStops && low <= trade.stop) {
+            return { exit: true, price: trade.stop, reason: 'STOP' };
+        }
+    } else {
+        // PUT direction
+        // Check target hit
+        if (low <= trade.target) {
+            return { exit: true, price: trade.target, reason: 'TARGET' };
+        }
+        // Check stop hit
+        if (useStops && high >= trade.stop) {
+            return { exit: true, price: trade.stop, reason: 'STOP' };
+        }
+    }
+
+    return { exit: false };
+}
+
+function calculateBacktestSummary(trades, startingCapital) {
+    if (trades.length === 0) {
+        return {
+            totalTrades: 0,
+            wins: 0,
+            losses: 0,
+            winRate: 0,
+            totalPnL: 0,
+            avgWin: 0,
+            avgLoss: 0,
+            profitFactor: 0,
+            maxDrawdown: 0,
+            sharpeRatio: 0
+        };
+    }
+
+    var wins = trades.filter(function(t) { return t.pnl > 0; });
+    var losses = trades.filter(function(t) { return t.pnl <= 0; });
+
+    var totalWin = wins.reduce(function(s, t) { return s + t.pnl; }, 0);
+    var totalLoss = Math.abs(losses.reduce(function(s, t) { return s + t.pnl; }, 0));
+
+    var avgWin = wins.length > 0 ? totalWin / wins.length : 0;
+    var avgLoss = losses.length > 0 ? totalLoss / losses.length : 0;
+    var profitFactor = totalLoss > 0 ? totalWin / totalLoss : totalWin > 0 ? 999 : 0;
+
+    // Calculate max drawdown
+    var equity = startingCapital;
+    var peak = equity;
+    var maxDrawdown = 0;
+
+    for (var i = 0; i < trades.length; i++) {
+        equity += trades[i].pnl;
+        if (equity > peak) peak = equity;
+        var drawdown = (peak - equity) / peak * 100;
+        if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+    }
+
+    // Calculate by check count
+    var byChecks = {};
+    for (var c = 3; c <= 5; c++) {
+        var checkTrades = trades.filter(function(t) { return t.checkCount === c; });
+        var checkWins = checkTrades.filter(function(t) { return t.pnl > 0; });
+        byChecks[c] = {
+            total: checkTrades.length,
+            wins: checkWins.length,
+            winRate: checkTrades.length > 0 ? (checkWins.length / checkTrades.length * 100).toFixed(1) : 0
+        };
+    }
+
+    // Calculate by direction
+    var calls = trades.filter(function(t) { return t.direction === 'CALL'; });
+    var puts = trades.filter(function(t) { return t.direction === 'PUT'; });
+    var callWins = calls.filter(function(t) { return t.pnl > 0; });
+    var putWins = puts.filter(function(t) { return t.pnl > 0; });
+
+    // Calculate by month
+    var byMonth = {};
+    for (var m = 0; m < trades.length; m++) {
+        var monthKey = trades[m].entryDate.substring(0, 7);
+        if (!byMonth[monthKey]) {
+            byMonth[monthKey] = { trades: 0, wins: 0, pnl: 0 };
+        }
+        byMonth[monthKey].trades++;
+        if (trades[m].pnl > 0) byMonth[monthKey].wins++;
+        byMonth[monthKey].pnl += trades[m].pnl;
+    }
+
+    return {
+        totalTrades: trades.length,
+        wins: wins.length,
+        losses: losses.length,
+        winRate: (wins.length / trades.length * 100).toFixed(1),
+        totalPnL: trades.reduce(function(s, t) { return s + t.pnl; }, 0),
+        avgWin: avgWin,
+        avgLoss: avgLoss,
+        profitFactor: profitFactor,
+        maxDrawdown: maxDrawdown,
+        byChecks: byChecks,
+        byDirection: {
+            calls: { total: calls.length, wins: callWins.length, winRate: calls.length > 0 ? (callWins.length / calls.length * 100).toFixed(1) : 0 },
+            puts: { total: puts.length, wins: putWins.length, winRate: puts.length > 0 ? (putWins.length / puts.length * 100).toFixed(1) : 0 }
+        },
+        byMonth: byMonth
+    };
+}
+
+function displayHistoricalBacktestResults(results) {
+    var panel = document.getElementById('sq9HistoricalBacktestPanel');
+    var resultsDiv = document.getElementById('sq9HistoricalBacktestResults');
+
+    if (!panel || !resultsDiv) {
+        console.warn('Historical backtest panel not found');
+        return;
+    }
+
+    panel.style.display = 'block';
+
+    var s = results.summary;
+
+    var html = '<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">' +
+        '<div style="background: rgba(255,255,255,0.5); border-radius: 8px; padding: 12px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #666;">TOTAL TRADES</div>' +
+        '<div style="font-size: 22px; font-weight: 800;">' + s.totalTrades + '</div>' +
+        '</div>' +
+        '<div style="background: rgba(34,197,94,0.2); border-radius: 8px; padding: 12px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #166534;">WIN RATE</div>' +
+        '<div style="font-size: 22px; font-weight: 800; color: #22c55e;">' + s.winRate + '%</div>' +
+        '<div style="font-size: 10px; color: #666;">' + s.wins + 'W / ' + s.losses + 'L</div>' +
+        '</div>' +
+        '<div style="background: rgba(59,130,246,0.2); border-radius: 8px; padding: 12px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #1e40af;">PROFIT FACTOR</div>' +
+        '<div style="font-size: 22px; font-weight: 800; color: #3b82f6;">' + s.profitFactor.toFixed(2) + '</div>' +
+        '</div>' +
+        '<div style="background: ' + (s.totalPnL >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 12px; text-align: center;">' +
+        '<div style="font-size: 10px; color: ' + (s.totalPnL >= 0 ? '#166534' : '#991b1b') + ';">TOTAL P&L</div>' +
+        '<div style="font-size: 22px; font-weight: 800; color: ' + (s.totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (s.totalPnL >= 0 ? '+$' : '-$') + Math.abs(s.totalPnL).toFixed(0) + '</div>' +
+        '</div>' +
+        '<div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">' +
+        '<div style="font-size: 10px; color: #991b1b;">MAX DRAWDOWN</div>' +
+        '<div style="font-size: 22px; font-weight: 800; color: #ef4444;">' + s.maxDrawdown.toFixed(1) + '%</div>' +
+        '</div>' +
+        '</div>';
+
+    // Performance by checks
+    html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">' +
+        '<div style="background: rgba(255,255,255,0.3); border-radius: 8px; padding: 15px;">' +
+        '<div style="font-weight: 600; margin-bottom: 10px;">🎯 Win Rate by Check Count</div>' +
+        '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">';
+
+    for (var c = 3; c <= 5; c++) {
+        var cs = s.byChecks[c];
+        var barColor = c === 5 ? '#22c55e' : c === 4 ? '#f59e0b' : '#6b7280';
+        html += '<div style="text-align: center;">' +
+            '<div style="font-size: 11px; color: #666;">' + c + '/5</div>' +
+            '<div style="font-size: 18px; font-weight: 700; color: ' + barColor + ';">' + cs.winRate + '%</div>' +
+            '<div style="font-size: 10px; color: #999;">' + cs.total + ' trades</div>' +
+            '</div>';
+    }
+    html += '</div></div>';
+
+    // Performance by direction
+    html += '<div style="background: rgba(255,255,255,0.3); border-radius: 8px; padding: 15px;">' +
+        '<div style="font-weight: 600; margin-bottom: 10px;">📊 Win Rate by Direction</div>' +
+        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
+        '<div style="text-align: center; background: rgba(34,197,94,0.1); border-radius: 6px; padding: 10px;">' +
+        '<div style="font-size: 11px; color: #22c55e;">📈 CALLS</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: #22c55e;">' + s.byDirection.calls.winRate + '%</div>' +
+        '<div style="font-size: 10px; color: #666;">' + s.byDirection.calls.wins + 'W / ' + (s.byDirection.calls.total - s.byDirection.calls.wins) + 'L</div>' +
+        '</div>' +
+        '<div style="text-align: center; background: rgba(239,68,68,0.1); border-radius: 6px; padding: 10px;">' +
+        '<div style="font-size: 11px; color: #ef4444;">📉 PUTS</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: #ef4444;">' + s.byDirection.puts.winRate + '%</div>' +
+        '<div style="font-size: 10px; color: #666;">' + s.byDirection.puts.wins + 'W / ' + (s.byDirection.puts.total - s.byDirection.puts.wins) + 'L</div>' +
+        '</div>' +
+        '</div></div></div>';
+
+    // Equity curve
+    html += '<div style="background: rgba(255,255,255,0.3); border-radius: 8px; padding: 15px; margin-bottom: 15px;">' +
+        '<div style="font-weight: 600; margin-bottom: 10px;">📈 Equity Curve</div>' +
+        '<canvas id="historicalEquityChart" style="width: 100%; height: 200px;"></canvas>' +
+        '</div>';
+
+    // Symbol breakdown table
+    html += '<div style="background: rgba(255,255,255,0.3); border-radius: 8px; padding: 15px;">' +
+        '<div style="font-weight: 600; margin-bottom: 10px;">📊 Performance by Symbol</div>' +
+        '<div style="overflow-x: auto;"><table style="width: 100%; font-size: 11px; border-collapse: collapse;">' +
+        '<tr style="background: rgba(0,0,0,0.05);">' +
+        '<th style="padding: 8px; text-align: left;">Symbol</th>' +
+        '<th style="padding: 8px; text-align: right;">Trades</th>' +
+        '<th style="padding: 8px; text-align: right;">Win Rate</th>' +
+        '<th style="padding: 8px; text-align: right;">W/L</th>' +
+        '<th style="padding: 8px; text-align: right;">P&L</th>' +
+        '</tr>';
+
+    var symbols = Object.keys(results.symbolStats).sort(function(a, b) {
+        return results.symbolStats[b].totalPnL - results.symbolStats[a].totalPnL;
+    });
+
+    for (var i = 0; i < symbols.length; i++) {
+        var sym = symbols[i];
+        var ss = results.symbolStats[sym];
+        var pnlColor = ss.totalPnL >= 0 ? '#22c55e' : '#ef4444';
+        html += '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">' +
+            '<td style="padding: 8px; font-weight: 600;">' + sym + '</td>' +
+            '<td style="padding: 8px; text-align: right;">' + ss.totalTrades + '</td>' +
+            '<td style="padding: 8px; text-align: right; color: ' + (parseFloat(ss.winRate) >= 50 ? '#22c55e' : '#ef4444') + ';">' + ss.winRate + '%</td>' +
+            '<td style="padding: 8px; text-align: right;">' + ss.wins + ' / ' + ss.losses + '</td>' +
+            '<td style="padding: 8px; text-align: right; font-weight: 600; color: ' + pnlColor + ';">' + (ss.totalPnL >= 0 ? '+' : '') + '$' + ss.totalPnL.toFixed(0) + '</td>' +
+            '</tr>';
+    }
+    html += '</table></div></div>';
+
+    // Insights
+    html += '<div style="margin-top: 15px; padding: 12px; background: rgba(59,130,246,0.1); border-radius: 6px; font-size: 12px;">' +
+        '💡 <strong>Insights:</strong> ';
+
+    var insights = [];
+    if (s.byChecks[5] && parseFloat(s.byChecks[5].winRate) > parseFloat(s.byChecks[3].winRate)) {
+        insights.push('5/5 entries outperform lower quality setups');
+    }
+    if (parseFloat(s.byDirection.calls.winRate) > parseFloat(s.byDirection.puts.winRate) + 10) {
+        insights.push('CALL trades show stronger performance');
+    } else if (parseFloat(s.byDirection.puts.winRate) > parseFloat(s.byDirection.calls.winRate) + 10) {
+        insights.push('PUT trades show stronger performance');
+    }
+    if (s.profitFactor > 1.5) {
+        insights.push('Strong profit factor indicates robust strategy');
+    }
+    if (s.maxDrawdown < 10) {
+        insights.push('Low drawdown shows good risk management');
+    }
+
+    html += insights.length > 0 ? insights.join('. ') + '.' : 'Run more trades to generate insights.';
+    html += '</div>';
+
+    resultsDiv.innerHTML = html;
+
+    // Draw equity chart
+    setTimeout(function() {
+        drawHistoricalEquityChart(results.equityCurve);
+    }, 100);
+}
+
+function drawHistoricalEquityChart(equityCurve) {
+    var canvas = document.getElementById('historicalEquityChart');
+    if (!canvas || equityCurve.length < 2) return;
+
+    var ctx = canvas.getContext('2d');
+    var rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * 2;
+    canvas.height = 400;
+    ctx.scale(2, 2);
+
+    var width = rect.width;
+    var height = 200;
+    var padding = 40;
+
+    // Find min/max
+    var minEquity = Infinity;
+    var maxEquity = -Infinity;
+    for (var i = 0; i < equityCurve.length; i++) {
+        if (equityCurve[i].equity < minEquity) minEquity = equityCurve[i].equity;
+        if (equityCurve[i].equity > maxEquity) maxEquity = equityCurve[i].equity;
+    }
+
+    var range = maxEquity - minEquity;
+    if (range === 0) range = 1;
+
+    // Draw background
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw grid
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 0.5;
+    for (var g = 0; g <= 4; g++) {
+        var y = padding + (height - 2 * padding) * (g / 4);
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+    }
+
+    // Draw equity line
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    for (var j = 0; j < equityCurve.length; j++) {
+        var x = padding + (width - 2 * padding) * (j / (equityCurve.length - 1));
+        var y = padding + (height - 2 * padding) * (1 - (equityCurve[j].equity - minEquity) / range);
+
+        if (j === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    }
+    ctx.stroke();
+
+    // Fill under curve
+    ctx.lineTo(width - padding, height - padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+    ctx.fill();
+
+    // Draw dots for wins/losses
+    for (var k = 1; k < equityCurve.length; k++) {
+        if (equityCurve[k].trade) {
+            var xDot = padding + (width - 2 * padding) * (k / (equityCurve.length - 1));
+            var yDot = padding + (height - 2 * padding) * (1 - (equityCurve[k].equity - minEquity) / range);
+
+            ctx.beginPath();
+            ctx.arc(xDot, yDot, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = equityCurve[k].trade.pnl >= 0 ? '#22c55e' : '#ef4444';
+            ctx.fill();
+        }
+    }
+
+    // Draw labels
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText('$' + maxEquity.toFixed(0), padding - 5, padding + 5);
+    ctx.fillText('$' + minEquity.toFixed(0), padding - 5, height - padding + 5);
+
+    // Start/end dates
+    ctx.textAlign = 'center';
+    if (equityCurve[0].date) {
+        ctx.fillText(equityCurve[0].date, padding, height - 5);
+    }
+    if (equityCurve[equityCurve.length - 1].date) {
+        ctx.fillText(equityCurve[equityCurve.length - 1].date, width - padding, height - 5);
+    }
+}
+
+function toggleBacktestSettings() {
+    var panel = document.getElementById('backtestSettingsPanel');
+    if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function runHistoricalBacktest() {
+    // Get settings from form
+    var minChecks = parseInt(document.getElementById('backtestMinChecks').value) || 4;
+    var lookbackDays = parseInt(document.getElementById('backtestLookback').value) || 180;
+    var positionSize = parseInt(document.getElementById('backtestPositionSize').value) || 1000;
+    var useStops = document.getElementById('backtestUseStops').checked;
+
+    // Get selected symbols
+    var symbolCheckboxes = document.querySelectorAll('.backtest-symbol-checkbox:checked');
+    var symbols = [];
+    for (var i = 0; i < symbolCheckboxes.length; i++) {
+        symbols.push(symbolCheckboxes[i].value);
+    }
+
+    if (symbols.length === 0) {
+        symbols = ['SPY', 'QQQ', 'IWM', 'DIA'];
+    }
+
+    // Show loading
+    var resultsDiv = document.getElementById('sq9HistoricalBacktestResults');
+    resultsDiv.innerHTML = '<div style="text-align: center; padding: 40px;">' +
+        '<div style="font-size: 32px; animation: spin 1s linear infinite;">⏳</div>' +
+        '<div style="margin-top: 10px;">Running backtest on ' + symbols.length + ' symbols...</div>' +
+        '</div>';
+    document.getElementById('sq9HistoricalBacktestPanel').style.display = 'block';
+
+    // Run backtest (use setTimeout to allow UI to update)
+    setTimeout(function() {
+        var results = runSq9HistoricalBacktest({
+            symbols: symbols,
+            lookbackDays: lookbackDays,
+            minChecks: minChecks,
+            useStops: useStops,
+            positionSize: positionSize
+        });
+
+        displayHistoricalBacktestResults(results);
+    }, 100);
+}
+
+function exportBacktestResults() {
+    if (!historicalBacktestResults || !historicalBacktestResults.trades.length) {
+        alert('No backtest results to export. Run a backtest first.');
+        return;
+    }
+
+    var trades = historicalBacktestResults.trades;
+    var csv = 'Symbol,Direction,Entry Date,Entry Price,SQ9 Level,Checks,Exit Date,Exit Price,Exit Reason,P&L,P&L %\n';
+
+    for (var i = 0; i < trades.length; i++) {
+        var t = trades[i];
+        csv += [
+            t.symbol,
+            t.direction,
+            t.entryDate,
+            t.entryPrice.toFixed(2),
+            t.sq9Level.toFixed(2),
+            t.checkCount + '/5',
+            t.exitDate,
+            t.exitPrice.toFixed(2),
+            t.exitReason,
+            t.pnl.toFixed(2),
+            t.pnlPct.toFixed(2) + '%'
+        ].join(',') + '\n';
+    }
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'sq9_backtest_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
 }
 
 // ============================================
