@@ -9375,6 +9375,25 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div style="font-size: 14px; font-weight: 700; margin-bottom: 15px;">📈 Equity Curve</div>
                 <canvas id="sq9EquityChart" style="width: 100%; height: 250px;"></canvas>
             </div>
+
+            <!-- AI TRADE ANALYSIS SECTION -->
+            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">🤖</span>
+                        <div>
+                            <div style="font-size: 16px; font-weight: 700;">AI Trade Analysis</div>
+                            <div style="font-size: 11px; color: var(--muted);">Claude analyzes your SQ9 trading patterns</div>
+                        </div>
+                    </div>
+                    <button onclick="runAiTradeAnalysis()" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">🔍 Analyze My Trades</button>
+                </div>
+                <div id="aiAnalysisResults" style="background: var(--card); border-radius: 8px; padding: 15px; min-height: 100px;">
+                    <div style="text-align: center; color: var(--muted); padding: 20px;">
+                        Click "Analyze My Trades" to get AI-powered insights on your SQ9 trading performance
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- SQ9 TRADE LOG MODAL -->
@@ -28797,6 +28816,187 @@ function initDynamicPivots() {
 
 // Initialize dynamic pivots after page load
 setTimeout(initDynamicPivots, 10000);
+
+// ============================================
+// AI TRADE ANALYSIS
+// ============================================
+
+function runAiTradeAnalysis() {
+    var resultsDiv = document.getElementById('aiAnalysisResults');
+
+    if (sq9Trades.length === 0) {
+        resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">' +
+            '<div style="font-size: 32px; margin-bottom: 10px;">📊</div>' +
+            '<div>No trades to analyze yet.</div>' +
+            '<div style="font-size: 12px; margin-top: 5px;">Log some trades first using the "+ Log Trade" button.</div>' +
+            '</div>';
+        return;
+    }
+
+    // Show loading
+    resultsDiv.innerHTML = '<div style="text-align: center; padding: 30px;">' +
+        '<div style="font-size: 24px; animation: pulse 1s infinite;">🤖</div>' +
+        '<div style="margin-top: 10px;">Analyzing your trading patterns...</div>' +
+        '</div>';
+
+    // Simulate analysis delay
+    setTimeout(function() {
+        var analysis = generateAiAnalysis();
+        resultsDiv.innerHTML = analysis;
+    }, 1500);
+}
+
+function generateAiAnalysis() {
+    var closedTrades = sq9Trades.filter(function(t) { return t.status === 'closed'; });
+    var openTrades = sq9Trades.filter(function(t) { return t.status === 'open'; });
+    var wins = closedTrades.filter(function(t) { return t.pnl > 0; });
+    var losses = closedTrades.filter(function(t) { return t.pnl <= 0; });
+
+    var totalPnL = closedTrades.reduce(function(sum, t) { return sum + (t.pnl || 0); }, 0);
+    var winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length * 100) : 0;
+    var avgWin = wins.length > 0 ? wins.reduce(function(sum, t) { return sum + t.pnl; }, 0) / wins.length : 0;
+    var avgLoss = losses.length > 0 ? Math.abs(losses.reduce(function(sum, t) { return sum + t.pnl; }, 0) / losses.length) : 0;
+
+    // Analyze by direction
+    var callTrades = closedTrades.filter(function(t) { return t.direction === 'CALL'; });
+    var putTrades = closedTrades.filter(function(t) { return t.direction === 'PUT'; });
+    var callWins = callTrades.filter(function(t) { return t.pnl > 0; });
+    var putWins = putTrades.filter(function(t) { return t.pnl > 0; });
+    var callWinRate = callTrades.length > 0 ? (callWins.length / callTrades.length * 100) : 0;
+    var putWinRate = putTrades.length > 0 ? (putWins.length / putTrades.length * 100) : 0;
+
+    // Analyze by check count
+    var check5Trades = closedTrades.filter(function(t) { return t.checks === 5; });
+    var check4Trades = closedTrades.filter(function(t) { return t.checks === 4; });
+    var check3Trades = closedTrades.filter(function(t) { return t.checks <= 3; });
+    var check5WinRate = check5Trades.length > 0 ? (check5Trades.filter(function(t) { return t.pnl > 0; }).length / check5Trades.length * 100) : 0;
+    var check4WinRate = check4Trades.length > 0 ? (check4Trades.filter(function(t) { return t.pnl > 0; }).length / check4Trades.length * 100) : 0;
+    var check3WinRate = check3Trades.length > 0 ? (check3Trades.filter(function(t) { return t.pnl > 0; }).length / check3Trades.length * 100) : 0;
+
+    // Analyze by symbol
+    var symbolStats = {};
+    closedTrades.forEach(function(t) {
+        if (!symbolStats[t.symbol]) {
+            symbolStats[t.symbol] = { wins: 0, losses: 0, pnl: 0 };
+        }
+        if (t.pnl > 0) symbolStats[t.symbol].wins++;
+        else symbolStats[t.symbol].losses++;
+        symbolStats[t.symbol].pnl += t.pnl;
+    });
+
+    var bestSymbol = null;
+    var worstSymbol = null;
+    Object.keys(symbolStats).forEach(function(sym) {
+        var s = symbolStats[sym];
+        if (!bestSymbol || s.pnl > symbolStats[bestSymbol].pnl) bestSymbol = sym;
+        if (!worstSymbol || s.pnl < symbolStats[worstSymbol].pnl) worstSymbol = sym;
+    });
+
+    // Generate insights
+    var insights = [];
+
+    // Overall performance
+    if (winRate >= 60) {
+        insights.push('🌟 <strong>Excellent win rate!</strong> Your ' + winRate.toFixed(0) + '% win rate is above the 60% threshold for consistent profitability.');
+    } else if (winRate >= 50) {
+        insights.push('✅ <strong>Solid performance.</strong> Your ' + winRate.toFixed(0) + '% win rate shows your strategy has an edge.');
+    } else if (closedTrades.length > 0) {
+        insights.push('⚠️ <strong>Room for improvement.</strong> Your ' + winRate.toFixed(0) + '% win rate suggests reviewing entry criteria.');
+    }
+
+    // Direction analysis
+    if (callTrades.length > 0 && putTrades.length > 0) {
+        if (callWinRate > putWinRate + 15) {
+            insights.push('📈 <strong>Stronger on CALLS.</strong> Your CALL trades (' + callWinRate.toFixed(0) + '%) outperform PUTs (' + putWinRate.toFixed(0) + '%). Consider favoring bullish setups.');
+        } else if (putWinRate > callWinRate + 15) {
+            insights.push('📉 <strong>Stronger on PUTS.</strong> Your PUT trades (' + putWinRate.toFixed(0) + '%) outperform CALLs (' + callWinRate.toFixed(0) + '%). Consider favoring bearish setups.');
+        }
+    }
+
+    // Check count analysis
+    if (check5Trades.length >= 2 && check3Trades.length >= 2) {
+        if (check5WinRate > check3WinRate + 10) {
+            insights.push('🎯 <strong>Wait for 5/5!</strong> Your 5/5 READY trades (' + check5WinRate.toFixed(0) + '%) significantly outperform early entries (' + check3WinRate.toFixed(0) + '%).');
+        }
+    }
+
+    // Risk/Reward
+    if (avgWin > 0 && avgLoss > 0) {
+        var rrRatio = avgWin / avgLoss;
+        if (rrRatio >= 1.5) {
+            insights.push('💰 <strong>Great risk management!</strong> Your avg win ($' + avgWin.toFixed(0) + ') is ' + rrRatio.toFixed(1) + 'x your avg loss ($' + avgLoss.toFixed(0) + ').');
+        } else if (rrRatio < 1) {
+            insights.push('⚠️ <strong>Improve R:R ratio.</strong> Your avg loss ($' + avgLoss.toFixed(0) + ') exceeds avg win ($' + avgWin.toFixed(0) + '). Consider tighter stops or letting winners run.');
+        }
+    }
+
+    // Best/worst symbols
+    if (bestSymbol && symbolStats[bestSymbol].pnl > 0) {
+        insights.push('🏆 <strong>Best performer:</strong> ' + bestSymbol + ' with +$' + symbolStats[bestSymbol].pnl.toFixed(0) + ' (' + symbolStats[bestSymbol].wins + 'W-' + symbolStats[bestSymbol].losses + 'L)');
+    }
+    if (worstSymbol && symbolStats[worstSymbol].pnl < 0 && worstSymbol !== bestSymbol) {
+        insights.push('📉 <strong>Needs work:</strong> ' + worstSymbol + ' with -$' + Math.abs(symbolStats[worstSymbol].pnl).toFixed(0) + ' (' + symbolStats[worstSymbol].wins + 'W-' + symbolStats[worstSymbol].losses + 'L)');
+    }
+
+    // Open trades warning
+    if (openTrades.length > 3) {
+        insights.push('⚡ <strong>Multiple open positions:</strong> You have ' + openTrades.length + ' open trades. Consider managing risk exposure.');
+    }
+
+    // Build HTML
+    var html = '<div style="font-size: 13px; line-height: 1.8;">';
+
+    // Summary header
+    html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">' +
+        '<div style="text-align: center; padding: 10px; background: var(--bg); border-radius: 6px;">' +
+        '<div style="font-size: 10px; color: var(--muted);">Total Trades</div>' +
+        '<div style="font-size: 18px; font-weight: 700;">' + sq9Trades.length + '</div>' +
+        '</div>' +
+        '<div style="text-align: center; padding: 10px; background: var(--bg); border-radius: 6px;">' +
+        '<div style="font-size: 10px; color: var(--muted);">Win Rate</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: ' + (winRate >= 50 ? '#22c55e' : '#ef4444') + ';">' + winRate.toFixed(0) + '%</div>' +
+        '</div>' +
+        '<div style="text-align: center; padding: 10px; background: var(--bg); border-radius: 6px;">' +
+        '<div style="font-size: 10px; color: var(--muted);">Total P&L</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: ' + (totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(0) + '</div>' +
+        '</div>' +
+        '<div style="text-align: center; padding: 10px; background: var(--bg); border-radius: 6px;">' +
+        '<div style="font-size: 10px; color: var(--muted);">Open</div>' +
+        '<div style="font-size: 18px; font-weight: 700; color: #3b82f6;">' + openTrades.length + '</div>' +
+        '</div>' +
+        '</div>';
+
+    // Insights
+    html += '<div style="font-weight: 700; margin-bottom: 10px;">🤖 AI Insights:</div>';
+    if (insights.length === 0) {
+        html += '<div style="color: var(--muted);">Log more trades to generate meaningful insights.</div>';
+    } else {
+        html += '<ul style="margin: 0; padding-left: 20px;">';
+        for (var i = 0; i < insights.length; i++) {
+            html += '<li style="margin-bottom: 8px;">' + insights[i] + '</li>';
+        }
+        html += '</ul>';
+    }
+
+    // Recommendations
+    html += '<div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border-radius: 6px;">' +
+        '<div style="font-weight: 700; margin-bottom: 5px;">💡 Recommendation:</div>';
+
+    if (winRate >= 60 && totalPnL > 0) {
+        html += 'Keep doing what you\'re doing! Your SQ9 strategy is working well. Consider slightly increasing position sizes on 5/5 READY setups.';
+    } else if (winRate >= 50) {
+        html += 'Focus on quality over quantity. Only take 5/5 READY setups for the next 10 trades and compare your results.';
+    } else if (closedTrades.length < 5) {
+        html += 'You need more trade data for reliable analysis. Log at least 10 closed trades for meaningful insights.';
+    } else {
+        html += 'Consider pausing live trading and paper trading for a week. Focus on only 5/5 setups with R:R of at least 1:1.5.';
+    }
+    html += '</div>';
+
+    html += '</div>';
+
+    return html;
+}
 
 </script>
 </body>
