@@ -32450,6 +32450,232 @@ function quickLogSq9Trade(symbol) {
     }
 }
 
+// ============================================
+// OPTIMAL ENTRY TIMING FOR PUTS & CALLS
+// ============================================
+
+function getOptimalEntryTiming(direction, marketTime) {
+    var result = {
+        status: 'MARKET CLOSED',
+        statusColor: '#6b7280',
+        statusIcon: '🔒',
+        bestTimes: '',
+        avoidTimes: '',
+        directionAdvice: '',
+        recommendation: '',
+        recommendationDetail: '',
+        recommendationIcon: '',
+        recommendationBg: 'var(--bg)',
+        recommendationBorder: 'var(--border)',
+        recommendationColor: 'var(--text)',
+        actionEmoji: '⏸️'
+    };
+
+    // Market hours: 9:30 AM - 4:00 PM ET
+    var isMarketOpen = marketTime >= 9.5 && marketTime < 16;
+    var isPreMarket = marketTime >= 4 && marketTime < 9.5;
+    var isAfterHours = marketTime >= 16 && marketTime < 20;
+
+    // Timing windows
+    var isOpeningHour = marketTime >= 9.5 && marketTime < 10.5;
+    var isMidMorning = marketTime >= 10.5 && marketTime < 11.5;
+    var isLunchHour = marketTime >= 11.5 && marketTime < 13;
+    var isAfternoon = marketTime >= 13 && marketTime < 15;
+    var isPowerHour = marketTime >= 15 && marketTime < 15.5;
+    var isLastHalfHour = marketTime >= 15.5 && marketTime < 16;
+
+    // Common advice for both directions
+    result.avoidTimes = '<strong>9:30-10:00 AM:</strong> Wide bid-ask spreads, high volatility<br>' +
+        '<strong>11:30 AM-1:00 PM:</strong> Low volume lunch lull<br>' +
+        '<strong>3:30-4:00 PM:</strong> Accelerated theta decay, gamma risk';
+
+    if (direction === 'CALL') {
+        result.bestTimes = '<strong>10:00-11:00 AM:</strong> After opening volatility settles, dips find support<br>' +
+            '<strong>2:00-3:00 PM:</strong> Afternoon reversal attempts<br>' +
+            '<strong>On RED days:</strong> Wait for capitulation volume spike';
+
+        result.directionAdvice = '<strong>Buy CALLS on weakness:</strong> Enter when price pulls back to SQ9 support with bullish candle. ' +
+            'Best entries are during red candles showing rejection (hammer, doji).';
+    } else {
+        result.bestTimes = '<strong>9:45-10:30 AM:</strong> Fade opening rally at resistance<br>' +
+            '<strong>2:30-3:15 PM:</strong> Failed breakouts reverse hard<br>' +
+            '<strong>On GREEN days:</strong> Wait for exhaustion at resistance';
+
+        result.directionAdvice = '<strong>Buy PUTS on strength:</strong> Enter when price rallies into SQ9 resistance with bearish candle. ' +
+            'Best entries are during green candles showing rejection (shooting star).';
+    }
+
+    // Time-based recommendations
+    if (!isMarketOpen) {
+        if (isPreMarket) {
+            result.status = 'PRE-MARKET';
+            result.statusColor = '#f59e0b';
+            result.statusIcon = '🌅';
+            result.recommendation = 'WAIT FOR MARKET OPEN';
+            result.recommendationDetail = 'Set alerts at SQ9 levels. Plan entry but do not chase pre-market.';
+            result.recommendationIcon = '⏳';
+            result.recommendationBg = 'rgba(245,158,11,0.1)';
+            result.recommendationBorder = 'rgba(245,158,11,0.3)';
+            result.recommendationColor = '#d97706';
+            result.actionEmoji = '☕';
+        } else if (isAfterHours) {
+            result.status = 'AFTER HOURS';
+            result.statusColor = '#6b7280';
+            result.statusIcon = '🌙';
+            result.recommendation = 'MARKET CLOSED';
+            result.recommendationDetail = 'Review setups for tomorrow.';
+            result.recommendationIcon = '📋';
+            result.actionEmoji = '📝';
+        } else {
+            result.status = 'MARKET CLOSED';
+            result.statusColor = '#6b7280';
+            result.statusIcon = '🔒';
+            result.recommendation = 'WAIT FOR NEXT SESSION';
+            result.recommendationDetail = 'Markets open 9:30 AM ET Monday-Friday.';
+            result.recommendationIcon = '⏰';
+            result.actionEmoji = '😴';
+        }
+    } else if (isOpeningHour) {
+        if (marketTime < 10) {
+            result.status = 'OPENING VOLATILITY';
+            result.statusColor = '#ef4444';
+            result.statusIcon = '⚡';
+            result.recommendation = 'WAIT - TOO EARLY';
+            result.recommendationDetail = 'Spreads wide, moves unpredictable. Wait until 10:00 AM.';
+            result.recommendationIcon = '🛑';
+            result.recommendationBg = 'rgba(239,68,68,0.1)';
+            result.recommendationBorder = 'rgba(239,68,68,0.3)';
+            result.recommendationColor = '#dc2626';
+            result.actionEmoji = '✋';
+        } else {
+            result.status = 'EARLY SESSION';
+            result.statusColor = '#f59e0b';
+            result.statusIcon = '🔶';
+            result.recommendation = direction === 'PUT' ? 'WATCH FOR RALLY FADE' : 'WATCH FOR DIP BUY';
+            result.recommendationDetail = direction === 'PUT' ? 'If spiked to resistance, good for PUT on rejection.' : 'If dipped to support, watch for bullish reversal.';
+            result.recommendationIcon = '👀';
+            result.recommendationBg = 'rgba(245,158,11,0.1)';
+            result.recommendationBorder = 'rgba(245,158,11,0.3)';
+            result.recommendationColor = '#d97706';
+            result.actionEmoji = '🎯';
+        }
+    } else if (isMidMorning) {
+        result.status = 'PRIME ENTRY WINDOW';
+        result.statusColor = '#22c55e';
+        result.statusIcon = '✅';
+        result.recommendation = 'OPTIMAL ENTRY TIME';
+        result.recommendationDetail = 'Spreads normalized, direction established. Best window for ' + direction + ' entries.';
+        result.recommendationIcon = '🚀';
+        result.recommendationBg = 'rgba(34,197,94,0.15)';
+        result.recommendationBorder = 'rgba(34,197,94,0.5)';
+        result.recommendationColor = '#16a34a';
+        result.actionEmoji = '💰';
+    } else if (isLunchHour) {
+        result.status = 'LUNCH LULL';
+        result.statusColor = '#f59e0b';
+        result.statusIcon = '🍽️';
+        result.recommendation = 'AVOID - LOW VOLUME';
+        result.recommendationDetail = 'Choppy, directionless. Theta eats premium.';
+        result.recommendationIcon = '⏸️';
+        result.recommendationBg = 'rgba(245,158,11,0.1)';
+        result.recommendationBorder = 'rgba(245,158,11,0.3)';
+        result.recommendationColor = '#d97706';
+        result.actionEmoji = '🥪';
+    } else if (isAfternoon) {
+        result.status = 'AFTERNOON SESSION';
+        result.statusColor = '#22c55e';
+        result.statusIcon = '✅';
+        result.recommendation = direction === 'CALL' ? 'GOOD FOR REVERSAL PLAYS' : 'WATCH FOR FAILED BREAKOUTS';
+        result.recommendationDetail = direction === 'CALL' ? 'Afternoon reversals can work well after 2 PM.' : 'Failed breakouts often reverse hard 2-3 PM.';
+        result.recommendationIcon = '🎯';
+        result.recommendationBg = 'rgba(34,197,94,0.1)';
+        result.recommendationBorder = 'rgba(34,197,94,0.3)';
+        result.recommendationColor = '#16a34a';
+        result.actionEmoji = '📊';
+    } else if (isPowerHour) {
+        result.status = 'POWER HOUR START';
+        result.statusColor = '#f59e0b';
+        result.statusIcon = '⚡';
+        result.recommendation = 'QUICK TRADES ONLY';
+        result.recommendationDetail = 'High volume but theta accelerating. Plan same-day exit.';
+        result.recommendationIcon = '⚡';
+        result.recommendationBg = 'rgba(245,158,11,0.1)';
+        result.recommendationBorder = 'rgba(245,158,11,0.3)';
+        result.recommendationColor = '#d97706';
+        result.actionEmoji = '🏃';
+    } else if (isLastHalfHour) {
+        result.status = 'GAMMA RISK ZONE';
+        result.statusColor = '#ef4444';
+        result.statusIcon = '🚨';
+        result.recommendation = 'AVOID NEW POSITIONS';
+        result.recommendationDetail = 'Theta decay rapid. Gamma risk high for 0DTE. Wait for tomorrow.';
+        result.recommendationIcon = '🛑';
+        result.recommendationBg = 'rgba(239,68,68,0.1)';
+        result.recommendationBorder = 'rgba(239,68,68,0.3)';
+        result.recommendationColor = '#dc2626';
+        result.actionEmoji = '🚫';
+    }
+
+    return result;
+}
+
+// Update market status indicator
+function updateMarketStatusIndicator() {
+    var statusEl = document.getElementById('currentMarketStatus');
+    if (!statusEl) return;
+
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var marketTime = hour + (minute / 60);
+    var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    var status = '';
+    var bgColor = '';
+    var textColor = '';
+
+    if (marketTime < 9.5) {
+        status = '🌅 Pre-Market | ' + timeStr;
+        bgColor = 'rgba(245,158,11,0.2)';
+        textColor = '#d97706';
+    } else if (marketTime >= 9.5 && marketTime < 10) {
+        status = '⚡ Opening (Avoid) | ' + timeStr;
+        bgColor = 'rgba(239,68,68,0.2)';
+        textColor = '#dc2626';
+    } else if (marketTime >= 10 && marketTime < 11.5) {
+        status = '✅ PRIME WINDOW | ' + timeStr;
+        bgColor = 'rgba(34,197,94,0.2)';
+        textColor = '#16a34a';
+    } else if (marketTime >= 11.5 && marketTime < 13) {
+        status = '🍽️ Lunch Lull | ' + timeStr;
+        bgColor = 'rgba(245,158,11,0.2)';
+        textColor = '#d97706';
+    } else if (marketTime >= 13 && marketTime < 15) {
+        status = '✅ Afternoon Session | ' + timeStr;
+        bgColor = 'rgba(34,197,94,0.2)';
+        textColor = '#16a34a';
+    } else if (marketTime >= 15 && marketTime < 15.5) {
+        status = '⚡ Power Hour | ' + timeStr;
+        bgColor = 'rgba(245,158,11,0.2)';
+        textColor = '#d97706';
+    } else if (marketTime >= 15.5 && marketTime < 16) {
+        status = '🚫 Gamma Risk | ' + timeStr;
+        bgColor = 'rgba(239,68,68,0.2)';
+        textColor = '#dc2626';
+    } else {
+        status = '🔒 Market Closed | ' + timeStr;
+        bgColor = 'rgba(107,114,128,0.2)';
+        textColor = '#6b7280';
+    }
+
+    statusEl.textContent = status;
+    statusEl.style.background = bgColor;
+    statusEl.style.color = textColor;
+}
+
+// Update every minute
+setInterval(updateMarketStatusIndicator, 60000);
+
 // Debug function to verify all prices
 function debugSq9Prices() {
     console.log('========== SQ9 PRICE DEBUG ==========');
