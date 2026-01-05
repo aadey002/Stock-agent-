@@ -28902,12 +28902,35 @@ function getSq9StatusForOpp(symbol) {
         return { status: 'none', direction: null, level: null, checkCount: 0, closedAt: null };
     }
 
-    var direction = nearest.type === 'resist' ? 'put' : 'call';
-    var dirUpper = direction.toUpperCase();
-
     // Get symbol data for real checks
     var symData = allSymbolsData[symbol];
     var lastBar = symData[symData.length - 1];
+    var prevBar = symData.length > 1 ? symData[symData.length - 2] : lastBar;
+
+    // Determine direction based on price TREND, not just level type
+    // If price is FALLING → PUT (bearish momentum)
+    // If price is RISING → CALL (bullish momentum)
+    var priceChange = currentPrice - parseFloat(prevBar.Close);
+    var direction, dirUpper;
+
+    // Check 3-bar trend for stronger signal
+    var trend3Bar = 0;
+    if (symData.length >= 4) {
+        var bar3Ago = parseFloat(symData[symData.length - 4].Close);
+        trend3Bar = currentPrice - bar3Ago;
+    }
+
+    if (trend3Bar < -0.3 || priceChange < 0) {
+        direction = 'put';
+        dirUpper = 'PUT';
+    } else if (trend3Bar > 0.3 || priceChange > 0) {
+        direction = 'call';
+        dirUpper = 'CALL';
+    } else {
+        // Fallback: use level type
+        direction = nearest.type === 'resist' ? 'put' : 'call';
+        dirUpper = direction.toUpperCase();
+    }
 
     // Calculate REAL checks inline (same logic as runSq9Scan)
     var checks = {
@@ -29139,7 +29162,30 @@ function runSq9Scan() {
         // Only include if within 4% of level
         if (distPct > 4) continue;
 
-        var direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
+        // Get actual data for this symbol
+        var symData = allSymbolsData[sym];
+        var lastBar = symData[symData.length - 1];
+        var prevBar = symData.length > 1 ? symData[symData.length - 2] : lastBar;
+
+        // Determine direction based on price TREND, not just level type
+        var priceChange = currentPrice - parseFloat(prevBar.Close);
+        var direction;
+
+        // Check 3-bar trend for stronger signal
+        var trend3Bar = 0;
+        if (symData.length >= 4) {
+            var bar3Ago = parseFloat(symData[symData.length - 4].Close);
+            trend3Bar = currentPrice - bar3Ago;
+        }
+
+        if (trend3Bar < -0.3 || priceChange < 0) {
+            direction = 'PUT';
+        } else if (trend3Bar > 0.3 || priceChange > 0) {
+            direction = 'CALL';
+        } else {
+            // Fallback: use level type
+            direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
+        }
 
         // Calculate REAL checks - not distance-based!
         var checks = {
@@ -29149,11 +29195,6 @@ function runSq9Scan() {
             rsi: false,
             closed: false
         };
-
-        // Get actual data for this symbol
-        var symData = allSymbolsData[sym];
-        var lastBar = symData[symData.length - 1];
-        var prevBar = symData.length > 1 ? symData[symData.length - 2] : lastBar;
 
         // 1. TOUCHED: Price came within 1.5% of level (this one is distance-based, that's correct)
         checks.touched = distPct <= 1.5;
@@ -31288,7 +31329,26 @@ function checkEntrySignal(symbol, bar, recentBars, pivot, settings) {
     // Must be within 2% of level
     if (distPct > 2.0) return null;
 
-    var direction = nearest.type === 'RESIST' ? 'PUT' : 'CALL';
+    // Determine direction based on price TREND, not just level type
+    var direction;
+    var prevBar = recentBars.length > 1 ? recentBars[recentBars.length - 2] : bar;
+    var priceChange = currentPrice - parseFloat(prevBar.Close);
+
+    // Check 3-bar trend for stronger signal
+    var trend3Bar = 0;
+    if (recentBars.length >= 4) {
+        var bar3Ago = parseFloat(recentBars[recentBars.length - 4].Close);
+        trend3Bar = currentPrice - bar3Ago;
+    }
+
+    if (trend3Bar < -0.3 || priceChange < 0) {
+        direction = 'PUT';
+    } else if (trend3Bar > 0.3 || priceChange > 0) {
+        direction = 'CALL';
+    } else {
+        // Fallback: use level type
+        direction = nearest.type === 'RESIST' ? 'PUT' : 'CALL';
+    }
 
     // Calculate checks
     var checks = {
