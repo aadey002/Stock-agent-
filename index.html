@@ -9500,6 +9500,63 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- MINOR TURN CALCULATOR PANEL -->
+            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">🔮 Minor Turn Calculator</div>
+                        <div style="font-size: 11px; color: var(--muted);">Predicting next reversal using Gann cycles, Fib time & swing analysis</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="turnCalcSymbol" onchange="calculateMinorTurn()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
+                        <button onclick="calculateMinorTurn()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Calculate</button>
+                    </div>
+                </div>
+
+                <!-- Next Turn Prediction -->
+                <div id="nextTurnPrediction" style="background: var(--bg); border-radius: 10px; padding: 20px; margin-bottom: 15px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">NEXT PREDICTED MINOR TURN</div>
+                    <div id="nextTurnDate" style="font-size: 28px; font-weight: 800; color: #f59e0b;">--</div>
+                    <div id="nextTurnDaysAway" style="font-size: 14px; color: var(--muted); margin-top: 5px;">-- days away</div>
+                    <div id="nextTurnDirection" style="margin-top: 10px; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 700; font-size: 12px; background: rgba(107,114,128,0.1); color: #6b7280;">
+                        Calculating...
+                    </div>
+                </div>
+
+                <!-- Turn Stats -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">CONFIDENCE</div>
+                        <div id="turnConfidenceVal" style="font-size: 20px; font-weight: 800; color: #f59e0b;">--%</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">METHODS AGREE</div>
+                        <div id="turnMethodsVal" style="font-size: 20px; font-weight: 800;">-/5</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">LAST TURN</div>
+                        <div id="lastTurnVal" style="font-size: 12px; font-weight: 700;">--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">AVG SWING</div>
+                        <div id="avgSwingVal" style="font-size: 20px; font-weight: 800;">-- days</div>
+                    </div>
+                </div>
+
+                <!-- Method Breakdown -->
+                <div style="background: var(--bg); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📊 Turn Prediction Methods</div>
+                    <div id="turnMethodsDetail" style="display: grid; gap: 8px; font-size: 11px;">
+                        <div style="text-align: center; color: var(--muted); padding: 10px;">Click Calculate to analyze...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
@@ -33100,6 +33157,157 @@ document.addEventListener('DOMContentLoaded', function() {
             scanCandlePatterns();
         }
     }, 5000);
+});
+
+// ============================================
+// MINOR TURN CALCULATOR
+// ============================================
+
+function calculateMinorTurn() {
+    var symbol = document.getElementById('turnCalcSymbol').value || 'SPY';
+    var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
+
+    if (!priceData || priceData.length < 50) {
+        console.log('Insufficient data for turn calculation');
+        return;
+    }
+
+    // Find swing points
+    var swings = findSwingPoints(priceData, 5);
+    if (swings.length < 3) return;
+
+    // Calculate avg swing length
+    var swingLengths = [];
+    for (var i = 1; i < swings.length; i++) {
+        swingLengths.push(swings[i].barIndex - swings[i-1].barIndex);
+    }
+    var avgSwingLength = swingLengths.reduce(function(a,b) { return a+b; }, 0) / swingLengths.length;
+
+    var lastSwing = swings[swings.length - 1];
+    var lastSwingDate = new Date(lastSwing.date);
+    var today = new Date();
+    var daysSinceLastSwing = Math.floor((today - lastSwingDate) / (1000 * 60 * 60 * 24));
+
+    // Build predictions from multiple methods
+    var predictions = [];
+
+    // Method 1: Average Swing
+    var avgDate = addTurnDays(lastSwingDate, Math.round(avgSwingLength));
+    predictions.push({ method: 'Avg Swing', icon: '📊', date: avgDate, daysAway: daysUntil(avgDate), desc: Math.round(avgSwingLength) + '-day average' });
+
+    // Method 2: Fibonacci Time (8, 13, 21, 34)
+    [8, 13, 21, 34].forEach(function(fib) {
+        var fibDate = addTurnDays(lastSwingDate, fib);
+        var days = daysUntil(fibDate);
+        if (days > 0 && days < 25) {
+            predictions.push({ method: 'Fib ' + fib, icon: '🌀', date: fibDate, daysAway: days, desc: fib + '-day Fibonacci' });
+        }
+    });
+
+    // Method 3: Gann Cycles (7, 14, 21, 30, 45)
+    [7, 14, 21, 30, 45].forEach(function(cycle) {
+        var gannDate = addTurnDays(lastSwingDate, cycle);
+        var days = daysUntil(gannDate);
+        if (days > 0 && days < 25) {
+            predictions.push({ method: 'Gann ' + cycle, icon: '📐', date: gannDate, daysAway: days, desc: cycle + '-day Gann cycle' });
+        }
+    });
+
+    // Find consensus (most common prediction within 3 days)
+    var consensusDate = findTurnConsensus(predictions);
+    var consensusDaysAway = daysUntil(consensusDate);
+    var methodsInRange = predictions.filter(function(p) { return Math.abs(p.daysAway - consensusDaysAway) <= 3; }).length;
+    var confidence = Math.min(90, Math.round((methodsInRange / Math.max(predictions.length, 1)) * 100));
+
+    // Expected direction
+    var expectedDir = lastSwing.type === 'HIGH' ? 'LOW (Pullback)' : 'HIGH (Rally)';
+    var dirColor = lastSwing.type === 'HIGH' ? '#ef4444' : '#22c55e';
+    var dirBg = lastSwing.type === 'HIGH' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+
+    // Update UI
+    document.getElementById('nextTurnDate').textContent = consensusDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    document.getElementById('nextTurnDaysAway').textContent = consensusDaysAway <= 0 ? 'NOW!' : consensusDaysAway + ' days away';
+    document.getElementById('nextTurnDaysAway').style.color = consensusDaysAway <= 2 ? '#ef4444' : 'var(--muted)';
+
+    var dirEl = document.getElementById('nextTurnDirection');
+    dirEl.textContent = 'Expected: ' + expectedDir;
+    dirEl.style.background = dirBg;
+    dirEl.style.color = dirColor;
+
+    document.getElementById('turnConfidenceVal').textContent = confidence + '%';
+    document.getElementById('turnConfidenceVal').style.color = confidence >= 60 ? '#22c55e' : '#f59e0b';
+    document.getElementById('turnMethodsVal').textContent = methodsInRange + '/' + predictions.length;
+    document.getElementById('lastTurnVal').textContent = new Date(lastSwing.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' (' + lastSwing.type + ')';
+    document.getElementById('avgSwingVal').textContent = Math.round(avgSwingLength) + ' days';
+
+    // Update methods detail
+    var detailHtml = '';
+    predictions.slice(0, 6).forEach(function(p) {
+        var isClose = Math.abs(p.daysAway - consensusDaysAway) <= 3;
+        var statusBg = isClose ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)';
+        var statusColor = isClose ? '#22c55e' : '#f59e0b';
+        detailHtml += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: ' + statusBg + '; border-radius: 6px;">' +
+            '<span style="font-size: 16px;">' + p.icon + '</span>' +
+            '<span style="flex: 1; font-weight: 600;">' + p.method + '</span>' +
+            '<span style="color: ' + statusColor + '; font-weight: 700;">' + p.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' +
+            '<span style="color: var(--muted); font-size: 10px;">' + p.daysAway + 'd</span>' +
+        '</div>';
+    });
+    document.getElementById('turnMethodsDetail').innerHTML = detailHtml;
+}
+
+function findSwingPoints(priceData, lookback) {
+    var swings = [];
+    for (var i = lookback; i < priceData.length - lookback; i++) {
+        var high = parseFloat(priceData[i].High);
+        var low = parseFloat(priceData[i].Low);
+        var isHigh = true, isLow = true;
+
+        for (var j = 1; j <= lookback; j++) {
+            if (high <= parseFloat(priceData[i-j].High) || high <= parseFloat(priceData[i+j].High)) isHigh = false;
+            if (low >= parseFloat(priceData[i-j].Low) || low >= parseFloat(priceData[i+j].Low)) isLow = false;
+        }
+
+        if (isHigh) swings.push({ type: 'HIGH', date: priceData[i].Date, price: high, barIndex: i });
+        if (isLow) swings.push({ type: 'LOW', date: priceData[i].Date, price: low, barIndex: i });
+    }
+
+    swings.sort(function(a, b) { return a.barIndex - b.barIndex; });
+
+    // Remove consecutive same types
+    var filtered = [];
+    swings.forEach(function(s) {
+        if (filtered.length === 0 || filtered[filtered.length - 1].type !== s.type) {
+            filtered.push(s);
+        }
+    });
+    return filtered;
+}
+
+function findTurnConsensus(predictions) {
+    if (predictions.length === 0) return new Date();
+    var dates = predictions.map(function(p) { return p.date.getTime(); });
+    dates.sort(function(a, b) { return a - b; });
+    return new Date(dates[Math.floor(dates.length / 2)]); // Median
+}
+
+function addTurnDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function daysUntil(date) {
+    return Math.floor((date - new Date()) / (1000 * 60 * 60 * 24));
+}
+
+// Auto-calculate on load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            calculateMinorTurn();
+        }
+    }, 4500);
 });
 
 // Debug function to verify all prices
