@@ -9685,6 +9685,37 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- TREND-AWARE SQ9 SIGNALS -->
+            <div style="background: linear-gradient(135deg, rgba(255,140,0,0.1), rgba(255,69,0,0.05)); border: 2px solid rgba(255,140,0,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">🎯 Trend-Aware SQ9 Signals</div>
+                        <div style="font-size: 11px; color: var(--muted);">PREVENTS trading against the trend - Only signals WITH the trend direction</div>
+                    </div>
+                    <button onclick="updateTrendAwareActionCenter()" style="padding: 8px 16px; background: linear-gradient(135deg, #ff8c00, #ff4500); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
+                        Refresh Signals
+                    </button>
+                </div>
+
+                <!-- Signal Rules Legend -->
+                <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                    <div style="font-size: 12px; font-weight: 600; color: #ff8c00; margin-bottom: 8px;">Signal Rules (Trade WITH Trend):</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px;">
+                        <div style="color: #00ff00;">📈 UPTREND + Support = BUY CALL</div>
+                        <div style="color: #ff9800;">📈 UPTREND + Resistance = WAIT (No PUTs!)</div>
+                        <div style="color: #ff0000;">📉 DOWNTREND + Resistance = BUY PUT</div>
+                        <div style="color: #ff9800;">📉 DOWNTREND + Support = WAIT (No CALLs!)</div>
+                    </div>
+                </div>
+
+                <!-- Signals Container -->
+                <div id="trendAwareSignals" style="min-height: 200px;">
+                    <div style="text-align: center; color: #888; padding: 40px;">
+                        Click "Refresh Signals" to analyze trend + SQ9 levels
+                    </div>
+                </div>
+            </div>
+
             <!-- HISTORICAL PATTERN SCANNER -->
             <div style="background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05)); border: 2px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -34585,6 +34616,243 @@ document.addEventListener('click', function(e) {
     var modal = document.getElementById('patternDetailModal');
     if (e.target === modal) { closePatternModal(); }
 });
+
+// ==================== TREND-AWARE SQ9 SIGNALS ====================
+// PREVENTS trading against the trend - only signals WITH the trend
+
+function getTrendAwareSQ9Signal(symbol) {
+    var priceData = allSymbolsData[symbol];
+    if (!priceData || priceData.length < 50) {
+        return { signal: 'NO_DATA', message: 'Insufficient data for trend analysis' };
+    }
+
+    var currentPrice = parseFloat(priceData[priceData.length - 1].Close);
+
+    // Calculate SMA20 and SMA50 for trend
+    var sma20 = 0, sma50 = 0;
+    for (var i = priceData.length - 20; i < priceData.length; i++) {
+        sma20 += parseFloat(priceData[i].Close);
+    }
+    sma20 /= 20;
+
+    for (var j = priceData.length - 50; j < priceData.length; j++) {
+        sma50 += parseFloat(priceData[j].Close);
+    }
+    sma50 /= 50;
+
+    // Determine trend strength
+    var trend = 'NEUTRAL';
+    var trendEmoji = '➡️';
+    var trendColor = '#888';
+
+    if (currentPrice > sma20 && sma20 > sma50) {
+        trend = 'STRONG_UP';
+        trendEmoji = '🚀';
+        trendColor = '#00ff00';
+    } else if (currentPrice > sma20) {
+        trend = 'UP';
+        trendEmoji = '📈';
+        trendColor = '#4CAF50';
+    } else if (currentPrice < sma20 && sma20 < sma50) {
+        trend = 'STRONG_DOWN';
+        trendEmoji = '💥';
+        trendColor = '#ff0000';
+    } else if (currentPrice < sma20) {
+        trend = 'DOWN';
+        trendEmoji = '📉';
+        trendColor = '#f44336';
+    }
+
+    // Find nearest SQ9 support and resistance
+    var sq9Levels = calculateSQ9Levels(currentPrice);
+    var nearestSupport = null;
+    var nearestResistance = null;
+    var supportDist = Infinity;
+    var resistanceDist = Infinity;
+
+    sq9Levels.forEach(function(level) {
+        if (level.price < currentPrice) {
+            var dist = currentPrice - level.price;
+            if (dist < supportDist) {
+                supportDist = dist;
+                nearestSupport = level;
+            }
+        } else if (level.price > currentPrice) {
+            var dist = level.price - currentPrice;
+            if (dist < resistanceDist) {
+                resistanceDist = dist;
+                nearestResistance = level;
+            }
+        }
+    });
+
+    var supportPct = nearestSupport ? (supportDist / currentPrice * 100).toFixed(2) : 'N/A';
+    var resistancePct = nearestResistance ? (resistanceDist / currentPrice * 100).toFixed(2) : 'N/A';
+
+    // Determine signal based on trend + SQ9 level
+    var signal = 'WAIT';
+    var action = '';
+    var warning = '';
+    var signalEmoji = '⏳';
+    var signalColor = '#888';
+    var confidence = 'LOW';
+
+    var atSupport = nearestSupport && parseFloat(supportPct) < 1.0;
+    var atResistance = nearestResistance && parseFloat(resistancePct) < 1.0;
+
+    // UPTREND LOGIC
+    if (trend === 'STRONG_UP' || trend === 'UP') {
+        if (atSupport) {
+            // Uptrend + Support = BUY CALL (bounce expected)
+            signal = 'BUY_CALL';
+            action = 'BUY CALL - Trend pullback to support';
+            signalEmoji = '📞💚';
+            signalColor = '#00ff00';
+            confidence = trend === 'STRONG_UP' ? 'HIGH' : 'MEDIUM';
+        } else if (atResistance) {
+            // Uptrend + Resistance = WAIT (DO NOT short in uptrend!)
+            signal = 'WAIT';
+            action = 'WAIT - At resistance but trend is UP';
+            warning = '⚠️ DO NOT BUY PUTS - Never short an uptrend!';
+            signalEmoji = '⏸️';
+            signalColor = '#ff9800';
+            confidence = 'LOW';
+        } else {
+            signal = 'NEUTRAL_UP';
+            action = 'BIAS: CALLS - Wait for pullback to support';
+            signalEmoji = '📈';
+            signalColor = '#4CAF50';
+            confidence = 'LOW';
+        }
+    }
+    // DOWNTREND LOGIC
+    else if (trend === 'STRONG_DOWN' || trend === 'DOWN') {
+        if (atResistance) {
+            // Downtrend + Resistance = BUY PUT (rejection expected)
+            signal = 'BUY_PUT';
+            action = 'BUY PUT - Trend bounce to resistance';
+            signalEmoji = '📉💔';
+            signalColor = '#ff0000';
+            confidence = trend === 'STRONG_DOWN' ? 'HIGH' : 'MEDIUM';
+        } else if (atSupport) {
+            // Downtrend + Support = WAIT (DO NOT buy calls in downtrend!)
+            signal = 'WAIT';
+            action = 'WAIT - At support but trend is DOWN';
+            warning = '⚠️ DO NOT BUY CALLS - Never buy dips in downtrend!';
+            signalEmoji = '⏸️';
+            signalColor = '#ff9800';
+            confidence = 'LOW';
+        } else {
+            signal = 'NEUTRAL_DOWN';
+            action = 'BIAS: PUTS - Wait for bounce to resistance';
+            signalEmoji = '📉';
+            signalColor = '#f44336';
+            confidence = 'LOW';
+        }
+    }
+    // NEUTRAL TREND
+    else {
+        if (atSupport) {
+            signal = 'POSSIBLE_CALL';
+            action = 'POSSIBLE CALL - Support in neutral trend';
+            warning = '⚠️ Low confidence - No clear trend';
+            signalEmoji = '🤔📞';
+            signalColor = '#2196F3';
+            confidence = 'LOW';
+        } else if (atResistance) {
+            signal = 'POSSIBLE_PUT';
+            action = 'POSSIBLE PUT - Resistance in neutral trend';
+            warning = '⚠️ Low confidence - No clear trend';
+            signalEmoji = '🤔📉';
+            signalColor = '#2196F3';
+            confidence = 'LOW';
+        } else {
+            signal = 'NO_SETUP';
+            action = 'NO SETUP - Neutral trend, away from levels';
+            signalEmoji = '😴';
+            signalColor = '#666';
+            confidence = 'NONE';
+        }
+    }
+
+    return {
+        symbol: symbol,
+        price: currentPrice,
+        sma20: sma20.toFixed(2),
+        sma50: sma50.toFixed(2),
+        trend: trend,
+        trendEmoji: trendEmoji,
+        trendColor: trendColor,
+        nearestSupport: nearestSupport,
+        nearestResistance: nearestResistance,
+        supportDistance: supportPct + '%',
+        resistanceDistance: resistancePct + '%',
+        atSupport: atSupport,
+        atResistance: atResistance,
+        signal: signal,
+        action: action,
+        warning: warning,
+        signalEmoji: signalEmoji,
+        signalColor: signalColor,
+        confidence: confidence
+    };
+}
+
+// Update action center with trend-aware signals
+function updateTrendAwareActionCenter() {
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK'];
+    var container = document.getElementById('trendAwareSignals');
+    if (!container) return;
+
+    var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
+
+    symbols.forEach(function(sym) {
+        var result = getTrendAwareSQ9Signal(sym);
+        if (result.signal === 'NO_DATA') return;
+
+        html += '<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid ' + result.signalColor + '; border-radius: 12px; padding: 15px;">';
+        html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">';
+        html += '<span style="font-size: 1.4em; font-weight: bold; color: #fff;">' + sym + '</span>';
+        html += '<span style="font-size: 1.5em;">' + result.signalEmoji + '</span>';
+        html += '</div>';
+
+        // Price and trend
+        html += '<div style="color: #aaa; font-size: 0.9em; margin-bottom: 8px;">';
+        html += '$' + result.price.toFixed(2) + ' | ' + result.trendEmoji + ' <span style="color: ' + result.trendColor + ';">' + result.trend + '</span>';
+        html += '</div>';
+
+        // SMAs
+        html += '<div style="color: #666; font-size: 0.8em; margin-bottom: 8px;">';
+        html += 'SMA20: $' + result.sma20 + ' | SMA50: $' + result.sma50;
+        html += '</div>';
+
+        // SQ9 Levels
+        html += '<div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 10px;">';
+        if (result.nearestSupport) {
+            var supStyle = result.atSupport ? 'color: #00ff00; font-weight: bold;' : 'color: #4CAF50;';
+            html += '<span style="' + supStyle + '">⬇️ Support: $' + result.nearestSupport.price.toFixed(2) + ' (' + result.supportDistance + ')</span>';
+        }
+        if (result.nearestResistance) {
+            var resStyle = result.atResistance ? 'color: #ff0000; font-weight: bold;' : 'color: #f44336;';
+            html += '<span style="' + resStyle + '">⬆️ Resist: $' + result.nearestResistance.price.toFixed(2) + ' (' + result.resistanceDistance + ')</span>';
+        }
+        html += '</div>';
+
+        // Action
+        html += '<div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; text-align: center;">';
+        html += '<div style="color: ' + result.signalColor + '; font-weight: bold; font-size: 1.1em;">' + result.action + '</div>';
+        if (result.warning) {
+            html += '<div style="color: #ff9800; font-size: 0.9em; margin-top: 5px;">' + result.warning + '</div>';
+        }
+        html += '<div style="color: #888; font-size: 0.8em; margin-top: 5px;">Confidence: ' + result.confidence + '</div>';
+        html += '</div>';
+
+        html += '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
 
 // Debug function to verify all prices
 function debugSq9Prices() {
