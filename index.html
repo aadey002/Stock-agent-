@@ -34835,6 +34835,37 @@ document.addEventListener('click', function(e) {
 // ==================== TREND-AWARE SQ9 SIGNALS ====================
 // PREVENTS trading against the trend - only signals WITH the trend
 
+// Calculate SQ9 levels from a given price
+function calculateSQ9Levels(price) {
+    var sqrt = Math.sqrt(price);
+    var levels = [];
+
+    // Support levels (below current price)
+    for (var i = 1; i <= 4; i++) {
+        var supportPrice = Math.pow(sqrt - (i * 0.25), 2);
+        if (supportPrice > 0) {
+            levels.push({
+                price: supportPrice,
+                type: 'support',
+                angle: i * 90,
+                label: '-' + (i * 90) + '°'
+            });
+        }
+    }
+
+    // Resistance levels (above current price)
+    for (var j = 1; j <= 4; j++) {
+        levels.push({
+            price: Math.pow(sqrt + (j * 0.25), 2),
+            type: 'resistance',
+            angle: j * 90,
+            label: '+' + (j * 90) + '°'
+        });
+    }
+
+    return levels;
+}
+
 function getTrendAwareSQ9Signal(symbol) {
     var priceData = allSymbolsData[symbol];
     if (!priceData || priceData.length < 50) {
@@ -35068,6 +35099,23 @@ function updateTrendAwareActionCenter() {
     html += '</div>';
     container.innerHTML = html;
 }
+
+// Auto-refresh Trend-Aware SQ9 Signals when data is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for data to load, then refresh signals
+    setTimeout(function() {
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            updateTrendAwareActionCenter();
+        }
+    }, 4000);
+
+    // Also refresh every 60 seconds
+    setInterval(function() {
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            updateTrendAwareActionCenter();
+        }
+    }, 60000);
+});
 
 // ============================================
 // RECOVERY TRACKER
