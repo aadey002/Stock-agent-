@@ -3726,6 +3726,18 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 <div id="recoveryTrackerContainer">Loading...</div>
             </div>
 
+            <!-- TRADE LOG - DECEMBER 2025 -->
+            <div id="tradeLogSection" style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📒 Trade Log - December 2025</div>
+                        <div style="font-size: 11px; color: var(--muted);">Your trades with P/L and mistake analysis</div>
+                    </div>
+                    <button onclick="renderTradeLog()" style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">Refresh</button>
+                </div>
+                <div id="tradeLogContainer">Loading...</div>
+            </div>
+
             <!-- Market Conditions Guard Rail -->
             <div id="marketConditionsGuard" class="card" style="margin-bottom: 20px; border: 2px solid #3b82f6;">
                 <div style="padding: 15px; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
@@ -35090,6 +35102,162 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         addRecoveryTrackerSection();
     }, 500);
+});
+
+// ============================================
+// TRADE LOG - DECEMBER 2025
+// ============================================
+
+var tradeLogData = [
+    { id: 1, date: '2025-12-01', symbol: 'IWM', type: 'CALL', strike: 250, expiry: '2025-12-02', entry: 0.18, exit: 0.11, qty: 5, pnl: -45.19, result: 'LOSS', notes: 'Bought multiple contracts, sold 4 at loss, 1 expired worthless. Too short expiry.', mistake: 'SHORT_EXPIRY' },
+    { id: 2, date: '2025-12-04', symbol: 'XLF', type: 'CALL', strike: 55, expiry: '2025-12-12', entry: 0.08, exit: 0.07, qty: 2, pnl: -2.09, result: 'LOSS', notes: 'Same day in/out. Small loss.', mistake: 'SCALP_FAIL' },
+    { id: 3, date: '2025-12-04', symbol: 'XLF', type: 'CALL', strike: 55, expiry: '2025-12-19', entry: 0.22, exit: 0.18, qty: 1, pnl: -4.05, result: 'LOSS', notes: 'Same day exit at loss.', mistake: 'SCALP_FAIL' },
+    { id: 4, date: '2025-12-04', symbol: 'XLF', type: 'CALL', strike: 55, expiry: '2025-12-26', entry: 0.22, exit: 0.37, qty: 1, pnl: 14.95, result: 'WIN', notes: 'Held for 7 days, +68% gain. PATIENCE PAID OFF.', lesson: 'HOLD_WINNERS' },
+    { id: 5, date: '2025-12-05', symbol: 'XLE', type: 'PUT', strike: 40, expiry: '2026-01-02', entry: 0.09, exit: 0.01, qty: 1, pnl: -8.02, result: 'LOSS', notes: 'Strike $40 when XLE was $87 - WAY too far OTM (54%)!', mistake: 'TOO_FAR_OTM' },
+    { id: 6, date: '2025-12-11', symbol: 'IWM', type: 'PUT', strike: 232, expiry: '2026-01-02', entry: 0.39, exit: 0.26, qty: 2, pnl: -26.07, result: 'LOSS', notes: 'Sold 1 at profit ($0.52), held 1 to near-zero. Market was in UPTREND.', mistake: 'AGAINST_TREND' },
+    { id: 7, date: '2025-12-11', symbol: 'SPY', type: 'PUT', strike: 595, expiry: '2026-01-02', entry: 0.35, exit: 0.49, qty: 2, pnl: 27.90, result: 'WIN', notes: 'Quick scalp next day. Strike was only 1.7% OTM - GOOD strike selection.', lesson: 'CLOSE_STRIKE' },
+    { id: 8, date: '2025-12-11', symbol: 'XLV', type: 'PUT', strike: 148, expiry: '2025-12-26', entry: 0.35, exit: 0.20, qty: 1, pnl: -15.05, result: 'LOSS', notes: 'Exited next day at loss. XLV was in uptrend.', mistake: 'AGAINST_TREND' },
+    { id: 9, date: '2025-12-15', symbol: 'IWM', type: 'PUT', strike: 242, expiry: '2025-12-26', entry: 0.68, exit: 0.00, qty: 1, pnl: -68.02, result: 'LOSS', notes: 'LET EXPIRE WORTHLESS! Should have exited at 50% loss. IWM was in UPTREND.', mistake: 'EXPIRED_WORTHLESS' },
+    { id: 10, date: '2025-12-17', symbol: 'XLB', type: 'CALL', strike: 46.50, expiry: '2026-01-23', entry: 0.34, exit: 0.01, qty: 1, pnl: -33.02, result: 'LOSS', notes: 'Still holding but worth $0.01. Should cut losses.', mistake: 'HOLDING_LOSER' },
+    { id: 11, date: '2025-12-19', symbol: 'IWM', type: 'PUT', strike: 245, expiry: '2025-12-26', entry: 0.56, exit: 0.00, qty: 1, pnl: -56.02, result: 'LOSS', notes: 'LET EXPIRE WORTHLESS! Another PUT against the uptrend.', mistake: 'EXPIRED_WORTHLESS' },
+    { id: 12, date: '2025-12-30', symbol: 'IWM', type: 'CALL', strike: 252, expiry: '2026-01-06', entry: 0.45, exit: 0.32, qty: 1, pnl: -13.05, result: 'LOSS', notes: 'Sold next day at loss. IWM hit resistance at 100% Fib.', mistake: 'BAD_ENTRY' },
+    { id: 13, date: '2025-12-31', symbol: 'SPY', type: 'PUT', strike: 680, expiry: '2026-01-05', entry: 0.88, exit: null, qty: 1, pnl: null, result: 'OPEN', notes: 'Bought 2, sold 1 at $1.55 (+$0.67), holding 1. SPY in UPTREND - risky!', mistake: 'AGAINST_TREND' }
+];
+
+function calculateTradeStats() {
+    var closed = tradeLogData.filter(function(t) { return t.result !== 'OPEN'; });
+    var wins = closed.filter(function(t) { return t.result === 'WIN'; });
+    var losses = closed.filter(function(t) { return t.result === 'LOSS'; });
+
+    var totalPnL = closed.reduce(function(sum, t) { return sum + t.pnl; }, 0);
+    var totalWins = wins.reduce(function(sum, t) { return sum + t.pnl; }, 0);
+    var totalLosses = losses.reduce(function(sum, t) { return sum + Math.abs(t.pnl); }, 0);
+
+    var winRate = closed.length > 0 ? (wins.length / closed.length * 100).toFixed(1) : 0;
+    var avgWin = wins.length > 0 ? (totalWins / wins.length).toFixed(2) : 0;
+    var avgLoss = losses.length > 0 ? (totalLosses / losses.length).toFixed(2) : 0;
+
+    var mistakes = {};
+    losses.forEach(function(t) {
+        if (t.mistake) {
+            mistakes[t.mistake] = (mistakes[t.mistake] || 0) + 1;
+        }
+    });
+
+    return {
+        totalTrades: closed.length,
+        wins: wins.length,
+        losses: losses.length,
+        winRate: winRate,
+        totalPnL: totalPnL,
+        totalWins: totalWins,
+        totalLosses: totalLosses,
+        avgWin: avgWin,
+        avgLoss: avgLoss,
+        mistakes: mistakes
+    };
+}
+
+function renderTradeLog() {
+    var container = document.getElementById('tradeLogContainer');
+    if (!container) return;
+
+    var stats = calculateTradeStats();
+    var mistakeLabels = {
+        'AGAINST_TREND': '📉 Against Trend',
+        'EXPIRED_WORTHLESS': '💀 Expired Worthless',
+        'TOO_FAR_OTM': '🎯 Too Far OTM',
+        'SHORT_EXPIRY': '⏰ Too Short Expiry',
+        'SCALP_FAIL': '⚡ Failed Scalp',
+        'HOLDING_LOSER': '🔒 Holding Loser',
+        'BAD_ENTRY': '❌ Bad Entry'
+    };
+
+    var html = '';
+
+    // Stats Summary
+    html += '<div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px;">';
+    html += '<div style="background: ' + (stats.totalPnL >= 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') + '; border-radius: 8px; padding: 15px; text-align: center;">';
+    html += '<div style="font-size: 10px; color: var(--muted);">TOTAL P/L</div>';
+    html += '<div style="font-size: 24px; font-weight: 800; color: ' + (stats.totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">$' + stats.totalPnL.toFixed(2) + '</div></div>';
+
+    html += '<div style="background: white; border-radius: 8px; padding: 15px; text-align: center; border: 1px solid var(--border);">';
+    html += '<div style="font-size: 10px; color: var(--muted);">WIN RATE</div>';
+    html += '<div style="font-size: 24px; font-weight: 800; color: ' + (parseFloat(stats.winRate) >= 50 ? '#22c55e' : '#ef4444') + ';">' + stats.winRate + '%</div></div>';
+
+    html += '<div style="background: white; border-radius: 8px; padding: 15px; text-align: center; border: 1px solid var(--border);">';
+    html += '<div style="font-size: 10px; color: var(--muted);">TRADES</div>';
+    html += '<div style="font-size: 24px; font-weight: 800;">' + stats.totalTrades + '</div></div>';
+
+    html += '<div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">';
+    html += '<div style="font-size: 10px; color: #22c55e;">WINS</div>';
+    html += '<div style="font-size: 24px; font-weight: 800; color: #22c55e;">' + stats.wins + '</div>';
+    html += '<div style="font-size: 10px; color: var(--muted);">Avg: +$' + stats.avgWin + '</div></div>';
+
+    html += '<div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 15px; text-align: center;">';
+    html += '<div style="font-size: 10px; color: #ef4444;">LOSSES</div>';
+    html += '<div style="font-size: 24px; font-weight: 800; color: #ef4444;">' + stats.losses + '</div>';
+    html += '<div style="font-size: 10px; color: var(--muted);">Avg: -$' + stats.avgLoss + '</div></div>';
+
+    html += '<div style="background: white; border-radius: 8px; padding: 15px; text-align: center; border: 1px solid var(--border);">';
+    html += '<div style="font-size: 10px; color: var(--muted);">PROFIT FACTOR</div>';
+    html += '<div style="font-size: 24px; font-weight: 800;">' + (stats.totalLosses > 0 ? (stats.totalWins / stats.totalLosses).toFixed(2) : '0') + '</div></div>';
+    html += '</div>';
+
+    // Mistake Analysis
+    html += '<div style="background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 15px; margin-bottom: 20px;">';
+    html += '<div style="font-size: 12px; font-weight: 700; color: #ef4444; margin-bottom: 10px;">🚫 MISTAKE BREAKDOWN</div>';
+    html += '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+
+    Object.keys(stats.mistakes).forEach(function(mistake) {
+        html += '<div style="background: white; padding: 8px 12px; border-radius: 6px; font-size: 11px;">';
+        html += '<span style="font-weight: 700;">' + (mistakeLabels[mistake] || mistake) + '</span>: ' + stats.mistakes[mistake] + ' trades</div>';
+    });
+    html += '</div></div>';
+
+    // Trade Table
+    html += '<div style="background: white; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); max-height: 400px; overflow-y: auto;">';
+    html += '<table style="width: 100%; border-collapse: collapse; font-size: 11px;">';
+    html += '<thead><tr style="background: var(--bg); position: sticky; top: 0;">';
+    html += '<th style="padding: 10px; text-align: left;">Date</th>';
+    html += '<th style="padding: 10px; text-align: left;">Trade</th>';
+    html += '<th style="padding: 10px; text-align: center;">Entry</th>';
+    html += '<th style="padding: 10px; text-align: center;">Exit</th>';
+    html += '<th style="padding: 10px; text-align: center;">P/L</th>';
+    html += '<th style="padding: 10px; text-align: center;">Result</th>';
+    html += '<th style="padding: 10px; text-align: left;">Notes</th>';
+    html += '</tr></thead><tbody>';
+
+    tradeLogData.forEach(function(trade) {
+        var resultColor = trade.result === 'WIN' ? '#22c55e' : trade.result === 'LOSS' ? '#ef4444' : '#f59e0b';
+        var resultBg = trade.result === 'WIN' ? 'rgba(34,197,94,0.1)' : trade.result === 'LOSS' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
+        var resultIcon = trade.result === 'WIN' ? '✅' : trade.result === 'LOSS' ? '❌' : '🔄';
+        var typeColor = trade.type === 'CALL' ? '#22c55e' : '#ef4444';
+        var rowBg = trade.mistake === 'AGAINST_TREND' ? 'rgba(239,68,68,0.05)' : 'transparent';
+
+        html += '<tr style="border-bottom: 1px solid var(--border); background: ' + rowBg + ';">';
+        html += '<td style="padding: 8px;">' + trade.date + '</td>';
+        html += '<td style="padding: 8px;"><strong>' + trade.symbol + '</strong> $' + trade.strike + ' <span style="color: ' + typeColor + '; font-weight: 700;">' + trade.type + '</span></td>';
+        html += '<td style="padding: 8px; text-align: center;">$' + trade.entry.toFixed(2) + '</td>';
+        html += '<td style="padding: 8px; text-align: center;">' + (trade.exit !== null ? '$' + trade.exit.toFixed(2) : '--') + '</td>';
+        html += '<td style="padding: 8px; text-align: center; font-weight: 700; color: ' + resultColor + ';">' + (trade.pnl !== null ? (trade.pnl >= 0 ? '+' : '') + '$' + trade.pnl.toFixed(2) : '--') + '</td>';
+        html += '<td style="padding: 8px; text-align: center;"><span style="background: ' + resultBg + '; color: ' + resultColor + '; padding: 2px 6px; border-radius: 4px; font-size: 10px;">' + resultIcon + '</span></td>';
+        html += '<td style="padding: 8px; font-size: 10px; max-width: 180px;">' + trade.notes;
+        if (trade.mistake) {
+            html += '<br><span style="color: #ef4444; font-weight: 600;">⚠️ ' + (mistakeLabels[trade.mistake] || trade.mistake) + '</span>';
+        }
+        html += '</td></tr>';
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// Initialize Trade Log on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        renderTradeLog();
+    }, 600);
 });
 
 // Debug function to verify all prices
