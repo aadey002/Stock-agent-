@@ -3714,6 +3714,18 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 </div>
             </div>
 
+            <!-- RECOVERY TRACKER -->
+            <div id="recoveryTrackerSection" style="background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.05)); border: 2px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">💰 Recovery Tracker</div>
+                        <div style="font-size: 11px; color: var(--muted);">Track your progress to break even</div>
+                    </div>
+                    <button onclick="resetRecoveryTracker()" style="padding: 6px 12px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">Reset</button>
+                </div>
+                <div id="recoveryTrackerContainer">Loading...</div>
+            </div>
+
             <!-- Market Conditions Guard Rail -->
             <div id="marketConditionsGuard" class="card" style="margin-bottom: 20px; border: 2px solid #3b82f6;">
                 <div style="padding: 15px; background: linear-gradient(135deg, #eff6ff, #dbeafe);">
@@ -35054,35 +35066,7 @@ function submitRecoveryTrade() {
 }
 
 function addRecoveryTrackerSection() {
-    var actionCenter = document.getElementById('action-center');
-    if (!actionCenter) return;
-
-    if (document.getElementById('recoveryTrackerSection')) return;
-
-    var section = document.createElement('div');
-    section.id = 'recoveryTrackerSection';
-    section.style.cssText = 'background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(59,130,246,0.05)); border: 2px solid rgba(34,197,94,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;';
-    section.innerHTML =
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">' +
-            '<div>' +
-                '<div style="font-size: 16px; font-weight: 700;">💰 Recovery Tracker</div>' +
-                '<div style="font-size: 11px; color: var(--muted);">Track your progress to break even</div>' +
-            '</div>' +
-            '<button onclick="resetRecoveryTracker()" style="padding: 6px 12px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">Reset</button>' +
-        '</div>' +
-        '<div id="recoveryTrackerContainer">Loading...</div>';
-
-    // Insert at the top of action center
-    var firstChild = actionCenter.querySelector('.max-width');
-    if (firstChild) {
-        var innerChild = firstChild.firstElementChild;
-        if (innerChild && innerChild.nextElementSibling) {
-            innerChild.nextElementSibling.after(section);
-        } else {
-            firstChild.appendChild(section);
-        }
-    }
-
+    // Container already exists in HTML, just render it
     loadRecoveryData();
     renderRecoveryTracker();
 }
@@ -35105,7 +35089,7 @@ function resetRecoveryTracker() {
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         addRecoveryTrackerSection();
-    }, 3500);
+    }, 500);
 });
 
 // Debug function to verify all prices
