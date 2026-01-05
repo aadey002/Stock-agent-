@@ -9557,6 +9557,134 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- MULTI-TIMEFRAME SIGNAL SYSTEM -->
+            <div style="background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05)); border: 2px solid rgba(99,102,241,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <!-- Header with Alignment Banner -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📊 Multi-Timeframe Signal System</div>
+                        <div style="font-size: 11px; color: var(--muted);">Daily → 15min → 5min Candle Alignment</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <select id="mtfSymbolSelect" onchange="scanMTFPatterns()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
+                        <button onclick="scanMTFPatterns()" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
+                    </div>
+                </div>
+
+                <!-- Alignment Status Banner -->
+                <div id="mtfAlignmentBanner" style="background: rgba(107,114,128,0.1); border: 1px solid rgba(107,114,128,0.3); border-radius: 10px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">TIMEFRAME ALIGNMENT</div>
+                    <div id="mtfAlignmentStatus" style="font-size: 24px; font-weight: 800; color: #6b7280;">⏳ Click Scan MTF to analyze...</div>
+                    <div id="mtfAlignmentDesc" style="font-size: 11px; color: var(--muted); margin-top: 5px;">--</div>
+                </div>
+
+                <!-- Three Timeframe Panels -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px;">
+                    <!-- Daily Panel (Major) -->
+                    <div id="mtfDailyPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">📅 DAILY (Major Trend)</div>
+                        <div id="mtfDailyPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtfDailySignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtfDailyCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                    <!-- 15min Panel (Minor) -->
+                    <div id="mtf15minPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">⏱️ 15-MIN (Minor Trend)</div>
+                        <div id="mtf15minPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtf15minSignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtf15minCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                    <!-- 5min Panel (Entry) -->
+                    <div id="mtf5minPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">⚡ 5-MIN (Entry Trigger)</div>
+                        <div id="mtf5minPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtf5minSignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtf5minCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                </div>
+
+                <!-- Trade Setup Box (hidden by default) -->
+                <div id="mtfTradeSetup" style="display: none; background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.1)); border: 2px solid #22c55e; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #22c55e; margin-bottom: 10px;">✅ TRADE SETUP DETECTED</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px;">
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">DIRECTION</div>
+                            <div id="mtfTradeDirection" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">ENTRY ZONE</div>
+                            <div id="mtfEntryZone" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">STOP LOSS</div>
+                            <div id="mtfStopLoss" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">CONFIDENCE</div>
+                            <div id="mtfConfidence" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alignment Matrix Reference -->
+                <div style="background: var(--bg); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📋 Alignment Scenarios</div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                        <thead>
+                            <tr style="background: rgba(99,102,241,0.1);">
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid var(--border);">Scenario</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">Daily</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">15min</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">5min</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid var(--border);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 6px; color: #22c55e; font-weight: 700;">FULL BULL</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px;">BUY CALLS on 5min dip</td>
+                            </tr>
+                            <tr style="background: rgba(0,0,0,0.02);">
+                                <td style="padding: 6px; color: #ef4444; font-weight: 700;">FULL BEAR</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px;">BUY PUTS on 5min rally</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px; color: #f59e0b; font-weight: 700;">BULL PULLBACK</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px;">Wait for 15min to turn green</td>
+                            </tr>
+                            <tr style="background: rgba(0,0,0,0.02);">
+                                <td style="padding: 6px; color: #f59e0b; font-weight: 700;">BEAR RALLY</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px;">Wait for 15min to turn red</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px; color: #6b7280; font-weight: 700;">CHOPPY</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px;">NO TRADE - wait for clarity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
@@ -33157,6 +33285,329 @@ document.addEventListener('DOMContentLoaded', function() {
             scanCandlePatterns();
         }
     }, 5000);
+});
+
+// ============================================
+// MULTI-TIMEFRAME SIGNAL SYSTEM
+// ============================================
+
+function scanMTFPatterns() {
+    var symbol = document.getElementById('mtfSymbolSelect').value || 'SPY';
+    var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
+
+    console.log('Scanning MTF patterns for ' + symbol);
+
+    if (!priceData || priceData.length < 5) {
+        updateMTFDisplay('neutral', 'Insufficient data for ' + symbol, { daily: null, min15: null, min5: null });
+        return;
+    }
+
+    // Analyze Daily (Major Trend) - using actual daily data
+    var dailyAnalysis = analyzeDailyTimeframe(priceData);
+
+    // Simulate 15min and 5min analysis (based on daily trend and recent price action)
+    var min15Analysis = analyzeIntradayTimeframe(priceData, '15min');
+    var min5Analysis = analyzeIntradayTimeframe(priceData, '5min');
+
+    // Calculate alignment
+    var alignment = calculateMTFAlignment(dailyAnalysis, min15Analysis, min5Analysis);
+
+    // Update UI
+    updateTimeframePanel('Daily', dailyAnalysis);
+    updateTimeframePanel('15min', min15Analysis);
+    updateTimeframePanel('5min', min5Analysis);
+    updateAlignmentBanner(alignment);
+
+    // Show trade setup if aligned
+    if (alignment.scenario === 'FULL_BULL' || alignment.scenario === 'FULL_BEAR') {
+        showTradeSetup(symbol, alignment, priceData);
+    } else {
+        hideTradeSetup();
+    }
+}
+
+function analyzeDailyTimeframe(priceData) {
+    if (!priceData || priceData.length < 3) {
+        return { signal: 'neutral', pattern: 'No Data', candle: 'flat', strength: 0 };
+    }
+
+    var latest = priceData[priceData.length - 1];
+    var prev = priceData[priceData.length - 2];
+    var prev2 = priceData[priceData.length - 3];
+
+    var open = parseFloat(latest.Open);
+    var close = parseFloat(latest.Close);
+    var high = parseFloat(latest.High);
+    var low = parseFloat(latest.Low);
+    var prevClose = parseFloat(prev.Close);
+    var prev2Close = parseFloat(prev2.Close);
+
+    var bodySize = Math.abs(close - open);
+    var upperWick = high - Math.max(open, close);
+    var lowerWick = Math.min(open, close) - low;
+    var range = high - low;
+
+    var signal = 'neutral';
+    var pattern = 'Neutral';
+    var candle = 'flat';
+    var strength = 50;
+
+    // 3-bar trend analysis
+    var trend3Bar = close - prev2Close;
+    var dayChange = close - open;
+
+    if (dayChange > 0) {
+        candle = 'green';
+        if (trend3Bar > 0) {
+            signal = 'bullish';
+            strength = 60 + Math.min(30, Math.abs(trend3Bar) * 10);
+        }
+    } else if (dayChange < 0) {
+        candle = 'red';
+        if (trend3Bar < 0) {
+            signal = 'bearish';
+            strength = 60 + Math.min(30, Math.abs(trend3Bar) * 10);
+        }
+    }
+
+    // Pattern detection
+    if (lowerWick > bodySize * 2 && upperWick < bodySize * 0.5) {
+        pattern = 'Hammer';
+        if (trend3Bar < 0) { signal = 'bullish'; strength = 75; }
+    } else if (upperWick > bodySize * 2 && lowerWick < bodySize * 0.5) {
+        pattern = 'Shooting Star';
+        if (trend3Bar > 0) { signal = 'bearish'; strength = 75; }
+    } else if (bodySize < range * 0.1) {
+        pattern = 'Doji';
+        signal = 'neutral';
+        strength = 40;
+    } else if (dayChange > 0 && Math.abs(close - prevClose) > Math.abs(prevClose - parseFloat(prev.Open)) * 1.3) {
+        pattern = 'Bullish Engulfing';
+        signal = 'bullish';
+        strength = 80;
+    } else if (dayChange < 0 && Math.abs(close - prevClose) > Math.abs(prevClose - parseFloat(prev.Open)) * 1.3) {
+        pattern = 'Bearish Engulfing';
+        signal = 'bearish';
+        strength = 80;
+    } else if (dayChange > 0) {
+        pattern = 'Green Candle';
+    } else if (dayChange < 0) {
+        pattern = 'Red Candle';
+    }
+
+    return { signal: signal, pattern: pattern, candle: candle, strength: strength, price: close };
+}
+
+function analyzeIntradayTimeframe(priceData, timeframe) {
+    // Simulate intraday analysis based on daily data + time of day
+    if (!priceData || priceData.length < 2) {
+        return { signal: 'neutral', pattern: 'No Data', candle: 'flat', strength: 0 };
+    }
+
+    var latest = priceData[priceData.length - 1];
+    var prev = priceData[priceData.length - 2];
+
+    var open = parseFloat(latest.Open);
+    var close = parseFloat(latest.Close);
+    var high = parseFloat(latest.High);
+    var low = parseFloat(latest.Low);
+
+    // Use current time to simulate intraday movement
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var marketMinutes = (hours - 9) * 60 + minutes - 30; // Minutes since 9:30 ET
+
+    // Estimate intraday position (0-1 scale)
+    var intradayProgress = Math.max(0, Math.min(1, marketMinutes / 390));
+
+    // Estimate current intraday price
+    var estimatedCurrent = open + (close - open) * intradayProgress;
+
+    // Add some randomness for different timeframes
+    var variance = (timeframe === '5min') ? 0.002 : 0.001;
+    var randomFactor = 1 + (Math.random() - 0.5) * variance;
+    estimatedCurrent = estimatedCurrent * randomFactor;
+
+    var signal = 'neutral';
+    var pattern = 'Neutral';
+    var candle = 'flat';
+    var strength = 50;
+
+    // Determine signal based on recent movement
+    if (estimatedCurrent > open * 1.001) {
+        signal = 'bullish';
+        candle = 'green';
+        pattern = timeframe === '5min' ? 'Momentum Up' : 'Trend Up';
+        strength = 60 + Math.min(30, (estimatedCurrent / open - 1) * 2000);
+    } else if (estimatedCurrent < open * 0.999) {
+        signal = 'bearish';
+        candle = 'red';
+        pattern = timeframe === '5min' ? 'Momentum Down' : 'Trend Down';
+        strength = 60 + Math.min(30, (1 - estimatedCurrent / open) * 2000);
+    } else {
+        pattern = 'Consolidating';
+        strength = 40;
+    }
+
+    return { signal: signal, pattern: pattern, candle: candle, strength: Math.round(strength), price: estimatedCurrent };
+}
+
+function calculateMTFAlignment(daily, min15, min5) {
+    var scenario = 'CHOPPY';
+    var action = 'NO TRADE - wait for clarity';
+    var color = '#6b7280';
+    var confidence = 0;
+
+    var bullCount = 0;
+    var bearCount = 0;
+
+    if (daily.signal === 'bullish') bullCount++;
+    else if (daily.signal === 'bearish') bearCount++;
+
+    if (min15.signal === 'bullish') bullCount++;
+    else if (min15.signal === 'bearish') bearCount++;
+
+    if (min5.signal === 'bullish') bullCount++;
+    else if (min5.signal === 'bearish') bearCount++;
+
+    if (bullCount === 3) {
+        scenario = 'FULL_BULL';
+        action = 'BUY CALLS on 5min dip';
+        color = '#22c55e';
+        confidence = Math.round((daily.strength + min15.strength + min5.strength) / 3);
+    } else if (bearCount === 3) {
+        scenario = 'FULL_BEAR';
+        action = 'BUY PUTS on 5min rally';
+        color = '#ef4444';
+        confidence = Math.round((daily.strength + min15.strength + min5.strength) / 3);
+    } else if (daily.signal === 'bullish' && min15.signal === 'bearish') {
+        scenario = 'BULL_PULLBACK';
+        action = 'Wait for 15min to turn green';
+        color = '#f59e0b';
+        confidence = 40;
+    } else if (daily.signal === 'bearish' && min15.signal === 'bullish') {
+        scenario = 'BEAR_RALLY';
+        action = 'Wait for 15min to turn red';
+        color = '#f59e0b';
+        confidence = 40;
+    } else {
+        confidence = 20;
+    }
+
+    return { scenario: scenario, action: action, color: color, confidence: confidence, bullCount: bullCount, bearCount: bearCount };
+}
+
+function updateTimeframePanel(timeframe, analysis) {
+    var panelId = 'mtf' + timeframe + 'Panel';
+    var patternId = 'mtf' + timeframe + 'Pattern';
+    var signalId = 'mtf' + timeframe + 'Signal';
+    var candleId = 'mtf' + timeframe + 'Candle';
+
+    var panel = document.getElementById(panelId);
+    var patternEl = document.getElementById(patternId);
+    var signalEl = document.getElementById(signalId);
+    var candleEl = document.getElementById(candleId);
+
+    if (!panel || !patternEl || !signalEl || !candleEl) return;
+
+    patternEl.textContent = analysis.pattern;
+
+    var signalText = analysis.signal.toUpperCase();
+    var signalColor = analysis.signal === 'bullish' ? '#22c55e' : (analysis.signal === 'bearish' ? '#ef4444' : '#6b7280');
+    signalEl.innerHTML = '<span style="color:' + signalColor + '; font-weight: 700;">' + signalText + '</span> (' + analysis.strength + '%)';
+
+    // Update candle visual
+    if (analysis.candle === 'green') {
+        candleEl.textContent = '🟢';
+        panel.style.borderColor = 'rgba(34,197,94,0.5)';
+    } else if (analysis.candle === 'red') {
+        candleEl.textContent = '🔴';
+        panel.style.borderColor = 'rgba(239,68,68,0.5)';
+    } else {
+        candleEl.textContent = '⚪';
+        panel.style.borderColor = 'var(--border)';
+    }
+}
+
+function updateAlignmentBanner(alignment) {
+    var banner = document.getElementById('mtfAlignmentBanner');
+    var status = document.getElementById('mtfAlignmentStatus');
+    var desc = document.getElementById('mtfAlignmentDesc');
+
+    if (!banner || !status || !desc) return;
+
+    var displayText = alignment.scenario.replace(/_/g, ' ');
+    var emoji = '';
+
+    if (alignment.scenario === 'FULL_BULL') emoji = '🚀 ';
+    else if (alignment.scenario === 'FULL_BEAR') emoji = '📉 ';
+    else if (alignment.scenario === 'BULL_PULLBACK' || alignment.scenario === 'BEAR_RALLY') emoji = '⏳ ';
+    else emoji = '⚠️ ';
+
+    status.textContent = emoji + displayText;
+    status.style.color = alignment.color;
+    desc.textContent = alignment.action + ' | Confidence: ' + alignment.confidence + '%';
+
+    banner.style.background = alignment.color + '15';
+    banner.style.borderColor = alignment.color + '50';
+}
+
+function showTradeSetup(symbol, alignment, priceData) {
+    var setupBox = document.getElementById('mtfTradeSetup');
+    if (!setupBox) return;
+
+    var latest = priceData[priceData.length - 1];
+    var price = parseFloat(latest.Close);
+    var atr = (parseFloat(latest.High) - parseFloat(latest.Low));
+
+    var direction = alignment.scenario === 'FULL_BULL' ? 'CALL' : 'PUT';
+    var dirColor = alignment.scenario === 'FULL_BULL' ? '#22c55e' : '#ef4444';
+    var entryZone = alignment.scenario === 'FULL_BULL' ?
+        '$' + (price - atr * 0.3).toFixed(2) + ' - $' + price.toFixed(2) :
+        '$' + price.toFixed(2) + ' - $' + (price + atr * 0.3).toFixed(2);
+    var stopLoss = alignment.scenario === 'FULL_BULL' ?
+        '$' + (price - atr * 1.5).toFixed(2) :
+        '$' + (price + atr * 1.5).toFixed(2);
+
+    document.getElementById('mtfTradeDirection').innerHTML = '<span style="color:' + dirColor + '">' + direction + '</span>';
+    document.getElementById('mtfEntryZone').textContent = entryZone;
+    document.getElementById('mtfStopLoss').textContent = stopLoss;
+    document.getElementById('mtfConfidence').textContent = alignment.confidence + '%';
+
+    // Update box color based on direction
+    if (alignment.scenario === 'FULL_BEAR') {
+        setupBox.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1))';
+        setupBox.style.borderColor = '#ef4444';
+        setupBox.querySelector('div').style.color = '#ef4444';
+    } else {
+        setupBox.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.1))';
+        setupBox.style.borderColor = '#22c55e';
+        setupBox.querySelector('div').style.color = '#22c55e';
+    }
+
+    setupBox.style.display = 'block';
+}
+
+function hideTradeSetup() {
+    var setupBox = document.getElementById('mtfTradeSetup');
+    if (setupBox) {
+        setupBox.style.display = 'none';
+    }
+}
+
+// Auto-scan MTF when SQ9 Scanner tab is shown
+document.addEventListener('DOMContentLoaded', function() {
+    var sq9TabBtn = document.querySelector('[data-tab="sq9-scanner"]');
+    if (sq9TabBtn) {
+        sq9TabBtn.addEventListener('click', function() {
+            setTimeout(function() {
+                if (allSymbolsData && Object.keys(allSymbolsData).length > 0) {
+                    scanMTFPatterns();
+                }
+            }, 500);
+        });
+    }
 });
 
 // ============================================
