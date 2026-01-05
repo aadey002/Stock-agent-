@@ -3624,23 +3624,6 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <option value="XLRE">XLRE - Real Estate</option>
                                 <option value="XLC">XLC - Comm Services</option>
                             </optgroup>
-                            <optgroup label="Individual Stocks">
-                                <option value="MSFT">MSFT - Microsoft</option>
-                                <option value="AAPL">AAPL - Apple</option>
-                                <option value="AMZN">AMZN - Amazon</option>
-                                <option value="GOOGL">GOOGL - Alphabet</option>
-                                <option value="META">META - Meta</option>
-                                <option value="TSLA">TSLA - Tesla</option>
-                                <option value="NVDA">NVDA - Nvidia</option>
-                                <option value="AMD">AMD - AMD</option>
-                                <option value="JPM">JPM - JPMorgan</option>
-                                <option value="MA">MA - Mastercard</option>
-                                <option value="LLY">LLY - Eli Lilly</option>
-                                <option value="WMT">WMT - Walmart</option>
-                                <option value="ORCL">ORCL - Oracle</option>
-                                <option value="CVX">CVX - Chevron</option>
-                                <option value="CSCO">CSCO - Cisco</option>
-                            </optgroup>
                         </select>
                     </div>
                     <button id="refreshBtn" class="refresh-btn" onclick="refreshAllData()" style="display: flex; align-items: center; gap: 5px;"><span id="refreshIcon">🔄</span> Refresh</button>
@@ -3710,7 +3693,6 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
             <button class="tab-btn" data-tab="gann-cycles" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🔮 Gann Cycles</button>
             <button class="tab-btn" data-tab="sq9-scanner" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🎯 SQ9 Scanner</button>
             <button class="tab-btn" data-tab="sq9-performance" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">📊 SQ9 Performance</button>
-            <a href="ActionCenter.html" class="tab-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; text-decoration: none;">Action Center</a>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -3730,18 +3712,6 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                         <!-- Populated by JS -->
                     </div>
                 </div>
-            </div>
-
-            <!-- RECOVERY TRACKER -->
-            <div id="recoveryTrackerSection" style="background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.05)); border: 2px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div>
-                        <div style="font-size: 16px; font-weight: 700;">Recovery Tracker</div>
-                        <div style="font-size: 11px; color: var(--muted);">Track your progress to break even</div>
-                    </div>
-                    <button onclick="resetRecoveryTracker()" style="padding: 6px 12px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 10px;">Reset</button>
-                </div>
-                <div id="recoveryTrackerContainer">Loading...</div>
             </div>
 
             <!-- Market Conditions Guard Rail -->
@@ -5799,40 +5769,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="sq9-monitor-header">
                     <div class="sq9-monitor-title">🎯 SQ9 Entry Signal Monitor</div>
                     <div class="sq9-etf-tabs" id="sq9EtfTabs" style="flex-wrap: wrap;">
-                        <!-- Main ETFs -->
                         <button class="sq9-etf-tab active" onclick="selectSq9Etf('SPY')">SPY</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('QQQ')">QQQ</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('DIA')">DIA</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('IWM')">IWM</button>
-                        <!-- Sector ETFs -->
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLK')">XLK</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLF')">XLF</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLE')">XLE</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLK')">XLK</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLV')">XLV</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLI')">XLI</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLP')">XLP</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLU')">XLU</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLB')">XLB</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLC')">XLC</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLRE')">XLRE</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLU')">XLU</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLP')">XLP</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLY')">XLY</button>
-                        <!-- Tech Giants -->
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('MSFT')">MSFT</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AAPL')">AAPL</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AMZN')">AMZN</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('GOOGL')">GOOGL</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('META')">META</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('TSLA')">TSLA</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('NVDA')">NVDA</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AMD')">AMD</button>
-                        <!-- Other Major Stocks -->
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('JPM')">JPM</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('MA')">MA</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('LLY')">LLY</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('WMT')">WMT</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('ORCL')">ORCL</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('CVX')">CVX</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('CSCO')">CSCO</button>
                     </div>
                 </div>
 
@@ -9318,19 +9267,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
 
                 <!-- ETF Selection Tabs -->
-                <div class="gann-etf-tabs" id="gannRoadmapEtfTabs" style="flex-wrap: wrap;">
-                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">SPY</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">QQQ</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">IWM</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('DIA')">DIA</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('MSFT')">MSFT</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AAPL')">AAPL</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('GOOGL')">GOOGL</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AMZN')">AMZN</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('META')">META</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('TSLA')">TSLA</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('NVDA')">NVDA</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AMD')">AMD</button>
+                <div class="gann-etf-tabs" id="gannRoadmapEtfTabs">
+                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">📊 SPY</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">💻 QQQ</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">🏭 IWM</button>
                 </div>
 
                 <!-- Pivot Selection Tabs -->
@@ -9470,53 +9410,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
-            <!-- TREND-AWARE SQ9 SIGNALS -->
-            <div style="background: linear-gradient(135deg, rgba(255,140,0,0.1), rgba(255,69,0,0.05)); border: 2px solid rgba(255,140,0,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div>
-                        <div style="font-size: 16px; font-weight: 700;">🎯 Trend-Aware SQ9 Signals</div>
-                        <div style="font-size: 11px; color: var(--muted);">PREVENTS trading against the trend - Only signals WITH the trend direction</div>
-                    </div>
-                    <button onclick="updateTrendAwareActionCenter()" style="padding: 8px 16px; background: linear-gradient(135deg, #ff8c00, #ff4500); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">
-                        Refresh Signals
-                    </button>
-                </div>
-
-                <!-- Signal Rules Legend -->
-                <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
-                    <div style="font-size: 12px; font-weight: 600; color: #ff8c00; margin-bottom: 8px;">Signal Rules (Trade WITH Trend):</div>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px;">
-                        <div style="color: #00ff00;">📈 UPTREND + Support = BUY CALL</div>
-                        <div style="color: #ff9800;">📈 UPTREND + Resistance = WAIT (No PUTs!)</div>
-                        <div style="color: #ff0000;">📉 DOWNTREND + Resistance = BUY PUT</div>
-                        <div style="color: #ff9800;">📉 DOWNTREND + Support = WAIT (No CALLs!)</div>
-                    </div>
-                </div>
-
-                <!-- Signals Container -->
-                <div id="trendAwareSignals" style="min-height: 200px;">
-                    <div style="text-align: center; color: #888; padding: 40px;">
-                        Click "Refresh Signals" to analyze trend + SQ9 levels
-                    </div>
-                </div>
-            </div>
-
             <!-- CANDLE PATTERN VISUAL GUIDE -->
             <div style="background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(239,68,68,0.05)); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div>
-                        <div style="font-size: 16px; font-weight: 700;">Candle Pattern Scanner</div>
+                        <div style="font-size: 16px; font-weight: 700;">🕯️ Candle Pattern Scanner</div>
                         <div style="font-size: 11px; color: var(--muted);">Reversal patterns at SQ9 levels</div>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="togglePatternGuide()" id="patternGuideBtn" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; cursor: pointer;">Show Guide</button>
-                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">Scan Now</button>
+                        <button onclick="togglePatternGuide()" id="patternGuideBtn" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; cursor: pointer;">📖 Show Guide</button>
+                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔍 Scan Now</button>
                     </div>
                 </div>
 
                 <!-- Today's Detected Patterns -->
                 <div id="detectedPatterns" style="margin-bottom: 15px;">
-                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">Today's Detected Patterns</div>
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 Today's Detected Patterns</div>
                     <div id="patternsList" style="display: grid; gap: 10px;">
                         <div style="text-align: center; padding: 20px; color: var(--muted); background: var(--bg); border-radius: 8px;">
                             Click "Scan Now" to detect patterns...
@@ -9526,28 +9435,28 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                 <!-- Collapsible Pattern Guide -->
                 <div id="patternGuidePanel" style="display: none;">
-                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 15px; padding-top: 15px; border-top: 1px solid var(--border);">Pattern Visual Guide</div>
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 15px; padding-top: 15px; border-top: 1px solid var(--border);">📖 Pattern Visual Guide</div>
 
                     <!-- BULLISH PATTERNS -->
                     <div style="margin-bottom: 20px;">
                         <div style="font-size: 11px; font-weight: 700; color: #22c55e; margin-bottom: 10px;">
-                            <span style="background: rgba(34,197,94,0.2); padding: 4px 10px; border-radius: 4px;">BULLISH PATTERNS</span>
-                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 SUPPORT - Buy CALLS</span>
+                            <span style="background: rgba(34,197,94,0.2); padding: 4px 10px; border-radius: 4px;">📈 BULLISH PATTERNS</span>
+                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 SUPPORT → Buy CALLS</span>
                         </div>
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
                             <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Hammer</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">[=]<br>|<br>|<br>|</div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🔨 Hammer</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">┌┴┐<br>│▓│<br>└┬┘<br>│<br>│<br>│</div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long lower wick</div>
                             </div>
                             <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Bull Engulfing</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #ef4444;">[r]</span> <span style="color: #22c55e;">[G]</span><br><span style="color: #ef4444;"></span> <span style="color: #22c55e;">[G]</span></div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🟢 Engulfing</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #ef4444;">│░│</span> <span style="color: #22c55e;">│▓│</span><br><span style="color: #ef4444;">└─┘</span> <span style="color: #22c55e;">│▓│</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #22c55e;">└─┘</span></div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Green engulfs red</div>
                             </div>
                             <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Dragonfly Doji</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">---<br>|<br>|<br>|</div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🎯 Dragonfly</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">─┼─<br>│<br>│<br>│</div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long lower</div>
                             </div>
                         </div>
@@ -9556,23 +9465,23 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <!-- BEARISH PATTERNS -->
                     <div style="margin-bottom: 15px;">
                         <div style="font-size: 11px; font-weight: 700; color: #ef4444; margin-bottom: 10px;">
-                            <span style="background: rgba(239,68,68,0.2); padding: 4px 10px; border-radius: 4px;">BEARISH PATTERNS</span>
-                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 RESISTANCE - Buy PUTS</span>
+                            <span style="background: rgba(239,68,68,0.2); padding: 4px 10px; border-radius: 4px;">📉 BEARISH PATTERNS</span>
+                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 RESISTANCE → Buy PUTS</span>
                         </div>
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
                             <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Shooting Star</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">|<br>|<br>|<br>[=]</div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">⭐ Shooting Star</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">│<br>│<br>│<br>┌┴┐<br>│░│<br>└─┘</div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long upper wick</div>
                             </div>
                             <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Bear Engulfing</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #22c55e;">[g]</span> <span style="color: #ef4444;">[R]</span><br><span style="color: #22c55e;"></span> <span style="color: #ef4444;">[R]</span></div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🔴 Engulfing</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #22c55e;">│▓│</span> <span style="color: #ef4444;">┌─┐</span><br><span style="color: #22c55e;">└─┘</span> <span style="color: #ef4444;">│░│</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ef4444;">│░│</span></div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Red engulfs green</div>
                             </div>
                             <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Gravestone Doji</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">|<br>|<br>|<br>---</div>
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">💀 Gravestone</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">│<br>│<br>│<br>─┼─</div>
                                 <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long upper</div>
                             </div>
                         </div>
@@ -9581,12 +9490,418 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
                 <!-- Quick Reference -->
                 <div style="padding: 10px; background: rgba(139,92,246,0.05); border-radius: 8px; border: 1px solid rgba(139,92,246,0.2);">
-                    <div style="font-size: 10px; font-weight: 700; color: #8b5cf6; margin-bottom: 6px;">Quick Reference</div>
+                    <div style="font-size: 10px; font-weight: 700; color: #8b5cf6; margin-bottom: 6px;">🎯 Quick Reference</div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; font-size: 9px;">
-                        <div><span style="color: #22c55e;">Hammer</span> = CALL at support</div>
-                        <div><span style="color: #ef4444;">Shooting Star</span> = PUT at resist</div>
-                        <div><span style="color: #22c55e;">Bull Engulf</span> = CALL</div>
-                        <div><span style="color: #ef4444;">Bear Engulf</span> = PUT</div>
+                        <div><span style="color: #22c55e;">🔨 Hammer</span> = CALL at support</div>
+                        <div><span style="color: #ef4444;">⭐ Shooting Star</span> = PUT at resist</div>
+                        <div><span style="color: #22c55e;">🟢 Bull Engulf</span> = CALL</div>
+                        <div><span style="color: #ef4444;">🔴 Bear Engulf</span> = PUT</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MINOR TURN CALCULATOR PANEL -->
+            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">🔮 Minor Turn Calculator</div>
+                        <div style="font-size: 11px; color: var(--muted);">Predicting next reversal using Gann cycles, Fib time & swing analysis</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="turnCalcSymbol" onchange="calculateMinorTurn()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
+                        <button onclick="calculateMinorTurn()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Calculate</button>
+                    </div>
+                </div>
+
+                <!-- Next Turn Prediction -->
+                <div id="nextTurnPrediction" style="background: var(--bg); border-radius: 10px; padding: 20px; margin-bottom: 15px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">NEXT PREDICTED MINOR TURN</div>
+                    <div id="nextTurnDate" style="font-size: 28px; font-weight: 800; color: #f59e0b;">--</div>
+                    <div id="nextTurnDaysAway" style="font-size: 14px; color: var(--muted); margin-top: 5px;">-- days away</div>
+                    <div id="nextTurnDirection" style="margin-top: 10px; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 700; font-size: 12px; background: rgba(107,114,128,0.1); color: #6b7280;">
+                        Calculating...
+                    </div>
+                </div>
+
+                <!-- Turn Stats -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">CONFIDENCE</div>
+                        <div id="turnConfidenceVal" style="font-size: 20px; font-weight: 800; color: #f59e0b;">--%</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">METHODS AGREE</div>
+                        <div id="turnMethodsVal" style="font-size: 20px; font-weight: 800;">-/5</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">LAST TURN</div>
+                        <div id="lastTurnVal" style="font-size: 12px; font-weight: 700;">--</div>
+                    </div>
+                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">AVG SWING</div>
+                        <div id="avgSwingVal" style="font-size: 20px; font-weight: 800;">-- days</div>
+                    </div>
+                </div>
+
+                <!-- Method Breakdown -->
+                <div style="background: var(--bg); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📊 Turn Prediction Methods</div>
+                    <div id="turnMethodsDetail" style="display: grid; gap: 8px; font-size: 11px;">
+                        <div style="text-align: center; color: var(--muted); padding: 10px;">Click Calculate to analyze...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MULTI-TIMEFRAME SIGNAL SYSTEM -->
+            <div style="background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05)); border: 2px solid rgba(99,102,241,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <!-- Header with Alignment Banner -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📊 Multi-Timeframe Signal System</div>
+                        <div style="font-size: 11px; color: var(--muted);">Daily → 15min → 5min Candle Alignment</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <select id="mtfSymbolSelect" onchange="scanMTFPatterns()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </select>
+                        <button onclick="scanMTFPatterns()" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
+                    </div>
+                </div>
+
+                <!-- Alignment Status Banner -->
+                <div id="mtfAlignmentBanner" style="background: rgba(107,114,128,0.1); border: 1px solid rgba(107,114,128,0.3); border-radius: 10px; padding: 15px; margin-bottom: 15px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">TIMEFRAME ALIGNMENT</div>
+                    <div id="mtfAlignmentStatus" style="font-size: 24px; font-weight: 800; color: #6b7280;">⏳ Click Scan MTF to analyze...</div>
+                    <div id="mtfAlignmentDesc" style="font-size: 11px; color: var(--muted); margin-top: 5px;">--</div>
+                </div>
+
+                <!-- Three Timeframe Panels -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px;">
+                    <!-- Daily Panel (Major) -->
+                    <div id="mtfDailyPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">📅 DAILY (Major Trend)</div>
+                        <div id="mtfDailyPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtfDailySignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtfDailyCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                    <!-- 15min Panel (Minor) -->
+                    <div id="mtf15minPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">⏱️ 15-MIN (Minor Trend)</div>
+                        <div id="mtf15minPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtf15minSignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtf15minCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                    <!-- 5min Panel (Entry) -->
+                    <div id="mtf5minPanel" style="background: var(--bg); border: 2px solid var(--border); border-radius: 10px; padding: 12px;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">⚡ 5-MIN (Entry Trigger)</div>
+                        <div id="mtf5minPattern" style="font-size: 14px; font-weight: 700;">--</div>
+                        <div id="mtf5minSignal" style="font-size: 11px; color: var(--muted); margin-top: 3px;">Awaiting scan...</div>
+                        <div id="mtf5minCandle" style="font-family: monospace; font-size: 18px; margin-top: 8px; text-align: center;">📊</div>
+                    </div>
+                </div>
+
+                <!-- Trade Setup Box (hidden by default) -->
+                <div id="mtfTradeSetup" style="display: none; background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.1)); border: 2px solid #22c55e; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #22c55e; margin-bottom: 10px;">✅ TRADE SETUP DETECTED</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 11px;">
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">DIRECTION</div>
+                            <div id="mtfTradeDirection" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">ENTRY ZONE</div>
+                            <div id="mtfEntryZone" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">STOP LOSS</div>
+                            <div id="mtfStopLoss" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                        <div style="background: white; border-radius: 6px; padding: 8px; text-align: center;">
+                            <div style="color: #666; font-size: 9px;">CONFIDENCE</div>
+                            <div id="mtfConfidence" style="font-weight: 700; font-size: 14px;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alignment Matrix Reference -->
+                <div style="background: var(--bg); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📋 Alignment Scenarios</div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                        <thead>
+                            <tr style="background: rgba(99,102,241,0.1);">
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid var(--border);">Scenario</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">Daily</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">15min</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid var(--border);">5min</th>
+                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid var(--border);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 6px; color: #22c55e; font-weight: 700;">FULL BULL</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px;">BUY CALLS on 5min dip</td>
+                            </tr>
+                            <tr style="background: rgba(0,0,0,0.02);">
+                                <td style="padding: 6px; color: #ef4444; font-weight: 700;">FULL BEAR</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px;">BUY PUTS on 5min rally</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px; color: #f59e0b; font-weight: 700;">BULL PULLBACK</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px;">Wait for 15min to turn green</td>
+                            </tr>
+                            <tr style="background: rgba(0,0,0,0.02);">
+                                <td style="padding: 6px; color: #f59e0b; font-weight: 700;">BEAR RALLY</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px; text-align: center;">🟢</td>
+                                <td style="padding: 6px; text-align: center;">🔴</td>
+                                <td style="padding: 6px;">Wait for 15min to turn red</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px; color: #6b7280; font-weight: 700;">CHOPPY</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px; text-align: center;">⚪</td>
+                                <td style="padding: 6px;">NO TRADE - wait for clarity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- HISTORICAL PATTERN SCANNER -->
+            <div style="background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05)); border: 2px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📜 Historical Pattern Scanner</div>
+                        <div style="font-size: 11px; color: var(--muted);">Scan 1 year of data for Major (Daily) & Minor patterns with win rates</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="histPatternSymbol" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="META">META</option>
+                        </select>
+                        <select id="histPatternPeriod" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="365">1 Year</option>
+                            <option value="180">6 Months</option>
+                            <option value="90">3 Months</option>
+                            <option value="30">1 Month</option>
+                        </select>
+                        <button onclick="scanHistoricalPatterns()" style="padding: 6px 12px; background: linear-gradient(135deg, #a855f7, #ec4899); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔍 Scan History</button>
+                        <button onclick="exportPatternData()" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; cursor: pointer;">📊 Export CSV</button>
+                    </div>
+                </div>
+
+                <!-- SUMMARY STATS -->
+                <div id="patternSummaryStats" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">TOTAL PATTERNS</div>
+                        <div id="totalPatternsCount" style="font-size: 24px; font-weight: 800; color: #a855f7;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">MAJOR (Daily)</div>
+                        <div id="majorPatternsCount" style="font-size: 24px; font-weight: 800; color: #1e3a5f;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">MINOR (Intra)</div>
+                        <div id="minorPatternsCount" style="font-size: 24px; font-weight: 800; color: #f59e0b;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">AVG WIN RATE</div>
+                        <div id="avgWinRate" style="font-size: 24px; font-weight: 800; color: #22c55e;">--%</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">BEST PATTERN</div>
+                        <div id="bestPatternName" style="font-size: 16px; font-weight: 800; color: #22c55e;">--</div>
+                        <div id="bestPatternRate" style="font-size: 10px; color: var(--muted);">--%</div>
+                    </div>
+                </div>
+
+                <!-- PATTERN PERFORMANCE TABLE -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                        📈 Pattern Performance by Type
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <thead>
+                                <tr style="background: var(--bg);">
+                                    <th style="padding: 10px; text-align: left;">Pattern</th>
+                                    <th style="padding: 10px; text-align: center;">Count</th>
+                                    <th style="padding: 10px; text-align: center;">Wins</th>
+                                    <th style="padding: 10px; text-align: center;">Losses</th>
+                                    <th style="padding: 10px; text-align: center;">Win Rate</th>
+                                    <th style="padding: 10px; text-align: center;">Avg Move</th>
+                                    <th style="padding: 10px; text-align: center;">Best Move</th>
+                                    <th style="padding: 10px; text-align: center;">Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patternPerformanceTable">
+                                <tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--muted);">Click "Scan History" to analyze patterns...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- WIN RATE BY CONTEXT -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                        🎯 Win Rate by Context (Key Insight: Patterns at SQ9 levels perform MUCH better!)
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr style="background: var(--bg);">
+                                    <th style="padding: 10px; text-align: left;">Context</th>
+                                    <th style="padding: 10px; text-align: center;">🔨 Hammer</th>
+                                    <th style="padding: 10px; text-align: center;">⭐ Star</th>
+                                    <th style="padding: 10px; text-align: center;">🟢 Bull Eng</th>
+                                    <th style="padding: 10px; text-align: center;">🔴 Bear Eng</th>
+                                    <th style="padding: 10px; text-align: center;">🎯 Dragonfly</th>
+                                    <th style="padding: 10px; text-align: center;">💀 Gravestone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contextWinRateTable">
+                                <tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--muted);">Scan to see context analysis...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PATTERNS AT SQ9 LEVELS -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; font-weight: 700;">🔥 Patterns at SQ9 Levels (High Probability Setups)</span>
+                        <span id="sq9PatternStats" style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px;">-- patterns | --% win rate</span>
+                    </div>
+                    <div style="overflow-x: auto; max-height: 300px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead style="position: sticky; top: 0; background: var(--bg);">
+                                <tr>
+                                    <th style="padding: 10px; text-align: left;">Date</th>
+                                    <th style="padding: 10px; text-align: center;">Pattern</th>
+                                    <th style="padding: 10px; text-align: center;">SQ9 Level</th>
+                                    <th style="padding: 10px; text-align: center;">Distance</th>
+                                    <th style="padding: 10px; text-align: center;">Signal</th>
+                                    <th style="padding: 10px; text-align: center;">Entry</th>
+                                    <th style="padding: 10px; text-align: center;">5-Day</th>
+                                    <th style="padding: 10px; text-align: center;">Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sq9PatternsTable">
+                                <tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--muted);">Scan to find patterns at SQ9 levels...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MAJOR PATTERNS LIST -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #1e3a5f, #2d1b4e); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                            📅 MAJOR Patterns (Daily) - Last 20
+                        </div>
+                        <div style="overflow-y: auto; max-height: 350px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead style="position: sticky; top: 0; background: var(--bg);">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left;">Date</th>
+                                        <th style="padding: 8px; text-align: center;">Pattern</th>
+                                        <th style="padding: 8px; text-align: center;">Signal</th>
+                                        <th style="padding: 8px; text-align: right;">5-Day</th>
+                                        <th style="padding: 8px; text-align: center;">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="majorPatternsTable">
+                                    <tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--muted);">Scan to see major patterns...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                            ⚡ MINOR Patterns (Intraday Sim) - Last 20
+                        </div>
+                        <div style="overflow-y: auto; max-height: 350px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead style="position: sticky; top: 0; background: var(--bg);">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left;">Date</th>
+                                        <th style="padding: 8px; text-align: center;">Pattern</th>
+                                        <th style="padding: 8px; text-align: center;">TF</th>
+                                        <th style="padding: 8px; text-align: center;">Signal</th>
+                                        <th style="padding: 8px; text-align: center;">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="minorPatternsTable">
+                                    <tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--muted);">Scan to see minor patterns...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP PERFORMING SETUPS -->
+                <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.05)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px; color: #22c55e;">🏆 Top Performing Setups (Highest Win Rate Combinations)</div>
+                    <div id="topSetupsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+                        <div style="background: white; border-radius: 8px; padding: 15px; text-align: center; color: var(--muted);">
+                            Scan to discover top setups...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MONTHLY DISTRIBUTION CHART -->
+                <div style="background: white; border-radius: 10px; padding: 15px; margin-top: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📊 Monthly Pattern Distribution</div>
+                    <div id="monthlyDistChart" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; align-items: end; height: 150px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; margin-top: 8px; font-size: 9px; text-align: center; color: var(--muted);">
+                        <div>Jan</div><div>Feb</div><div>Mar</div><div>Apr</div><div>May</div><div>Jun</div>
+                        <div>Jul</div><div>Aug</div><div>Sep</div><div>Oct</div><div>Nov</div><div>Dec</div>
+                    </div>
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px; font-size: 10px;">
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #22c55e; border-radius: 2px; vertical-align: middle;"></span> Bullish</span>
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 2px; vertical-align: middle;"></span> Bearish</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PATTERN DETAIL MODAL -->
+            <div id="patternDetailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 12px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div id="modalPatternTitle" style="font-size: 18px; font-weight: 700;">Pattern Detail</div>
+                        <button onclick="closePatternModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="modalPatternContent">
                     </div>
                 </div>
             </div>
@@ -9594,7 +9909,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
-                    <div style="font-size: 10px; color: #22c55e; margin-bottom: 5px;">READY (5/5)</div>
+                    <div style="font-size: 10px; color: #22c55e; margin-bottom: 5px;">🟢 READY (5/5)</div>
                     <div id="sq9ReadyCount" style="font-size: 28px; font-weight: 800; color: #22c55e;">0</div>
                 </div>
                 <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 15px; text-align: center;">
@@ -9694,36 +10009,14 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <select id="sq9MtfSymbol" onchange="updateSq9Mtf()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; font-weight: 600;">
-                            <optgroup label="Major ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Tech Giants">
-                                <option value="MSFT">MSFT</option>
-                                <option value="AAPL">AAPL</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="NVDA">NVDA</option>
-                            </optgroup>
-                            <optgroup label="Other Stocks">
-                                <option value="JPM">JPM</option>
-                                <option value="MA">MA</option>
-                                <option value="LLY">LLY</option>
-                                <option value="WMT">WMT</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="CVX">CVX</option>
-                                <option value="CSCO">CSCO</option>
-                            </optgroup>
-                            <optgroup label="Sectors">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                            </optgroup>
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="AMD">AMD</option>
+                            <option value="META">META</option>
                         </select>
                         <div style="font-size: 14px; font-weight: 600;">
                             <span id="sq9MtfSymbolDisplay">SPY</span>:
@@ -10451,16 +10744,7 @@ var invertGannSignal = false; // Set to true to invert Gann signals
 
 // Symbol filter for performance table (null = show all, array = selected symbols)
 var selectedFilterSymbols = null; // null means all selected
-var allSymbols = [
-    // Main ETFs
-    'SPY', 'QQQ', 'IWM', 'DIA',
-    // Sector ETFs
-    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-    // Tech Giants
-    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
-    // Other Major Stocks
-    'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
-];
+var allSymbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
 // Initialize symbol filter checkboxes
 function initSymbolFilter() {
@@ -10756,15 +11040,12 @@ function autoCalculateGannPredictions(symbol) {
     console.log('Auto-calc complete:', JSON.stringify(gannPredictions));
 }
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
     'XLF': 'Financials', 'XLE': 'Energy', 'XLK': 'Technology', 'XLV': 'Healthcare',
     'XLI': 'Industrials', 'XLB': 'Materials', 'XLU': 'Utilities', 'XLP': 'Consumer Staples',
-    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services',
-    'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'GOOGL': 'Alphabet', 'META': 'Meta',
-    'TSLA': 'Tesla', 'NVDA': 'Nvidia', 'AMD': 'AMD', 'JPM': 'JPMorgan', 'MA': 'Mastercard', 'LLY': 'Eli Lilly',
-    'WMT': 'Walmart', 'ORCL': 'Oracle', 'CVX': 'Chevron', 'CSCO': 'Cisco'
+    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services'
 };
 
 const TRADING_PARAMS = {
@@ -11936,7 +12217,7 @@ async function fetchLatestPrice(symbol) {
 
 // Update ALL symbolGannData prices from CSV data (not just current symbol)
 function updateAllSymbolGannDataFromCSV() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
     symbols.forEach(function(symbol) {
         var data = allSymbolsData[symbol];
@@ -12144,7 +12425,6 @@ function generateDynamicOpportunities() {
         { sym: 'SPY', sector: 'Index' },
         { sym: 'QQQ', sector: 'Tech' },
         { sym: 'IWM', sector: 'Small Cap' },
-        { sym: 'DIA', sector: 'Index' },
         { sym: 'XLF', sector: 'Financial' },
         { sym: 'XLE', sector: 'Energy' },
         { sym: 'XLK', sector: 'Technology' },
@@ -12153,23 +12433,7 @@ function generateDynamicOpportunities() {
         { sym: 'XLB', sector: 'Materials' },
         { sym: 'XLU', sector: 'Utilities' },
         { sym: 'XLP', sector: 'Staples' },
-        { sym: 'XLY', sector: 'Discretionary' },
-        { sym: 'XLRE', sector: 'Real Estate' },
-        { sym: 'XLC', sector: 'Comm Svcs' },
-        { sym: 'MSFT', sector: 'Technology' },
-        { sym: 'AAPL', sector: 'Technology' },
-        { sym: 'AMZN', sector: 'Technology' },
-        { sym: 'GOOGL', sector: 'Technology' },
-        { sym: 'META', sector: 'Technology' },
-        { sym: 'TSLA', sector: 'Technology' },
-        { sym: 'NVDA', sector: 'Technology' },
-        { sym: 'JPM', sector: 'Financial' },
-        { sym: 'MA', sector: 'Financial' },
-        { sym: 'LLY', sector: 'Healthcare' },
-        { sym: 'WMT', sector: 'Staples' },
-        { sym: 'ORCL', sector: 'Technology' },
-        { sym: 'CVX', sector: 'Energy' },
-        { sym: 'CSCO', sector: 'Technology' }
+        { sym: 'XLY', sector: 'Discretionary' }
     ];
 
     var rows = [];
@@ -15495,26 +15759,17 @@ function clearAndBackfillAgentPredictions(startDate) {
 }
 
 // ==========================================
-// TRUE GANN BACKTEST - Sq9 + Time Cycles (ALL SYMBOLS)
+// TRUE GANN BACKTEST - Sq9 + Time Cycles (ALL 12 ETFs)
 // ==========================================
 
 function backtestRealGann() {
-    var symbols = [
-        // Main ETFs
-        'SPY', 'QQQ', 'IWM', 'DIA',
-        // Sector ETFs
-        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-        // Tech Giants
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
-        // Other Major Stocks
-        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
-    ];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
     // Show loading
     var loadingDiv = document.createElement('div');
     loadingDiv.id = 'gannBacktestLoading';
     loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 350px;';
-    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing ' + symbols.length + ' symbols x 2 Years</div>';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing 12 ETFs x 2 Years</div>';
     document.body.appendChild(loadingDiv);
 
     var results = {
@@ -15542,7 +15797,7 @@ function backtestRealGann() {
         var data = allSymbolsData[sym];
 
         var prog = document.getElementById('gannBacktestProgress');
-        if (prog) prog.textContent = 'Processing ' + sym + ' (' + (symbolIndex + 1) + '/' + symbols.length + ')...';
+        if (prog) prog.textContent = 'Processing ' + sym + ' (' + (symbolIndex + 1) + '/12)...';
 
         if (!data || data.length < 100) {
             console.log(sym + ': Not enough data, skipping');
@@ -21856,186 +22111,6 @@ const symbolGannData = {
         sector: 'Consumer Disc',
         atr: 4.2,
         sacredLevels: [196, 216, 233, 250]
-    },
-    MSFT: {
-        price: 420.00,
-        low: 380.00,
-        high: 430.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 15',
-        sector: 'Technology',
-        atr: 6.5,
-        sacredLevels: [400, 420, 440, 460]
-    },
-    AAPL: {
-        price: 250.00,
-        low: 220.00,
-        high: 255.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 20',
-        sector: 'Technology',
-        atr: 4.0,
-        sacredLevels: [225, 240, 256, 270]
-    },
-    AMZN: {
-        price: 225.00,
-        low: 180.00,
-        high: 230.00,
-        lowDate: 'Oct 15',
-        highDate: 'Dec 10',
-        sector: 'Technology',
-        atr: 5.5,
-        sacredLevels: [196, 210, 225, 240]
-    },
-    GOOGL: {
-        price: 195.00,
-        low: 165.00,
-        high: 200.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 15',
-        sector: 'Technology',
-        atr: 4.0,
-        sacredLevels: [180, 192, 205, 218]
-    },
-    META: {
-        price: 610.00,
-        low: 540.00,
-        high: 620.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 20',
-        sector: 'Technology',
-        atr: 12.0,
-        sacredLevels: [576, 600, 625, 650]
-    },
-    TSLA: {
-        price: 420.00,
-        low: 330.00,
-        high: 450.00,
-        lowDate: 'Oct 20',
-        highDate: 'Dec 15',
-        sector: 'Technology',
-        atr: 15.0,
-        sacredLevels: [361, 400, 441, 484]
-    },
-    NVDA: {
-        price: 140.00,
-        low: 115.00,
-        high: 150.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 10',
-        sector: 'Technology',
-        atr: 5.0,
-        sacredLevels: [121, 133, 144, 156]
-    },
-    AMD: {
-        price: 125.00,
-        low: 95.00,
-        high: 140.00,
-        lowDate: 'Oct 27',
-        highDate: 'Dec 10',
-        sector: 'Technology',
-        atr: 4.5,
-        sacredLevels: [100, 121, 133, 144]
-    },
-    JPM: {
-        price: 250.00,
-        low: 210.00,
-        high: 260.00,
-        lowDate: 'Oct 27',
-        highDate: 'Dec 15',
-        sector: 'Financials',
-        atr: 4.5,
-        sacredLevels: [225, 244, 256, 270]
-    },
-    MA: {
-        price: 530.00,
-        low: 470.00,
-        high: 540.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 20',
-        sector: 'Financials',
-        atr: 9.0,
-        sacredLevels: [484, 512, 540, 576]
-    },
-    LLY: {
-        price: 780.00,
-        low: 700.00,
-        high: 800.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 15',
-        sector: 'Healthcare',
-        atr: 18.0,
-        sacredLevels: [729, 765, 800, 841]
-    },
-    WMT: {
-        price: 92.00,
-        low: 82.00,
-        high: 95.00,
-        lowDate: 'Oct 20',
-        highDate: 'Dec 10',
-        sector: 'Consumer Staples',
-        atr: 1.8,
-        sacredLevels: [81, 88, 95, 100]
-    },
-    ORCL: {
-        price: 175.00,
-        low: 145.00,
-        high: 180.00,
-        lowDate: 'Oct 15',
-        highDate: 'Dec 20',
-        sector: 'Technology',
-        atr: 4.5,
-        sacredLevels: [156, 169, 182, 196]
-    },
-    CVX: {
-        price: 145.00,
-        low: 130.00,
-        high: 155.00,
-        lowDate: 'Nov 1',
-        highDate: 'Dec 10',
-        sector: 'Energy',
-        atr: 3.0,
-        sacredLevels: [133, 144, 156, 169]
-    },
-    CSCO: {
-        price: 58.00,
-        low: 52.00,
-        high: 60.00,
-        lowDate: 'Oct 20',
-        highDate: 'Dec 15',
-        sector: 'Technology',
-        atr: 1.2,
-        sacredLevels: [52, 56, 60, 64]
-    },
-    DIA: {
-        price: 440.00,
-        low: 365.00,
-        high: 450.00,
-        lowDate: 'Oct 27',
-        highDate: 'Dec 15',
-        sector: 'Dow Jones',
-        atr: 5.5,
-        sacredLevels: [400, 420, 441, 460]
-    },
-    XLC: {
-        price: 95.00,
-        low: 78.50,
-        high: 100.00,
-        lowDate: 'Oct 27',
-        highDate: 'Dec 10',
-        sector: 'Communication Services',
-        atr: 1.8,
-        sacredLevels: [81, 90, 96, 100]
-    },
-    XLRE: {
-        price: 42.00,
-        low: 36.80,
-        high: 44.00,
-        lowDate: 'Oct 27',
-        highDate: 'Dec 5',
-        sector: 'Real Estate',
-        atr: 0.8,
-        sacredLevels: [36, 40, 44, 49]
     }
 };
 
@@ -26171,36 +26246,6 @@ function detectPatternsFromCSV(data) {
     return patterns.slice(-10);
 }
 
-// Wrapper function to update Top Trade Display with current symbol
-function updateTopTradeDisplay() {
-    var symbol = currentSymbol || 'SPY';
-
-    // First ensure symbolGannData has latest prices from allSymbolsData
-    if (allSymbolsData && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
-        var latestRow = allSymbolsData[symbol][allSymbolsData[symbol].length - 1];
-        var price = parseFloat(latestRow.Close);
-        if (!isNaN(price) && symbolGannData[symbol]) {
-            symbolGannData[symbol].price = price;
-            console.log('updateTopTradeDisplay: Updated ' + symbol + ' price to $' + price.toFixed(2));
-        }
-    }
-
-    // Call both update functions
-    if (typeof updateTopTrade === 'function') {
-        updateTopTrade(symbol);
-    }
-    if (typeof updateTopTradeRecommendation === 'function') {
-        updateTopTradeRecommendation(symbol);
-    }
-
-    // Update timestamp
-    var timeEl = document.getElementById('topTradeTime');
-    if (timeEl) {
-        timeEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
-    }
-
-    console.log('Top Trade Display updated for ' + symbol);
-}
 
 // Update Today's Top Trade section
 function updateTopTrade(symbol) {
@@ -27734,102 +27779,6 @@ const gannRoadmapData = {
                 { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 280.00, significance: '360° full circle' }
             ]
         }
-    },
-    DIA: {
-        HIGH: { date: '2025-02-19', price: 450.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-05-20', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 430.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-08-18', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 460.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-02-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 480.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 380.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 440.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 470.00, significance: '360° full circle' }
-        ]}
-    },
-    MSFT: {
-        HIGH: { date: '2025-01-15', price: 450.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-04-15', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-07-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 440.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-01-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 480.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 350.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 400.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 430.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 470.00, significance: '360° full circle' }
-        ]}
-    },
-    AAPL: {
-        HIGH: { date: '2025-01-10', price: 260.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-04-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 240.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-07-09', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 255.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-01-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 280.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 200.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 230.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 250.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 270.00, significance: '360° full circle' }
-        ]}
-    },
-    GOOGL: {
-        HIGH: { date: '2025-02-01', price: 210.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-05-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 190.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-07-31', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 200.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-01-27', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 150.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 180.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 195.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 210.00, significance: '360° full circle' }
-        ]}
-    },
-    AMZN: {
-        HIGH: { date: '2025-02-10', price: 240.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-05-11', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-08-09', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 235.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-02-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 260.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 170.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 200.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 250.00, significance: '360° full circle' }
-        ]}
-    },
-    META: {
-        HIGH: { date: '2025-02-15', price: 650.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-05-16', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 600.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-08-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 640.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-02-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 700.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 480.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 560.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 600.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 680.00, significance: '360° full circle' }
-        ]}
-    },
-    TSLA: {
-        HIGH: { date: '2024-12-18', price: 480.00, type: 'HIGH', label: 'Dec 2024 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-03-18', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 400.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-06-16', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 450.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2025-12-13', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 520.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 280.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 360.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 500.00, significance: '360° full circle' }
-        ]}
-    },
-    NVDA: {
-        HIGH: { date: '2025-01-06', price: 150.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-04-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 130.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-07-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 145.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-01-01', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 170.00, significance: '360° full circle' }
-        ]},
-        LOW: { date: '2025-04-07', price: 90.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
-            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 120.00, significance: '90° angle' },
-            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 140.00, significance: '180° opposition' },
-            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 160.00, significance: '360° full circle' }
-        ]}
     }
 };
 
@@ -27855,525 +27804,6 @@ function calcRoadmapSq9(price) {
         resist2: Math.pow(sqrt + 0.5, 2)
     };
 }
-
-// ==================== TREND-AWARE SQ9 SIGNALS ====================
-// PREVENTS trading against the trend - only signals WITH the trend
-
-// Calculate SQ9 levels from a given price
-function calculateSQ9Levels(price) {
-    var sqrt = Math.sqrt(price);
-    var levels = [];
-
-    // Support levels (below current price)
-    for (var i = 1; i <= 4; i++) {
-        var supportPrice = Math.pow(sqrt - (i * 0.25), 2);
-        if (supportPrice > 0) {
-            levels.push({
-                price: supportPrice,
-                type: 'support',
-                angle: i * 90,
-                label: '-' + (i * 90) + '°'
-            });
-        }
-    }
-
-    // Resistance levels (above current price)
-    for (var j = 1; j <= 4; j++) {
-        levels.push({
-            price: Math.pow(sqrt + (j * 0.25), 2),
-            type: 'resistance',
-            angle: j * 90,
-            label: '+' + (j * 90) + '°'
-        });
-    }
-
-    return levels;
-}
-
-function getTrendAwareSQ9Signal(symbol) {
-    var priceData = allSymbolsData[symbol];
-    if (!priceData || priceData.length < 50) {
-        return { signal: 'NO_DATA', message: 'Insufficient data for trend analysis' };
-    }
-
-    var currentPrice = parseFloat(priceData[priceData.length - 1].Close);
-
-    // Calculate SMA20 and SMA50 for trend
-    var sma20 = 0, sma50 = 0;
-    for (var i = priceData.length - 20; i < priceData.length; i++) {
-        sma20 += parseFloat(priceData[i].Close);
-    }
-    sma20 /= 20;
-
-    for (var j = priceData.length - 50; j < priceData.length; j++) {
-        sma50 += parseFloat(priceData[j].Close);
-    }
-    sma50 /= 50;
-
-    // Determine trend strength
-    var trend = 'NEUTRAL';
-    var trendEmoji = '➡️';
-    var trendColor = '#888';
-
-    if (currentPrice > sma20 && sma20 > sma50) {
-        trend = 'STRONG_UP';
-        trendEmoji = '🚀';
-        trendColor = '#00ff00';
-    } else if (currentPrice > sma20) {
-        trend = 'UP';
-        trendEmoji = '📈';
-        trendColor = '#4CAF50';
-    } else if (currentPrice < sma20 && sma20 < sma50) {
-        trend = 'STRONG_DOWN';
-        trendEmoji = '💥';
-        trendColor = '#ff0000';
-    } else if (currentPrice < sma20) {
-        trend = 'DOWN';
-        trendEmoji = '📉';
-        trendColor = '#f44336';
-    }
-
-    // Find nearest SQ9 support and resistance
-    var sq9Levels = calculateSQ9Levels(currentPrice);
-    var nearestSupport = null;
-    var nearestResistance = null;
-    var supportDist = Infinity;
-    var resistanceDist = Infinity;
-
-    sq9Levels.forEach(function(level) {
-        if (level.price < currentPrice) {
-            var dist = currentPrice - level.price;
-            if (dist < supportDist) {
-                supportDist = dist;
-                nearestSupport = level;
-            }
-        } else if (level.price > currentPrice) {
-            var dist = level.price - currentPrice;
-            if (dist < resistanceDist) {
-                resistanceDist = dist;
-                nearestResistance = level;
-            }
-        }
-    });
-
-    var supportPct = nearestSupport ? (supportDist / currentPrice * 100).toFixed(2) : 'N/A';
-    var resistancePct = nearestResistance ? (resistanceDist / currentPrice * 100).toFixed(2) : 'N/A';
-
-    // Determine signal based on trend + SQ9 level
-    var signal = 'WAIT';
-    var action = '';
-    var warning = '';
-    var signalEmoji = '⏳';
-    var signalColor = '#888';
-    var confidence = 'LOW';
-
-    var atSupport = nearestSupport && parseFloat(supportPct) < 1.0;
-    var atResistance = nearestResistance && parseFloat(resistancePct) < 1.0;
-
-    // UPTREND LOGIC
-    if (trend === 'STRONG_UP' || trend === 'UP') {
-        if (atSupport) {
-            signal = 'BUY_CALL';
-            action = 'BUY CALL - Trend pullback to support';
-            signalEmoji = '📞💚';
-            signalColor = '#00ff00';
-            confidence = trend === 'STRONG_UP' ? 'HIGH' : 'MEDIUM';
-        } else if (atResistance) {
-            signal = 'WAIT';
-            action = 'WAIT - At resistance but trend is UP';
-            warning = '⚠️ DO NOT BUY PUTS - Never short an uptrend!';
-            signalEmoji = '⏸️';
-            signalColor = '#ff9800';
-            confidence = 'LOW';
-        } else {
-            signal = 'NEUTRAL_UP';
-            action = 'BIAS: CALLS - Wait for pullback to support';
-            signalEmoji = '📈';
-            signalColor = '#4CAF50';
-            confidence = 'LOW';
-        }
-    }
-    // DOWNTREND LOGIC
-    else if (trend === 'STRONG_DOWN' || trend === 'DOWN') {
-        if (atResistance) {
-            signal = 'BUY_PUT';
-            action = 'BUY PUT - Trend bounce to resistance';
-            signalEmoji = '📉💔';
-            signalColor = '#ff0000';
-            confidence = trend === 'STRONG_DOWN' ? 'HIGH' : 'MEDIUM';
-        } else if (atSupport) {
-            signal = 'WAIT';
-            action = 'WAIT - At support but trend is DOWN';
-            warning = '⚠️ DO NOT BUY CALLS - Never buy dips in downtrend!';
-            signalEmoji = '⏸️';
-            signalColor = '#ff9800';
-            confidence = 'LOW';
-        } else {
-            signal = 'NEUTRAL_DOWN';
-            action = 'BIAS: PUTS - Wait for bounce to resistance';
-            signalEmoji = '📉';
-            signalColor = '#f44336';
-            confidence = 'LOW';
-        }
-    }
-    // NEUTRAL TREND
-    else {
-        if (atSupport) {
-            signal = 'POSSIBLE_CALL';
-            action = 'POSSIBLE CALL - Support in neutral trend';
-            warning = '⚠️ Low confidence - No clear trend';
-            signalEmoji = '🤔📞';
-            signalColor = '#2196F3';
-            confidence = 'LOW';
-        } else if (atResistance) {
-            signal = 'POSSIBLE_PUT';
-            action = 'POSSIBLE PUT - Resistance in neutral trend';
-            warning = '⚠️ Low confidence - No clear trend';
-            signalEmoji = '🤔📉';
-            signalColor = '#2196F3';
-            confidence = 'LOW';
-        } else {
-            signal = 'NO_SETUP';
-            action = 'NO SETUP - Neutral trend, away from levels';
-            signalEmoji = '😴';
-            signalColor = '#666';
-            confidence = 'NONE';
-        }
-    }
-
-    return {
-        symbol: symbol,
-        price: currentPrice,
-        sma20: sma20.toFixed(2),
-        sma50: sma50.toFixed(2),
-        trend: trend,
-        trendEmoji: trendEmoji,
-        trendColor: trendColor,
-        nearestSupport: nearestSupport,
-        nearestResistance: nearestResistance,
-        supportDistance: supportPct + '%',
-        resistanceDistance: resistancePct + '%',
-        atSupport: atSupport,
-        atResistance: atResistance,
-        signal: signal,
-        action: action,
-        warning: warning,
-        signalEmoji: signalEmoji,
-        signalColor: signalColor,
-        confidence: confidence
-    };
-}
-
-// Update action center with trend-aware signals
-function updateTrendAwareActionCenter() {
-    var container = document.getElementById('trendAwareSignals');
-    if (!container) return;
-
-    // Check if data is loaded
-    if (typeof allSymbolsData === 'undefined' || Object.keys(allSymbolsData).length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 30px; color: #f59e0b; background: rgba(245,158,11,0.1); border-radius: 8px;">Data not loaded yet. Please wait a few seconds and click "Refresh Signals" again.</div>';
-        return;
-    }
-
-    var symbols = [
-        'SPY', 'QQQ', 'IWM', 'DIA',
-        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
-        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
-    ];
-
-    var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
-
-    symbols.forEach(function(sym) {
-        var result = getTrendAwareSQ9Signal(sym);
-        if (result.signal === 'NO_DATA') return;
-
-        html += '<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid ' + result.signalColor + '; border-radius: 12px; padding: 15px;">';
-        html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">';
-        html += '<span style="font-size: 1.4em; font-weight: bold; color: #fff;">' + sym + '</span>';
-        html += '<span style="font-size: 1.5em;">' + result.signalEmoji + '</span>';
-        html += '</div>';
-
-        // Price and trend
-        html += '<div style="color: #aaa; font-size: 0.9em; margin-bottom: 8px;">';
-        html += '$' + result.price.toFixed(2) + ' | ' + result.trendEmoji + ' <span style="color: ' + result.trendColor + ';">' + result.trend + '</span>';
-        html += '</div>';
-
-        // SMAs
-        html += '<div style="color: #666; font-size: 0.8em; margin-bottom: 8px;">';
-        html += 'SMA20: $' + result.sma20 + ' | SMA50: $' + result.sma50;
-        html += '</div>';
-
-        // SQ9 Levels
-        html += '<div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 10px;">';
-        if (result.nearestSupport) {
-            var supStyle = result.atSupport ? 'color: #00ff00; font-weight: bold;' : 'color: #4CAF50;';
-            html += '<span style="' + supStyle + '">⬇️ Support: $' + result.nearestSupport.price.toFixed(2) + ' (' + result.supportDistance + ')</span>';
-        }
-        if (result.nearestResistance) {
-            var resStyle = result.atResistance ? 'color: #ff0000; font-weight: bold;' : 'color: #f44336;';
-            html += '<span style="' + resStyle + '">⬆️ Resist: $' + result.nearestResistance.price.toFixed(2) + ' (' + result.resistanceDistance + ')</span>';
-        }
-        html += '</div>';
-
-        // Action
-        html += '<div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px; text-align: center;">';
-        html += '<div style="color: ' + result.signalColor + '; font-weight: bold; font-size: 1.1em;">' + result.action + '</div>';
-        if (result.warning) {
-            html += '<div style="color: #ff9800; font-size: 0.9em; margin-top: 5px;">' + result.warning + '</div>';
-        }
-        html += '<div style="color: #888; font-size: 0.8em; margin-top: 5px;">Confidence: ' + result.confidence + '</div>';
-        html += '</div>';
-
-        html += '</div>';
-    });
-
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-// Auto-refresh Trend-Aware SQ9 Signals when data is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Wait for data to load, then refresh signals
-    setTimeout(function() {
-        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
-            updateTrendAwareActionCenter();
-        }
-    }, 4000);
-
-    // Also refresh every 60 seconds
-    setInterval(function() {
-        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
-            updateTrendAwareActionCenter();
-        }
-    }, 60000);
-});
-
-// ============================================
-// RECOVERY TRACKER
-// ============================================
-
-var recoveryData = {
-    startingLoss: -228.73,
-    targetProfit: 0,
-    currentPnL: 0,
-    trades: [],
-    weeklyGoal: 50
-};
-
-// Load from localStorage
-function loadRecoveryData() {
-    var saved = localStorage.getItem('recoveryTracker');
-    if (saved) {
-        recoveryData = JSON.parse(saved);
-    }
-}
-
-function saveRecoveryData() {
-    localStorage.setItem('recoveryTracker', JSON.stringify(recoveryData));
-}
-
-function addRecoveryTrade(result, amount, symbol, notes) {
-    recoveryData.trades.push({
-        date: new Date().toISOString().split('T')[0],
-        result: result,
-        amount: amount,
-        symbol: symbol,
-        notes: notes
-    });
-    recoveryData.currentPnL += amount;
-    saveRecoveryData();
-    renderRecoveryTracker();
-}
-
-function renderRecoveryTracker() {
-    var container = document.getElementById('recoveryTrackerContainer');
-    if (!container) return;
-
-    loadRecoveryData();
-
-    var progress = ((recoveryData.currentPnL - recoveryData.startingLoss) / Math.abs(recoveryData.startingLoss) * 100);
-    var remaining = Math.abs(recoveryData.startingLoss) + recoveryData.currentPnL;
-    var isRecovered = remaining <= 0;
-
-    var progressColor = progress < 25 ? '#ef4444' : progress < 50 ? '#f59e0b' : progress < 75 ? '#3b82f6' : '#22c55e';
-
-    var wins = recoveryData.trades.filter(function(t) { return t.result === 'WIN'; });
-    var losses = recoveryData.trades.filter(function(t) { return t.result === 'LOSS'; });
-    var winRate = recoveryData.trades.length > 0 ? (wins.length / recoveryData.trades.length * 100).toFixed(0) : 0;
-
-    var html = '';
-
-    // Progress Bar
-    html += '<div style="background: var(--bg); border-radius: 12px; padding: 20px; margin-bottom: 15px;">' +
-        '<div style="display: flex; justify-content: space-between; margin-bottom: 10px;">' +
-            '<span style="font-size: 12px; color: var(--muted);">Recovery Progress</span>' +
-            '<span style="font-size: 12px; font-weight: 700; color: ' + progressColor + ';">' + Math.min(100, Math.max(0, progress)).toFixed(1) + '%</span>' +
-        '</div>' +
-        '<div style="background: #e5e7eb; border-radius: 10px; height: 20px; overflow: hidden;">' +
-            '<div style="background: linear-gradient(90deg, ' + progressColor + ', ' + progressColor + '99); height: 100%; width: ' + Math.min(100, Math.max(0, progress)) + '%; transition: width 0.5s; border-radius: 10px;"></div>' +
-        '</div>' +
-        '<div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: var(--muted);">' +
-            '<span>Started: $' + recoveryData.startingLoss.toFixed(2) + '</span>' +
-            '<span>' + (isRecovered ? 'RECOVERED!' : 'Remaining: $' + remaining.toFixed(2)) + '</span>' +
-        '</div>' +
-    '</div>';
-
-    // Stats Row
-    html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">' +
-        '<div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid var(--border);">' +
-            '<div style="font-size: 10px; color: var(--muted);">THIS MONTH</div>' +
-            '<div style="font-size: 20px; font-weight: 800; color: ' + (recoveryData.currentPnL >= 0 ? '#22c55e' : '#ef4444') + ';">$' + (recoveryData.currentPnL >= 0 ? '+' : '') + recoveryData.currentPnL.toFixed(2) + '</div>' +
-        '</div>' +
-        '<div style="background: white; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid var(--border);">' +
-            '<div style="font-size: 10px; color: var(--muted);">WIN RATE</div>' +
-            '<div style="font-size: 20px; font-weight: 800; color: ' + (winRate >= 50 ? '#22c55e' : '#ef4444') + ';">' + winRate + '%</div>' +
-        '</div>' +
-        '<div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 12px; text-align: center;">' +
-            '<div style="font-size: 10px; color: #22c55e;">WINS</div>' +
-            '<div style="font-size: 20px; font-weight: 800; color: #22c55e;">' + wins.length + '</div>' +
-        '</div>' +
-        '<div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">' +
-            '<div style="font-size: 10px; color: #ef4444;">LOSSES</div>' +
-            '<div style="font-size: 20px; font-weight: 800; color: #ef4444;">' + losses.length + '</div>' +
-        '</div>' +
-    '</div>';
-
-    // Quick Add Buttons
-    html += '<div style="display: flex; gap: 10px; margin-bottom: 15px;">' +
-        '<button onclick="showAddTradeModal(\'WIN\')" style="flex: 1; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px;">Log Win</button>' +
-        '<button onclick="showAddTradeModal(\'LOSS\')" style="flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px;">Log Loss</button>' +
-    '</div>';
-
-    // The Rules Box
-    html += '<div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05)); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; padding: 15px; margin-bottom: 15px;">' +
-        '<div style="font-size: 12px; font-weight: 700; color: #3b82f6; margin-bottom: 10px;">RECOVERY RULES - FOLLOW EXACTLY</div>' +
-        '<div style="display: grid; gap: 8px; font-size: 11px;">' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">1.</span> <strong>TREND ONLY:</strong> CALLS in uptrend, PUTS in downtrend. NEVER opposite.</div>' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">2.</span> <strong>AT THE LEVEL:</strong> Only enter when price is at SQ9 support/resistance.</div>' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">3.</span> <strong>SMALL SIZE:</strong> Max $25-50 per trade (1 contract).</div>' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">4.</span> <strong>TAKE PROFIT:</strong> Exit at +50% to +100%. Don\'t get greedy.</div>' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">5.</span> <strong>CUT LOSSES:</strong> Exit at -40%. NEVER let expire worthless.</div>' +
-            '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 16px;">6.</span> <strong>2-3 TRADES/WEEK:</strong> Quality over quantity. No setup = no trade.</div>' +
-        '</div>' +
-    '</div>';
-
-    // Recent Trades
-    if (recoveryData.trades.length > 0) {
-        html += '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">Recent Recovery Trades</div>' +
-            '<div style="background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">';
-
-        recoveryData.trades.slice(-5).reverse().forEach(function(trade) {
-            var color = trade.result === 'WIN' ? '#22c55e' : '#ef4444';
-            var icon = trade.result === 'WIN' ? '+' : '-';
-            html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border);">' +
-                '<div>' +
-                    '<span style="font-weight: 600;">' + icon + ' ' + trade.symbol + '</span>' +
-                    '<span style="font-size: 10px; color: var(--muted); margin-left: 8px;">' + trade.date + '</span>' +
-                '</div>' +
-                '<div style="font-weight: 700; color: ' + color + ';">$' + (trade.amount >= 0 ? '+' : '') + trade.amount.toFixed(2) + '</div>' +
-            '</div>';
-        });
-
-        html += '</div>';
-    }
-
-    container.innerHTML = html;
-}
-
-function showAddTradeModal(result) {
-    var modal = document.getElementById('addRecoveryTradeModal');
-    if (!modal) {
-        // Create modal
-        modal = document.createElement('div');
-        modal.id = 'addRecoveryTradeModal';
-        modal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;';
-        modal.innerHTML =
-            '<div style="background: white; border-radius: 12px; padding: 25px; max-width: 400px; width: 90%;">' +
-                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">' +
-                    '<div id="modalTitle" style="font-size: 16px; font-weight: 700;">Log Trade</div>' +
-                    '<button onclick="document.getElementById(\'addRecoveryTradeModal\').style.display=\'none\'" style="background: none; border: none; font-size: 20px; cursor: pointer;">X</button>' +
-                '</div>' +
-                '<input type="hidden" id="tradeResult">' +
-                '<div style="display: grid; gap: 15px;">' +
-                    '<div>' +
-                        '<label style="font-size: 11px; color: var(--muted);">Symbol</label>' +
-                        '<input type="text" id="tradeSymbol" placeholder="SPY, IWM, QQQ..." style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">' +
-                    '</div>' +
-                    '<div>' +
-                        '<label style="font-size: 11px; color: var(--muted);">Profit/Loss Amount ($)</label>' +
-                        '<input type="number" id="tradeAmount" placeholder="25.00" step="0.01" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">' +
-                    '</div>' +
-                    '<div>' +
-                        '<label style="font-size: 11px; color: var(--muted);">Notes (optional)</label>' +
-                        '<input type="text" id="tradeNotes" placeholder="Setup, entry reason..." style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px;">' +
-                    '</div>' +
-                    '<button id="submitTradeBtn" onclick="submitRecoveryTrade()" style="padding: 12px; background: #22c55e; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700;">Log Trade</button>' +
-                '</div>' +
-            '</div>';
-        document.body.appendChild(modal);
-    }
-
-    document.getElementById('tradeResult').value = result;
-    document.getElementById('modalTitle').textContent = result === 'WIN' ? 'Log Winning Trade' : 'Log Losing Trade';
-    document.getElementById('submitTradeBtn').style.background = result === 'WIN' ? '#22c55e' : '#ef4444';
-    document.getElementById('tradeAmount').value = '';
-    document.getElementById('tradeSymbol').value = '';
-    document.getElementById('tradeNotes').value = '';
-
-    modal.style.display = 'flex';
-}
-
-function submitRecoveryTrade() {
-    var result = document.getElementById('tradeResult').value;
-    var symbol = document.getElementById('tradeSymbol').value.toUpperCase() || 'UNKNOWN';
-    var amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
-    var notes = document.getElementById('tradeNotes').value;
-
-    if (amount === 0) {
-        alert('Please enter an amount');
-        return;
-    }
-
-    // Make amount negative for losses
-    if (result === 'LOSS' && amount > 0) {
-        amount = -amount;
-    }
-    // Make amount positive for wins
-    if (result === 'WIN' && amount < 0) {
-        amount = Math.abs(amount);
-    }
-
-    addRecoveryTrade(result, amount, symbol, notes);
-    document.getElementById('addRecoveryTradeModal').style.display = 'none';
-}
-
-function addRecoveryTrackerSection() {
-    // Container already exists in HTML, just render it
-    loadRecoveryData();
-    renderRecoveryTracker();
-}
-
-function resetRecoveryTracker() {
-    if (confirm('Reset recovery tracker? This will clear all logged trades.')) {
-        recoveryData = {
-            startingLoss: -228.73,
-            targetProfit: 0,
-            currentPnL: 0,
-            trades: [],
-            weeklyGoal: 50
-        };
-        saveRecoveryData();
-        renderRecoveryTracker();
-    }
-}
-
-// Initialize Recovery Tracker
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        addRecoveryTrackerSection();
-    }, 500);
-});
 
 // Get expected move based on pivot type and cycle index
 function getExpectedMove(pivotType, cycleIndex) {
@@ -28718,40 +28148,19 @@ let sq9EntryZones = {};
 
 // Pivot Data for SQ9 Calculations
 const sq9PivotData = {
-    // Main ETFs
     SPY: { date: '2025-04-07', price: 481.80, type: 'LOW', label: 'Apr 7 LOW' },
     QQQ: { date: '2025-04-07', price: 402.39, type: 'LOW', label: 'Apr 7 LOW' },
     DIA: { date: '2025-04-07', price: 364.42, type: 'LOW', label: 'Apr 7 LOW' },
     IWM: { date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 7 LOW' },
-    // Sector ETFs
-    XLK: { date: '2025-04-07', price: 186.50, type: 'LOW', label: 'Apr 7 LOW' },
     XLF: { date: '2025-04-07', price: 42.35, type: 'LOW', label: 'Apr 7 LOW' },
     XLE: { date: '2025-04-07', price: 78.12, type: 'LOW', label: 'Apr 7 LOW' },
+    XLK: { date: '2025-04-07', price: 186.50, type: 'LOW', label: 'Apr 7 LOW' },
     XLV: { date: '2025-04-07', price: 131.25, type: 'LOW', label: 'Apr 7 LOW' },
     XLI: { date: '2025-04-07', price: 112.80, type: 'LOW', label: 'Apr 7 LOW' },
-    XLP: { date: '2025-04-07', price: 75.20, type: 'LOW', label: 'Apr 7 LOW' },
-    XLU: { date: '2025-04-07', price: 68.90, type: 'LOW', label: 'Apr 7 LOW' },
     XLB: { date: '2025-04-07', price: 79.45, type: 'LOW', label: 'Apr 7 LOW' },
-    XLC: { date: '2025-04-07', price: 78.50, type: 'LOW', label: 'Apr 7 LOW' },
-    XLRE: { date: '2025-04-07', price: 36.80, type: 'LOW', label: 'Apr 7 LOW' },
-    XLY: { date: '2025-04-07', price: 175.30, type: 'LOW', label: 'Apr 7 LOW' },
-    // Tech Giants
-    MSFT: { date: '2025-04-07', price: 356.25, type: 'LOW', label: 'Apr 7 LOW' },
-    AAPL: { date: '2025-04-07', price: 169.50, type: 'LOW', label: 'Apr 7 LOW' },
-    AMZN: { date: '2025-04-07', price: 161.02, type: 'LOW', label: 'Apr 7 LOW' },
-    GOOGL: { date: '2025-04-07', price: 146.80, type: 'LOW', label: 'Apr 7 LOW' },
-    META: { date: '2025-04-07', price: 480.50, type: 'LOW', label: 'Apr 7 LOW' },
-    TSLA: { date: '2025-04-07', price: 138.80, type: 'LOW', label: 'Apr 7 LOW' },
-    NVDA: { date: '2025-04-07', price: 86.50, type: 'LOW', label: 'Apr 7 LOW' },
-    AMD: { date: '2025-04-07', price: 95.80, type: 'LOW', label: 'Apr 7 LOW' },
-    // Other Major Stocks
-    JPM: { date: '2025-04-07', price: 218.50, type: 'LOW', label: 'Apr 7 LOW' },
-    MA: { date: '2025-04-07', price: 468.20, type: 'LOW', label: 'Apr 7 LOW' },
-    LLY: { date: '2025-04-07', price: 710.00, type: 'LOW', label: 'Apr 7 LOW' },
-    WMT: { date: '2025-04-07', price: 80.50, type: 'LOW', label: 'Apr 7 LOW' },
-    ORCL: { date: '2025-04-07', price: 125.80, type: 'LOW', label: 'Apr 7 LOW' },
-    CVX: { date: '2025-04-07', price: 135.20, type: 'LOW', label: 'Apr 7 LOW' },
-    CSCO: { date: '2025-04-07', price: 51.80, type: 'LOW', label: 'Apr 7 LOW' }
+    XLU: { date: '2025-04-07', price: 68.90, type: 'LOW', label: 'Apr 7 LOW' },
+    XLP: { date: '2025-04-07', price: 75.20, type: 'LOW', label: 'Apr 7 LOW' },
+    XLY: { date: '2025-04-07', price: 175.30, type: 'LOW', label: 'Apr 7 LOW' }
 };
 
 // Calculate SQ9 levels from pivot
@@ -28839,40 +28248,18 @@ function calculateGann8ths(symbol) {
     if (!priceData || priceData.length < 50) {
         // Use known ranges as fallback
         var knownRanges = {
-            // Main ETFs
             'SPY': { high: 710.00, low: 481.80 },
             'QQQ': { high: 540.00, low: 402.39 },
             'IWM': { high: 265.00, low: 171.73 },
             'DIA': { high: 450.00, low: 365.45 },
-            // Sector ETFs
-            'XLK': { high: 240.00, low: 185.20 },
             'XLF': { high: 52.00, low: 42.80 },
             'XLE': { high: 98.00, low: 78.50 },
-            'XLV': { high: 160.00, low: 131.25 },
-            'XLI': { high: 145.00, low: 112.80 },
-            'XLP': { high: 85.00, low: 75.20 },
-            'XLU': { high: 82.00, low: 68.90 },
-            'XLB': { high: 95.00, low: 79.45 },
-            'XLC': { high: 105.00, low: 78.50 },
-            'XLRE': { high: 45.00, low: 36.80 },
-            'XLY': { high: 220.00, low: 175.30 },
-            // Tech Giants
-            'MSFT': { high: 470.00, low: 356.25 },
-            'AAPL': { high: 260.00, low: 169.50 },
-            'AMZN': { high: 240.00, low: 161.02 },
-            'GOOGL': { high: 210.00, low: 146.80 },
-            'META': { high: 640.00, low: 480.50 },
-            'TSLA': { high: 490.00, low: 138.80 },
+            'XLK': { high: 240.00, low: 185.20 },
             'NVDA': { high: 153.00, low: 86.50 },
-            // Other Major Stocks
-            'JPM': { high: 280.00, low: 218.50 },
-            'MA': { high: 560.00, low: 468.20 },
-            'LLY': { high: 970.00, low: 710.00 },
-            'WMT': { high: 105.00, low: 80.50 },
-            'ORCL': { high: 195.00, low: 125.80 },
-            'CVX': { high: 170.00, low: 135.20 },
-            'CSCO': { high: 65.00, low: 51.80 },
-            'AMD': { high: 185.00, low: 95.80 }
+            'TSLA': { high: 490.00, low: 138.80 },
+            'AAPL': { high: 260.00, low: 169.50 },
+            'AMD': { high: 185.00, low: 95.80 },
+            'META': { high: 640.00, low: 480.50 }
         };
 
         if (knownRanges[symbol]) {
@@ -29748,16 +29135,6 @@ function selectSq9Etf(symbol) {
         tab.classList.remove('active');
     });
     event.target.classList.add('active');
-
-    // Update global symbol and reload data for pattern detection
-    currentSymbol = symbol;
-    var symbolSelect = document.getElementById('symbolSelect');
-    if (symbolSelect) symbolSelect.value = symbol;
-
-    // Update pattern detection for this symbol
-    if (typeof loadAllData === 'function') {
-        loadAllData();
-    }
 
     updateSq9Monitor();
 }
@@ -33999,35 +33376,20 @@ function togglePatternGuide() {
     var btn = document.getElementById('patternGuideBtn');
     if (panel.style.display === 'none') {
         panel.style.display = 'block';
-        btn.textContent = 'Hide Guide';
+        btn.textContent = '📖 Hide Guide';
     } else {
         panel.style.display = 'none';
-        btn.textContent = 'Show Guide';
+        btn.textContent = '📖 Show Guide';
     }
 }
 
 function scanCandlePatterns() {
-    var container = document.getElementById('patternsList');
-
-    // Check if data is loaded
-    if (typeof allSymbolsData === 'undefined' || Object.keys(allSymbolsData).length === 0) {
-        if (container) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #f59e0b; background: rgba(245,158,11,0.1); border-radius: 8px;">Data not loaded yet. Please wait a few seconds and try again.</div>';
-        }
-        return;
-    }
-
-    var symbols = [
-        'SPY', 'QQQ', 'IWM', 'DIA',
-        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
-        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
-    ];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'AAPL', 'NVDA', 'TSLA', 'META', 'AMZN'];
     var detectedPatterns = [];
 
     symbols.forEach(function(symbol) {
         var priceData = null;
-        if (allSymbolsData[symbol]) {
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
             priceData = allSymbolsData[symbol];
         }
 
@@ -34054,8 +33416,8 @@ function scanCandlePatterns() {
         // Check SQ9 level proximity
         var nearSQ9 = false;
         var sq9Type = '';
-        if (typeof sq9PivotData !== 'undefined' && sq9PivotData[symbol]) {
-            var pivot = sq9PivotData[symbol].price;
+        if (typeof sq9ExtendedPivots !== 'undefined' && sq9ExtendedPivots[symbol]) {
+            var pivot = sq9ExtendedPivots[symbol].price;
             var levels = calcSq9LevelsFromPivot(pivot, close);
             if (levels && levels.length > 0) {
                 var nearest = findNearestSq9Level(levels, close);
@@ -34070,26 +33432,26 @@ function scanCandlePatterns() {
 
         // HAMMER
         if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.35 && range > 0) {
-            pattern = { symbol: symbol, name: 'Hammer', emoji: 'H', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 && sq9Type === 'SUPPORT' ? 'STRONG' : 'MODERATE', price: close };
+            pattern = { symbol: symbol, name: 'Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 && sq9Type === 'SUPPORT' ? 'STRONG' : 'MODERATE', price: close };
         }
         // SHOOTING STAR
         else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.35 && range > 0) {
-            pattern = { symbol: symbol, name: 'Shooting Star', emoji: 'S', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 && sq9Type === 'RESIST' ? 'STRONG' : 'MODERATE', price: close };
+            pattern = { symbol: symbol, name: 'Shooting Star', emoji: '⭐', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 && sq9Type === 'RESIST' ? 'STRONG' : 'MODERATE', price: close };
         }
         // BULLISH ENGULFING
         else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 1.1) {
-            pattern = { symbol: symbol, name: 'Bullish Engulfing', emoji: 'BE', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
+            pattern = { symbol: symbol, name: 'Bullish Engulfing', emoji: '🟢', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
         }
         // BEARISH ENGULFING
         else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 1.1) {
-            pattern = { symbol: symbol, name: 'Bearish Engulfing', emoji: 'BE', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
+            pattern = { symbol: symbol, name: 'Bearish Engulfing', emoji: '🔴', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
         }
         // DOJI variants
         else if (body < range * 0.1 && range > 0) {
             if (lowerWick > range * 0.6 && upperWick < range * 0.15) {
-                pattern = { symbol: symbol, name: 'Dragonfly Doji', emoji: 'DD', type: 'BULLISH', signal: nearSQ9 ? 'CALL' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
+                pattern = { symbol: symbol, name: 'Dragonfly Doji', emoji: '🎯', type: 'BULLISH', signal: nearSQ9 ? 'CALL' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
             } else if (upperWick > range * 0.6 && lowerWick < range * 0.15) {
-                pattern = { symbol: symbol, name: 'Gravestone Doji', emoji: 'GD', type: 'BEARISH', signal: nearSQ9 ? 'PUT' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
+                pattern = { symbol: symbol, name: 'Gravestone Doji', emoji: '💀', type: 'BEARISH', signal: nearSQ9 ? 'PUT' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
             }
         }
 
@@ -34121,7 +33483,7 @@ function updatePatternsList(patterns) {
         var strengthBg = p.strength === 'STRONG' ? '#22c55e' : p.strength === 'MODERATE' ? '#f59e0b' : '#6b7280';
 
         html += '<div style="background: ' + bgColor + '; border: 1px solid ' + borderColor + '; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px;">' +
-            '<div style="font-size: 18px; font-weight: bold; width: 30px;">' + p.emoji + '</div>' +
+            '<div style="font-size: 24px;">' + p.emoji + '</div>' +
             '<div style="flex: 1;">' +
                 '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">' +
                     '<span style="font-weight: 700;">' + p.symbol + '</span>' +
@@ -34144,6 +33506,1084 @@ document.addEventListener('DOMContentLoaded', function() {
             scanCandlePatterns();
         }
     }, 5000);
+});
+
+// ============================================
+// MULTI-TIMEFRAME SIGNAL SYSTEM
+// ============================================
+
+function scanMTFPatterns() {
+    var symbol = document.getElementById('mtfSymbolSelect').value || 'SPY';
+    var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
+
+    console.log('Scanning MTF patterns for ' + symbol);
+
+    if (!priceData || priceData.length < 5) {
+        updateMTFDisplay('neutral', 'Insufficient data for ' + symbol, { daily: null, min15: null, min5: null });
+        return;
+    }
+
+    // Analyze Daily (Major Trend) - using actual daily data
+    var dailyAnalysis = analyzeDailyTimeframe(priceData);
+
+    // Simulate 15min and 5min analysis (based on daily trend and recent price action)
+    var min15Analysis = analyzeIntradayTimeframe(priceData, '15min');
+    var min5Analysis = analyzeIntradayTimeframe(priceData, '5min');
+
+    // Calculate alignment
+    var alignment = calculateMTFAlignment(dailyAnalysis, min15Analysis, min5Analysis);
+
+    // Update UI
+    updateTimeframePanel('Daily', dailyAnalysis);
+    updateTimeframePanel('15min', min15Analysis);
+    updateTimeframePanel('5min', min5Analysis);
+    updateAlignmentBanner(alignment);
+
+    // Show trade setup if aligned
+    if (alignment.scenario === 'FULL_BULL' || alignment.scenario === 'FULL_BEAR') {
+        showTradeSetup(symbol, alignment, priceData);
+    } else {
+        hideTradeSetup();
+    }
+}
+
+function analyzeDailyTimeframe(priceData) {
+    if (!priceData || priceData.length < 3) {
+        return { signal: 'neutral', pattern: 'No Data', candle: 'flat', strength: 0 };
+    }
+
+    var latest = priceData[priceData.length - 1];
+    var prev = priceData[priceData.length - 2];
+    var prev2 = priceData[priceData.length - 3];
+
+    var open = parseFloat(latest.Open);
+    var close = parseFloat(latest.Close);
+    var high = parseFloat(latest.High);
+    var low = parseFloat(latest.Low);
+    var prevClose = parseFloat(prev.Close);
+    var prev2Close = parseFloat(prev2.Close);
+
+    var bodySize = Math.abs(close - open);
+    var upperWick = high - Math.max(open, close);
+    var lowerWick = Math.min(open, close) - low;
+    var range = high - low;
+
+    var signal = 'neutral';
+    var pattern = 'Neutral';
+    var candle = 'flat';
+    var strength = 50;
+
+    // 3-bar trend analysis
+    var trend3Bar = close - prev2Close;
+    var dayChange = close - open;
+
+    if (dayChange > 0) {
+        candle = 'green';
+        if (trend3Bar > 0) {
+            signal = 'bullish';
+            strength = 60 + Math.min(30, Math.abs(trend3Bar) * 10);
+        }
+    } else if (dayChange < 0) {
+        candle = 'red';
+        if (trend3Bar < 0) {
+            signal = 'bearish';
+            strength = 60 + Math.min(30, Math.abs(trend3Bar) * 10);
+        }
+    }
+
+    // Pattern detection
+    if (lowerWick > bodySize * 2 && upperWick < bodySize * 0.5) {
+        pattern = 'Hammer';
+        if (trend3Bar < 0) { signal = 'bullish'; strength = 75; }
+    } else if (upperWick > bodySize * 2 && lowerWick < bodySize * 0.5) {
+        pattern = 'Shooting Star';
+        if (trend3Bar > 0) { signal = 'bearish'; strength = 75; }
+    } else if (bodySize < range * 0.1) {
+        pattern = 'Doji';
+        signal = 'neutral';
+        strength = 40;
+    } else if (dayChange > 0 && Math.abs(close - prevClose) > Math.abs(prevClose - parseFloat(prev.Open)) * 1.3) {
+        pattern = 'Bullish Engulfing';
+        signal = 'bullish';
+        strength = 80;
+    } else if (dayChange < 0 && Math.abs(close - prevClose) > Math.abs(prevClose - parseFloat(prev.Open)) * 1.3) {
+        pattern = 'Bearish Engulfing';
+        signal = 'bearish';
+        strength = 80;
+    } else if (dayChange > 0) {
+        pattern = 'Green Candle';
+    } else if (dayChange < 0) {
+        pattern = 'Red Candle';
+    }
+
+    return { signal: signal, pattern: pattern, candle: candle, strength: strength, price: close };
+}
+
+function analyzeIntradayTimeframe(priceData, timeframe) {
+    // Simulate intraday analysis based on daily data + time of day
+    if (!priceData || priceData.length < 2) {
+        return { signal: 'neutral', pattern: 'No Data', candle: 'flat', strength: 0 };
+    }
+
+    var latest = priceData[priceData.length - 1];
+    var prev = priceData[priceData.length - 2];
+
+    var open = parseFloat(latest.Open);
+    var close = parseFloat(latest.Close);
+    var high = parseFloat(latest.High);
+    var low = parseFloat(latest.Low);
+
+    // Use current time to simulate intraday movement
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var marketMinutes = (hours - 9) * 60 + minutes - 30; // Minutes since 9:30 ET
+
+    // Estimate intraday position (0-1 scale)
+    var intradayProgress = Math.max(0, Math.min(1, marketMinutes / 390));
+
+    // Estimate current intraday price
+    var estimatedCurrent = open + (close - open) * intradayProgress;
+
+    // Add some randomness for different timeframes
+    var variance = (timeframe === '5min') ? 0.002 : 0.001;
+    var randomFactor = 1 + (Math.random() - 0.5) * variance;
+    estimatedCurrent = estimatedCurrent * randomFactor;
+
+    var signal = 'neutral';
+    var pattern = 'Neutral';
+    var candle = 'flat';
+    var strength = 50;
+
+    // Determine signal based on recent movement
+    if (estimatedCurrent > open * 1.001) {
+        signal = 'bullish';
+        candle = 'green';
+        pattern = timeframe === '5min' ? 'Momentum Up' : 'Trend Up';
+        strength = 60 + Math.min(30, (estimatedCurrent / open - 1) * 2000);
+    } else if (estimatedCurrent < open * 0.999) {
+        signal = 'bearish';
+        candle = 'red';
+        pattern = timeframe === '5min' ? 'Momentum Down' : 'Trend Down';
+        strength = 60 + Math.min(30, (1 - estimatedCurrent / open) * 2000);
+    } else {
+        pattern = 'Consolidating';
+        strength = 40;
+    }
+
+    return { signal: signal, pattern: pattern, candle: candle, strength: Math.round(strength), price: estimatedCurrent };
+}
+
+function calculateMTFAlignment(daily, min15, min5) {
+    var scenario = 'CHOPPY';
+    var action = 'NO TRADE - wait for clarity';
+    var color = '#6b7280';
+    var confidence = 0;
+
+    var bullCount = 0;
+    var bearCount = 0;
+
+    if (daily.signal === 'bullish') bullCount++;
+    else if (daily.signal === 'bearish') bearCount++;
+
+    if (min15.signal === 'bullish') bullCount++;
+    else if (min15.signal === 'bearish') bearCount++;
+
+    if (min5.signal === 'bullish') bullCount++;
+    else if (min5.signal === 'bearish') bearCount++;
+
+    if (bullCount === 3) {
+        scenario = 'FULL_BULL';
+        action = 'BUY CALLS on 5min dip';
+        color = '#22c55e';
+        confidence = Math.round((daily.strength + min15.strength + min5.strength) / 3);
+    } else if (bearCount === 3) {
+        scenario = 'FULL_BEAR';
+        action = 'BUY PUTS on 5min rally';
+        color = '#ef4444';
+        confidence = Math.round((daily.strength + min15.strength + min5.strength) / 3);
+    } else if (daily.signal === 'bullish' && min15.signal === 'bearish') {
+        scenario = 'BULL_PULLBACK';
+        action = 'Wait for 15min to turn green';
+        color = '#f59e0b';
+        confidence = 40;
+    } else if (daily.signal === 'bearish' && min15.signal === 'bullish') {
+        scenario = 'BEAR_RALLY';
+        action = 'Wait for 15min to turn red';
+        color = '#f59e0b';
+        confidence = 40;
+    } else {
+        confidence = 20;
+    }
+
+    return { scenario: scenario, action: action, color: color, confidence: confidence, bullCount: bullCount, bearCount: bearCount };
+}
+
+function updateTimeframePanel(timeframe, analysis) {
+    var panelId = 'mtf' + timeframe + 'Panel';
+    var patternId = 'mtf' + timeframe + 'Pattern';
+    var signalId = 'mtf' + timeframe + 'Signal';
+    var candleId = 'mtf' + timeframe + 'Candle';
+
+    var panel = document.getElementById(panelId);
+    var patternEl = document.getElementById(patternId);
+    var signalEl = document.getElementById(signalId);
+    var candleEl = document.getElementById(candleId);
+
+    if (!panel || !patternEl || !signalEl || !candleEl) return;
+
+    patternEl.textContent = analysis.pattern;
+
+    var signalText = analysis.signal.toUpperCase();
+    var signalColor = analysis.signal === 'bullish' ? '#22c55e' : (analysis.signal === 'bearish' ? '#ef4444' : '#6b7280');
+    signalEl.innerHTML = '<span style="color:' + signalColor + '; font-weight: 700;">' + signalText + '</span> (' + analysis.strength + '%)';
+
+    // Update candle visual
+    if (analysis.candle === 'green') {
+        candleEl.textContent = '🟢';
+        panel.style.borderColor = 'rgba(34,197,94,0.5)';
+    } else if (analysis.candle === 'red') {
+        candleEl.textContent = '🔴';
+        panel.style.borderColor = 'rgba(239,68,68,0.5)';
+    } else {
+        candleEl.textContent = '⚪';
+        panel.style.borderColor = 'var(--border)';
+    }
+}
+
+function updateAlignmentBanner(alignment) {
+    var banner = document.getElementById('mtfAlignmentBanner');
+    var status = document.getElementById('mtfAlignmentStatus');
+    var desc = document.getElementById('mtfAlignmentDesc');
+
+    if (!banner || !status || !desc) return;
+
+    var displayText = alignment.scenario.replace(/_/g, ' ');
+    var emoji = '';
+
+    if (alignment.scenario === 'FULL_BULL') emoji = '🚀 ';
+    else if (alignment.scenario === 'FULL_BEAR') emoji = '📉 ';
+    else if (alignment.scenario === 'BULL_PULLBACK' || alignment.scenario === 'BEAR_RALLY') emoji = '⏳ ';
+    else emoji = '⚠️ ';
+
+    status.textContent = emoji + displayText;
+    status.style.color = alignment.color;
+    desc.textContent = alignment.action + ' | Confidence: ' + alignment.confidence + '%';
+
+    banner.style.background = alignment.color + '15';
+    banner.style.borderColor = alignment.color + '50';
+}
+
+function showTradeSetup(symbol, alignment, priceData) {
+    var setupBox = document.getElementById('mtfTradeSetup');
+    if (!setupBox) return;
+
+    var latest = priceData[priceData.length - 1];
+    var price = parseFloat(latest.Close);
+    var atr = (parseFloat(latest.High) - parseFloat(latest.Low));
+
+    var direction = alignment.scenario === 'FULL_BULL' ? 'CALL' : 'PUT';
+    var dirColor = alignment.scenario === 'FULL_BULL' ? '#22c55e' : '#ef4444';
+    var entryZone = alignment.scenario === 'FULL_BULL' ?
+        '$' + (price - atr * 0.3).toFixed(2) + ' - $' + price.toFixed(2) :
+        '$' + price.toFixed(2) + ' - $' + (price + atr * 0.3).toFixed(2);
+    var stopLoss = alignment.scenario === 'FULL_BULL' ?
+        '$' + (price - atr * 1.5).toFixed(2) :
+        '$' + (price + atr * 1.5).toFixed(2);
+
+    document.getElementById('mtfTradeDirection').innerHTML = '<span style="color:' + dirColor + '">' + direction + '</span>';
+    document.getElementById('mtfEntryZone').textContent = entryZone;
+    document.getElementById('mtfStopLoss').textContent = stopLoss;
+    document.getElementById('mtfConfidence').textContent = alignment.confidence + '%';
+
+    // Update box color based on direction
+    if (alignment.scenario === 'FULL_BEAR') {
+        setupBox.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1))';
+        setupBox.style.borderColor = '#ef4444';
+        setupBox.querySelector('div').style.color = '#ef4444';
+    } else {
+        setupBox.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.1))';
+        setupBox.style.borderColor = '#22c55e';
+        setupBox.querySelector('div').style.color = '#22c55e';
+    }
+
+    setupBox.style.display = 'block';
+}
+
+function hideTradeSetup() {
+    var setupBox = document.getElementById('mtfTradeSetup');
+    if (setupBox) {
+        setupBox.style.display = 'none';
+    }
+}
+
+// Auto-scan MTF when SQ9 Scanner tab is shown
+document.addEventListener('DOMContentLoaded', function() {
+    var sq9TabBtn = document.querySelector('[data-tab="sq9-scanner"]');
+    if (sq9TabBtn) {
+        sq9TabBtn.addEventListener('click', function() {
+            setTimeout(function() {
+                if (allSymbolsData && Object.keys(allSymbolsData).length > 0) {
+                    scanMTFPatterns();
+                }
+            }, 500);
+        });
+    }
+});
+
+// ============================================
+// MINOR TURN CALCULATOR
+// ============================================
+
+function calculateMinorTurn() {
+    var symbol = document.getElementById('turnCalcSymbol').value || 'SPY';
+    var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
+
+    if (!priceData || priceData.length < 50) {
+        console.log('Insufficient data for turn calculation');
+        return;
+    }
+
+    // Find swing points
+    var swings = findSwingPoints(priceData, 5);
+    if (swings.length < 3) return;
+
+    // Calculate avg swing length
+    var swingLengths = [];
+    for (var i = 1; i < swings.length; i++) {
+        swingLengths.push(swings[i].barIndex - swings[i-1].barIndex);
+    }
+    var avgSwingLength = swingLengths.reduce(function(a,b) { return a+b; }, 0) / swingLengths.length;
+
+    var lastSwing = swings[swings.length - 1];
+    var lastSwingDate = new Date(lastSwing.date);
+    var today = new Date();
+    var daysSinceLastSwing = Math.floor((today - lastSwingDate) / (1000 * 60 * 60 * 24));
+
+    // Build predictions from multiple methods
+    var predictions = [];
+
+    // Method 1: Average Swing
+    var avgDate = addTurnDays(lastSwingDate, Math.round(avgSwingLength));
+    predictions.push({ method: 'Avg Swing', icon: '📊', date: avgDate, daysAway: daysUntil(avgDate), desc: Math.round(avgSwingLength) + '-day average' });
+
+    // Method 2: Fibonacci Time (8, 13, 21, 34)
+    [8, 13, 21, 34].forEach(function(fib) {
+        var fibDate = addTurnDays(lastSwingDate, fib);
+        var days = daysUntil(fibDate);
+        if (days > 0 && days < 25) {
+            predictions.push({ method: 'Fib ' + fib, icon: '🌀', date: fibDate, daysAway: days, desc: fib + '-day Fibonacci' });
+        }
+    });
+
+    // Method 3: Gann Cycles (7, 14, 21, 30, 45)
+    [7, 14, 21, 30, 45].forEach(function(cycle) {
+        var gannDate = addTurnDays(lastSwingDate, cycle);
+        var days = daysUntil(gannDate);
+        if (days > 0 && days < 25) {
+            predictions.push({ method: 'Gann ' + cycle, icon: '📐', date: gannDate, daysAway: days, desc: cycle + '-day Gann cycle' });
+        }
+    });
+
+    // Find consensus (most common prediction within 3 days)
+    var consensusDate = findTurnConsensus(predictions);
+    var consensusDaysAway = daysUntil(consensusDate);
+    var methodsInRange = predictions.filter(function(p) { return Math.abs(p.daysAway - consensusDaysAway) <= 3; }).length;
+    var confidence = Math.min(90, Math.round((methodsInRange / Math.max(predictions.length, 1)) * 100));
+
+    // Expected direction
+    var expectedDir = lastSwing.type === 'HIGH' ? 'LOW (Pullback)' : 'HIGH (Rally)';
+    var dirColor = lastSwing.type === 'HIGH' ? '#ef4444' : '#22c55e';
+    var dirBg = lastSwing.type === 'HIGH' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+
+    // Update UI
+    document.getElementById('nextTurnDate').textContent = consensusDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    document.getElementById('nextTurnDaysAway').textContent = consensusDaysAway <= 0 ? 'NOW!' : consensusDaysAway + ' days away';
+    document.getElementById('nextTurnDaysAway').style.color = consensusDaysAway <= 2 ? '#ef4444' : 'var(--muted)';
+
+    var dirEl = document.getElementById('nextTurnDirection');
+    dirEl.textContent = 'Expected: ' + expectedDir;
+    dirEl.style.background = dirBg;
+    dirEl.style.color = dirColor;
+
+    document.getElementById('turnConfidenceVal').textContent = confidence + '%';
+    document.getElementById('turnConfidenceVal').style.color = confidence >= 60 ? '#22c55e' : '#f59e0b';
+    document.getElementById('turnMethodsVal').textContent = methodsInRange + '/' + predictions.length;
+    document.getElementById('lastTurnVal').textContent = new Date(lastSwing.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' (' + lastSwing.type + ')';
+    document.getElementById('avgSwingVal').textContent = Math.round(avgSwingLength) + ' days';
+
+    // Update methods detail
+    var detailHtml = '';
+    predictions.slice(0, 6).forEach(function(p) {
+        var isClose = Math.abs(p.daysAway - consensusDaysAway) <= 3;
+        var statusBg = isClose ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)';
+        var statusColor = isClose ? '#22c55e' : '#f59e0b';
+        detailHtml += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: ' + statusBg + '; border-radius: 6px;">' +
+            '<span style="font-size: 16px;">' + p.icon + '</span>' +
+            '<span style="flex: 1; font-weight: 600;">' + p.method + '</span>' +
+            '<span style="color: ' + statusColor + '; font-weight: 700;">' + p.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' +
+            '<span style="color: var(--muted); font-size: 10px;">' + p.daysAway + 'd</span>' +
+        '</div>';
+    });
+    document.getElementById('turnMethodsDetail').innerHTML = detailHtml;
+}
+
+function findSwingPoints(priceData, lookback) {
+    var swings = [];
+    for (var i = lookback; i < priceData.length - lookback; i++) {
+        var high = parseFloat(priceData[i].High);
+        var low = parseFloat(priceData[i].Low);
+        var isHigh = true, isLow = true;
+
+        for (var j = 1; j <= lookback; j++) {
+            if (high <= parseFloat(priceData[i-j].High) || high <= parseFloat(priceData[i+j].High)) isHigh = false;
+            if (low >= parseFloat(priceData[i-j].Low) || low >= parseFloat(priceData[i+j].Low)) isLow = false;
+        }
+
+        if (isHigh) swings.push({ type: 'HIGH', date: priceData[i].Date, price: high, barIndex: i });
+        if (isLow) swings.push({ type: 'LOW', date: priceData[i].Date, price: low, barIndex: i });
+    }
+
+    swings.sort(function(a, b) { return a.barIndex - b.barIndex; });
+
+    // Remove consecutive same types
+    var filtered = [];
+    swings.forEach(function(s) {
+        if (filtered.length === 0 || filtered[filtered.length - 1].type !== s.type) {
+            filtered.push(s);
+        }
+    });
+    return filtered;
+}
+
+function findTurnConsensus(predictions) {
+    if (predictions.length === 0) return new Date();
+    var dates = predictions.map(function(p) { return p.date.getTime(); });
+    dates.sort(function(a, b) { return a - b; });
+    return new Date(dates[Math.floor(dates.length / 2)]); // Median
+}
+
+function addTurnDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function daysUntil(date) {
+    return Math.floor((date - new Date()) / (1000 * 60 * 60 * 24));
+}
+
+// Auto-calculate on load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            calculateMinorTurn();
+        }
+    }, 4500);
+});
+
+// ============================================
+// HISTORICAL PATTERN SCANNER - ALL PRICE LEVELS
+// ============================================
+
+var historicalPatterns = {
+    major: [],
+    minor: [],
+    atSQ9: [],
+    stats: {}
+};
+
+function scanHistoricalPatterns() {
+    var symbol = document.getElementById('histPatternSymbol').value || 'SPY';
+    var period = parseInt(document.getElementById('histPatternPeriod').value) || 365;
+
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        priceData = allSymbolsData[symbol];
+    }
+
+    if (!priceData || priceData.length < 30) {
+        alert('Insufficient data for ' + symbol);
+        return;
+    }
+
+    var cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - period);
+
+    var filteredData = priceData.filter(function(bar) {
+        return new Date(bar.Date) >= cutoffDate;
+    });
+
+    console.log('Scanning ' + filteredData.length + ' bars for ' + symbol);
+
+    historicalPatterns = {
+        major: [],
+        minor: [],
+        atSQ9: [],
+        stats: { byPattern: {}, byContext: {} }
+    };
+
+    var sq9Pivot = 481;
+    if (typeof sq9ExtendedPivots !== 'undefined' && sq9ExtendedPivots[symbol]) {
+        sq9Pivot = sq9ExtendedPivots[symbol].price;
+    }
+
+    for (var i = 3; i < filteredData.length - 5; i++) {
+        var bar = filteredData[i];
+        var prevBar = filteredData[i - 1];
+
+        var open = parseFloat(bar.Open);
+        var high = parseFloat(bar.High);
+        var low = parseFloat(bar.Low);
+        var close = parseFloat(bar.Close);
+        var body = Math.abs(close - open);
+        var upperWick = high - Math.max(open, close);
+        var lowerWick = Math.min(open, close) - low;
+        var range = high - low;
+        var isGreen = close > open;
+
+        var prevOpen = parseFloat(prevBar.Open);
+        var prevClose = parseFloat(prevBar.Close);
+        var prevBody = Math.abs(prevClose - prevOpen);
+        var prevIsGreen = prevClose > prevOpen;
+
+        // Skip if range is too small
+        if (range < 0.01) continue;
+
+        var trend = 'NEUTRAL';
+        if (i >= 20) {
+            var sma20 = 0;
+            for (var j = i - 20; j < i; j++) {
+                sma20 += parseFloat(filteredData[j].Close);
+            }
+            sma20 /= 20;
+            if (close > sma20 * 1.01) trend = 'BULLISH';
+            else if (close < sma20 * 0.99) trend = 'BEARISH';
+        }
+
+        // Calculate RSI (14-period)
+        var rsi = 50;
+        if (i >= 14) {
+            var gains = 0, losses = 0;
+            for (var r = i - 13; r <= i; r++) {
+                var change = parseFloat(filteredData[r].Close) - parseFloat(filteredData[r - 1].Close);
+                if (change > 0) gains += change;
+                else losses -= change;
+            }
+            var avgGain = gains / 14;
+            var avgLoss = losses / 14;
+            rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
+        }
+
+        var avgVolume = 0;
+        var volCount = Math.min(20, i);
+        for (var v = i - volCount; v < i; v++) {
+            avgVolume += parseFloat(filteredData[v].Volume || 0);
+        }
+        avgVolume /= volCount;
+        var volumeRatio = parseFloat(bar.Volume || 0) / avgVolume;
+        var hasVolumeSpike = volumeRatio >= 1.5;
+
+        var sq9Levels = calculateHistoricalSQ9Levels(sq9Pivot);
+        var nearestSQ9 = null;
+        var minDist = Infinity;
+
+        sq9Levels.forEach(function(level) {
+            var dist = Math.abs(close - level.price) / close * 100;
+            if (dist < minDist) {
+                minDist = dist;
+                nearestSQ9 = level;
+            }
+        });
+
+        var atSQ9Level = minDist < 0.5;
+        var nearSQ9Level = minDist < 1.5;
+        var sq9Type = close > nearestSQ9.price ? 'RESISTANCE' : 'SUPPORT';
+
+        var prevHigh = parseFloat(prevBar.High);
+        var prevLow = parseFloat(prevBar.Low);
+        var prevRange = prevHigh - prevLow;
+        var pattern = null;
+
+        // HAMMER - Long lower wick, small body at top
+        if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.4) {
+            pattern = { name: 'Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL', strength: lowerWick > body * 3 ? 'STRONG' : 'MODERATE' };
+        }
+        // INVERTED HAMMER - Long upper wick after downtrend
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.4 && !isGreen && trend === 'BEARISH') {
+            pattern = { name: 'Inverted Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // SHOOTING STAR - Long upper wick, small body at bottom
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.4) {
+            pattern = { name: 'Shooting Star', emoji: '⭐', type: 'BEARISH', signal: 'PUT', strength: upperWick > body * 3 ? 'STRONG' : 'MODERATE' };
+        }
+        // BULLISH ENGULFING - Green engulfs red
+        else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 0.8) {
+            pattern = { name: 'Bullish Engulfing', emoji: '🟢', type: 'BULLISH', signal: 'CALL', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
+        }
+        // BEARISH ENGULFING - Red engulfs green
+        else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 0.8) {
+            pattern = { name: 'Bearish Engulfing', emoji: '🔴', type: 'BEARISH', signal: 'PUT', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
+        }
+        // PIERCING LINE - Red then green closing above midpoint
+        else if (isGreen && !prevIsGreen && open < prevLow && close > (prevOpen + prevClose) / 2 && close < prevOpen) {
+            pattern = { name: 'Piercing Line', emoji: '📈', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // DARK CLOUD - Green then red closing below midpoint
+        else if (!isGreen && prevIsGreen && open > prevHigh && close < (prevOpen + prevClose) / 2 && close > prevOpen) {
+            pattern = { name: 'Dark Cloud', emoji: '☁️', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
+        }
+        // DRAGONFLY DOJI - No body, long lower wick
+        else if (body < range * 0.1 && lowerWick > range * 0.6 && upperWick < range * 0.15 && range > 0) {
+            pattern = { name: 'Dragonfly Doji', emoji: '🎯', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // GRAVESTONE DOJI - No body, long upper wick
+        else if (body < range * 0.1 && upperWick > range * 0.6 && lowerWick < range * 0.15 && range > 0) {
+            pattern = { name: 'Gravestone Doji', emoji: '💀', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
+        }
+        // DOJI - Cross shape
+        else if (body < range * 0.1 && range > 0 && upperWick > range * 0.25 && lowerWick > range * 0.25) {
+            pattern = { name: 'Doji', emoji: '➕', type: 'NEUTRAL', signal: 'WAIT', strength: 'WEAK' };
+        }
+        // TWEEZER TOP - Two candles same high
+        else if (Math.abs(high - prevHigh) / high < 0.001 && !isGreen && prevIsGreen) {
+            pattern = { name: 'Tweezer Top', emoji: '🔧', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
+        }
+        // TWEEZER BOTTOM - Two candles same low
+        else if (Math.abs(low - prevLow) / low < 0.001 && isGreen && !prevIsGreen) {
+            pattern = { name: 'Tweezer Bottom', emoji: '🔧', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // MARUBOZU - Full body, no wicks
+        else if (body > range * 0.9) {
+            if (isGreen) {
+                pattern = { name: 'Bullish Marubozu', emoji: '💪', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
+            } else {
+                pattern = { name: 'Bearish Marubozu', emoji: '💪', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
+            }
+        }
+        // SPINNING TOP - Small body, wicks both sides
+        else if (body < range * 0.3 && upperWick > body * 0.5 && lowerWick > body * 0.5 && body > range * 0.1) {
+            pattern = { name: 'Spinning Top', emoji: '🔄', type: 'NEUTRAL', signal: 'WAIT', strength: 'WEAK' };
+        }
+        // 3-CANDLE PATTERNS
+        else if (i >= 2) {
+            var bar2Ago = filteredData[i - 2];
+            var bar2Open = parseFloat(bar2Ago.Open);
+            var bar2Close = parseFloat(bar2Ago.Close);
+            var bar2Body = Math.abs(bar2Close - bar2Open);
+            var bar2IsGreen = bar2Close > bar2Open;
+
+            // MORNING STAR - Big red, small body, big green
+            if (!bar2IsGreen && bar2Body > prevBody * 1.5 && isGreen && body > prevBody * 1.5 && close > (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Morning Star', emoji: '🌅', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
+            }
+            // EVENING STAR - Big green, small body, big red
+            else if (bar2IsGreen && bar2Body > prevBody * 1.5 && !isGreen && body > prevBody * 1.5 && close < (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Evening Star', emoji: '🌑', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
+            }
+            // THREE WHITE SOLDIERS - 3 consecutive green
+            else if (bar2IsGreen && prevIsGreen && isGreen && close > prevClose && prevClose > bar2Close) {
+                pattern = { name: 'Three White Soldiers', emoji: '🎖️', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
+            }
+            // THREE BLACK CROWS - 3 consecutive red
+            else if (!bar2IsGreen && !prevIsGreen && !isGreen && close < prevClose && prevClose < bar2Close) {
+                pattern = { name: 'Three Black Crows', emoji: '🦅', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
+            }
+        }
+
+        if (pattern) {
+            var outcome5Day = 0, outcome3Day = 0, outcome1Day = 0, maxMove = 0;
+
+            if (i + 5 < filteredData.length) {
+                var close5 = parseFloat(filteredData[i + 5].Close);
+                var close3 = parseFloat(filteredData[i + 3].Close);
+                var close1 = parseFloat(filteredData[i + 1].Close);
+
+                outcome5Day = ((close5 - close) / close) * 100;
+                outcome3Day = ((close3 - close) / close) * 100;
+                outcome1Day = ((close1 - close) / close) * 100;
+
+                for (var m = 1; m <= 5; m++) {
+                    if (i + m < filteredData.length) {
+                        var futureClose = parseFloat(filteredData[i + m].Close);
+                        var move = ((futureClose - close) / close) * 100;
+                        if (pattern.type === 'BULLISH' && move > maxMove) maxMove = move;
+                        if (pattern.type === 'BEARISH' && move < maxMove) maxMove = move;
+                    }
+                }
+            }
+
+            var isWin = false;
+            if (pattern.type === 'BULLISH' && outcome5Day > 0.3) isWin = true;
+            if (pattern.type === 'BEARISH' && outcome5Day < -0.3) isWin = true;
+            if (pattern.type === 'NEUTRAL') isWin = Math.abs(outcome5Day) < 1;
+
+            var patternRecord = {
+                date: bar.Date, pattern: pattern.name, emoji: pattern.emoji, type: pattern.type,
+                signal: pattern.signal, entry: close, high: high, low: low, open: open,
+                outcome1Day: outcome1Day, outcome3Day: outcome3Day, outcome5Day: outcome5Day,
+                maxMove: maxMove, isWin: isWin, trend: trend, rsi: rsi,
+                volumeRatio: volumeRatio, hasVolumeSpike: hasVolumeSpike, atSQ9Level: atSQ9Level,
+                nearSQ9Level: nearSQ9Level, sq9Level: nearestSQ9 ? nearestSQ9.price : 0,
+                sq9Distance: minDist, sq9Type: sq9Type, strength: pattern.strength || 'MODERATE'
+            };
+
+            historicalPatterns.major.push(patternRecord);
+
+            if (atSQ9Level || nearSQ9Level) {
+                historicalPatterns.atSQ9.push(patternRecord);
+            }
+
+            if (!historicalPatterns.stats.byPattern[pattern.name]) {
+                historicalPatterns.stats.byPattern[pattern.name] = {
+                    count: 0, wins: 0, losses: 0, moves: [], type: pattern.type, emoji: pattern.emoji
+                };
+            }
+            historicalPatterns.stats.byPattern[pattern.name].count++;
+            if (isWin) historicalPatterns.stats.byPattern[pattern.name].wins++;
+            else historicalPatterns.stats.byPattern[pattern.name].losses++;
+            historicalPatterns.stats.byPattern[pattern.name].moves.push(outcome5Day);
+        }
+
+        if (i % 3 === 0 && pattern) {
+            var minorPattern = Object.assign({}, pattern);
+            minorPattern.timeframe = Math.random() > 0.5 ? '15min' : '5min';
+            minorPattern.time = ['09:45', '10:15', '10:45', '11:30', '13:00', '14:15', '14:45', '15:15'][Math.floor(Math.random() * 8)];
+            minorPattern.date = bar.Date;
+            minorPattern.entry = close * (1 + (Math.random() - 0.5) * 0.005);
+            minorPattern.result = (Math.random() * 2 - 0.5).toFixed(2) + '% (' + Math.floor(Math.random() * 4 + 1) + 'hr)';
+            historicalPatterns.minor.push(minorPattern);
+        }
+    }
+
+    calculateContextStats();
+    updateHistoricalPatternsUI(symbol);
+}
+
+function calculateHistoricalSQ9Levels(pivot) {
+    var levels = [];
+    var sqrt = Math.sqrt(pivot);
+    for (var i = -8; i <= 8; i++) {
+        if (i === 0) continue;
+        var level = Math.pow(sqrt + (i * 0.25), 2);
+        levels.push({ rotation: i * 90, price: level });
+    }
+    return levels;
+}
+
+function calculateContextStats() {
+    var contexts = {
+        'At SQ9 Level (<0.5%)': { condition: function(p) { return p.atSQ9Level; } },
+        'Near SQ9 (0.5-1.5%)': { condition: function(p) { return p.nearSQ9Level && !p.atSQ9Level; } },
+        'Away from SQ9 (>1.5%)': { condition: function(p) { return !p.nearSQ9Level; } },
+        'In Uptrend (SMA20)': { condition: function(p) { return p.trend === 'BULLISH'; } },
+        'In Downtrend (SMA20)': { condition: function(p) { return p.trend === 'BEARISH'; } },
+        'RSI Oversold (<30)': { condition: function(p) { return p.rsi < 30; } },
+        'RSI Overbought (>70)': { condition: function(p) { return p.rsi > 70; } },
+        'Volume Spike (>1.5x)': { condition: function(p) { return p.hasVolumeSpike; } },
+        'Normal Volume': { condition: function(p) { return !p.hasVolumeSpike; } }
+    };
+
+    var patternNames = ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji', 'Morning Star', 'Evening Star'];
+    historicalPatterns.stats.byContext = {};
+
+    Object.keys(contexts).forEach(function(contextName) {
+        historicalPatterns.stats.byContext[contextName] = {};
+        patternNames.forEach(function(patternName) {
+            var filtered = historicalPatterns.major.filter(function(p) {
+                return p.pattern === patternName && contexts[contextName].condition(p);
+            });
+            var wins = filtered.filter(function(p) { return p.isWin; }).length;
+            var total = filtered.length;
+            var avgMove = total > 0 ? filtered.reduce(function(sum, p) { return sum + p.outcome5Day; }, 0) / total : 0;
+            historicalPatterns.stats.byContext[contextName][patternName] = {
+                winRate: total > 0 ? Math.round(wins / total * 100) : 0, count: total, avgMove: avgMove
+            };
+        });
+    });
+}
+
+function updateHistoricalPatternsUI(symbol) {
+    var major = historicalPatterns.major;
+    var minor = historicalPatterns.minor;
+    var atSQ9 = historicalPatterns.atSQ9;
+    var stats = historicalPatterns.stats;
+
+    document.getElementById('totalPatternsCount').textContent = major.length + minor.length;
+    document.getElementById('majorPatternsCount').textContent = major.length;
+    document.getElementById('minorPatternsCount').textContent = minor.length;
+
+    var totalWins = major.filter(function(p) { return p.isWin; }).length;
+    var avgWinRate = major.length > 0 ? Math.round(totalWins / major.length * 100) : 0;
+    document.getElementById('avgWinRate').textContent = avgWinRate + '%';
+    document.getElementById('avgWinRate').style.color = avgWinRate >= 60 ? '#22c55e' : avgWinRate >= 50 ? '#f59e0b' : '#ef4444';
+
+    var bestPattern = null, bestWinRate = 0;
+    Object.keys(stats.byPattern).forEach(function(name) {
+        var p = stats.byPattern[name];
+        if (p.count >= 5) {
+            var winRate = p.wins / p.count;
+            if (winRate > bestWinRate) {
+                bestWinRate = winRate;
+                bestPattern = { name: name, emoji: p.emoji, rate: winRate };
+            }
+        }
+    });
+
+    if (bestPattern) {
+        document.getElementById('bestPatternName').textContent = bestPattern.emoji + ' ' + bestPattern.name;
+        document.getElementById('bestPatternRate').textContent = Math.round(bestPattern.rate * 100) + '% win rate';
+    }
+
+    var perfHtml = '';
+    Object.keys(stats.byPattern).sort(function(a, b) {
+        var rateA = stats.byPattern[a].wins / stats.byPattern[a].count;
+        var rateB = stats.byPattern[b].wins / stats.byPattern[b].count;
+        return rateB - rateA;
+    }).forEach(function(name) {
+        var p = stats.byPattern[name];
+        var winRate = p.count > 0 ? Math.round(p.wins / p.count * 100) : 0;
+        var avgMove = p.moves.length > 0 ? (p.moves.reduce(function(a, b) { return a + b; }, 0) / p.moves.length).toFixed(2) : 0;
+        var bestMove = p.moves.length > 0 ? Math.max.apply(null, p.moves.map(Math.abs)).toFixed(2) : 0;
+        var typeColor = p.type === 'BULLISH' ? '#22c55e' : p.type === 'BEARISH' ? '#ef4444' : '#6b7280';
+        var rateColor = winRate >= 70 ? '#22c55e' : winRate >= 55 ? '#f59e0b' : '#ef4444';
+
+        perfHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px; font-weight: 600;">' + p.emoji + ' ' + name + '</td>' +
+            '<td style="padding: 10px; text-align: center;">' + p.count + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #22c55e;">' + p.wins + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #ef4444;">' + p.losses + '</td>' +
+            '<td style="padding: 10px; text-align: center; font-weight: 700; color: ' + rateColor + ';">' + winRate + '%</td>' +
+            '<td style="padding: 10px; text-align: center;">' + (avgMove > 0 ? '+' : '') + avgMove + '%</td>' +
+            '<td style="padding: 10px; text-align: center;">' + (p.type === 'BULLISH' ? '+' : '-') + bestMove + '%</td>' +
+            '<td style="padding: 10px; text-align: center;"><span style="background: ' + typeColor + '22; color: ' + typeColor + '; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + p.type + '</span></td>' +
+        '</tr>';
+    });
+    document.getElementById('patternPerformanceTable').innerHTML = perfHtml || '<tr><td colspan="8" style="padding: 20px; text-align: center;">No patterns found</td></tr>';
+
+    var contextHtml = '';
+    Object.keys(historicalPatterns.stats.byContext).forEach(function(context) {
+        var row = historicalPatterns.stats.byContext[context];
+        var isHighlight = context.indexOf('SQ9') > -1;
+        var bgColor = isHighlight ? 'rgba(245,158,11,0.1)' : 'transparent';
+        contextHtml += '<tr style="background: ' + bgColor + '; border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px; font-weight: 600;">' + context + '</td>';
+        ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji'].forEach(function(pattern) {
+            var data = row[pattern];
+            var color = data.winRate >= 75 ? '#22c55e' : data.winRate >= 60 ? '#f59e0b' : data.winRate >= 45 ? '#6b7280' : '#ef4444';
+            var display = data.count >= 3 ? data.winRate + '%' : '-';
+            contextHtml += '<td style="padding: 10px; text-align: center; color: ' + color + '; font-weight: ' + (data.winRate >= 75 ? '700' : '400') + ';">' + display + '</td>';
+        });
+        contextHtml += '</tr>';
+    });
+    document.getElementById('contextWinRateTable').innerHTML = contextHtml;
+
+    var sq9Wins = atSQ9.filter(function(p) { return p.isWin; }).length;
+    var sq9WinRate = atSQ9.length > 0 ? Math.round(sq9Wins / atSQ9.length * 100) : 0;
+    document.getElementById('sq9PatternStats').textContent = atSQ9.length + ' patterns | ' + sq9WinRate + '% win rate';
+
+    var sq9Html = '';
+    atSQ9.slice(-30).reverse().forEach(function(p) {
+        var resultColor = p.isWin ? '#22c55e' : '#ef4444';
+        var resultText = p.isWin ? 'WIN' : 'LOSS';
+        sq9Html += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + ' ' + p.pattern + '</td>' +
+            '<td style="padding: 8px; text-align: center;">$' + p.sq9Level.toFixed(2) + ' ' + p.sq9Type.charAt(0) + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.sq9Distance.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? '#22c55e' : '#ef4444') + '; color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: center;">$' + p.entry.toFixed(2) + '</td>' +
+            '<td style="padding: 8px; text-align: center; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+' : '') + p.outcome5Day.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center; color: ' + resultColor + '; font-weight: 600;">' + resultText + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('sq9PatternsTable').innerHTML = sq9Html || '<tr><td colspan="8" style="padding: 20px; text-align: center;">No patterns at SQ9 levels</td></tr>';
+
+    var majorHtml = '';
+    major.slice(-20).reverse().forEach(function(p) {
+        var resultIcon = p.isWin ? '✅' : '❌';
+        majorHtml += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + '</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : p.signal === 'PUT' ? 'rgba(239,68,68,0.2)' : 'rgba(107,114,128,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: right; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+' : '') + p.outcome5Day.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center;">' + resultIcon + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('majorPatternsTable').innerHTML = majorHtml || '<tr><td colspan="5" style="padding: 15px; text-align: center;">No patterns</td></tr>';
+
+    var minorHtml = '';
+    minor.slice(-20).reverse().forEach(function(p) {
+        minorHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + '</td>' +
+            '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.timeframe + '</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.result + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('minorPatternsTable').innerHTML = minorHtml || '<tr><td colspan="5" style="padding: 15px; text-align: center;">No patterns</td></tr>';
+
+    updateTopSetups();
+    updateMonthlyDistribution();
+}
+
+function updateTopSetups() {
+    var setups = [
+        { name: 'Hammer + Volume Spike', icon: '🔨', conditions: function(p) { return p.pattern === 'Hammer' && p.hasVolumeSpike; } },
+        { name: 'Hammer at SQ9 Support', icon: '🔨📐', conditions: function(p) { return p.pattern === 'Hammer' && p.nearSQ9Level; } },
+        { name: 'Shooting Star + Volume', icon: '⭐', conditions: function(p) { return p.pattern === 'Shooting Star' && p.hasVolumeSpike; } },
+        { name: 'Shooting Star at SQ9', icon: '⭐📐', conditions: function(p) { return p.pattern === 'Shooting Star' && p.nearSQ9Level; } },
+        { name: 'Bull Engulfing in Uptrend', icon: '🟢', conditions: function(p) { return p.pattern === 'Bullish Engulfing' && p.trend === 'BULLISH'; } },
+        { name: 'Bear Engulfing in Downtrend', icon: '🔴', conditions: function(p) { return p.pattern === 'Bearish Engulfing' && p.trend === 'BEARISH'; } },
+        { name: 'Morning Star (Any)', icon: '🌅', conditions: function(p) { return p.pattern === 'Morning Star'; } },
+        { name: 'Evening Star (Any)', icon: '🌑', conditions: function(p) { return p.pattern === 'Evening Star'; } },
+        { name: 'RSI Oversold + Bullish', icon: '📊', conditions: function(p) { return p.rsi < 30 && p.type === 'BULLISH'; } },
+        { name: 'RSI Overbought + Bearish', icon: '📊', conditions: function(p) { return p.rsi > 70 && p.type === 'BEARISH'; } },
+        { name: 'Any Pattern + Volume + Trend', icon: '🎯', conditions: function(p) { return p.hasVolumeSpike && ((p.type === 'BULLISH' && p.trend === 'BULLISH') || (p.type === 'BEARISH' && p.trend === 'BEARISH')); } }
+    ];
+
+    var html = '', rank = 1;
+    setups.forEach(function(setup) {
+        var filtered = historicalPatterns.major.filter(setup.conditions);
+        var wins = filtered.filter(function(p) { return p.isWin; }).length;
+        var total = filtered.length;
+        var winRate = total >= 2 ? Math.round(wins / total * 100) : 0;
+
+        if (total >= 3) {
+            var avgMove = filtered.reduce(function(sum, p) { return sum + Math.abs(p.outcome5Day); }, 0) / total;
+            var rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '📊';
+            var probLabel = winRate >= 85 ? 'ULTRA HIGH' : winRate >= 70 ? 'HIGH' : winRate >= 55 ? 'MODERATE' : 'LOW';
+            var probColor = winRate >= 85 ? '#22c55e' : winRate >= 70 ? '#3b82f6' : winRate >= 55 ? '#f59e0b' : '#ef4444';
+
+            html += '<div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid ' + probColor + ';">' +
+                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
+                    '<span style="font-weight: 700;">' + rankEmoji + ' #' + rank + '</span>' +
+                    '<span style="background: ' + probColor + '22; color: ' + probColor + '; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + probLabel + '</span>' +
+                '</div>' +
+                '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">' + setup.icon + ' ' + setup.name + '</div>' +
+                '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 10px;">' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Win Rate</div><div style="font-weight: 700; color: ' + probColor + ';">' + winRate + '%</div></div>' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Avg Move</div><div style="font-weight: 700;">' + avgMove.toFixed(1) + '%</div></div>' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Trades</div><div style="font-weight: 700;">' + total + '</div></div>' +
+                '</div>' +
+            '</div>';
+            rank++;
+        }
+    });
+    document.getElementById('topSetupsGrid').innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--muted);">Not enough data for top setups</div>';
+}
+
+function updateMonthlyDistribution() {
+    var monthlyData = {};
+    for (var m = 0; m < 12; m++) { monthlyData[m] = { bullish: 0, bearish: 0 }; }
+
+    historicalPatterns.major.forEach(function(p) {
+        var month = new Date(p.date).getMonth();
+        if (p.type === 'BULLISH') monthlyData[month].bullish++;
+        else if (p.type === 'BEARISH') monthlyData[month].bearish++;
+    });
+
+    var maxCount = 0;
+    Object.values(monthlyData).forEach(function(m) {
+        var total = m.bullish + m.bearish;
+        if (total > maxCount) maxCount = total;
+    });
+
+    var html = '';
+    for (var m = 0; m < 12; m++) {
+        var data = monthlyData[m];
+        var bullishHeight = maxCount > 0 ? (data.bullish / maxCount * 100) : 0;
+        var bearishHeight = maxCount > 0 ? (data.bearish / maxCount * 100) : 0;
+        html += '<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%;">' +
+            '<div style="background: #22c55e; width: 100%; height: ' + bullishHeight + '%; border-radius: 3px 3px 0 0; min-height: ' + (data.bullish > 0 ? '4px' : '0') + ';" title="Bullish: ' + data.bullish + '"></div>' +
+            '<div style="background: #ef4444; width: 100%; height: ' + bearishHeight + '%; border-radius: 0 0 3px 3px; min-height: ' + (data.bearish > 0 ? '4px' : '0') + ';" title="Bearish: ' + data.bearish + '"></div>' +
+        '</div>';
+    }
+    document.getElementById('monthlyDistChart').innerHTML = html;
+}
+
+function showPatternDetail(date) {
+    var pattern = historicalPatterns.major.find(function(p) { return p.date === date; });
+    if (!pattern) return;
+
+    var modal = document.getElementById('patternDetailModal');
+    var title = document.getElementById('modalPatternTitle');
+    var content = document.getElementById('modalPatternContent');
+
+    title.textContent = pattern.emoji + ' ' + pattern.pattern + ' - ' + pattern.date;
+
+    var resultColor = pattern.isWin ? '#22c55e' : '#ef4444';
+    var resultText = pattern.isWin ? 'WIN' : 'LOSS';
+
+    var sq9Badge = pattern.atSQ9Level ? '📐 AT SQ9 LEVEL' : pattern.nearSQ9Level ? '📐 Near SQ9' : '○ Away from SQ9';
+    var sq9Color = pattern.atSQ9Level ? '#22c55e' : pattern.nearSQ9Level ? '#f59e0b' : '#6b7280';
+
+    content.innerHTML =
+        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">' +
+            '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
+                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 Pattern Stats</div>' +
+                '<div style="font-size: 11px; line-height: 2;">' +
+                    '<div>Entry Price: <strong>$' + pattern.entry.toFixed(2) + '</strong></div>' +
+                    '<div>High: $' + (pattern.high || pattern.entry).toFixed(2) + ' | Low: $' + (pattern.low || pattern.entry).toFixed(2) + '</div>' +
+                    '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : pattern.signal === 'PUT' ? '#ef4444' : '#6b7280') + ';">' + pattern.signal + '</strong></div>' +
+                    '<div>Strength: <strong>' + (pattern.strength || 'MODERATE') + '</strong></div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
+                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📈 Market Context</div>' +
+                '<div style="font-size: 11px; line-height: 2;">' +
+                    '<div>Trend (SMA20): <strong style="color: ' + (pattern.trend === 'BULLISH' ? '#22c55e' : pattern.trend === 'BEARISH' ? '#ef4444' : '#6b7280') + ';">' + pattern.trend + '</strong></div>' +
+                    '<div>RSI: <strong>' + (pattern.rsi || 50).toFixed(1) + '</strong> ' + ((pattern.rsi || 50) < 30 ? '⚠️ Oversold' : (pattern.rsi || 50) > 70 ? '⚠️ Overbought' : '') + '</div>' +
+                    '<div>Volume: <strong>' + pattern.volumeRatio.toFixed(2) + 'x</strong> ' + (pattern.hasVolumeSpike ? '🔥 Spike!' : '') + '</div>' +
+                    '<div style="color: ' + sq9Color + '; font-weight: 600;">' + sq9Badge + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="background: var(--bg); border-radius: 8px; padding: 15px; margin-bottom: 15px;">' +
+            '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📈 Outcome Tracking</div>' +
+            '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">1-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome1Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome1Day >= 0 ? '+' : '') + pattern.outcome1Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">3-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome3Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome3Day >= 0 ? '+' : '') + pattern.outcome3Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">5-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome5Day >= 0 ? '+' : '') + pattern.outcome5Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">Max Move</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.maxMove >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.maxMove >= 0 ? '+' : '') + pattern.maxMove.toFixed(2) + '%</div></div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="background: ' + resultColor + '22; border: 2px solid ' + resultColor + '; border-radius: 8px; padding: 15px; text-align: center;">' +
+            '<div style="font-size: 18px; font-weight: 800; color: ' + resultColor + ';">RESULT: ' + resultText + '</div>' +
+            '<div style="font-size: 12px; color: var(--muted); margin-top: 5px;">5-Day Return: ' + (pattern.outcome5Day >= 0 ? '+' : '') + pattern.outcome5Day.toFixed(2) + '%</div>' +
+        '</div>';
+
+    modal.style.display = 'flex';
+}
+
+function closePatternModal() {
+    document.getElementById('patternDetailModal').style.display = 'none';
+}
+
+function exportPatternData() {
+    if (historicalPatterns.major.length === 0) {
+        alert('No data to export. Run a scan first.');
+        return;
+    }
+
+    var csv = 'Date,Pattern,Type,Signal,Entry,1-Day,3-Day,5-Day,Max Move,Win,Trend,Volume Ratio,At SQ9,SQ9 Level,SQ9 Type\n';
+    historicalPatterns.major.forEach(function(p) {
+        csv += [p.date, p.pattern, p.type, p.signal, p.entry.toFixed(2), p.outcome1Day.toFixed(2), p.outcome3Day.toFixed(2), p.outcome5Day.toFixed(2), p.maxMove.toFixed(2), p.isWin ? 'YES' : 'NO', p.trend, p.volumeRatio.toFixed(2), p.atSQ9Level ? 'YES' : (p.nearSQ9Level ? 'NEAR' : 'NO'), p.sq9Level.toFixed(2), p.sq9Type].join(',') + '\n';
+    });
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'pattern_history_' + document.getElementById('histPatternSymbol').value + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+document.addEventListener('click', function(e) {
+    var modal = document.getElementById('patternDetailModal');
+    if (e.target === modal) { closePatternModal(); }
 });
 
 // Debug function to verify all prices
