@@ -33983,7 +33983,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// HISTORICAL PATTERN SCANNER
+// HISTORICAL PATTERN SCANNER - ALL PRICE LEVELS
 // ============================================
 
 var historicalPatterns = {
@@ -34047,6 +34047,9 @@ function scanHistoricalPatterns() {
         var prevBody = Math.abs(prevClose - prevOpen);
         var prevIsGreen = prevClose > prevOpen;
 
+        // Skip if range is too small
+        if (range < 0.01) continue;
+
         var trend = 'NEUTRAL';
         if (i >= 20) {
             var sma20 = 0;
@@ -34054,8 +34057,22 @@ function scanHistoricalPatterns() {
                 sma20 += parseFloat(filteredData[j].Close);
             }
             sma20 /= 20;
-            if (close > sma20 * 1.02) trend = 'BULLISH';
-            else if (close < sma20 * 0.98) trend = 'BEARISH';
+            if (close > sma20 * 1.01) trend = 'BULLISH';
+            else if (close < sma20 * 0.99) trend = 'BEARISH';
+        }
+
+        // Calculate RSI (14-period)
+        var rsi = 50;
+        if (i >= 14) {
+            var gains = 0, losses = 0;
+            for (var r = i - 13; r <= i; r++) {
+                var change = parseFloat(filteredData[r].Close) - parseFloat(filteredData[r - 1].Close);
+                if (change > 0) gains += change;
+                else losses -= change;
+            }
+            var avgGain = gains / 14;
+            var avgLoss = losses / 14;
+            rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
         }
 
         var avgVolume = 0;
@@ -34083,40 +34100,94 @@ function scanHistoricalPatterns() {
         var nearSQ9Level = minDist < 1.5;
         var sq9Type = close > nearestSQ9.price ? 'RESISTANCE' : 'SUPPORT';
 
+        var prevHigh = parseFloat(prevBar.High);
+        var prevLow = parseFloat(prevBar.Low);
+        var prevRange = prevHigh - prevLow;
         var pattern = null;
 
-        if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.35 && range > 0) {
-            pattern = { name: 'Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL' };
+        // HAMMER - Long lower wick, small body at top
+        if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.4) {
+            pattern = { name: 'Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL', strength: lowerWick > body * 3 ? 'STRONG' : 'MODERATE' };
         }
-        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.35 && range > 0) {
-            pattern = { name: 'Shooting Star', emoji: '⭐', type: 'BEARISH', signal: 'PUT' };
+        // INVERTED HAMMER - Long upper wick after downtrend
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.4 && !isGreen && trend === 'BEARISH') {
+            pattern = { name: 'Inverted Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
         }
-        else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 0.9) {
-            pattern = { name: 'Bullish Engulfing', emoji: '🟢', type: 'BULLISH', signal: 'CALL' };
+        // SHOOTING STAR - Long upper wick, small body at bottom
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.4) {
+            pattern = { name: 'Shooting Star', emoji: '⭐', type: 'BEARISH', signal: 'PUT', strength: upperWick > body * 3 ? 'STRONG' : 'MODERATE' };
         }
-        else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 0.9) {
-            pattern = { name: 'Bearish Engulfing', emoji: '🔴', type: 'BEARISH', signal: 'PUT' };
+        // BULLISH ENGULFING - Green engulfs red
+        else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 0.8) {
+            pattern = { name: 'Bullish Engulfing', emoji: '🟢', type: 'BULLISH', signal: 'CALL', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
         }
+        // BEARISH ENGULFING - Red engulfs green
+        else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 0.8) {
+            pattern = { name: 'Bearish Engulfing', emoji: '🔴', type: 'BEARISH', signal: 'PUT', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
+        }
+        // PIERCING LINE - Red then green closing above midpoint
+        else if (isGreen && !prevIsGreen && open < prevLow && close > (prevOpen + prevClose) / 2 && close < prevOpen) {
+            pattern = { name: 'Piercing Line', emoji: '📈', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // DARK CLOUD - Green then red closing below midpoint
+        else if (!isGreen && prevIsGreen && open > prevHigh && close < (prevOpen + prevClose) / 2 && close > prevOpen) {
+            pattern = { name: 'Dark Cloud', emoji: '☁️', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
+        }
+        // DRAGONFLY DOJI - No body, long lower wick
         else if (body < range * 0.1 && lowerWick > range * 0.6 && upperWick < range * 0.15 && range > 0) {
-            pattern = { name: 'Dragonfly Doji', emoji: '🎯', type: 'BULLISH', signal: 'CALL' };
+            pattern = { name: 'Dragonfly Doji', emoji: '🎯', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
         }
+        // GRAVESTONE DOJI - No body, long upper wick
         else if (body < range * 0.1 && upperWick > range * 0.6 && lowerWick < range * 0.15 && range > 0) {
-            pattern = { name: 'Gravestone Doji', emoji: '💀', type: 'BEARISH', signal: 'PUT' };
+            pattern = { name: 'Gravestone Doji', emoji: '💀', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
         }
-        else if (body < range * 0.1 && range > 0) {
-            pattern = { name: 'Doji', emoji: '➕', type: 'NEUTRAL', signal: 'WAIT' };
+        // DOJI - Cross shape
+        else if (body < range * 0.1 && range > 0 && upperWick > range * 0.25 && lowerWick > range * 0.25) {
+            pattern = { name: 'Doji', emoji: '➕', type: 'NEUTRAL', signal: 'WAIT', strength: 'WEAK' };
         }
+        // TWEEZER TOP - Two candles same high
+        else if (Math.abs(high - prevHigh) / high < 0.001 && !isGreen && prevIsGreen) {
+            pattern = { name: 'Tweezer Top', emoji: '🔧', type: 'BEARISH', signal: 'PUT', strength: 'MODERATE' };
+        }
+        // TWEEZER BOTTOM - Two candles same low
+        else if (Math.abs(low - prevLow) / low < 0.001 && isGreen && !prevIsGreen) {
+            pattern = { name: 'Tweezer Bottom', emoji: '🔧', type: 'BULLISH', signal: 'CALL', strength: 'MODERATE' };
+        }
+        // MARUBOZU - Full body, no wicks
+        else if (body > range * 0.9) {
+            if (isGreen) {
+                pattern = { name: 'Bullish Marubozu', emoji: '💪', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
+            } else {
+                pattern = { name: 'Bearish Marubozu', emoji: '💪', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
+            }
+        }
+        // SPINNING TOP - Small body, wicks both sides
+        else if (body < range * 0.3 && upperWick > body * 0.5 && lowerWick > body * 0.5 && body > range * 0.1) {
+            pattern = { name: 'Spinning Top', emoji: '🔄', type: 'NEUTRAL', signal: 'WAIT', strength: 'WEAK' };
+        }
+        // 3-CANDLE PATTERNS
         else if (i >= 2) {
             var bar2Ago = filteredData[i - 2];
             var bar2Open = parseFloat(bar2Ago.Open);
             var bar2Close = parseFloat(bar2Ago.Close);
+            var bar2Body = Math.abs(bar2Close - bar2Open);
             var bar2IsGreen = bar2Close > bar2Open;
 
-            if (!bar2IsGreen && prevBody < body * 0.3 && isGreen && close > (bar2Open + bar2Close) / 2) {
-                pattern = { name: 'Morning Star', emoji: '🌅', type: 'BULLISH', signal: 'CALL' };
+            // MORNING STAR - Big red, small body, big green
+            if (!bar2IsGreen && bar2Body > prevBody * 1.5 && isGreen && body > prevBody * 1.5 && close > (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Morning Star', emoji: '🌅', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
             }
-            else if (bar2IsGreen && prevBody < body * 0.3 && !isGreen && close < (bar2Open + bar2Close) / 2) {
-                pattern = { name: 'Evening Star', emoji: '🌑', type: 'BEARISH', signal: 'PUT' };
+            // EVENING STAR - Big green, small body, big red
+            else if (bar2IsGreen && bar2Body > prevBody * 1.5 && !isGreen && body > prevBody * 1.5 && close < (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Evening Star', emoji: '🌑', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
+            }
+            // THREE WHITE SOLDIERS - 3 consecutive green
+            else if (bar2IsGreen && prevIsGreen && isGreen && close > prevClose && prevClose > bar2Close) {
+                pattern = { name: 'Three White Soldiers', emoji: '🎖️', type: 'BULLISH', signal: 'CALL', strength: 'STRONG' };
+            }
+            // THREE BLACK CROWS - 3 consecutive red
+            else if (!bar2IsGreen && !prevIsGreen && !isGreen && close < prevClose && prevClose < bar2Close) {
+                pattern = { name: 'Three Black Crows', emoji: '🦅', type: 'BEARISH', signal: 'PUT', strength: 'STRONG' };
             }
         }
 
@@ -34149,11 +34220,12 @@ function scanHistoricalPatterns() {
 
             var patternRecord = {
                 date: bar.Date, pattern: pattern.name, emoji: pattern.emoji, type: pattern.type,
-                signal: pattern.signal, entry: close, outcome1Day: outcome1Day, outcome3Day: outcome3Day,
-                outcome5Day: outcome5Day, maxMove: maxMove, isWin: isWin, trend: trend,
+                signal: pattern.signal, entry: close, high: high, low: low, open: open,
+                outcome1Day: outcome1Day, outcome3Day: outcome3Day, outcome5Day: outcome5Day,
+                maxMove: maxMove, isWin: isWin, trend: trend, rsi: rsi,
                 volumeRatio: volumeRatio, hasVolumeSpike: hasVolumeSpike, atSQ9Level: atSQ9Level,
                 nearSQ9Level: nearSQ9Level, sq9Level: nearestSQ9 ? nearestSQ9.price : 0,
-                sq9Distance: minDist, sq9Type: sq9Type
+                sq9Distance: minDist, sq9Type: sq9Type, strength: pattern.strength || 'MODERATE'
             };
 
             historicalPatterns.major.push(patternRecord);
@@ -34201,15 +34273,18 @@ function calculateHistoricalSQ9Levels(pivot) {
 
 function calculateContextStats() {
     var contexts = {
-        'At SQ9 (<0.5%)': { condition: function(p) { return p.atSQ9Level; } },
+        'At SQ9 Level (<0.5%)': { condition: function(p) { return p.atSQ9Level; } },
         'Near SQ9 (0.5-1.5%)': { condition: function(p) { return p.nearSQ9Level && !p.atSQ9Level; } },
-        'Away from SQ9': { condition: function(p) { return !p.nearSQ9Level; } },
-        'In Uptrend': { condition: function(p) { return p.trend === 'BULLISH'; } },
-        'In Downtrend': { condition: function(p) { return p.trend === 'BEARISH'; } },
-        'Volume Spike (>1.5x)': { condition: function(p) { return p.hasVolumeSpike; } }
+        'Away from SQ9 (>1.5%)': { condition: function(p) { return !p.nearSQ9Level; } },
+        'In Uptrend (SMA20)': { condition: function(p) { return p.trend === 'BULLISH'; } },
+        'In Downtrend (SMA20)': { condition: function(p) { return p.trend === 'BEARISH'; } },
+        'RSI Oversold (<30)': { condition: function(p) { return p.rsi < 30; } },
+        'RSI Overbought (>70)': { condition: function(p) { return p.rsi > 70; } },
+        'Volume Spike (>1.5x)': { condition: function(p) { return p.hasVolumeSpike; } },
+        'Normal Volume': { condition: function(p) { return !p.hasVolumeSpike; } }
     };
 
-    var patternNames = ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji'];
+    var patternNames = ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji', 'Morning Star', 'Evening Star'];
     historicalPatterns.stats.byContext = {};
 
     Object.keys(contexts).forEach(function(contextName) {
@@ -34220,8 +34295,9 @@ function calculateContextStats() {
             });
             var wins = filtered.filter(function(p) { return p.isWin; }).length;
             var total = filtered.length;
+            var avgMove = total > 0 ? filtered.reduce(function(sum, p) { return sum + p.outcome5Day; }, 0) / total : 0;
             historicalPatterns.stats.byContext[contextName][patternName] = {
-                winRate: total > 0 ? Math.round(wins / total * 100) : 0, count: total
+                winRate: total > 0 ? Math.round(wins / total * 100) : 0, count: total, avgMove: avgMove
             };
         });
     });
@@ -34354,12 +34430,17 @@ function updateHistoricalPatternsUI(symbol) {
 
 function updateTopSetups() {
     var setups = [
-        { name: 'Hammer at SQ9 Support + Volume', conditions: function(p) { return p.pattern === 'Hammer' && p.atSQ9Level && p.hasVolumeSpike; }, icon: '🔨' },
-        { name: 'Shooting Star at SQ9 Resistance + Volume', conditions: function(p) { return p.pattern === 'Shooting Star' && p.atSQ9Level && p.hasVolumeSpike; }, icon: '⭐' },
-        { name: 'Bull Engulfing at SQ9 Support', conditions: function(p) { return p.pattern === 'Bullish Engulfing' && p.nearSQ9Level && p.sq9Type === 'SUPPORT'; }, icon: '🟢' },
-        { name: 'Bear Engulfing at SQ9 Resistance', conditions: function(p) { return p.pattern === 'Bearish Engulfing' && p.nearSQ9Level && p.sq9Type === 'RESISTANCE'; }, icon: '🔴' },
-        { name: 'Morning Star in Uptrend', conditions: function(p) { return p.pattern === 'Morning Star' && p.trend === 'BULLISH'; }, icon: '🌅' },
-        { name: 'Any Pattern at SQ9 + Volume', conditions: function(p) { return p.atSQ9Level && p.hasVolumeSpike; }, icon: '🎯' }
+        { name: 'Hammer + Volume Spike', icon: '🔨', conditions: function(p) { return p.pattern === 'Hammer' && p.hasVolumeSpike; } },
+        { name: 'Hammer at SQ9 Support', icon: '🔨📐', conditions: function(p) { return p.pattern === 'Hammer' && p.nearSQ9Level; } },
+        { name: 'Shooting Star + Volume', icon: '⭐', conditions: function(p) { return p.pattern === 'Shooting Star' && p.hasVolumeSpike; } },
+        { name: 'Shooting Star at SQ9', icon: '⭐📐', conditions: function(p) { return p.pattern === 'Shooting Star' && p.nearSQ9Level; } },
+        { name: 'Bull Engulfing in Uptrend', icon: '🟢', conditions: function(p) { return p.pattern === 'Bullish Engulfing' && p.trend === 'BULLISH'; } },
+        { name: 'Bear Engulfing in Downtrend', icon: '🔴', conditions: function(p) { return p.pattern === 'Bearish Engulfing' && p.trend === 'BEARISH'; } },
+        { name: 'Morning Star (Any)', icon: '🌅', conditions: function(p) { return p.pattern === 'Morning Star'; } },
+        { name: 'Evening Star (Any)', icon: '🌑', conditions: function(p) { return p.pattern === 'Evening Star'; } },
+        { name: 'RSI Oversold + Bullish', icon: '📊', conditions: function(p) { return p.rsi < 30 && p.type === 'BULLISH'; } },
+        { name: 'RSI Overbought + Bearish', icon: '📊', conditions: function(p) { return p.rsi > 70 && p.type === 'BEARISH'; } },
+        { name: 'Any Pattern + Volume + Trend', icon: '🎯', conditions: function(p) { return p.hasVolumeSpike && ((p.type === 'BULLISH' && p.trend === 'BULLISH') || (p.type === 'BEARISH' && p.trend === 'BEARISH')); } }
     ];
 
     var html = '', rank = 1;
@@ -34367,7 +34448,7 @@ function updateTopSetups() {
         var filtered = historicalPatterns.major.filter(setup.conditions);
         var wins = filtered.filter(function(p) { return p.isWin; }).length;
         var total = filtered.length;
-        var winRate = total >= 3 ? Math.round(wins / total * 100) : 0;
+        var winRate = total >= 2 ? Math.round(wins / total * 100) : 0;
 
         if (total >= 3) {
             var avgMove = filtered.reduce(function(sum, p) { return sum + Math.abs(p.outcome5Day); }, 0) / total;
@@ -34435,23 +34516,27 @@ function showPatternDetail(date) {
     var resultColor = pattern.isWin ? '#22c55e' : '#ef4444';
     var resultText = pattern.isWin ? 'WIN' : 'LOSS';
 
+    var sq9Badge = pattern.atSQ9Level ? '📐 AT SQ9 LEVEL' : pattern.nearSQ9Level ? '📐 Near SQ9' : '○ Away from SQ9';
+    var sq9Color = pattern.atSQ9Level ? '#22c55e' : pattern.nearSQ9Level ? '#f59e0b' : '#6b7280';
+
     content.innerHTML =
         '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">' +
             '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
                 '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 Pattern Stats</div>' +
-                '<div style="font-size: 11px; line-height: 1.8;">' +
+                '<div style="font-size: 11px; line-height: 2;">' +
                     '<div>Entry Price: <strong>$' + pattern.entry.toFixed(2) + '</strong></div>' +
-                    '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : '#ef4444') + ';">' + pattern.signal + '</strong></div>' +
-                    '<div>Trend: <strong>' + pattern.trend + '</strong></div>' +
-                    '<div>Volume: <strong>' + pattern.volumeRatio.toFixed(2) + 'x avg' + (pattern.hasVolumeSpike ? ' ✅' : '') + '</strong></div>' +
+                    '<div>High: $' + (pattern.high || pattern.entry).toFixed(2) + ' | Low: $' + (pattern.low || pattern.entry).toFixed(2) + '</div>' +
+                    '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : pattern.signal === 'PUT' ? '#ef4444' : '#6b7280') + ';">' + pattern.signal + '</strong></div>' +
+                    '<div>Strength: <strong>' + (pattern.strength || 'MODERATE') + '</strong></div>' +
                 '</div>' +
             '</div>' +
             '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
-                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📐 SQ9 Context</div>' +
-                '<div style="font-size: 11px; line-height: 1.8;">' +
-                    '<div>Nearest Level: <strong>$' + pattern.sq9Level.toFixed(2) + '</strong></div>' +
-                    '<div>Type: <strong>' + pattern.sq9Type + '</strong></div>' +
-                    '<div>Distance: <strong>' + pattern.sq9Distance.toFixed(2) + '%</strong> ' + (pattern.atSQ9Level ? '✅ At Level' : pattern.nearSQ9Level ? '⚠️ Near' : '') + '</div>' +
+                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📈 Market Context</div>' +
+                '<div style="font-size: 11px; line-height: 2;">' +
+                    '<div>Trend (SMA20): <strong style="color: ' + (pattern.trend === 'BULLISH' ? '#22c55e' : pattern.trend === 'BEARISH' ? '#ef4444' : '#6b7280') + ';">' + pattern.trend + '</strong></div>' +
+                    '<div>RSI: <strong>' + (pattern.rsi || 50).toFixed(1) + '</strong> ' + ((pattern.rsi || 50) < 30 ? '⚠️ Oversold' : (pattern.rsi || 50) > 70 ? '⚠️ Overbought' : '') + '</div>' +
+                    '<div>Volume: <strong>' + pattern.volumeRatio.toFixed(2) + 'x</strong> ' + (pattern.hasVolumeSpike ? '🔥 Spike!' : '') + '</div>' +
+                    '<div style="color: ' + sq9Color + '; font-weight: 600;">' + sq9Badge + '</div>' +
                 '</div>' +
             '</div>' +
         '</div>' +
