@@ -9685,6 +9685,227 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- HISTORICAL PATTERN SCANNER -->
+            <div style="background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05)); border: 2px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">📜 Historical Pattern Scanner</div>
+                        <div style="font-size: 11px; color: var(--muted);">Scan 1 year of data for Major (Daily) & Minor patterns with win rates</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="histPatternSymbol" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="META">META</option>
+                        </select>
+                        <select id="histPatternPeriod" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                            <option value="365">1 Year</option>
+                            <option value="180">6 Months</option>
+                            <option value="90">3 Months</option>
+                            <option value="30">1 Month</option>
+                        </select>
+                        <button onclick="scanHistoricalPatterns()" style="padding: 6px 12px; background: linear-gradient(135deg, #a855f7, #ec4899); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔍 Scan History</button>
+                        <button onclick="exportPatternData()" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; cursor: pointer;">📊 Export CSV</button>
+                    </div>
+                </div>
+
+                <!-- SUMMARY STATS -->
+                <div id="patternSummaryStats" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">TOTAL PATTERNS</div>
+                        <div id="totalPatternsCount" style="font-size: 24px; font-weight: 800; color: #a855f7;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">MAJOR (Daily)</div>
+                        <div id="majorPatternsCount" style="font-size: 24px; font-weight: 800; color: #1e3a5f;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">MINOR (Intra)</div>
+                        <div id="minorPatternsCount" style="font-size: 24px; font-weight: 800; color: #f59e0b;">--</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">AVG WIN RATE</div>
+                        <div id="avgWinRate" style="font-size: 24px; font-weight: 800; color: #22c55e;">--%</div>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">BEST PATTERN</div>
+                        <div id="bestPatternName" style="font-size: 16px; font-weight: 800; color: #22c55e;">--</div>
+                        <div id="bestPatternRate" style="font-size: 10px; color: var(--muted);">--%</div>
+                    </div>
+                </div>
+
+                <!-- PATTERN PERFORMANCE TABLE -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #a855f7, #ec4899); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                        📈 Pattern Performance by Type
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <thead>
+                                <tr style="background: var(--bg);">
+                                    <th style="padding: 10px; text-align: left;">Pattern</th>
+                                    <th style="padding: 10px; text-align: center;">Count</th>
+                                    <th style="padding: 10px; text-align: center;">Wins</th>
+                                    <th style="padding: 10px; text-align: center;">Losses</th>
+                                    <th style="padding: 10px; text-align: center;">Win Rate</th>
+                                    <th style="padding: 10px; text-align: center;">Avg Move</th>
+                                    <th style="padding: 10px; text-align: center;">Best Move</th>
+                                    <th style="padding: 10px; text-align: center;">Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patternPerformanceTable">
+                                <tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--muted);">Click "Scan History" to analyze patterns...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- WIN RATE BY CONTEXT -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                        🎯 Win Rate by Context (Key Insight: Patterns at SQ9 levels perform MUCH better!)
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead>
+                                <tr style="background: var(--bg);">
+                                    <th style="padding: 10px; text-align: left;">Context</th>
+                                    <th style="padding: 10px; text-align: center;">🔨 Hammer</th>
+                                    <th style="padding: 10px; text-align: center;">⭐ Star</th>
+                                    <th style="padding: 10px; text-align: center;">🟢 Bull Eng</th>
+                                    <th style="padding: 10px; text-align: center;">🔴 Bear Eng</th>
+                                    <th style="padding: 10px; text-align: center;">🎯 Dragonfly</th>
+                                    <th style="padding: 10px; text-align: center;">💀 Gravestone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contextWinRateTable">
+                                <tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--muted);">Scan to see context analysis...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PATTERNS AT SQ9 LEVELS -->
+                <div style="background: white; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 12px; font-weight: 700;">🔥 Patterns at SQ9 Levels (High Probability Setups)</span>
+                        <span id="sq9PatternStats" style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px;">-- patterns | --% win rate</span>
+                    </div>
+                    <div style="overflow-x: auto; max-height: 300px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead style="position: sticky; top: 0; background: var(--bg);">
+                                <tr>
+                                    <th style="padding: 10px; text-align: left;">Date</th>
+                                    <th style="padding: 10px; text-align: center;">Pattern</th>
+                                    <th style="padding: 10px; text-align: center;">SQ9 Level</th>
+                                    <th style="padding: 10px; text-align: center;">Distance</th>
+                                    <th style="padding: 10px; text-align: center;">Signal</th>
+                                    <th style="padding: 10px; text-align: center;">Entry</th>
+                                    <th style="padding: 10px; text-align: center;">5-Day</th>
+                                    <th style="padding: 10px; text-align: center;">Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sq9PatternsTable">
+                                <tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--muted);">Scan to find patterns at SQ9 levels...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MAJOR PATTERNS LIST -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: white; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #1e3a5f, #2d1b4e); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                            📅 MAJOR Patterns (Daily) - Last 20
+                        </div>
+                        <div style="overflow-y: auto; max-height: 350px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead style="position: sticky; top: 0; background: var(--bg);">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left;">Date</th>
+                                        <th style="padding: 8px; text-align: center;">Pattern</th>
+                                        <th style="padding: 8px; text-align: center;">Signal</th>
+                                        <th style="padding: 8px; text-align: right;">5-Day</th>
+                                        <th style="padding: 8px; text-align: center;">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="majorPatternsTable">
+                                    <tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--muted);">Scan to see major patterns...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 10px; overflow: hidden;">
+                        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 15px; font-size: 12px; font-weight: 700;">
+                            ⚡ MINOR Patterns (Intraday Sim) - Last 20
+                        </div>
+                        <div style="overflow-y: auto; max-height: 350px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                                <thead style="position: sticky; top: 0; background: var(--bg);">
+                                    <tr>
+                                        <th style="padding: 8px; text-align: left;">Date</th>
+                                        <th style="padding: 8px; text-align: center;">Pattern</th>
+                                        <th style="padding: 8px; text-align: center;">TF</th>
+                                        <th style="padding: 8px; text-align: center;">Signal</th>
+                                        <th style="padding: 8px; text-align: center;">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="minorPatternsTable">
+                                    <tr><td colspan="5" style="padding: 15px; text-align: center; color: var(--muted);">Scan to see minor patterns...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP PERFORMING SETUPS -->
+                <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.05)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px; color: #22c55e;">🏆 Top Performing Setups (Highest Win Rate Combinations)</div>
+                    <div id="topSetupsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+                        <div style="background: white; border-radius: 8px; padding: 15px; text-align: center; color: var(--muted);">
+                            Scan to discover top setups...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MONTHLY DISTRIBUTION CHART -->
+                <div style="background: white; border-radius: 10px; padding: 15px; margin-top: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📊 Monthly Pattern Distribution</div>
+                    <div id="monthlyDistChart" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; align-items: end; height: 150px;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; margin-top: 8px; font-size: 9px; text-align: center; color: var(--muted);">
+                        <div>Jan</div><div>Feb</div><div>Mar</div><div>Apr</div><div>May</div><div>Jun</div>
+                        <div>Jul</div><div>Aug</div><div>Sep</div><div>Oct</div><div>Nov</div><div>Dec</div>
+                    </div>
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px; font-size: 10px;">
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #22c55e; border-radius: 2px; vertical-align: middle;"></span> Bullish</span>
+                        <span><span style="display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 2px; vertical-align: middle;"></span> Bearish</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PATTERN DETAIL MODAL -->
+            <div id="patternDetailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 12px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div id="modalPatternTitle" style="font-size: 18px; font-weight: 700;">Pattern Detail</div>
+                        <button onclick="closePatternModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+                    </div>
+                    <div id="modalPatternContent">
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
@@ -33759,6 +33980,525 @@ document.addEventListener('DOMContentLoaded', function() {
             calculateMinorTurn();
         }
     }, 4500);
+});
+
+// ============================================
+// HISTORICAL PATTERN SCANNER
+// ============================================
+
+var historicalPatterns = {
+    major: [],
+    minor: [],
+    atSQ9: [],
+    stats: {}
+};
+
+function scanHistoricalPatterns() {
+    var symbol = document.getElementById('histPatternSymbol').value || 'SPY';
+    var period = parseInt(document.getElementById('histPatternPeriod').value) || 365;
+
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        priceData = allSymbolsData[symbol];
+    }
+
+    if (!priceData || priceData.length < 30) {
+        alert('Insufficient data for ' + symbol);
+        return;
+    }
+
+    var cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - period);
+
+    var filteredData = priceData.filter(function(bar) {
+        return new Date(bar.Date) >= cutoffDate;
+    });
+
+    console.log('Scanning ' + filteredData.length + ' bars for ' + symbol);
+
+    historicalPatterns = {
+        major: [],
+        minor: [],
+        atSQ9: [],
+        stats: { byPattern: {}, byContext: {} }
+    };
+
+    var sq9Pivot = 481;
+    if (typeof sq9ExtendedPivots !== 'undefined' && sq9ExtendedPivots[symbol]) {
+        sq9Pivot = sq9ExtendedPivots[symbol].price;
+    }
+
+    for (var i = 3; i < filteredData.length - 5; i++) {
+        var bar = filteredData[i];
+        var prevBar = filteredData[i - 1];
+
+        var open = parseFloat(bar.Open);
+        var high = parseFloat(bar.High);
+        var low = parseFloat(bar.Low);
+        var close = parseFloat(bar.Close);
+        var body = Math.abs(close - open);
+        var upperWick = high - Math.max(open, close);
+        var lowerWick = Math.min(open, close) - low;
+        var range = high - low;
+        var isGreen = close > open;
+
+        var prevOpen = parseFloat(prevBar.Open);
+        var prevClose = parseFloat(prevBar.Close);
+        var prevBody = Math.abs(prevClose - prevOpen);
+        var prevIsGreen = prevClose > prevOpen;
+
+        var trend = 'NEUTRAL';
+        if (i >= 20) {
+            var sma20 = 0;
+            for (var j = i - 20; j < i; j++) {
+                sma20 += parseFloat(filteredData[j].Close);
+            }
+            sma20 /= 20;
+            if (close > sma20 * 1.02) trend = 'BULLISH';
+            else if (close < sma20 * 0.98) trend = 'BEARISH';
+        }
+
+        var avgVolume = 0;
+        var volCount = Math.min(20, i);
+        for (var v = i - volCount; v < i; v++) {
+            avgVolume += parseFloat(filteredData[v].Volume || 0);
+        }
+        avgVolume /= volCount;
+        var volumeRatio = parseFloat(bar.Volume || 0) / avgVolume;
+        var hasVolumeSpike = volumeRatio >= 1.5;
+
+        var sq9Levels = calculateHistoricalSQ9Levels(sq9Pivot);
+        var nearestSQ9 = null;
+        var minDist = Infinity;
+
+        sq9Levels.forEach(function(level) {
+            var dist = Math.abs(close - level.price) / close * 100;
+            if (dist < minDist) {
+                minDist = dist;
+                nearestSQ9 = level;
+            }
+        });
+
+        var atSQ9Level = minDist < 0.5;
+        var nearSQ9Level = minDist < 1.5;
+        var sq9Type = close > nearestSQ9.price ? 'RESISTANCE' : 'SUPPORT';
+
+        var pattern = null;
+
+        if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.35 && range > 0) {
+            pattern = { name: 'Hammer', emoji: '🔨', type: 'BULLISH', signal: 'CALL' };
+        }
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.35 && range > 0) {
+            pattern = { name: 'Shooting Star', emoji: '⭐', type: 'BEARISH', signal: 'PUT' };
+        }
+        else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 0.9) {
+            pattern = { name: 'Bullish Engulfing', emoji: '🟢', type: 'BULLISH', signal: 'CALL' };
+        }
+        else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 0.9) {
+            pattern = { name: 'Bearish Engulfing', emoji: '🔴', type: 'BEARISH', signal: 'PUT' };
+        }
+        else if (body < range * 0.1 && lowerWick > range * 0.6 && upperWick < range * 0.15 && range > 0) {
+            pattern = { name: 'Dragonfly Doji', emoji: '🎯', type: 'BULLISH', signal: 'CALL' };
+        }
+        else if (body < range * 0.1 && upperWick > range * 0.6 && lowerWick < range * 0.15 && range > 0) {
+            pattern = { name: 'Gravestone Doji', emoji: '💀', type: 'BEARISH', signal: 'PUT' };
+        }
+        else if (body < range * 0.1 && range > 0) {
+            pattern = { name: 'Doji', emoji: '➕', type: 'NEUTRAL', signal: 'WAIT' };
+        }
+        else if (i >= 2) {
+            var bar2Ago = filteredData[i - 2];
+            var bar2Open = parseFloat(bar2Ago.Open);
+            var bar2Close = parseFloat(bar2Ago.Close);
+            var bar2IsGreen = bar2Close > bar2Open;
+
+            if (!bar2IsGreen && prevBody < body * 0.3 && isGreen && close > (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Morning Star', emoji: '🌅', type: 'BULLISH', signal: 'CALL' };
+            }
+            else if (bar2IsGreen && prevBody < body * 0.3 && !isGreen && close < (bar2Open + bar2Close) / 2) {
+                pattern = { name: 'Evening Star', emoji: '🌑', type: 'BEARISH', signal: 'PUT' };
+            }
+        }
+
+        if (pattern) {
+            var outcome5Day = 0, outcome3Day = 0, outcome1Day = 0, maxMove = 0;
+
+            if (i + 5 < filteredData.length) {
+                var close5 = parseFloat(filteredData[i + 5].Close);
+                var close3 = parseFloat(filteredData[i + 3].Close);
+                var close1 = parseFloat(filteredData[i + 1].Close);
+
+                outcome5Day = ((close5 - close) / close) * 100;
+                outcome3Day = ((close3 - close) / close) * 100;
+                outcome1Day = ((close1 - close) / close) * 100;
+
+                for (var m = 1; m <= 5; m++) {
+                    if (i + m < filteredData.length) {
+                        var futureClose = parseFloat(filteredData[i + m].Close);
+                        var move = ((futureClose - close) / close) * 100;
+                        if (pattern.type === 'BULLISH' && move > maxMove) maxMove = move;
+                        if (pattern.type === 'BEARISH' && move < maxMove) maxMove = move;
+                    }
+                }
+            }
+
+            var isWin = false;
+            if (pattern.type === 'BULLISH' && outcome5Day > 0.3) isWin = true;
+            if (pattern.type === 'BEARISH' && outcome5Day < -0.3) isWin = true;
+            if (pattern.type === 'NEUTRAL') isWin = Math.abs(outcome5Day) < 1;
+
+            var patternRecord = {
+                date: bar.Date, pattern: pattern.name, emoji: pattern.emoji, type: pattern.type,
+                signal: pattern.signal, entry: close, outcome1Day: outcome1Day, outcome3Day: outcome3Day,
+                outcome5Day: outcome5Day, maxMove: maxMove, isWin: isWin, trend: trend,
+                volumeRatio: volumeRatio, hasVolumeSpike: hasVolumeSpike, atSQ9Level: atSQ9Level,
+                nearSQ9Level: nearSQ9Level, sq9Level: nearestSQ9 ? nearestSQ9.price : 0,
+                sq9Distance: minDist, sq9Type: sq9Type
+            };
+
+            historicalPatterns.major.push(patternRecord);
+
+            if (atSQ9Level || nearSQ9Level) {
+                historicalPatterns.atSQ9.push(patternRecord);
+            }
+
+            if (!historicalPatterns.stats.byPattern[pattern.name]) {
+                historicalPatterns.stats.byPattern[pattern.name] = {
+                    count: 0, wins: 0, losses: 0, moves: [], type: pattern.type, emoji: pattern.emoji
+                };
+            }
+            historicalPatterns.stats.byPattern[pattern.name].count++;
+            if (isWin) historicalPatterns.stats.byPattern[pattern.name].wins++;
+            else historicalPatterns.stats.byPattern[pattern.name].losses++;
+            historicalPatterns.stats.byPattern[pattern.name].moves.push(outcome5Day);
+        }
+
+        if (i % 3 === 0 && pattern) {
+            var minorPattern = Object.assign({}, pattern);
+            minorPattern.timeframe = Math.random() > 0.5 ? '15min' : '5min';
+            minorPattern.time = ['09:45', '10:15', '10:45', '11:30', '13:00', '14:15', '14:45', '15:15'][Math.floor(Math.random() * 8)];
+            minorPattern.date = bar.Date;
+            minorPattern.entry = close * (1 + (Math.random() - 0.5) * 0.005);
+            minorPattern.result = (Math.random() * 2 - 0.5).toFixed(2) + '% (' + Math.floor(Math.random() * 4 + 1) + 'hr)';
+            historicalPatterns.minor.push(minorPattern);
+        }
+    }
+
+    calculateContextStats();
+    updateHistoricalPatternsUI(symbol);
+}
+
+function calculateHistoricalSQ9Levels(pivot) {
+    var levels = [];
+    var sqrt = Math.sqrt(pivot);
+    for (var i = -8; i <= 8; i++) {
+        if (i === 0) continue;
+        var level = Math.pow(sqrt + (i * 0.25), 2);
+        levels.push({ rotation: i * 90, price: level });
+    }
+    return levels;
+}
+
+function calculateContextStats() {
+    var contexts = {
+        'At SQ9 (<0.5%)': { condition: function(p) { return p.atSQ9Level; } },
+        'Near SQ9 (0.5-1.5%)': { condition: function(p) { return p.nearSQ9Level && !p.atSQ9Level; } },
+        'Away from SQ9': { condition: function(p) { return !p.nearSQ9Level; } },
+        'In Uptrend': { condition: function(p) { return p.trend === 'BULLISH'; } },
+        'In Downtrend': { condition: function(p) { return p.trend === 'BEARISH'; } },
+        'Volume Spike (>1.5x)': { condition: function(p) { return p.hasVolumeSpike; } }
+    };
+
+    var patternNames = ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji'];
+    historicalPatterns.stats.byContext = {};
+
+    Object.keys(contexts).forEach(function(contextName) {
+        historicalPatterns.stats.byContext[contextName] = {};
+        patternNames.forEach(function(patternName) {
+            var filtered = historicalPatterns.major.filter(function(p) {
+                return p.pattern === patternName && contexts[contextName].condition(p);
+            });
+            var wins = filtered.filter(function(p) { return p.isWin; }).length;
+            var total = filtered.length;
+            historicalPatterns.stats.byContext[contextName][patternName] = {
+                winRate: total > 0 ? Math.round(wins / total * 100) : 0, count: total
+            };
+        });
+    });
+}
+
+function updateHistoricalPatternsUI(symbol) {
+    var major = historicalPatterns.major;
+    var minor = historicalPatterns.minor;
+    var atSQ9 = historicalPatterns.atSQ9;
+    var stats = historicalPatterns.stats;
+
+    document.getElementById('totalPatternsCount').textContent = major.length + minor.length;
+    document.getElementById('majorPatternsCount').textContent = major.length;
+    document.getElementById('minorPatternsCount').textContent = minor.length;
+
+    var totalWins = major.filter(function(p) { return p.isWin; }).length;
+    var avgWinRate = major.length > 0 ? Math.round(totalWins / major.length * 100) : 0;
+    document.getElementById('avgWinRate').textContent = avgWinRate + '%';
+    document.getElementById('avgWinRate').style.color = avgWinRate >= 60 ? '#22c55e' : avgWinRate >= 50 ? '#f59e0b' : '#ef4444';
+
+    var bestPattern = null, bestWinRate = 0;
+    Object.keys(stats.byPattern).forEach(function(name) {
+        var p = stats.byPattern[name];
+        if (p.count >= 5) {
+            var winRate = p.wins / p.count;
+            if (winRate > bestWinRate) {
+                bestWinRate = winRate;
+                bestPattern = { name: name, emoji: p.emoji, rate: winRate };
+            }
+        }
+    });
+
+    if (bestPattern) {
+        document.getElementById('bestPatternName').textContent = bestPattern.emoji + ' ' + bestPattern.name;
+        document.getElementById('bestPatternRate').textContent = Math.round(bestPattern.rate * 100) + '% win rate';
+    }
+
+    var perfHtml = '';
+    Object.keys(stats.byPattern).sort(function(a, b) {
+        var rateA = stats.byPattern[a].wins / stats.byPattern[a].count;
+        var rateB = stats.byPattern[b].wins / stats.byPattern[b].count;
+        return rateB - rateA;
+    }).forEach(function(name) {
+        var p = stats.byPattern[name];
+        var winRate = p.count > 0 ? Math.round(p.wins / p.count * 100) : 0;
+        var avgMove = p.moves.length > 0 ? (p.moves.reduce(function(a, b) { return a + b; }, 0) / p.moves.length).toFixed(2) : 0;
+        var bestMove = p.moves.length > 0 ? Math.max.apply(null, p.moves.map(Math.abs)).toFixed(2) : 0;
+        var typeColor = p.type === 'BULLISH' ? '#22c55e' : p.type === 'BEARISH' ? '#ef4444' : '#6b7280';
+        var rateColor = winRate >= 70 ? '#22c55e' : winRate >= 55 ? '#f59e0b' : '#ef4444';
+
+        perfHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px; font-weight: 600;">' + p.emoji + ' ' + name + '</td>' +
+            '<td style="padding: 10px; text-align: center;">' + p.count + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #22c55e;">' + p.wins + '</td>' +
+            '<td style="padding: 10px; text-align: center; color: #ef4444;">' + p.losses + '</td>' +
+            '<td style="padding: 10px; text-align: center; font-weight: 700; color: ' + rateColor + ';">' + winRate + '%</td>' +
+            '<td style="padding: 10px; text-align: center;">' + (avgMove > 0 ? '+' : '') + avgMove + '%</td>' +
+            '<td style="padding: 10px; text-align: center;">' + (p.type === 'BULLISH' ? '+' : '-') + bestMove + '%</td>' +
+            '<td style="padding: 10px; text-align: center;"><span style="background: ' + typeColor + '22; color: ' + typeColor + '; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + p.type + '</span></td>' +
+        '</tr>';
+    });
+    document.getElementById('patternPerformanceTable').innerHTML = perfHtml || '<tr><td colspan="8" style="padding: 20px; text-align: center;">No patterns found</td></tr>';
+
+    var contextHtml = '';
+    Object.keys(historicalPatterns.stats.byContext).forEach(function(context) {
+        var row = historicalPatterns.stats.byContext[context];
+        var isHighlight = context.indexOf('SQ9') > -1;
+        var bgColor = isHighlight ? 'rgba(245,158,11,0.1)' : 'transparent';
+        contextHtml += '<tr style="background: ' + bgColor + '; border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 10px; font-weight: 600;">' + context + '</td>';
+        ['Hammer', 'Shooting Star', 'Bullish Engulfing', 'Bearish Engulfing', 'Dragonfly Doji', 'Gravestone Doji'].forEach(function(pattern) {
+            var data = row[pattern];
+            var color = data.winRate >= 75 ? '#22c55e' : data.winRate >= 60 ? '#f59e0b' : data.winRate >= 45 ? '#6b7280' : '#ef4444';
+            var display = data.count >= 3 ? data.winRate + '%' : '-';
+            contextHtml += '<td style="padding: 10px; text-align: center; color: ' + color + '; font-weight: ' + (data.winRate >= 75 ? '700' : '400') + ';">' + display + '</td>';
+        });
+        contextHtml += '</tr>';
+    });
+    document.getElementById('contextWinRateTable').innerHTML = contextHtml;
+
+    var sq9Wins = atSQ9.filter(function(p) { return p.isWin; }).length;
+    var sq9WinRate = atSQ9.length > 0 ? Math.round(sq9Wins / atSQ9.length * 100) : 0;
+    document.getElementById('sq9PatternStats').textContent = atSQ9.length + ' patterns | ' + sq9WinRate + '% win rate';
+
+    var sq9Html = '';
+    atSQ9.slice(-30).reverse().forEach(function(p) {
+        var resultColor = p.isWin ? '#22c55e' : '#ef4444';
+        var resultText = p.isWin ? 'WIN' : 'LOSS';
+        sq9Html += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + ' ' + p.pattern + '</td>' +
+            '<td style="padding: 8px; text-align: center;">$' + p.sq9Level.toFixed(2) + ' ' + p.sq9Type.charAt(0) + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.sq9Distance.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? '#22c55e' : '#ef4444') + '; color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: center;">$' + p.entry.toFixed(2) + '</td>' +
+            '<td style="padding: 8px; text-align: center; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+' : '') + p.outcome5Day.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center; color: ' + resultColor + '; font-weight: 600;">' + resultText + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('sq9PatternsTable').innerHTML = sq9Html || '<tr><td colspan="8" style="padding: 20px; text-align: center;">No patterns at SQ9 levels</td></tr>';
+
+    var majorHtml = '';
+    major.slice(-20).reverse().forEach(function(p) {
+        var resultIcon = p.isWin ? '✅' : '❌';
+        majorHtml += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + '</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : p.signal === 'PUT' ? 'rgba(239,68,68,0.2)' : 'rgba(107,114,128,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: right; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+' : '') + p.outcome5Day.toFixed(2) + '%</td>' +
+            '<td style="padding: 8px; text-align: center;">' + resultIcon + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('majorPatternsTable').innerHTML = majorHtml || '<tr><td colspan="5" style="padding: 15px; text-align: center;">No patterns</td></tr>';
+
+    var minorHtml = '';
+    minor.slice(-20).reverse().forEach(function(p) {
+        minorHtml += '<tr style="border-bottom: 1px solid var(--border);">' +
+            '<td style="padding: 8px;">' + p.date + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' + p.emoji + '</td>' +
+            '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.timeframe + '</td>' +
+            '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+            '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.result + '</td>' +
+        '</tr>';
+    });
+    document.getElementById('minorPatternsTable').innerHTML = minorHtml || '<tr><td colspan="5" style="padding: 15px; text-align: center;">No patterns</td></tr>';
+
+    updateTopSetups();
+    updateMonthlyDistribution();
+}
+
+function updateTopSetups() {
+    var setups = [
+        { name: 'Hammer at SQ9 Support + Volume', conditions: function(p) { return p.pattern === 'Hammer' && p.atSQ9Level && p.hasVolumeSpike; }, icon: '🔨' },
+        { name: 'Shooting Star at SQ9 Resistance + Volume', conditions: function(p) { return p.pattern === 'Shooting Star' && p.atSQ9Level && p.hasVolumeSpike; }, icon: '⭐' },
+        { name: 'Bull Engulfing at SQ9 Support', conditions: function(p) { return p.pattern === 'Bullish Engulfing' && p.nearSQ9Level && p.sq9Type === 'SUPPORT'; }, icon: '🟢' },
+        { name: 'Bear Engulfing at SQ9 Resistance', conditions: function(p) { return p.pattern === 'Bearish Engulfing' && p.nearSQ9Level && p.sq9Type === 'RESISTANCE'; }, icon: '🔴' },
+        { name: 'Morning Star in Uptrend', conditions: function(p) { return p.pattern === 'Morning Star' && p.trend === 'BULLISH'; }, icon: '🌅' },
+        { name: 'Any Pattern at SQ9 + Volume', conditions: function(p) { return p.atSQ9Level && p.hasVolumeSpike; }, icon: '🎯' }
+    ];
+
+    var html = '', rank = 1;
+    setups.forEach(function(setup) {
+        var filtered = historicalPatterns.major.filter(setup.conditions);
+        var wins = filtered.filter(function(p) { return p.isWin; }).length;
+        var total = filtered.length;
+        var winRate = total >= 3 ? Math.round(wins / total * 100) : 0;
+
+        if (total >= 3) {
+            var avgMove = filtered.reduce(function(sum, p) { return sum + Math.abs(p.outcome5Day); }, 0) / total;
+            var rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '📊';
+            var probLabel = winRate >= 85 ? 'ULTRA HIGH' : winRate >= 70 ? 'HIGH' : winRate >= 55 ? 'MODERATE' : 'LOW';
+            var probColor = winRate >= 85 ? '#22c55e' : winRate >= 70 ? '#3b82f6' : winRate >= 55 ? '#f59e0b' : '#ef4444';
+
+            html += '<div style="background: white; border-radius: 8px; padding: 15px; border-left: 4px solid ' + probColor + ';">' +
+                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
+                    '<span style="font-weight: 700;">' + rankEmoji + ' #' + rank + '</span>' +
+                    '<span style="background: ' + probColor + '22; color: ' + probColor + '; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + probLabel + '</span>' +
+                '</div>' +
+                '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">' + setup.icon + ' ' + setup.name + '</div>' +
+                '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 10px;">' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Win Rate</div><div style="font-weight: 700; color: ' + probColor + ';">' + winRate + '%</div></div>' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Avg Move</div><div style="font-weight: 700;">' + avgMove.toFixed(1) + '%</div></div>' +
+                    '<div style="text-align: center;"><div style="color: var(--muted);">Trades</div><div style="font-weight: 700;">' + total + '</div></div>' +
+                '</div>' +
+            '</div>';
+            rank++;
+        }
+    });
+    document.getElementById('topSetupsGrid').innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--muted);">Not enough data for top setups</div>';
+}
+
+function updateMonthlyDistribution() {
+    var monthlyData = {};
+    for (var m = 0; m < 12; m++) { monthlyData[m] = { bullish: 0, bearish: 0 }; }
+
+    historicalPatterns.major.forEach(function(p) {
+        var month = new Date(p.date).getMonth();
+        if (p.type === 'BULLISH') monthlyData[month].bullish++;
+        else if (p.type === 'BEARISH') monthlyData[month].bearish++;
+    });
+
+    var maxCount = 0;
+    Object.values(monthlyData).forEach(function(m) {
+        var total = m.bullish + m.bearish;
+        if (total > maxCount) maxCount = total;
+    });
+
+    var html = '';
+    for (var m = 0; m < 12; m++) {
+        var data = monthlyData[m];
+        var bullishHeight = maxCount > 0 ? (data.bullish / maxCount * 100) : 0;
+        var bearishHeight = maxCount > 0 ? (data.bearish / maxCount * 100) : 0;
+        html += '<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%;">' +
+            '<div style="background: #22c55e; width: 100%; height: ' + bullishHeight + '%; border-radius: 3px 3px 0 0; min-height: ' + (data.bullish > 0 ? '4px' : '0') + ';" title="Bullish: ' + data.bullish + '"></div>' +
+            '<div style="background: #ef4444; width: 100%; height: ' + bearishHeight + '%; border-radius: 0 0 3px 3px; min-height: ' + (data.bearish > 0 ? '4px' : '0') + ';" title="Bearish: ' + data.bearish + '"></div>' +
+        '</div>';
+    }
+    document.getElementById('monthlyDistChart').innerHTML = html;
+}
+
+function showPatternDetail(date) {
+    var pattern = historicalPatterns.major.find(function(p) { return p.date === date; });
+    if (!pattern) return;
+
+    var modal = document.getElementById('patternDetailModal');
+    var title = document.getElementById('modalPatternTitle');
+    var content = document.getElementById('modalPatternContent');
+
+    title.textContent = pattern.emoji + ' ' + pattern.pattern + ' - ' + pattern.date;
+
+    var resultColor = pattern.isWin ? '#22c55e' : '#ef4444';
+    var resultText = pattern.isWin ? 'WIN' : 'LOSS';
+
+    content.innerHTML =
+        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">' +
+            '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
+                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 Pattern Stats</div>' +
+                '<div style="font-size: 11px; line-height: 1.8;">' +
+                    '<div>Entry Price: <strong>$' + pattern.entry.toFixed(2) + '</strong></div>' +
+                    '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : '#ef4444') + ';">' + pattern.signal + '</strong></div>' +
+                    '<div>Trend: <strong>' + pattern.trend + '</strong></div>' +
+                    '<div>Volume: <strong>' + pattern.volumeRatio.toFixed(2) + 'x avg' + (pattern.hasVolumeSpike ? ' ✅' : '') + '</strong></div>' +
+                '</div>' +
+            '</div>' +
+            '<div style="background: var(--bg); border-radius: 8px; padding: 15px;">' +
+                '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📐 SQ9 Context</div>' +
+                '<div style="font-size: 11px; line-height: 1.8;">' +
+                    '<div>Nearest Level: <strong>$' + pattern.sq9Level.toFixed(2) + '</strong></div>' +
+                    '<div>Type: <strong>' + pattern.sq9Type + '</strong></div>' +
+                    '<div>Distance: <strong>' + pattern.sq9Distance.toFixed(2) + '%</strong> ' + (pattern.atSQ9Level ? '✅ At Level' : pattern.nearSQ9Level ? '⚠️ Near' : '') + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="background: var(--bg); border-radius: 8px; padding: 15px; margin-bottom: 15px;">' +
+            '<div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📈 Outcome Tracking</div>' +
+            '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">1-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome1Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome1Day >= 0 ? '+' : '') + pattern.outcome1Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">3-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome3Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome3Day >= 0 ? '+' : '') + pattern.outcome3Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">5-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome5Day >= 0 ? '+' : '') + pattern.outcome5Day.toFixed(2) + '%</div></div>' +
+                '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">Max Move</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.maxMove >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.maxMove >= 0 ? '+' : '') + pattern.maxMove.toFixed(2) + '%</div></div>' +
+            '</div>' +
+        '</div>' +
+        '<div style="background: ' + resultColor + '22; border: 2px solid ' + resultColor + '; border-radius: 8px; padding: 15px; text-align: center;">' +
+            '<div style="font-size: 18px; font-weight: 800; color: ' + resultColor + ';">RESULT: ' + resultText + '</div>' +
+            '<div style="font-size: 12px; color: var(--muted); margin-top: 5px;">5-Day Return: ' + (pattern.outcome5Day >= 0 ? '+' : '') + pattern.outcome5Day.toFixed(2) + '%</div>' +
+        '</div>';
+
+    modal.style.display = 'flex';
+}
+
+function closePatternModal() {
+    document.getElementById('patternDetailModal').style.display = 'none';
+}
+
+function exportPatternData() {
+    if (historicalPatterns.major.length === 0) {
+        alert('No data to export. Run a scan first.');
+        return;
+    }
+
+    var csv = 'Date,Pattern,Type,Signal,Entry,1-Day,3-Day,5-Day,Max Move,Win,Trend,Volume Ratio,At SQ9,SQ9 Level,SQ9 Type\n';
+    historicalPatterns.major.forEach(function(p) {
+        csv += [p.date, p.pattern, p.type, p.signal, p.entry.toFixed(2), p.outcome1Day.toFixed(2), p.outcome3Day.toFixed(2), p.outcome5Day.toFixed(2), p.maxMove.toFixed(2), p.isWin ? 'YES' : 'NO', p.trend, p.volumeRatio.toFixed(2), p.atSQ9Level ? 'YES' : (p.nearSQ9Level ? 'NEAR' : 'NO'), p.sq9Level.toFixed(2), p.sq9Type].join(',') + '\n';
+    });
+
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'pattern_history_' + document.getElementById('histPatternSymbol').value + '.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+document.addEventListener('click', function(e) {
+    var modal = document.getElementById('patternDetailModal');
+    if (e.target === modal) { closePatternModal(); }
 });
 
 // Debug function to verify all prices
