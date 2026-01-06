@@ -29749,6 +29749,16 @@ function selectSq9Etf(symbol) {
     });
     event.target.classList.add('active');
 
+    // Update global symbol and reload data for pattern detection
+    currentSymbol = symbol;
+    var symbolSelect = document.getElementById('symbolSelect');
+    if (symbolSelect) symbolSelect.value = symbol;
+
+    // Update pattern detection for this symbol
+    if (typeof loadAllData === 'function') {
+        loadAllData();
+    }
+
     updateSq9Monitor();
 }
 
