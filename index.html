@@ -3767,6 +3767,36 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 </div>
             </div>
 
+            <!-- TODAY'S TREND-AWARE SETUPS -->
+            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 2px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">🎯</span>
+                        <div>
+                            <div style="font-size: 18px; font-weight: 800; color: #166534;">TODAY'S SETUPS</div>
+                            <div style="font-size: 11px; color: #22c55e;" id="todaysSetupsTime">Trend + SQ9 Level Alignment</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="scanTodaysSetups()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">🔍 SCAN NOW</button>
+                    </div>
+                </div>
+
+                <!-- Setup Cards Container -->
+                <div id="todaysSetupsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; padding: 30px; color: #666; grid-column: 1 / -1;">
+                        Click "SCAN NOW" to find trend-aligned setups...
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; display: flex; justify-content: center; gap: 20px; font-size: 10px;">
+                    <span><span style="color: #22c55e; font-weight: bold;">UPTREND + SUPPORT</span> = BUY CALL</span>
+                    <span><span style="color: #ef4444; font-weight: bold;">DOWNTREND + RESISTANCE</span> = BUY PUT</span>
+                    <span style="color: #666;">Other = NO SETUP</span>
+                </div>
+            </div>
+
             <!-- TODAY'S SQ9 SETUPS WIDGET -->
             <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -12302,6 +12332,9 @@ async function refreshAllData() {
         if (typeof updateHeaderForSymbol === 'function') updateHeaderForSymbol(symbol);
         if (typeof updateTradeSetupForSymbol === 'function') updateTradeSetupForSymbol(symbol);
         if (typeof updateMTFTrendForSymbol === 'function') updateMTFTrendForSymbol(symbol);
+
+        // Today's Setups scanner
+        if (typeof scanTodaysSetups === 'function') scanTodaysSetups();
 
         // Reload data if function exists
         if (typeof loadAllData === 'function') loadAllData();
@@ -34790,6 +34823,225 @@ function debugSq9Prices() {
         console.log(sym + ': $' + (price ? price.toFixed(2) : 'N/A') + ' (from ' + source + ')');
     });
     console.log('=====================================');
+}
+
+
+// =====================================================
+// TODAY'S SETUPS - QUALIFIED TRADE SCANNER (5 CRITERIA)
+// =====================================================
+
+// Scan all symbols for fully qualified setups
+async function scanTodaysSetups() {
+    var container = document.getElementById('todaysSetupsContainer');
+    var timeEl = document.getElementById('todaysSetupsTime');
+
+    if (!container) return;
+
+    // Show loading state
+    container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666; grid-column: 1 / -1;"><span style="font-size: 24px;">⏳</span><br>Scanning for qualified setups (5 criteria)...</div>';
+
+    // Symbols to scan
+    var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'DIA', 'XLRE', 'XLC'];
+    var setups = [];
+
+    for (var i = 0; i < symbols.length; i++) {
+        try {
+            var setup = await analyzeQualifiedSetup(symbols[i]);
+            if (setup && setup.hasSetup) {
+                setups.push(setup);
+            }
+        } catch (e) {
+            console.warn('Error analyzing ' + symbols[i] + ':', e);
+        }
+    }
+
+    // Update timestamp
+    if (timeEl) {
+        var now = new Date();
+        timeEl.textContent = 'Last scan: ' + now.toLocaleTimeString();
+    }
+
+    // Display results
+    if (setups.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666; grid-column: 1 / -1;"><span style="font-size: 24px;">😴</span><br><strong>No Qualified Setups</strong><br>No symbols meet all 5 criteria (Trend + Level + Pattern + Time).<br><small style="color: #999;">Check back during optimal entry windows (10-11:30am or 1-3pm EST).</small></div>';
+        return;
+    }
+
+    // Render setup cards
+    container.innerHTML = setups.map(function(s) { return renderQualifiedCard(s); }).join('');
+}
+
+// Check if current time is in optimal entry window (EST)
+function isOptimalEntryTime() {
+    var now = new Date();
+    var estHour = (now.getUTCHours() - 5 + 24) % 24;
+    var minutes = now.getMinutes();
+    var timeVal = estHour + minutes / 60;
+
+    var isMorningWindow = timeVal >= 10 && timeVal <= 11.5;
+    var isAfternoonWindow = timeVal >= 13 && timeVal <= 15;
+
+    return { isOptimal: isMorningWindow || isAfternoonWindow, window: isMorningWindow ? 'MORNING' : isAfternoonWindow ? 'AFTERNOON' : 'OUTSIDE' };
+}
+
+// Detect candle patterns
+function detectCandlePattern(data) {
+    if (!data || data.length < 3) return { pattern: null, type: null };
+
+    var c0 = data[data.length - 1];
+    var c1 = data[data.length - 2];
+
+    var o0 = parseFloat(c0.Open), h0 = parseFloat(c0.High), l0 = parseFloat(c0.Low), cl0 = parseFloat(c0.Close);
+    var o1 = parseFloat(c1.Open), cl1 = parseFloat(c1.Close);
+
+    var body0 = Math.abs(cl0 - o0);
+    var range0 = h0 - l0;
+    var upperWick0 = h0 - Math.max(o0, cl0);
+    var lowerWick0 = Math.min(o0, cl0) - l0;
+
+    if (lowerWick0 > body0 * 2 && upperWick0 < body0 * 0.5 && cl0 > o0) {
+        return { pattern: 'HAMMER', type: 'BULLISH', emoji: '🔨' };
+    }
+    if (cl1 < o1 && cl0 > o0 && o0 <= cl1 && cl0 >= o1) {
+        return { pattern: 'BULLISH ENGULFING', type: 'BULLISH', emoji: '🟢' };
+    }
+    if (body0 < range0 * 0.1) {
+        return { pattern: 'DOJI', type: 'NEUTRAL', emoji: '⚖️' };
+    }
+    if (upperWick0 > body0 * 2 && lowerWick0 < body0 * 0.5 && cl0 < o0) {
+        return { pattern: 'SHOOTING STAR', type: 'BEARISH', emoji: '💫' };
+    }
+    if (cl1 > o1 && cl0 < o0 && o0 >= cl1 && cl0 <= o1) {
+        return { pattern: 'BEARISH ENGULFING', type: 'BEARISH', emoji: '🔴' };
+    }
+
+    return { pattern: null, type: null };
+}
+
+// Analyze a single symbol for all 5 criteria
+async function analyzeQualifiedSetup(symbol) {
+    var data = [];
+
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 50) {
+        data = allSymbolsData[symbol];
+    } else {
+        try {
+            var response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
+            if (response.ok) {
+                var text = await response.text();
+                var lines = text.trim().split('\n').slice(1);
+                data = lines.map(function(line) {
+                    var cols = line.split(',');
+                    return { Date: cols[0], Open: parseFloat(cols[1]), High: parseFloat(cols[2]), Low: parseFloat(cols[3]), Close: parseFloat(cols[4]), Volume: parseFloat(cols[5]) };
+                }).filter(function(d) { return !isNaN(d.Close); });
+            }
+        } catch (e) { return null; }
+    }
+
+    if (data.length < 50) return null;
+
+    var closes = data.slice(-50).map(function(d) { return parseFloat(d.Close); });
+    var currentPrice = closes[closes.length - 1];
+    if (!currentPrice || isNaN(currentPrice)) return null;
+
+    // CRITERION 1: TREND
+    var sma20 = closes.slice(-20).reduce(function(a, b) { return a + b; }, 0) / 20;
+    var sma50 = closes.reduce(function(a, b) { return a + b; }, 0) / 50;
+
+    var trend = 'NEUTRAL';
+    if (currentPrice > sma20 && sma20 > sma50) trend = 'UPTREND';
+    else if (currentPrice < sma20 && sma20 < sma50) trend = 'DOWNTREND';
+
+    if (trend === 'NEUTRAL') return { symbol: symbol, hasSetup: false };
+
+    // CRITERION 2: AT KEY LEVEL
+    var sq9Levels = calculateSquareOf9Levels(currentPrice);
+    var tolerance = 0.005;
+    var nearestLevel = null, levelType = null, levelDistance = Infinity;
+
+    Object.entries(sq9Levels.support).forEach(function(entry) {
+        var dist = Math.abs((currentPrice - entry[1]) / entry[1]);
+        if (dist < tolerance && dist < levelDistance) { nearestLevel = entry[1]; levelType = 'SUPPORT'; levelDistance = dist; }
+    });
+    Object.entries(sq9Levels.resistance).forEach(function(entry) {
+        var dist = Math.abs((currentPrice - entry[1]) / entry[1]);
+        if (dist < tolerance && dist < levelDistance) { nearestLevel = entry[1]; levelType = 'RESISTANCE'; levelDistance = dist; }
+    });
+
+    if (nearestLevel === null) return { symbol: symbol, hasSetup: false };
+
+    // CRITERION 3: CANDLE PATTERN
+    var candleInfo = detectCandlePattern(data.slice(-5));
+    var patternMatch = false;
+    if (trend === 'UPTREND' && levelType === 'SUPPORT' && (candleInfo.type === 'BULLISH' || candleInfo.type === 'NEUTRAL')) patternMatch = true;
+    if (trend === 'DOWNTREND' && levelType === 'RESISTANCE' && (candleInfo.type === 'BEARISH' || candleInfo.type === 'NEUTRAL')) patternMatch = true;
+    if (!patternMatch && candleInfo.pattern) return { symbol: symbol, hasSetup: false };
+
+    // CRITERION 4: TIME CHECK
+    var timeCheck = isOptimalEntryTime();
+
+    // CRITERION 5: GENERATE RECOMMENDATION
+    var action, actionColor;
+    if (trend === 'UPTREND' && levelType === 'SUPPORT') { action = 'BUY CALL'; actionColor = '#22c55e'; }
+    else if (trend === 'DOWNTREND' && levelType === 'RESISTANCE') { action = 'BUY PUT'; actionColor = '#ef4444'; }
+    else return { symbol: symbol, hasSetup: false };
+
+    var atr = calculateSetupATR(data.slice(-14));
+    var entry = currentPrice;
+    var stop, target1, target2;
+
+    if (action === 'BUY CALL') { stop = nearestLevel - (atr * 0.5); target1 = entry + (atr * 1.5); target2 = entry + (atr * 2.5); }
+    else { stop = nearestLevel + (atr * 0.5); target1 = entry - (atr * 1.5); target2 = entry - (atr * 2.5); }
+
+    return {
+        symbol: symbol, hasSetup: true, action: action, actionColor: actionColor, trend: trend,
+        levelType: levelType, nearestLevel: nearestLevel, currentPrice: currentPrice,
+        sma20: sma20.toFixed(2), sma50: sma50.toFixed(2), entry: entry.toFixed(2),
+        stop: stop.toFixed(2), target1: target1.toFixed(2), target2: target2.toFixed(2),
+        riskReward: (Math.abs(target1 - entry) / Math.abs(entry - stop)).toFixed(1),
+        candlePattern: candleInfo.pattern || 'None', candleEmoji: candleInfo.emoji || '',
+        timeWindow: timeCheck.window, isOptimalTime: timeCheck.isOptimal
+    };
+}
+
+// Calculate ATR for setups
+function calculateSetupATR(data) {
+    if (!data || data.length < 2) return 1;
+    var trSum = 0;
+    for (var i = 1; i < data.length; i++) {
+        var high = parseFloat(data[i].High);
+        var low = parseFloat(data[i].Low);
+        var prevClose = parseFloat(data[i-1].Close);
+        var tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+        trSum += tr;
+    }
+    return trSum / (data.length - 1);
+}
+
+// Render a qualified setup card
+function renderQualifiedCard(setup) {
+    var bgGradient = setup.action === 'BUY CALL' ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.1))' : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1))';
+    var borderColor = setup.action === 'BUY CALL' ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)';
+    var timeWarning = !setup.isOptimalTime ? '<div style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 10px; margin-bottom: 8px;">⏰ WAIT FOR ENTRY WINDOW</div>' : '';
+
+    return '<div style="background: ' + bgGradient + '; border: 2px solid ' + borderColor + '; border-radius: 10px; padding: 15px;">' +
+        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
+            '<span style="font-size: 18px; font-weight: 800;">' + setup.symbol + '</span>' +
+            '<span style="background: ' + setup.actionColor + '; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;">' + setup.action + '</span>' +
+        '</div>' + timeWarning +
+        '<div style="font-size: 10px; color: #666; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px;">' +
+            '<span style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 3px;">✓ ' + setup.trend + '</span>' +
+            '<span style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 3px;">✓ SQ9 ' + setup.levelType + '</span>' +
+            '<span style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 3px;">' + setup.candleEmoji + ' ' + setup.candlePattern + '</span>' +
+        '</div>' +
+        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">' +
+            '<div><div style="color: #888; font-size: 9px;">Entry</div><div style="font-weight: 700;">$' + setup.entry + '</div></div>' +
+            '<div><div style="color: #888; font-size: 9px;">Stop</div><div style="font-weight: 700; color: #ef4444;">$' + setup.stop + '</div></div>' +
+            '<div><div style="color: #888; font-size: 9px;">Target 1</div><div style="font-weight: 700; color: #22c55e;">$' + setup.target1 + '</div></div>' +
+            '<div><div style="color: #888; font-size: 9px;">Target 2</div><div style="font-weight: 700; color: #22c55e;">$' + setup.target2 + '</div></div>' +
+        '</div>' +
+        '<div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 9px; color: #888;">R:R ' + setup.riskReward + ' | SQ9 $' + setup.nearestLevel.toFixed(2) + '</div>' +
+    '</div>';
 }
 
 </script>
