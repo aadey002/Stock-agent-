@@ -21977,13 +21977,13 @@ function initSymbolFilter() {
 
  var isChecked = selectedFilterSymbols === null || selectedFilterSymbols.indexOf(symbol) !== -1;
 
- var bgColor = isChecked ? '#3b82f6'' : ''#e5e7eb';
+ var bgColor = isChecked ? '#3b82f6' : '#e5e7eb';
 
- var textColor = isChecked ? 'white'' : ''#374151';
+ var textColor = isChecked ? 'white' : '#374151';
 
  return '<label style="display: inline-flex; align-items: center; padding: 4px 10px; background: ' + bgColor + '; color: ' + textColor + '; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500; transition: all 0.2s;">' +
 
- '<input type="checkbox" value="' + symbol + '" ' + (isChecked ? 'checked'' : ''') + ' onchange="toggleSymbolFilter(\'' + symbol + '\')" style="display: none;">' +
+ '<input type="checkbox" value="' + symbol + '" ' + (isChecked ? 'checked' : '') + ' onchange="toggleSymbolFilter(\'' + symbol + '\')" style="display: none;">' +
 
  symbol +
 
@@ -22159,11 +22159,11 @@ function setGannMode(invert) {
 
  // Save preference
 
- localStorage.setItem('gannInvertMode', invert ? 'true'' : ''false');
+ localStorage.setItem('gannInvertMode', invert ? 'true' : 'false');
 
 
 
- console.log('Gann mode set to: ' + (invert ? 'INVERTED'' : ''NORMAL'));
+ console.log('Gann mode set to: ' + (invert ? 'INVERTED' : 'NORMAL'));
 
 }
 
@@ -22467,15 +22467,15 @@ function calculateGannDirectionForSymbol(symbol, timeframe) {
 
  if (timeframe === 'INTRADAY') {
 
- direction = position > 0.6 ? 'CALL'' : ''PUT';
+ direction = position > 0.6 ? 'CALL' : 'PUT';
 
  } else if (timeframe === 'SWING') {
 
- direction = position > 0.65 ? 'CALL'' : ''PUT';
+ direction = position > 0.65 ? 'CALL' : 'PUT';
 
  } else {
 
- direction = position > 0.7 ? 'CALL'' : ''PUT';
+ direction = position > 0.7 ? 'CALL' : 'PUT';
 
  }
 
@@ -22485,15 +22485,15 @@ function calculateGannDirectionForSymbol(symbol, timeframe) {
 
  if (timeframe === 'INTRADAY') {
 
- direction = position < 0.4 ? 'CALL'' : ''PUT';
+ direction = position < 0.4 ? 'CALL' : 'PUT';
 
  } else if (timeframe === 'SWING') {
 
- direction = position < 0.35 ? 'CALL'' : ''PUT';
+ direction = position < 0.35 ? 'CALL' : 'PUT';
 
  } else {
 
- direction = position < 0.3 ? 'CALL'' : ''PUT';
+ direction = position < 0.3 ? 'CALL' : 'PUT';
 
  }
 
@@ -23267,7 +23267,7 @@ function filterOppTable(filter) {
 
 
 
- row.style.display = show ? ''' : ''none';
+ row.style.display = show ? '' : 'none';
 
  });
 
@@ -23563,7 +23563,7 @@ function updateMTFBiasHistory(symbol) {
 
  var minute = Math.floor(Math.random() * 4) * 15;
 
- var timeStr = hour + ':' + (minute < 10 ? '0'' : ''') + minute + ' ' + (hour < 12 ? 'AM'' : ''PM');
+ var timeStr = hour + ':' + (minute < 10 ? '0'' : ''') + minute + ' ' + (hour < 12 ? 'AM' : 'PM');
 
 
 
@@ -23981,11 +23981,11 @@ function updateFibonacciForSymbol(symbol) {
 
  const bg = r.isCurrent ? 'background: rgba(59,130,246,0.1);' : (r.level.includes('R1') ? 'background: rgba(245,158,11,0.1);'' : ''');
 
- const nearTag = Math.abs(r.dist) < 1 && !r.isCurrent ? '<span style="color: #f59e0b;">  NEAR</span>' : (r.isCurrent ? '<span style="color: #3b82f6;"> HERE</span>'' : ''-');
+ const nearTag = Math.abs(r.dist) < 1 && !r.isCurrent ? '<span style="color: #f59e0b;">  NEAR</span>' : (r.isCurrent ? '<span style="color: #3b82f6;"> HERE</span>' : '-');
 
  const distStr = r.isCurrent ? '--' : (r.dist >= 0 ? '+'' : ''') + r.dist.toFixed(1) + '%';
 
- const distColor = r.isCurrent ? '' : (r.dist >= 0 ? '#22c55e'' : ''#ef4444');
+ const distColor = r.isCurrent ? '' : (r.dist >= 0 ? '#22c55e' : '#ef4444');
 
 
 
@@ -23993,7 +23993,7 @@ function updateFibonacciForSymbol(symbol) {
 
  html += '<td style="padding: 10px; color: ' + r.color + '; font-weight: 600;">' + r.level + '</td>';
 
- html += '<td style="padding: 10px; text-align: center; font-weight: ' + (r.isCurrent ? '700'' : ''600') + '; ' + (r.isCurrent ? 'color: #3b82f6;'' : ''') + '">$' + r.price.toFixed(2) + '</td>';
+ html += '<td style="padding: 10px; text-align: center; font-weight: ' + (r.isCurrent ? '700' : '600') + '; ' + (r.isCurrent ? 'color: #3b82f6;'' : ''') + '">$' + r.price.toFixed(2) + '</td>';
 
  html += '<td style="padding: 10px; text-align: center; color: ' + distColor + '; ' + (r.level.includes('R1') && !r.isCurrent ? 'font-weight: 600;'' : ''') + '">' + distStr + '</td>';
 
@@ -24003,7 +24003,7 @@ function updateFibonacciForSymbol(symbol) {
 
  html += '<td style="padding: 10px; text-align: center;">' + (tfs[r.idx] || '--') + '</td>';
 
- html += '<td style="padding: 10px; color: ' + (r.level.includes('R1') && !r.isCurrent ? '#f59e0b; font-weight: 600;'' : ''#666;') + '">' + impls[r.idx] + '</td>';
+ html += '<td style="padding: 10px; color: ' + (r.level.includes('R1') && !r.isCurrent ? '#f59e0b; font-weight: 600;' : '#666;') + '">' + impls[r.idx] + '</td>';
 
  html += '</tr>';
 
@@ -24387,7 +24387,7 @@ function updateMasterConfluence(symbol) {
 
  var f = factors[k];
 
- var bgColor = f.color === '#22c55e' ? '34,197,94' : f.color === '#eab308' ? '234,179,8'' : ''139,92,246';
+ var bgColor = f.color === '#22c55e' ? '34,197,94' : f.color === '#eab308' ? '234,179,8' : '139,92,246';
 
  html += '<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(' + bgColor + ',0.1); padding: 8px 10px; border-radius: 6px; font-size: 11px; margin-bottom: 5px;">';
 
@@ -24981,7 +24981,7 @@ function updatePriceDisplay(symbol, price, change, changePct) {
 
  changeEl.textContent = sign + change.toFixed(2) + ' (' + sign + changePct.toFixed(2) + '%)';
 
- changeEl.style.color = change >= 0 ? '#22c55e'' : ''#ef4444';
+ changeEl.style.color = change >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -25421,25 +25421,25 @@ function generateDynamicOpportunities() {
 
  // INVERTED: High position = CALL (momentum), Low position = PUT
 
- gannSignal = position > 0.65 ? 'CALL' : (position < 0.35 ? 'PUT'' : ''HOLD');
+ gannSignal = position > 0.65 ? 'CALL' : (position < 0.35 ? 'PUT' : 'HOLD');
 
  } else {
 
  // NORMAL: Low position = CALL (mean reversion), High position = PUT
 
- gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT'' : ''HOLD');
+ gannSignal = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
 
  }
 
- var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444'' : ''#eab308');
+ var gannColor = gannSignal === 'CALL' ? '#22c55e' : (gannSignal === 'PUT' ? '#ef4444' : '#eab308');
 
 
 
  // MARKET Analysis (20MA)
 
- var mktSignal = price < sym20MA ? 'PUT'' : ''CALL';
+ var mktSignal = price < sym20MA ? 'PUT' : 'CALL';
 
- var mktColor = mktSignal === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var mktColor = mktSignal === 'CALL' ? '#22c55e' : '#ef4444';
 
 
 
@@ -25541,9 +25541,9 @@ function generateDynamicOpportunities() {
 
  var aligned = (gannSignal === mktSignal) || gannSignal === 'HOLD';
 
- var alignIcon = aligned ? ''' : ''';
+ var alignIcon = aligned ? '' : ''';
 
- var alignColor = aligned ? '#22c55e'' : ''#f59e0b';
+ var alignColor = aligned ? '#22c55e' : '#f59e0b';
 
 
 
@@ -25609,11 +25609,11 @@ function generateDynamicOpportunities() {
 
 
 
- var changeColor = changePct >= 0 ? '#22c55e'' : ''#ef4444';
+ var changeColor = changePct >= 0 ? '#22c55e' : '#ef4444';
 
  var changeSign = changePct >= 0 ? '+'' : ''';
 
- var maColor = price >= sym20MA ? '#22c55e'' : ''#ef4444';
+ var maColor = price >= sym20MA ? '#22c55e' : '#ef4444';
 
 
 
@@ -25643,7 +25643,7 @@ function generateDynamicOpportunities() {
 
  '<td style="padding: 6px; font-size: 9px;">' + nextTurnStr + '</td>' +
 
- '<td style="padding: 6px; font-size: 10px; font-weight: 600; color: ' + (daysToTurn <= 3 ? '#ef4444'' : ''#666') + ';">' + daysToTurn + '</td>' +
+ '<td style="padding: 6px; font-size: 10px; font-weight: 600; color: ' + (daysToTurn <= 3 ? '#ef4444' : '#666') + ';">' + daysToTurn + '</td>' +
 
  '<td style="padding: 6px;"><span style="color: ' + stageColor + '; font-size: 9px; font-weight: 600;">' + stage + '</span></td>' +
 
@@ -25653,7 +25653,7 @@ function generateDynamicOpportunities() {
 
  '<td style="padding: 6px; font-size: 9px; color: #ef4444;">$' + stop + '</td>' +
 
- '<td style="padding: 6px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68'' : ''234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 4px; border-radius: 3px; font-size: 9px;">' + risk + '</span></td>' +
+ '<td style="padding: 6px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68' : '234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 4px; border-radius: 3px; font-size: 9px;">' + risk + '</span></td>' +
 
  '<td style="padding: 6px; font-weight: 600; font-size: 10px;">' + score + '</td>' +
 
@@ -26009,7 +26009,7 @@ function updateMTFTrendForSymbol(symbol) {
 
  el.textContent = bias;
 
- el.style.color = bias === 'BULLISH' ? '#22c55e' : (bias === 'BEARISH' ? '#ef4444'' : ''#eab308');
+ el.style.color = bias === 'BULLISH' ? '#22c55e' : (bias === 'BEARISH' ? '#ef4444' : '#eab308');
 
  }
 
@@ -26237,7 +26237,7 @@ function updateTopTradeRecommendation(symbol) {
 
  consensusEl.style.color = consensusSignal === 'CALL' ? '#22c55e' :
 
- (consensusSignal === 'PUT' ? '#ef4444'' : ''#6b7280');
+ (consensusSignal === 'PUT' ? '#ef4444' : '#6b7280');
 
  }
 
@@ -26503,7 +26503,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  // Update displays with CAPTURED symbol (not currentSymbol which may have changed)
 
- var dirColor = isBullish ? '#4ade80'' : ''#ef4444';
+ var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
  var el;
 
@@ -26623,7 +26623,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  el = document.getElementById('topTradeStopPrice');
 
- if (el) el.textContent = 'If ' + capturedSymbol + (isBullish ? ' drops to $'' : '' rises to $') + stopPriceETF;
+ if (el) el.textContent = 'If ' + capturedSymbol + (isBullish ? ' drops to $' : ' rises to $') + stopPriceETF;
 
 
 
@@ -26759,7 +26759,7 @@ function updateMTFBiasSummary(symbol) {
 
  el.style.color = bias === 'BULLISH' ? '#22c55e' :
 
- (bias === 'BEARISH' ? '#ef4444'' : ''#eab308');
+ (bias === 'BEARISH' ? '#ef4444' : '#eab308');
 
  }
 
@@ -26795,7 +26795,7 @@ function updateMTFBiasSummary(symbol) {
 
  confluenceEl.style.color = bullishCount >= 2 ? '#22c55e' :
 
- (bullishCount === 0 ? '#ef4444'' : ''#eab308');
+ (bullishCount === 0 ? '#ef4444' : '#eab308');
 
  }
 
@@ -27425,7 +27425,7 @@ function updatePnLScenarios(S, K, DTE, IV, rate, optionType, currentPrice) {
 
 
 
- const pnlColor = pnl >= 0 ? '#22c55e'' : ''#ef4444';
+ const pnlColor = pnl >= 0 ? '#22c55e' : '#ef4444';
 
  html += `
 
@@ -27505,7 +27505,7 @@ function updateThetaDecay(S, K, DTE, IV, rate, optionType, currentPrice) {
 
  const decayStr = days === 0 ? '-' : ('$' + decay.toFixed(2));
 
- const cumColor = cumulative < 0 ? '#ef4444'' : ''#22c55e';
+ const cumColor = cumulative < 0 ? '#ef4444' : '#22c55e';
 
 
 
@@ -28831,7 +28831,7 @@ function updateMarketAnalysisTab() {
 
  el.textContent = (vixVsAvg >= 0 ? '+'' : ''') + vixVsAvg + '%';
 
- el.style.color = vixVsAvg < 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = vixVsAvg < 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -28945,11 +28945,11 @@ function updateMarketAnalysisTab() {
 
  var spyAbove20MA = spyPrice > spy20MA;
 
- var spyTrendText = spyAbove20MA ? '   ABOVE'' : ''   BELOW';
+ var spyTrendText = spyAbove20MA ? '   ABOVE' : '   BELOW';
 
  var spyTrendStatus = spyAbove20MA ? 'Bullish : 'Bearish 
 
- var spyTrendColor = spyAbove20MA ? '#22c55e'' : ''#ef4444';
+ var spyTrendColor = spyAbove20MA ? '#22c55e' : '#ef4444';
 
 
 
@@ -29007,9 +29007,9 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- el.textContent = (dist20 >= 0 ? '+'' : ''') + dist20 + '% ' + (dist20 >= 0 ? 'above'' : ''below');
+ el.textContent = (dist20 >= 0 ? '+'' : ''') + dist20 + '% ' + (dist20 >= 0 ? 'above' : 'below');
 
- el.style.color = dist20 >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = dist20 >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29017,9 +29017,9 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- el.textContent = (dist50 >= 0 ? '+'' : ''') + dist50 + '% ' + (dist50 >= 0 ? 'above'' : ''below');
+ el.textContent = (dist50 >= 0 ? '+'' : ''') + dist50 + '% ' + (dist50 >= 0 ? 'above' : 'below');
 
- el.style.color = dist50 >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = dist50 >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29027,9 +29027,9 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- el.textContent = (dist200 >= 0 ? '+'' : ''') + dist200 + '% ' + (dist200 >= 0 ? 'above'' : ''below');
+ el.textContent = (dist200 >= 0 ? '+'' : ''') + dist200 + '% ' + (dist200 >= 0 ? 'above' : 'below');
 
- el.style.color = dist200 >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = dist200 >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29221,7 +29221,7 @@ function updateMarketAnalysisTab() {
 
  el = document.getElementById('mktOverallScore');
 
- if (el) { el.textContent = score + '/3 ' + (score >= 2 ? ''' : '''; el.style.color = overallColor; }
+ if (el) { el.textContent = score + '/3 ' + (score >= 2 ? '' : '''; el.style.color = overallColor; }
 
  el = document.getElementById('mktOverallAdvice');
 
@@ -29231,7 +29231,7 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- var rgb = overallColor === '#22c55e' ? '34,197,94' : overallColor === '#eab308' ? '234,179,8'' : ''239,68,68';
+ var rgb = overallColor === '#22c55e' ? '34,197,94' : overallColor === '#eab308' ? '234,179,8' : '239,68,68';
 
  el.style.background = 'linear-gradient(135deg, rgba(' + rgb + ',0.1), rgba(' + rgb + ',0.2))';
 
@@ -29243,9 +29243,9 @@ function updateMarketAnalysisTab() {
 
  // === Directional Bias ===
 
- var biasText = spyOK ? 'BULLISH'' : ''BEARISH';
+ var biasText = spyOK ? 'BULLISH' : 'BEARISH';
 
- var biasColor = spyOK ? '#22c55e'' : ''#ef4444';
+ var biasColor = spyOK ? '#22c55e' : '#ef4444';
 
 
 
@@ -29257,7 +29257,7 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- var biasRgb = spyOK ? '34,197,94'' : ''239,68,68';
+ var biasRgb = spyOK ? '34,197,94' : '239,68,68';
 
  el.style.background = 'linear-gradient(135deg, rgba(' + biasRgb + ',0.15), rgba(' + biasRgb + ',0.25))';
 
@@ -29271,21 +29271,21 @@ function updateMarketAnalysisTab() {
 
  if (el) {
 
- var summaryHTML = '<div> <strong>SPY ' + (spyOK ? 'above'' : ''below') + ' 20MA</strong> - Primary trend is ' + (spyOK ? 'UP'' : ''DOWN') + '</div>';
+ var summaryHTML = '<div> <strong>SPY ' + (spyOK ? 'above' : 'below') + ' 20MA</strong> - Primary trend is ' + (spyOK ? 'UP' : 'DOWN') + '</div>';
 
- summaryHTML += '<div> <strong>' + (breadthOK ? 'Strong'' : ''Weak') + ' breadth (' + breadthPct + '%)</strong> - ' + (breadthOK ? 'Broad participation'' : ''Narrow participation') + '</div>';
+ summaryHTML += '<div> <strong>' + (breadthOK ? 'Strong' : 'Weak') + ' breadth (' + breadthPct + '%)</strong> - ' + (breadthOK ? 'Broad participation' : 'Narrow participation') + '</div>';
 
- summaryHTML += '<div> <strong>' + (vixCurrent < 16 ? 'Low' : vixCurrent < 20 ? 'Normal'' : ''High') + ' VIX (' + vixCurrent.toFixed(1) + ')</strong> - ' + (vixCurrent < 16 ? 'Complacency risk' : vixCurrent < 20 ? 'Normal conditions'' : ''Fear elevated') + '</div>';
+ summaryHTML += '<div> <strong>' + (vixCurrent < 16 ? 'Low' : vixCurrent < 20 ? 'Normal' : 'High') + ' VIX (' + vixCurrent.toFixed(1) + ')</strong> - ' + (vixCurrent < 16 ? 'Complacency risk' : vixCurrent < 20 ? 'Normal conditions' : 'Fear elevated') + '</div>';
 
 
 
- var recColor = spyOK ? '#166534'' : ''#991b1b';
+ var recColor = spyOK ? '#166534' : '#991b1b';
 
- var recBg = spyOK ? 'rgba(34,197,94,0.1)'' : ''rgba(239,68,68,0.1)';
+ var recBg = spyOK ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
 
  var recText = spyOK ?
 
- ' Recommendation: Favor CALL trades, normal position sizes, buy dips'' : ''  Recommendation: Favor PUT trades, reduce position sizes, sell rallies';
+ ' Recommendation: Favor CALL trades, normal position sizes, buy dips' : '  Recommendation: Favor PUT trades, reduce position sizes, sell rallies';
 
 
 
@@ -29411,13 +29411,13 @@ function runBacktest() {
 
  var position = range > 0 ? (price - low20) / range : 0.5;
 
- var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT'' : ''HOLD');
+ var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
 
 
 
  // MARKET Prediction (trend following)
 
- var mktPred = price > ma20 ? 'CALL'' : ''PUT';
+ var mktPred = price > ma20 ? 'CALL' : 'PUT';
 
 
 
@@ -29615,7 +29615,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = results.gannWinRate + '%';
 
- el.style.color = results.gannWinRate >= 55 ? '#22c55e' : (results.gannWinRate >= 45 ? '#eab308'' : ''#ef4444');
+ el.style.color = results.gannWinRate >= 55 ? '#22c55e' : (results.gannWinRate >= 45 ? '#eab308' : '#ef4444');
 
  }
 
@@ -29629,7 +29629,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = 'Avg: ' + (results.gannAvgReturn >= 0 ? '+'' : ''') + results.gannAvgReturn + '%';
 
- el.style.color = results.gannAvgReturn >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = results.gannAvgReturn >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29643,7 +29643,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = results.mktWinRate + '%';
 
- el.style.color = results.mktWinRate >= 55 ? '#22c55e' : (results.mktWinRate >= 45 ? '#eab308'' : ''#ef4444');
+ el.style.color = results.mktWinRate >= 55 ? '#22c55e' : (results.mktWinRate >= 45 ? '#eab308' : '#ef4444');
 
  }
 
@@ -29657,7 +29657,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = 'Avg: ' + (results.mktAvgReturn >= 0 ? '+'' : ''') + results.mktAvgReturn + '%';
 
- el.style.color = results.mktAvgReturn >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = results.mktAvgReturn >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29671,7 +29671,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = results.alignedWinRate + '%';
 
- el.style.color = results.alignedWinRate >= 55 ? '#22c55e' : (results.alignedWinRate >= 45 ? '#eab308'' : ''#ef4444');
+ el.style.color = results.alignedWinRate >= 55 ? '#22c55e' : (results.alignedWinRate >= 45 ? '#eab308' : '#ef4444');
 
  }
 
@@ -29685,7 +29685,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = 'Avg: ' + (results.alignedAvgReturn >= 0 ? '+'' : ''') + results.alignedAvgReturn + '%';
 
- el.style.color = results.alignedAvgReturn >= 0 ? '#22c55e'' : ''#ef4444';
+ el.style.color = results.alignedAvgReturn >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29699,7 +29699,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = 'Gann: ' + results.conflictGannWinRate + '%';
 
- el.style.color = results.conflictGannWinRate >= 50 ? '#22c55e'' : ''#ef4444';
+ el.style.color = results.conflictGannWinRate >= 50 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29709,7 +29709,7 @@ function updateBacktestDisplay(results) {
 
  el.textContent = 'Mkt: ' + results.conflictMktWinRate + '%';
 
- el.style.color = results.conflictMktWinRate >= 50 ? '#22c55e'' : ''#ef4444';
+ el.style.color = results.conflictMktWinRate >= 50 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -29933,13 +29933,13 @@ function saveAgentPredictions() {
 
  var details = agentData.agentDetails;
 
- baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
  baseConf = details.base ? details.base.confidence : 50;
 
@@ -29961,7 +29961,7 @@ function saveAgentPredictions() {
 
  // Base Confluence: uses multiple indicators
 
- baseSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ baseSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  baseConf = 55 + Math.abs(gannPct - 50) * 0.3;
 
@@ -29979,7 +29979,7 @@ function saveAgentPredictions() {
 
  } else {
 
- gannElliottSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ gannElliottSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  }
 
@@ -29989,7 +29989,7 @@ function saveAgentPredictions() {
 
  // DQN: momentum-based
 
- dqnSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ dqnSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  dqnConf = 55;
 
@@ -29997,7 +29997,7 @@ function saveAgentPredictions() {
 
  // 3-Wave: trend following
 
- waveSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ waveSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  waveConf = 55;
 
@@ -30049,7 +30049,7 @@ function saveAgentPredictions() {
 
  consensusLevel = 'MIXED';
 
- consensusDirection = bullishCount >= 2 ? 'BULLISH'' : ''BEARISH';
+ consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
 
  }
 
@@ -30371,31 +30371,31 @@ function updateAgentPredictionDisplay() {
 
  el = document.getElementById('agentBaseAccuracy');
 
- if (el) el.textContent = stats.base.total > 0 ? basePct + '%'' : ''--%';
+ if (el) el.textContent = stats.base.total > 0 ? basePct + '%' : '--%';
 
  el = document.getElementById('agentGannElliottAccuracy');
 
- if (el) el.textContent = stats.gannElliott.total > 0 ? gannElliottPct + '%'' : ''--%';
+ if (el) el.textContent = stats.gannElliott.total > 0 ? gannElliottPct + '%' : '--%';
 
  el = document.getElementById('agentDqnAccuracy');
 
- if (el) el.textContent = stats.dqn.total > 0 ? dqnPct + '%'' : ''--%';
+ if (el) el.textContent = stats.dqn.total > 0 ? dqnPct + '%' : '--%';
 
  el = document.getElementById('agentWaveAccuracy');
 
- if (el) el.textContent = stats.wave.total > 0 ? wavePct + '%'' : ''--%';
+ if (el) el.textContent = stats.wave.total > 0 ? wavePct + '%' : '--%';
 
  el = document.getElementById('agentUltraAccuracy');
 
- if (el) el.textContent = stats.ultra.total > 0 ? ultraPct + '% (' + stats.ultra.wins + '/' + stats.ultra.total + ')'' : ''--% (0/0)';
+ if (el) el.textContent = stats.ultra.total > 0 ? ultraPct + '% (' + stats.ultra.wins + '/' + stats.ultra.total + ')' : '--% (0/0)';
 
  el = document.getElementById('agentSuperAccuracy');
 
- if (el) el.textContent = stats.superLevel.total > 0 ? superPct + '% (' + stats.superLevel.wins + '/' + stats.superLevel.total + ')'' : ''--% (0/0)';
+ if (el) el.textContent = stats.superLevel.total > 0 ? superPct + '% (' + stats.superLevel.wins + '/' + stats.superLevel.total + ')' : '--% (0/0)';
 
  el = document.getElementById('agentMixedAccuracy');
 
- if (el) el.textContent = stats.mixed.total > 0 ? mixedPct + '% (' + stats.mixed.wins + '/' + stats.mixed.total + ')'' : ''--% (0/0)';
+ if (el) el.textContent = stats.mixed.total > 0 ? mixedPct + '% (' + stats.mixed.wins + '/' + stats.mixed.total + ')' : '--% (0/0)';
 
  el = document.getElementById('agentTotalLogged');
 
@@ -30493,17 +30493,17 @@ function autoSavePredictions() {
 
  if (gannPct < 35) {
 
- gannPred = invertGannSignal ? 'PUT'' : ''CALL';
+ gannPred = invertGannSignal ? 'PUT' : 'CALL';
 
  } else if (gannPct > 65) {
 
- gannPred = invertGannSignal ? 'CALL'' : ''PUT';
+ gannPred = invertGannSignal ? 'CALL' : 'PUT';
 
  }
 
 
 
- var mktPred = data.price > data.ma20 ? 'CALL'' : ''PUT';
+ var mktPred = data.price > data.ma20 ? 'CALL' : 'PUT';
 
  var aligned = (gannPred === mktPred) || gannPred === 'HOLD';
 
@@ -30607,13 +30607,13 @@ function autoSavePredictions() {
 
  var details = agentData.agentDetails;
 
- baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ baseSignal = details.base ? (details.base.signal === 'CALL' ? 'BULLISH' : (details.base.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ gannElliottSignal = details.gann ? (details.gann.signal === 'CALL' ? 'BULLISH' : (details.gann.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ dqnSignal = details.dqn ? (details.dqn.signal === 'CALL' ? 'BULLISH' : (details.dqn.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
- waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH'' : ''NEUTRAL')) : 'NEUTRAL';
+ waveSignal = details.wave ? (details.wave.signal === 'CALL' ? 'BULLISH' : (details.wave.signal === 'PUT' ? 'BEARISH' : 'NEUTRAL')) : 'NEUTRAL';
 
  baseConf = details.base ? details.base.confidence : 50;
 
@@ -30631,7 +30631,7 @@ function autoSavePredictions() {
 
 
 
- baseSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ baseSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  baseConf = 55 + Math.abs(gannPct - 50) * 0.3;
 
@@ -30647,7 +30647,7 @@ function autoSavePredictions() {
 
  } else {
 
- gannElliottSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ gannElliottSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  }
 
@@ -30655,13 +30655,13 @@ function autoSavePredictions() {
 
 
 
- dqnSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ dqnSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  dqnConf = 55;
 
 
 
- waveSignal = aboveMA ? 'BULLISH'' : ''BEARISH';
+ waveSignal = aboveMA ? 'BULLISH' : 'BEARISH';
 
  waveConf = 55;
 
@@ -30711,7 +30711,7 @@ function autoSavePredictions() {
 
  consensusLevel = 'MIXED';
 
- consensusDirection = bullishCount >= 2 ? 'BULLISH'' : ''BEARISH';
+ consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
 
  }
 
@@ -30905,13 +30905,13 @@ function saveTodaysPrediction() {
 
  var position = range > 0 ? (price - low20) / range : 0.5;
 
- var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT'' : ''HOLD');
+ var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
 
 
 
  // MARKET Prediction
 
- var mktPred = price > ma20 ? 'CALL'' : ''PUT';
+ var mktPred = price > ma20 ? 'CALL' : 'PUT';
 
 
 
@@ -31143,9 +31143,9 @@ function verifyPastPredictions() {
 
  console.log('Verified ' + sym + ' ' + entry.date + ': ' +
 
- 'Gann=' + entry.gannPred + (entry.gannCorrect ? ''' : ''') + ', ' +
+ 'Gann=' + entry.gannPred + (entry.gannCorrect ? '' : ''') + ', ' +
 
- 'Mkt=' + entry.mktPred + (entry.mktCorrect ? ''' : ''') + ', ' +
+ 'Mkt=' + entry.mktPred + (entry.mktCorrect ? '' : ''') + ', ' +
 
  'Move=' + entry.actualMove.toFixed(2) + '%');
 
@@ -31385,13 +31385,13 @@ function backfillPredictions(startDateStr) {
 
  var position = range > 0 ? (price - low20) / range : 0.5;
 
- var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT'' : ''HOLD');
+ var gannPred = position < 0.35 ? 'CALL' : (position > 0.65 ? 'PUT' : 'HOLD');
 
 
 
  // MARKET Prediction (trend following)
 
- var mktPred = price > ma20 ? 'CALL'' : ''PUT';
+ var mktPred = price > ma20 ? 'CALL' : 'PUT';
 
 
 
@@ -31545,7 +31545,7 @@ function backfillPredictions(startDateStr) {
 
  ' Aligned Accuracy: ' + alignedPct + '% (' + alignedWins + '/' + alignedTotal + ')\n\n' +
 
- 'Leader: ' + (mktPct > gannPct ? '  MARKET'' : '' GANN') + ' by ' + Math.abs(mktPct - gannPct) + '%';
+ 'Leader: ' + (mktPct > gannPct ? '  MARKET' : ' GANN') + ' by ' + Math.abs(mktPct - gannPct) + '%';
 
 
 
@@ -31763,13 +31763,13 @@ function backfillAgentPredictions(startDateStr) {
 
  // Agent signals
 
- var baseSignal = (trend5 && momentum > 0) ? 'BULLISH' : ((!trend5 && momentum < 0) ? 'BEARISH'' : ''NEUTRAL');
+ var baseSignal = (trend5 && momentum > 0) ? 'BULLISH' : ((!trend5 && momentum < 0) ? 'BEARISH' : 'NEUTRAL');
 
- var gannElliottSignal = (gannPct < 30) ? 'BULLISH' : ((gannPct > 70) ? 'BEARISH' : (aboveMA ? 'BULLISH'' : ''BEARISH'));
+ var gannElliottSignal = (gannPct < 30) ? 'BULLISH' : ((gannPct > 70) ? 'BEARISH' : (aboveMA ? 'BULLISH' : 'BEARISH'));
 
- var dqnSignal = (momentum > 0.005) ? 'BULLISH' : ((momentum < -0.005) ? 'BEARISH'' : ''NEUTRAL');
+ var dqnSignal = (momentum > 0.005) ? 'BULLISH' : ((momentum < -0.005) ? 'BEARISH' : 'NEUTRAL');
 
- var waveSignal = trend5 ? 'BULLISH'' : ''BEARISH';
+ var waveSignal = trend5 ? 'BULLISH' : 'BEARISH';
 
 
 
@@ -31777,9 +31777,9 @@ function backfillAgentPredictions(startDateStr) {
 
 
 
- var consensusLevel = (bullishCount === 4 || bullishCount === 0) ? 'ULTRA' : ((bullishCount === 3 || bullishCount === 1) ? 'SUPER'' : ''MIXED');
+ var consensusLevel = (bullishCount === 4 || bullishCount === 0) ? 'ULTRA' : ((bullishCount === 3 || bullishCount === 1) ? 'SUPER' : 'MIXED');
 
- var consensusDirection = bullishCount >= 2 ? 'BULLISH'' : ''BEARISH';
+ var consensusDirection = bullishCount >= 2 ? 'BULLISH' : 'BEARISH';
 
 
 
@@ -31809,7 +31809,7 @@ function backfillAgentPredictions(startDateStr) {
 
  c: (consensusDirection === 'BULLISH' && moveUp) || (consensusDirection === 'BEARISH' && !moveUp) ? 1 : 0,
 
- l: consensusLevel === 'ULTRA' ? 'U' : (consensusLevel === 'SUPER' ? 'S'' : ''M'),
+ l: consensusLevel === 'ULTRA' ? 'U' : (consensusLevel === 'SUPER' ? 'S' : 'M'),
 
  n: baseNeutral ? 1 : 0,
 
@@ -32287,11 +32287,11 @@ function backtestRealGann() {
 
  price: price.toFixed(2),
 
- type: nearSupport ? 'SUPPORT'' : ''RESIST',
+ type: nearSupport ? 'SUPPORT' : 'RESIST',
 
- prediction: predictUp ? 'UP'' : ''DOWN',
+ prediction: predictUp ? 'UP' : 'DOWN',
 
- actual: actualUp ? 'UP'' : ''DOWN',
+ actual: actualUp ? 'UP' : 'DOWN',
 
  move: move5day.toFixed(2) + '%',
 
@@ -32919,11 +32919,11 @@ function testSingleETF(symbol, tolerance) {
 
  var edge = row.pct - 50;
 
- var edgeColor = edge > 0 ? '#22c55e' : (edge < 0 ? '#ef4444'' : ''#666');
+ var edgeColor = edge > 0 ? '#22c55e' : (edge < 0 ? '#ef4444' : '#666');
 
  var edgeSign = edge > 0 ? '+'' : ''';
 
- var pctBg = row.pct >= 55 ? 'rgba(34,197,94,0.2)' : (row.pct >= 50 ? 'rgba(245,158,11,0.2)'' : ''rgba(239,68,68,0.2)');
+ var pctBg = row.pct >= 55 ? 'rgba(34,197,94,0.2)' : (row.pct >= 50 ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)');
 
 
 
@@ -33517,7 +33517,7 @@ function backtestPivotGann() {
 
  for (var i = 0; i < methods.length; i++) {
 
- var icon = methods[i].pct >= 55 ? '' : (methods[i].pct >= 50 ? ''' : ''';
+ var icon = methods[i].pct >= 55 ? '' : (methods[i].pct >= 50 ? '' : ''';
 
  msg += icon + ' ' + methods[i].name + ': ' + methods[i].pct + '%\n';
 
@@ -33825,7 +33825,7 @@ function backtestBiblicalNumbers() {
 
  price: price,
 
- outcome: wasUp ? 'REVERSED DOWN'' : ''REVERSED UP'
+ outcome: wasUp ? 'REVERSED DOWN' : 'REVERSED UP'
 
  });
 
@@ -34161,9 +34161,9 @@ function backtestBiblicalNumbers() {
 
  var r = calendarRanked[i];
 
- var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? ''' : ''';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : ''';
 
- var highlight = (r.days == 144 || r.days == 49 || r.days == 40) ? ''' : '''';
+ var highlight = (r.days == 144 || r.days == 49 || r.days == 40) ? '' : '''';
 
  msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + highlight + '\n';
 
@@ -34181,7 +34181,7 @@ function backtestBiblicalNumbers() {
 
  var r = tradingRanked[i];
 
- var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? ''' : ''';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : ''';
 
  var highlight = r.days == 35 ? '   DEATH ZONE'' : ''';
 
@@ -34615,9 +34615,9 @@ function runBiblicalBacktestOnData(data, label) {
 
  var r = ranked[i];
 
- var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? ''' : ''';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : ''';
 
- var star = (r.days == 144 || r.days == 49 || r.days == 40 || r.days == 360) ? ''' : '''';
+ var star = (r.days == 144 || r.days == 49 || r.days == 40 || r.days == 360) ? '' : '''';
 
  msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + star + '\n';
 
@@ -34703,7 +34703,7 @@ function updateBiblicalDisplay(calendarRanked, tradingRanked, sq9Biblical) {
 
  if (r.total < 5) continue;
 
- var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308'' : ''#ef4444');
+ var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308' : '#ef4444');
 
  html += '<div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">';
 
@@ -34733,7 +34733,7 @@ function updateBiblicalDisplay(calendarRanked, tradingRanked, sq9Biblical) {
 
  if (r.total < 5) continue;
 
- var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308'' : ''#ef4444');
+ var color = r.pct >= 55 ? '#22c55e' : (r.pct >= 50 ? '#eab308' : '#ef4444');
 
  html += '<div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">';
 
@@ -35171,19 +35171,19 @@ function updatePredictionLogDisplay() {
 
  el = document.getElementById('logGannAccuracy');
 
- if (el) el.textContent = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) + '%'' : ''--%';
+ if (el) el.textContent = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) + '%' : '--%';
 
 
 
  el = document.getElementById('logMktAccuracy');
 
- if (el) el.textContent = mktTotal > 0 ? Math.round(mktWins / mktTotal * 100) + '%'' : ''--%';
+ if (el) el.textContent = mktTotal > 0 ? Math.round(mktWins / mktTotal * 100) + '%' : '--%';
 
 
 
  el = document.getElementById('logAlignedAccuracy');
 
- if (el) el.textContent = alignedTotal > 0 ? Math.round(alignedWins / alignedTotal * 100) + '%'' : ''--%';
+ if (el) el.textContent = alignedTotal > 0 ? Math.round(alignedWins / alignedTotal * 100) + '%' : '--%';
 
 
 
@@ -35199,7 +35199,7 @@ function updatePredictionLogDisplay() {
 
  ? 'No symbols selected. Use the filter above to select symbols.'
 
- : (log.length === 0 ? 'No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.'' : ''No predictions match the selected symbols.');
+ : (log.length === 0 ? 'No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.' : 'No predictions match the selected symbols.');
 
  tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">' + msg + '</td></tr>';
 
@@ -35233,21 +35233,21 @@ function updatePredictionLogDisplay() {
 
  var rows = displayLog.map(function(entry) {
 
- var gannColor = entry.gannPred === 'CALL' ? '#22c55e' : (entry.gannPred === 'PUT' ? '#ef4444'' : ''#eab308');
+ var gannColor = entry.gannPred === 'CALL' ? '#22c55e' : (entry.gannPred === 'PUT' ? '#ef4444' : '#eab308');
 
- var mktColor = entry.mktPred === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var mktColor = entry.mktPred === 'CALL' ? '#22c55e' : '#ef4444';
 
- var alignedIcon = entry.aligned ? ''' : ''';
+ var alignedIcon = entry.aligned ? '' : ''';
 
- var actualColor = entry.actualMove >= 0 ? '#22c55e'' : ''#ef4444';
+ var actualColor = entry.actualMove >= 0 ? '#22c55e' : '#ef4444';
 
  var actualSign = entry.actualMove >= 0 ? '+'' : ''';
 
 
 
- var gannCheckIcon = entry.verified ? (entry.gannCorrect ? ''' : '''' : '''
+ var gannCheckIcon = entry.verified ? (entry.gannCorrect ? '' : '''' : '''
 
- var mktCheckIcon = entry.verified ? (entry.mktCorrect ? ''' : '''' : '''
+ var mktCheckIcon = entry.verified ? (entry.mktCorrect ? '' : '''' : '''
 
 
 
@@ -35267,7 +35267,7 @@ function updatePredictionLogDisplay() {
 
  '<td style="padding: 8px;">' + (entry.nextDayPrice ? '$' + entry.nextDayPrice.toFixed(2) : '--') + '</td>' +
 
- '<td style="padding: 8px; color: ' + actualColor + '; font-weight: 600;">' + (entry.actualMove !== null ? actualSign + entry.actualMove + '%'' : ''--') + '</td>' +
+ '<td style="padding: 8px; color: ' + actualColor + '; font-weight: 600;">' + (entry.actualMove !== null ? actualSign + entry.actualMove + '%' : '--') + '</td>' +
 
  '<td style="padding: 8px; background: rgba(139,92,246,0.05); font-size: 14px;">' + gannCheckIcon + '</td>' +
 
@@ -35677,7 +35677,7 @@ function updateDashboard() {
 
  var el=document.getElementById('tickerChange');if(el)el.textContent = (chg >= 0 ? '+'' : ''') + '$' + Math.abs(chg).toFixed(2);
 
- el=document.getElementById('tickerChange');if(el)el.className = 'ticker-change ' + (chg >= 0 ? 'positive'' : ''negative');
+ el=document.getElementById('tickerChange');if(el)el.className = 'ticker-change ' + (chg >= 0 ? 'positive' : 'negative');
 
  var el=document.getElementById('tickerPct');if(el)el.textContent = (pct >= 0 ? '+'' : ''') + pct.toFixed(2) + '%';
 
@@ -35691,7 +35691,7 @@ function updateDashboard() {
 
  var el=document.getElementById('dailyChange');if(el)el.textContent = (chg >= 0 ? '+'' : ''') + '$' + Math.abs(chg).toFixed(2);
 
- el=document.getElementById('dailyChange');if(el)el.className = 'metric-value ' + (chg >= 0 ? 'positive'' : ''negative');
+ el=document.getElementById('dailyChange');if(el)el.className = 'metric-value ' + (chg >= 0 ? 'positive' : 'negative');
 
  var el=document.getElementById('changePct');if(el)el.textContent = (pct >= 0 ? '+'' : ''') + pct.toFixed(2) + '%';
 
@@ -35737,7 +35737,7 @@ function updateDashboard() {
 
  var el=document.getElementById('intradaySignal');if(el)el.textContent = bias || 'HOLD';
 
- el=document.getElementById('intradaySignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger'' : ''warning')}`;
+ el=document.getElementById('intradaySignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
 
  var el=document.getElementById('intradayEntry');if(el)el.textContent = '$' + price.toFixed(2);
 
@@ -35753,7 +35753,7 @@ function updateDashboard() {
 
  var el=document.getElementById('swingSignal');if(el)el.textContent = bias || 'HOLD';
 
- el=document.getElementById('swingSignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger'' : ''warning')}`;
+ el=document.getElementById('swingSignal');if(el)el.className = `badge badge-${bias === 'CALL' ? 'success' : (bias === 'PUT' ? 'danger' : 'warning')}`;
 
  var el=document.getElementById('swingEntry');if(el)el.textContent = '$' + (price - 2).toFixed(0) + '-' + (price + 2).toFixed(0);
 
@@ -35897,11 +35897,11 @@ function updateFibonacci() {
 
  const slowSMA = parseFloat(currentData[currentData.length-1].SlowSMA) || price;
 
- const trend = fastSMA > slowSMA ? 'BULLISH'' : ''BEARISH';
+ const trend = fastSMA > slowSMA ? 'BULLISH' : 'BEARISH';
 
  var el=document.getElementById('trendBadge');if(el)el.textContent = trend;
 
- el=document.getElementById('trendBadge');if(el)el.className = `badge badge-${trend === 'BULLISH' ? 'success'' : ''danger'}`;
+ el=document.getElementById('trendBadge');if(el)el.className = `badge badge-${trend === 'BULLISH' ? 'success' : 'danger'}`;
 
  
 
@@ -36019,17 +36019,17 @@ function updateBarCountAnalysis() {
 
  <td style="font-size:10px;">${r.o.toFixed(0)}/${r.high.toFixed(0)}/${r.low.toFixed(0)}/${r.c.toFixed(0)}</td>
 
- <td>${r.isBullish ? ''' : '''}</td>
+ <td>${r.isBullish ? '' : '''}</td>
 
- <td class="${r.baseCount > 0 ? 'positive'' : ''negative'}">${r.baseCount > 0 ? '+'' : '''}${r.baseCount}</td>
+ <td class="${r.baseCount > 0 ? 'positive' : 'negative'}">${r.baseCount > 0 ? '+'' : '''}${r.baseCount}</td>
 
- <td class="${r.gannCount > 0 ? 'positive'' : ''negative'}">${r.gannCount > 0 ? '+'' : '''}${r.gannCount}</td>
+ <td class="${r.gannCount > 0 ? 'positive' : 'negative'}">${r.gannCount > 0 ? '+'' : '''}${r.gannCount}</td>
 
- <td class="${r.dqnCount > 0 ? 'positive'' : ''negative'}">${r.dqnCount > 0 ? '+'' : '''}${r.dqnCount}</td>
+ <td class="${r.dqnCount > 0 ? 'positive' : 'negative'}">${r.dqnCount > 0 ? '+'' : '''}${r.dqnCount}</td>
 
- <td class="${r.waveCount > 0 ? 'positive'' : ''negative'}">${r.waveCount > 0 ? '+'' : '''}${r.waveCount}</td>
+ <td class="${r.waveCount > 0 ? 'positive' : 'negative'}">${r.waveCount > 0 ? '+'' : '''}${r.waveCount}</td>
 
- <td><span class="badge badge-${r.avg > 2 ? 'success' : (r.avg < -2 ? 'danger'' : ''warning')}">${r.avg.toFixed(1)}</span></td>
+ <td><span class="badge badge-${r.avg > 2 ? 'success' : (r.avg < -2 ? 'danger' : 'warning')}">${r.avg.toFixed(1)}</span></td>
 
  </tr>`;
 
@@ -36043,19 +36043,19 @@ function updateBarCountAnalysis() {
 
  var el=document.getElementById('baseBarCount');if(el)el.textContent = (baseCount > 0 ? '+'' : ''') + baseCount;
 
- document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById('baseBarCount').style.color = baseCount > 0 ? 'var(--success)' : 'var(--danger)';
 
  var el=document.getElementById('gannBarCount');if(el)el.textContent = (gannCount > 0 ? '+'' : ''') + gannCount;
 
- document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById('gannBarCount').style.color = gannCount > 0 ? 'var(--success)' : 'var(--danger)';
 
  var el=document.getElementById('dqnBarCount');if(el)el.textContent = (dqnCount > 0 ? '+'' : ''') + dqnCount;
 
- document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById('dqnBarCount').style.color = dqnCount > 0 ? 'var(--success)' : 'var(--danger)';
 
  var el=document.getElementById('waveBarCount');if(el)el.textContent = (waveCount > 0 ? '+'' : ''') + waveCount;
 
- document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById('waveBarCount').style.color = waveCount > 0 ? 'var(--success)' : 'var(--danger)';
 
 
 
@@ -36197,7 +36197,7 @@ async function updateHistoricalAverages() {
 
  updateEl(symLower + 'MaxOL', maxOL, '-');
 
- updateEl(symLower + 'AvgOC', Math.abs(avgOC), avgOC >= 0 ? '+'' : ''-');
+ updateEl(symLower + 'AvgOC', Math.abs(avgOC), avgOC >= 0 ? '+' : '-');
 
  updateEl(symLower + 'AvgRange', avgRange);
 
@@ -36587,13 +36587,13 @@ function updateSignalsFibonacci() {
 
  if (proximityEl && closestLevel) {
 
- const direction = closestLevel.price > currentPrice ? 'below'' : ''above';
+ const direction = closestLevel.price > currentPrice ? 'below' : 'above';
 
- const levelType = closestLevel.type === 'resistance' ? '' : closestLevel.type === 'support' ? ''' : ''';
+ const levelType = closestLevel.type === 'resistance' ? '' : closestLevel.type === 'support' ? '' : ''';
 
  proximityEl.innerHTML = `${levelType} <strong>${currentSymbol}</strong> is <strong>${Math.abs(closestPct)}%</strong> away from <strong>${closestLevel.name}</strong> ($${closestLevel.price.toFixed(2)})`;
 
- proximityEl.style.color = Math.abs(parseFloat(closestPct)) < 1 ? '#ef4444'' : ''inherit';
+ proximityEl.style.color = Math.abs(parseFloat(closestPct)) < 1 ? '#ef4444' : 'inherit';
 
  }
 
@@ -36641,7 +36641,7 @@ function updateSignalsFibonacci() {
 
 
 
- const approaching = isApproaching ? '<span class="badge badge-success">YES</span>'' : ''NO';
+ const approaching = isApproaching ? '<span class="badge badge-success">YES</span>' : 'NO';
 
  const dateSet = level.dateSet || '--';
 
@@ -36757,7 +36757,7 @@ function updateReversalStats() {
 
  const avgBearish = bearishRuns.length ? (bearishRuns.reduce((a,b) => a+b, 0) / bearishRuns.length).toFixed(1) : 'N/A';
 
- const currentDir = lastDir ? 'Bullish'' : ''Bearish';
+ const currentDir = lastDir ? 'Bullish' : 'Bearish';
 
  const avgForDir = lastDir ? parseFloat(avgBullish) : parseFloat(avgBearish);
 
@@ -36851,7 +36851,7 @@ function updatePriceChart() {
 
  const fib = window.fibLevels || {};
 
- const colors = data.map(d => parseFloat(d.Close) >= parseFloat(d.Open) ? '#10b981'' : ''#ef4444');
+ const colors = data.map(d => parseFloat(d.Close) >= parseFloat(d.Open) ? '#10b981' : '#ef4444');
 
  
 
@@ -37353,7 +37353,7 @@ This could mean:
 
  trades.forEach(t => {
 
- const emoji = t.consensus === 4 ? ''' : ''';
+ const emoji = t.consensus === 4 ? '' : ''';
 
  response += `${emoji} **${t.symbol}** - ${t.signal} (${t.consensus}/4)\n`;
 
@@ -37671,7 +37671,7 @@ ATR: $${atr.toFixed(2)}
 
  sectors.forEach((s, i) => {
 
- const emoji = i === 0 ? '' : (i === 1 ? '' : (i === 2 ? ''' : '''));
+ const emoji = i === 0 ? '' : (i === 1 ? '' : (i === 2 ? '' : '''));
 
  const perfColor = parseFloat(s.perf) >= 0 ? '+'' : ''';
 
@@ -37851,7 +37851,7 @@ The agents are not aligned for ${direction} trades currently. Consider:
 
  recommendations.slice(0, 5).forEach((r, i) => {
 
- const emoji = r.consensus >= 3 ? ''' : '' ';
+ const emoji = r.consensus >= 3 ? '' : '' ';
 
  response += `${emoji} **#${i+1} ${r.symbol}** (${r.consensus}/4 consensus)\n`;
 
@@ -37949,9 +37949,9 @@ function generateBarCountResponse() {
 
  const signal = lat.Bias || 'HOLD';
 
- const streakDir = lastDir ? ' Bullish'' : '' Bearish';
+ const streakDir = lastDir ? ' Bullish' : ' Bearish';
 
- const streakEmoji = currentStreak >= 5 ? '' : (currentStreak >= 3 ? ''' : ''');
+ const streakEmoji = currentStreak >= 5 ? '' : (currentStreak >= 3 ? '' : ''');
 
  
 
@@ -38119,9 +38119,9 @@ function generateBreakoutResponse() {
 
  response += ` Price: $${b.price} (+${b.change}%)\n`;
 
- response += ` Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? ''' : '''}\n`;
+ response += ` Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? '' : '''}\n`;
 
- response += ` Breaking 5-day high: ${b.above5Day ? ' YES'' : '' No'}\n`;
+ response += ` Breaking 5-day high: ${b.above5Day ? ' YES' : ' No'}\n`;
 
  response += ` Agent Signal: ${b.signal} (${b.consensus}/4)\n`;
 
@@ -38453,7 +38453,7 @@ function generateMomentumResponse() {
 
  momentum.slice(0, 3).forEach((m, i) => {
 
- const emoji = i === 0 ? '' : (i === 1 ? ''' : ''');
+ const emoji = i === 0 ? '' : (i === 1 ? '' : ''');
 
  response += `${emoji} **${m.symbol}** - $${m.price}\n`;
 
@@ -38577,13 +38577,13 @@ function generateReversalResponse() {
 
  if (bullishEngulfing || hammer) {
 
- pattern = bullishEngulfing ? 'Bullish Engulfing'' : ''Hammer';
+ pattern = bullishEngulfing ? 'Bullish Engulfing' : 'Hammer';
 
  direction = 'BULLISH';
 
  } else if (bearishEngulfing || shootingStar) {
 
- pattern = bearishEngulfing ? 'Bearish Engulfing'' : ''Shooting Star';
+ pattern = bearishEngulfing ? 'Bearish Engulfing' : 'Shooting Star';
 
  direction = 'BEARISH';
 
@@ -38807,7 +38807,7 @@ function generateOptimalTimeResponse() {
 
 For ${currentSymbol} ${signal} signal:
 
-${signal === 'CALL' ? ' Enter on pullback to support 10:00-11:00 AM'' : '' Enter on rally to resistance 10:00-11:00 AM'}
+${signal === 'CALL' ? ' Enter on pullback to support 10:00-11:00 AM' : ' Enter on rally to resistance 10:00-11:00 AM'}
 
  Set stop based on ATR ($${lat ? parseFloat(lat.ATR).toFixed(2) : '--'})
 
@@ -38967,7 +38967,7 @@ Current market conditions don't show clear setups:
 
 **${bestTrade.symbol} ${bestTrade.signal}**
 
-Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? ''' : '''}
+Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? '' : '''}
 
 
 
@@ -38977,7 +38977,7 @@ Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? ''' : '''
 
  Strike: $${strike} ${bestTrade.signal}
 
- Mode: ${tradingMode === 'intraday' ? '0DTE'' : ''3-5 DTE'}
+ Mode: ${tradingMode === 'intraday' ? '0DTE' : '3-5 DTE'}
 
 
 
@@ -39105,9 +39105,9 @@ function generateMarketUpdateResponse() {
 
  
 
- const marketBias = bullish > bearish ? 'BULLISH' : (bearish > bullish ? 'BEARISH'' : ''MIXED');
+ const marketBias = bullish > bearish ? 'BULLISH' : (bearish > bullish ? 'BEARISH' : 'MIXED');
 
- const biasEmoji = marketBias === 'BULLISH' ? '' : (marketBias === 'BEARISH' ? ''' : ''');
+ const biasEmoji = marketBias === 'BULLISH' ? '' : (marketBias === 'BEARISH' ? '' : ''');
 
  
 
@@ -39135,7 +39135,7 @@ ${generateQuickSectorSummary()}
 
 ${marketBias === 'BULLISH' ? ' Favor CALL trades\n Look for pullbacks to support\n Sector leaders: Check XLK, XLF' : 
 
- marketBias === 'BEARISH' ? ' Favor PUT trades\n Look for rallies to resistance\n Defensive sectors may outperform'' : '' Mixed signals - reduce position size\n Wait for clearer direction\n Focus on highest consensus trades'}
+ marketBias === 'BEARISH' ? ' Favor PUT trades\n Look for rallies to resistance\n Defensive sectors may outperform' : ' Mixed signals - reduce position size\n Wait for clearer direction\n Focus on highest consensus trades'}
 
 
 
@@ -39159,7 +39159,7 @@ function generateQuickSectorSummary() {
 
  const signal = lat.Bias || 'HOLD';
 
- const emoji = signal === 'CALL' ? '' : (signal === 'PUT' ? ''' : ''');
+ const emoji = signal === 'CALL' ? '' : (signal === 'PUT' ? '' : ''');
 
  summary += `${emoji} ${SYMBOL_NAMES[symbol]}: ${signal}\n`;
 
@@ -39543,9 +39543,9 @@ function renderTrades() {
 
  const statusClass = trade.status.toLowerCase();
 
- const directionEmoji = trade.direction === 'CALL' ? ''' : ''';
+ const directionEmoji = trade.direction === 'CALL' ? '' : ''';
 
- const typeEmoji = trade.type === 'INTRADAY' ? ''' : '' ';
+ const typeEmoji = trade.type === 'INTRADAY' ? '' : '' ';
 
 
 
@@ -39569,7 +39569,7 @@ function renderTrades() {
 
  <td class="${pnlClass}">${pnlDisplay}</td>
 
- <td><span class="badge badge-${trade.consensus === '4/4' ? 'ultra' : (trade.consensus === '3/4' ? 'success'' : ''warning')}">${trade.consensus}</span></td>
+ <td><span class="badge badge-${trade.consensus === '4/4' ? 'ultra' : (trade.consensus === '3/4' ? 'success' : 'warning')}">${trade.consensus}</span></td>
 
  <td><span class="status-badge-trade ${statusClass}">${trade.status}</span></td>
 
@@ -39669,7 +39669,7 @@ function filterTradesTable() {
 
 
 
- row.style.display = show ? ''' : ''none';
+ row.style.display = show ? '' : 'none';
 
  });
 
@@ -39855,7 +39855,7 @@ function updateTradeStats() {
 
  var el=document.getElementById('statWinRate');if(el)el.textContent = winRate + '%';
 
- el=document.getElementById('statWinRate');if(el)el.className = `metric-value ${parseFloat(winRate) >= 50 ? 'positive'' : ''negative'}`;
+ el=document.getElementById('statWinRate');if(el)el.className = `metric-value ${parseFloat(winRate) >= 50 ? 'positive' : 'negative'}`;
 
  var el=document.getElementById('statWinLoss');if(el)el.textContent = `${wins.length}W / ${losses.length}L`;
 
@@ -39867,7 +39867,7 @@ function updateTradeStats() {
 
  var el=document.getElementById('statTotalPnL');if(el)el.textContent = `${totalPnL >= 0 ? '+'' : '''}$${totalPnL.toFixed(2)}`;
 
- el=document.getElementById('statTotalPnL');if(el)el.className = `metric-value ${totalPnL >= 0 ? 'positive'' : ''negative'}`;
+ el=document.getElementById('statTotalPnL');if(el)el.className = `metric-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
 
  
 
@@ -39971,7 +39971,7 @@ function updateSymbolPerformance() {
 
  const winRate = ((data.wins / (data.wins + data.losses)) * 100).toFixed(0);
 
- const pnlClass = data.pnl >= 0 ? 'positive'' : ''negative';
+ const pnlClass = data.pnl >= 0 ? 'positive' : 'negative';
 
  html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:var(--bg);border-radius:4px;">
 
@@ -40049,7 +40049,7 @@ function updateDirectionPerformance() {
 
  </div>
 
- <div style="font-size:18px;font-weight:700;" class="${callPnL >= 0 ? 'positive'' : ''negative'}">${callPnL >= 0 ? '+'' : '''}$${callPnL.toFixed(2)}</div>
+ <div style="font-size:18px;font-weight:700;" class="${callPnL >= 0 ? 'positive' : 'negative'}">${callPnL >= 0 ? '+'' : '''}$${callPnL.toFixed(2)}</div>
 
  </div>
 
@@ -40063,7 +40063,7 @@ function updateDirectionPerformance() {
 
  </div>
 
- <div style="font-size:18px;font-weight:700;" class="${putPnL >= 0 ? 'positive'' : ''negative'}">${putPnL >= 0 ? '+'' : '''}$${putPnL.toFixed(2)}</div>
+ <div style="font-size:18px;font-weight:700;" class="${putPnL >= 0 ? 'positive' : 'negative'}">${putPnL >= 0 ? '+'' : '''}$${putPnL.toFixed(2)}</div>
 
  </div>
 
@@ -40095,7 +40095,7 @@ function updateConsensusAnalysis() {
 
  document.getElementById(`${ids[i]}WinRate`).textContent = winRate + '%';
 
- document.getElementById(`${ids[i]}WinRate`).style.color = winRate !== '--' && parseFloat(winRate) >= 50 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById(`${ids[i]}WinRate`).style.color = winRate !== '--' && parseFloat(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
 
  document.getElementById(`${ids[i]}Count`).textContent = `${levelTrades.length} trades`;
 
@@ -41173,7 +41173,7 @@ function updateOverallHealth() {
 
  const marketVal = document.getElementById('marketStatusValue')?.textContent || '';
 
- const marketStatus = (marketVal.includes('Open') || marketVal.includes('Pre') || marketVal.includes('After')) ? 'healthy'' : ''warning';
+ const marketStatus = (marketVal.includes('Open') || marketVal.includes('Pre') || marketVal.includes('After')) ? 'healthy' : 'warning';
 
  statuses.push(marketStatus);
 
@@ -41421,7 +41421,7 @@ function renderSystemLog() {
 
  tbody.innerHTML = recentLog.map(entry => {
 
- const statusIcon = entry.status === 'Success' ? '' : entry.status === 'Warning' ? ''' : ''';
+ const statusIcon = entry.status === 'Success' ? '' : entry.status === 'Warning' ? '' : ''';
 
  return `
 
@@ -41489,7 +41489,7 @@ function updateComponentStatus() {
 
  }
 
- if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? '' : healthStatus.dataFreshness === 'warning' ? ''' : ''';
+ if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? '' : healthStatus.dataFreshness === 'warning' ? '' : ''';
 
  }
 
@@ -41519,7 +41519,7 @@ function updateComponentStatus() {
 
  }
 
- if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? '' : healthStatus.workflowStatus === 'warning' ? ''' : ''';
+ if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? '' : healthStatus.workflowStatus === 'warning' ? '' : ''';
 
  }
 
@@ -42217,9 +42217,9 @@ function updateMultiChartBias(symbol, data) {
 
  // Determine bias based on price change
 
- const bias = data.change >= 0 ? 'BULLISH'' : ''BEARISH';
+ const bias = data.change >= 0 ? 'BULLISH' : 'BEARISH';
 
- const biasColor = data.change >= 0 ? '#22c55e'' : ''#ef4444';
+ const biasColor = data.change >= 0 ? '#22c55e' : '#ef4444';
 
 
 
@@ -42413,7 +42413,7 @@ async function updateChart(panelType) {
 
  priceEl.textContent = `$${lastBar.close.toFixed(2)}`;
 
- priceEl.className = lastBar.close >= lastBar.open ? 'price'' : ''price down';
+ priceEl.className = lastBar.close >= lastBar.open ? 'price' : 'price down';
 
  }
 
@@ -42421,7 +42421,7 @@ async function updateChart(panelType) {
 
  // Update signal and bias
 
- const signal = lastBar.close > (data[data.length - 2]?.close || lastBar.close) ? 'CALL'' : ''PUT';
+ const signal = lastBar.close > (data[data.length - 2]?.close || lastBar.close) ? 'CALL' : 'PUT';
 
  updateMTFSignal(panelType, signal);
 
@@ -42477,7 +42477,7 @@ function updateMTFSignal(panel, signal) {
 
  if (biasEl) {
 
- const bias = signal === 'CALL' ? 'BULLISH'' : ''BEARISH';
+ const bias = signal === 'CALL' ? 'BULLISH' : 'BEARISH';
 
  biasEl.textContent = bias;
 
@@ -42507,9 +42507,9 @@ function updateMTFSignal(panel, signal) {
 
  if (overallEl) {
 
- overallEl.textContent = `${bullish}/3 ${bullish >= 2 ? 'BULLISH'' : ''BEARISH'}`;
+ overallEl.textContent = `${bullish}/3 ${bullish >= 2 ? 'BULLISH' : 'BEARISH'}`;
 
- overallEl.className = `value ${bullish >= 2 ? 'bullish'' : ''bearish'}`;
+ overallEl.className = `value ${bullish >= 2 ? 'bullish' : 'bearish'}`;
 
  }
 
@@ -42647,15 +42647,15 @@ function renderLWChart(panelType, data, chartType, container, settings) {
 
  mainSeries = chart.addCandlestickSeries({
 
- upColor: chartType === 'heikinashi' ? '#4caf50'' : ''#26a69a',
+ upColor: chartType === 'heikinashi' ? '#4caf50' : '#26a69a',
 
- downColor: chartType === 'heikinashi' ? '#f44336'' : ''#ef5350',
+ downColor: chartType === 'heikinashi' ? '#f44336' : '#ef5350',
 
  borderVisible: false,
 
- wickUpColor: chartType === 'heikinashi' ? '#4caf50'' : ''#26a69a',
+ wickUpColor: chartType === 'heikinashi' ? '#4caf50' : '#26a69a',
 
- wickDownColor: chartType === 'heikinashi' ? '#f44336'' : ''#ef5350'
+ wickDownColor: chartType === 'heikinashi' ? '#f44336' : '#ef5350'
 
  });
 
@@ -42721,7 +42721,7 @@ function renderLWChart(panelType, data, chartType, container, settings) {
 
  value: data[i].volume || 1000000,
 
- color: d.close >= d.open ? 'rgba(38,166,154,0.6)'' : ''rgba(239,83,80,0.6)'
+ color: d.close >= d.open ? 'rgba(38,166,154,0.6)' : 'rgba(239,83,80,0.6)'
 
  })));
 
@@ -42875,7 +42875,7 @@ function detectPFPatterns(columns) {
 
  const strongest = patterns.sort((a, b) => b.strength - a.strength)[0];
 
- return { pattern: strongest, signal: strongest.type === 'bullish' ? 'CALL'' : ''PUT' };
+ return { pattern: strongest, signal: strongest.type === 'bullish' ? 'CALL' : 'PUT' };
 
 }
 
@@ -42961,7 +42961,7 @@ function renderEnhancedPF(panelType, data, container, settings) {
 
  patternEl.className = `pattern-alert-mtf ${patternResult.pattern.type}`;
 
- patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? ''' : '''} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
+ patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? '' : '''} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
 
  updateMTFSignal(panelType, patternResult.signal);
 
@@ -43077,7 +43077,7 @@ function renderEnhancedPF(panelType, data, container, settings) {
 
  const y = pad.top + ch - ((price - minP) / (maxP - minP)) * ch;
 
- ctx.fillStyle = col.type === 'X' ? '#26a69a'' : ''#ef5350';
+ ctx.fillStyle = col.type === 'X' ? '#26a69a' : '#ef5350';
 
  ctx.fillText(col.type, x, y);
 
@@ -43111,7 +43111,7 @@ function renderEnhancedPF(panelType, data, container, settings) {
 
  ctx.font = 'bold 10px Arial';
 
- ctx.fillStyle = patternResult.pattern.type === 'bullish' ? '#059669'' : ''#dc2626';
+ ctx.fillStyle = patternResult.pattern.type === 'bullish' ? '#059669' : '#dc2626';
 
  ctx.textAlign = 'center';
 
@@ -43593,9 +43593,9 @@ function renderMultiCandlestickChart(panelType, data, chartType, canvas) {
 
  
 
- const upColor = chartType === 'heikinashi' ? '#4caf50'' : ''#26a69a';
+ const upColor = chartType === 'heikinashi' ? '#4caf50' : '#26a69a';
 
- const downColor = chartType === 'heikinashi' ? '#f44336'' : ''#ef5350';
+ const downColor = chartType === 'heikinashi' ? '#f44336' : '#ef5350';
 
  
 
@@ -43785,7 +43785,7 @@ function switchAnalysisMode(mode) {
 
  if (planTitle) {
 
- planTitle.textContent = mode === 'morning' ? ' Morning Trading Plan'' : '' Evening Review & Next Day Plan';
+ planTitle.textContent = mode === 'morning' ? ' Morning Trading Plan' : ' Evening Review & Next Day Plan';
 
  }
 
@@ -43869,19 +43869,19 @@ function updateOverviewAiAnalysis() {
 
  const slowSMA = parseFloat(lastBar.SlowSMA) || price;
 
- const priceVsFast = price > fastSMA ? 'above'' : ''below';
+ const priceVsFast = price > fastSMA ? 'above' : 'below';
 
- const fastVsSlow = fastSMA > slowSMA ? 'bullish'' : ''bearish';
+ const fastVsSlow = fastSMA > slowSMA ? 'bullish' : 'bearish';
 
 
 
  // Build AI analysis
 
- const direction = bias === 'BULLISH' ? 'bullish' : bias === 'BEARISH' ? 'bearish'' : ''neutral';
+ const direction = bias === 'BULLISH' ? 'bullish' : bias === 'BEARISH' ? 'bearish' : 'neutral';
 
- const optionType = bias === 'BULLISH' ? 'CALL' : bias === 'BEARISH' ? 'PUT'' : ''neutral';
+ const optionType = bias === 'BULLISH' ? 'CALL' : bias === 'BEARISH' ? 'PUT' : 'neutral';
 
- const momentum = change > 0 ? 'positive'' : ''negative';
+ const momentum = change > 0 ? 'positive' : 'negative';
 
 
 
@@ -43921,19 +43921,19 @@ function updateOverviewAiAnalysis() {
 
 
 
- const confColor = confidence >= 75 ? 'var(--success)' : confidence >= 60 ? 'var(--warning)'' : ''var(--danger)';
+ const confColor = confidence >= 75 ? 'var(--success)' : confidence >= 60 ? 'var(--warning)' : 'var(--danger)';
 
- const signalColor = bias === 'BULLISH' ? 'var(--success)' : bias === 'BEARISH' ? 'var(--danger)'' : ''var(--muted)';
+ const signalColor = bias === 'BULLISH' ? 'var(--success)' : bias === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
 
  const volMsg = parseInt(volRatio) > 120 ? 'High volume confirms the move.' :
 
- parseInt(volRatio) < 80 ? 'Low volume - move may lack conviction.'' : ''Normal volume activity.';
+ parseInt(volRatio) < 80 ? 'Low volume - move may lack conviction.' : 'Normal volume activity.';
 
  const confMsg = confidence >= 75 ? 'High confidence - favorable setup' :
 
- confidence >= 60 ? 'Moderate confidence - smaller size'' : ''Low confidence - consider waiting';
+ confidence >= 60 ? 'Moderate confidence - smaller size' : 'Low confidence - consider waiting';
 
- const dteText = tradingMode === 'INTRADAY' ? '0-1 days'' : ''3-7 days';
+ const dteText = tradingMode === 'INTRADAY' ? '0-1 days' : '3-7 days';
 
 
 
@@ -43951,7 +43951,7 @@ function updateOverviewAiAnalysis() {
 
  ${currentSymbol} is showing <strong style="color:${signalColor};">${direction}</strong> bias with
 
- <strong style="color:${momentum === 'positive' ? 'var(--success)'' : ''var(--danger)'};">
+ <strong style="color:${momentum === 'positive' ? 'var(--success)' : 'var(--danger)'};">
 
  ${parseFloat(changePct) > 0 ? '+'' : '''}${changePct}%
 
@@ -44375,7 +44375,7 @@ function updateDataPatternDetection() {
 
  result.type === 'highVolume' ? 'rgba(139,92,246,0.1)' :
 
- result.type === 'gapUp' ? 'rgba(34,197,94,0.08)'' : ''rgba(239,68,68,0.08)';
+ result.type === 'gapUp' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)';
 
  html += `
 
@@ -44895,15 +44895,15 @@ function updateGannForecast(symbol) {
 
  if (biasTextEl) {
 
- biasTextEl.textContent = isBullish ? 'BULLISH'' : ''BEARISH';
+ biasTextEl.textContent = isBullish ? 'BULLISH' : 'BEARISH';
 
- biasTextEl.style.color = isBullish ? '#22c55e'' : ''#ef4444';
+ biasTextEl.style.color = isBullish ? '#22c55e' : '#ef4444';
 
  }
 
  if (biasContainerEl) {
 
- biasContainerEl.style.background = isBullish ? 'rgba(34,197,94,0.15)'' : ''rgba(239,68,68,0.15)';
+ biasContainerEl.style.background = isBullish ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
 
  }
 
@@ -45053,7 +45053,7 @@ function updateGannForecast(symbol) {
 
 
 
- console.log('Gann Forecast updated for ' + symbol + ': ' + (isBullish ? 'BULLISH'' : ''BEARISH'));
+ console.log('Gann Forecast updated for ' + symbol + ': ' + (isBullish ? 'BULLISH' : 'BEARISH'));
 
 }
 
@@ -46515,11 +46515,11 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
 
  reasons = [
 
- `90-min cycle: <strong>${isBullish ? 'Rising'' : ''Falling'}</strong> phase`,
+ `90-min cycle: <strong>${isBullish ? 'Rising' : 'Falling'}</strong> phase`,
 
- `Intraday VWAP: Price ${isBullish ? 'above'' : ''below'} VWAP`,
+ `Intraday VWAP: Price ${isBullish ? 'above' : 'below'} VWAP`,
 
- `Session high/low: Near session ${isBullish ? 'low (reversal zone)'' : ''high (reversal zone)'}`,
+ `Session high/low: Near session ${isBullish ? 'low (reversal zone)' : 'high (reversal zone)'}`,
 
  `Time window: <strong>Next 90 min turn</strong> approaching`
 
@@ -46541,11 +46541,11 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
 
  reasons = [
 
- `Current trend: <strong>${isBullish ? 'DOWN'' : ''UP'}</strong> (price at ${(swingPosition*100).toFixed(0)}% of range)`,
+ `Current trend: <strong>${isBullish ? 'DOWN' : 'UP'}</strong> (price at ${(swingPosition*100).toFixed(0)}% of range)`,
 
- `At Gann ${isBullish ? 'support'' : ''resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
+ `At Gann ${isBullish ? 'support' : 'resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
 
- `Cycle position: <strong>${isBullish ? 'Near LOW'' : ''Near HIGH'}</strong>`,
+ `Cycle position: <strong>${isBullish ? 'Near LOW' : 'Near HIGH'}</strong>`,
 
  `Time symmetry: <strong>Winter Solstice Dec 21</strong> = major reversal`
 
@@ -46567,13 +46567,13 @@ function updateGannPrediction(timeframe, price, symbol, high, low) {
 
  reasons = [
 
- `Major cycle: <strong>${isBullish ? 'BOTTOM'' : ''TOP'}</strong> forming`,
+ `Major cycle: <strong>${isBullish ? 'BOTTOM' : 'TOP'}</strong> forming`,
 
- `Annual ${isBullish ? 'support'' : ''resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
+ `Annual ${isBullish ? 'support' : 'resistance'}: <strong>$${(isBullish ? low : high).toFixed(2)}</strong>`,
 
- `Seasonal pattern: <strong>${isBullish ? 'Rally'' : ''Pullback'}</strong> expected`,
+ `Seasonal pattern: <strong>${isBullish ? 'Rally' : 'Pullback'}</strong> expected`,
 
- `Long-term Gann angle: <strong>1x1 ${isBullish ? 'support'' : ''resistance'}</strong>`
+ `Long-term Gann angle: <strong>1x1 ${isBullish ? 'support' : 'resistance'}</strong>`
 
  ];
 
@@ -46857,7 +46857,7 @@ function updateGannTurnAnalysis(symbol, price) {
 
  var tfText = activeBtn ? activeBtn.textContent : 'Swing';
 
- var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING'' : ''POSITION';
+ var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING' : 'POSITION';
 
  gannPredictions[tfKey] = { direction: 'PUT', symbol: symbol };
 
@@ -46939,7 +46939,7 @@ function updateGannTurnAnalysis(symbol, price) {
 
  var tfText = activeBtn ? activeBtn.textContent : 'Swing';
 
- var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING'' : ''POSITION';
+ var tfKey = tfText.includes('Intraday') ? 'INTRADAY' : tfText.includes('Swing') ? 'SWING' : 'POSITION';
 
  gannPredictions[tfKey] = { direction: 'CALL', symbol: symbol };
 
@@ -47017,7 +47017,7 @@ function updateCycleDisplay(cycles) {
 
  if (alertEl) {
 
- alertEl.style.display = anyNearTurn ? 'block'' : ''none';
+ alertEl.style.display = anyNearTurn ? 'block' : 'none';
 
  }
 
@@ -47313,7 +47313,7 @@ function updateConfluenceDisplay(confluence) {
 
  confluence.score >= 50 ? '#d4a017' :
 
- confluence.score >= 25 ? '#f59e0b'' : ''#6b7280';
+ confluence.score >= 25 ? '#f59e0b' : '#6b7280';
 
  scoreEl.style.color = color;
 
@@ -47327,11 +47327,11 @@ function updateConfluenceDisplay(confluence) {
 
  confluence.score >= 50 ? 'MODERATE CONFLUENCE' :
 
- confluence.score >= 25 ? 'WEAK CONFLUENCE'' : ''LOW PROBABILITY';
+ confluence.score >= 25 ? 'WEAK CONFLUENCE' : 'LOW PROBABILITY';
 
  labelEl.textContent = label;
 
- labelEl.style.color = confluence.score >= 50 ? '#d4a017'' : ''var(--muted)';
+ labelEl.style.color = confluence.score >= 50 ? '#d4a017' : 'var(--muted)';
 
  }
 
@@ -47347,7 +47347,7 @@ function updateConfluenceDisplay(confluence) {
 
  ringEl.style.stroke = confluence.score >= 75 ? '#22c55e' :
 
- confluence.score >= 50 ? '#d4a017'' : ''#6b7280';
+ confluence.score >= 50 ? '#d4a017' : '#6b7280';
 
  }
 
@@ -47359,11 +47359,11 @@ function updateConfluenceDisplay(confluence) {
 
  <div class="confluence-factor">
 
- <span class="confluence-factor-icon">${f.active ? ''' : '''</span>
+ <span class="confluence-factor-icon">${f.active ? '' : '''</span>
 
  <span class="confluence-factor-text">${f.text}</span>
 
- <span class="confluence-factor-score ${f.active ? 'active'' : ''inactive'}">
+ <span class="confluence-factor-score ${f.active ? 'active' : 'inactive'}">
 
  ${f.active ? '+' + f.points : '0'}
 
@@ -47485,7 +47485,7 @@ function generateGannForecast(sq9Levels, cycles, pivots, confluence, price) {
 
  daysUntilEl.textContent = nearest.daysUntilTurn + ' days';
 
- daysUntilEl.style.color = nearest.daysUntilTurn <= 3 ? '#f59e0b'' : ''#8b5cf6';
+ daysUntilEl.style.color = nearest.daysUntilTurn <= 3 ? '#f59e0b' : '#8b5cf6';
 
  }
 
@@ -47507,7 +47507,7 @@ function generateGannForecast(sq9Levels, cycles, pivots, confluence, price) {
 
 
 
- const direction = bias === 'BULLISH' ? '  ' : bias === 'BEARISH' ? '  '' : ''  ';
+ const direction = bias === 'BULLISH' ? '  ' : bias === 'BEARISH' ? '  ' : '  ';
 
  projectedEl.textContent = `Expect ${direction} $${projectedMove.toFixed(2)} move within ${nearestCycleDays} days`;
 
@@ -47715,9 +47715,9 @@ function updateMultiTimeframeTrends() {
 
  // Intraday trend (price vs 5 SMA)
 
- const intradayTrend = price > sma5 ? 'BULLISH'' : ''BEARISH';
+ const intradayTrend = price > sma5 ? 'BULLISH' : 'BEARISH';
 
- const intradayColor = price > sma5 ? '#22c55e'' : ''#ef4444';
+ const intradayColor = price > sma5 ? '#22c55e' : '#ef4444';
 
 
 
@@ -47725,17 +47725,17 @@ function updateMultiTimeframeTrends() {
 
  const swingBullish = price > sma10 && sma5 > sma10;
 
- const swingTrend = swingBullish ? 'BULLISH'' : ''BEARISH';
+ const swingTrend = swingBullish ? 'BULLISH' : 'BEARISH';
 
- const swingColor = swingBullish ? '#22c55e'' : ''#ef4444';
+ const swingColor = swingBullish ? '#22c55e' : '#ef4444';
 
 
 
  // Position trend (price vs 20 SMA)
 
- const positionTrend = price > sma20 ? 'BULLISH'' : ''BEARISH';
+ const positionTrend = price > sma20 ? 'BULLISH' : 'BEARISH';
 
- const positionColor = price > sma20 ? '#22c55e'' : ''#ef4444';
+ const positionColor = price > sma20 ? '#22c55e' : '#ef4444';
 
 
 
@@ -47779,7 +47779,7 @@ function updateGannQuickView() {
 
  trendEl.textContent = bias;
 
- trendEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444'' : ''#d4a017';
+ trendEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444' : '#d4a017';
 
  }
 
@@ -47799,7 +47799,7 @@ function updateGannQuickView() {
 
  volEl.textContent = volRatio + '%';
 
- volEl.style.color = parseInt(volRatio) > 120 ? '#22c55e' : parseInt(volRatio) < 80 ? '#ef4444'' : ''var(--text)';
+ volEl.style.color = parseInt(volRatio) > 120 ? '#22c55e' : parseInt(volRatio) < 80 ? '#ef4444' : 'var(--text)';
 
  }
 
@@ -47809,11 +47809,11 @@ function updateGannQuickView() {
 
  let barsInTrend = 0;
 
- const currentDirection = parseFloat(currentData[currentData.length - 1].Close) > parseFloat(currentData[currentData.length - 2].Close) ? 'up'' : ''down';
+ const currentDirection = parseFloat(currentData[currentData.length - 1].Close) > parseFloat(currentData[currentData.length - 2].Close) ? 'up' : 'down';
 
  for (let i = currentData.length - 1; i > 0; i--) {
 
- const prevDir = parseFloat(currentData[i].Close) > parseFloat(currentData[i - 1].Close) ? 'up'' : ''down';
+ const prevDir = parseFloat(currentData[i].Close) > parseFloat(currentData[i - 1].Close) ? 'up' : 'down';
 
  if (prevDir === currentDirection) {
 
@@ -47833,7 +47833,7 @@ function updateGannQuickView() {
 
  barsEl.textContent = barsInTrend + ' bars';
 
- barsEl.style.color = barsInTrend > 5 ? '#f59e0b'' : ''var(--text)';
+ barsEl.style.color = barsInTrend > 5 ? '#f59e0b' : 'var(--text)';
 
  }
 
@@ -47889,7 +47889,7 @@ function updateGannQuickView() {
 
  nextTurnEl.textContent = nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
- nextTurnEl.style.color = daysToTurn <= 3 ? '#f59e0b'' : ''var(--text)';
+ nextTurnEl.style.color = daysToTurn <= 3 ? '#f59e0b' : 'var(--text)';
 
  }
 
@@ -47913,7 +47913,7 @@ function updateGannQuickView() {
 
  scoreEl.textContent = score + '/100';
 
- scoreEl.style.color = score >= 75 ? '#22c55e' : score >= 50 ? '#d4a017'' : ''#ef4444';
+ scoreEl.style.color = score >= 75 ? '#22c55e' : score >= 50 ? '#d4a017' : '#ef4444';
 
  }
 
@@ -47925,9 +47925,9 @@ function updateGannQuickView() {
 
  if (consensusEl) {
 
- consensusEl.textContent = bias === 'BULLISH' ? 'BUY' : bias === 'BEARISH' ? 'SELL'' : ''HOLD';
+ consensusEl.textContent = bias === 'BULLISH' ? 'BUY' : bias === 'BEARISH' ? 'SELL' : 'HOLD';
 
- consensusEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444'' : ''#d4a017';
+ consensusEl.style.color = bias === 'BULLISH' ? '#22c55e' : bias === 'BEARISH' ? '#ef4444' : '#d4a017';
 
  }
 
@@ -47939,11 +47939,11 @@ function updateGannQuickView() {
 
  if (reversalEl) {
 
- const risk = barsInTrend > 7 ? 'HIGH' : barsInTrend > 4 ? 'MEDIUM'' : ''LOW';
+ const risk = barsInTrend > 7 ? 'HIGH' : barsInTrend > 4 ? 'MEDIUM' : 'LOW';
 
  reversalEl.textContent = risk;
 
- reversalEl.style.color = risk === 'HIGH' ? '#ef4444' : risk === 'MEDIUM' ? '#f59e0b'' : ''#22c55e';
+ reversalEl.style.color = risk === 'HIGH' ? '#ef4444' : risk === 'MEDIUM' ? '#f59e0b' : '#22c55e';
 
  }
 
@@ -47961,9 +47961,9 @@ function updateGannQuickView() {
 
  const aligned = (price > sma5 && sma5 > sma20) || (price < sma5 && sma5 < sma20);
 
- mtfEl.textContent = aligned ? 'ALIGNED'' : ''MIXED';
+ mtfEl.textContent = aligned ? 'ALIGNED' : 'MIXED';
 
- mtfEl.style.color = aligned ? '#22c55e'' : ''#f59e0b';
+ mtfEl.style.color = aligned ? '#22c55e' : '#f59e0b';
 
  }
 
@@ -47975,11 +47975,11 @@ function updateGannQuickView() {
 
  if (entryEl) {
 
- const entryScore = (barsInTrend < 5 && parseInt(volRatio) > 90) ? 'OPEN'' : ''WAIT';
+ const entryScore = (barsInTrend < 5 && parseInt(volRatio) > 90) ? 'OPEN' : 'WAIT';
 
  entryEl.textContent = entryScore;
 
- entryEl.style.color = entryScore === 'OPEN' ? '#22c55e'' : ''#f59e0b';
+ entryEl.style.color = entryScore === 'OPEN' ? '#22c55e' : '#f59e0b';
 
  }
 
@@ -48149,7 +48149,7 @@ function updateTradeStatistics() {
 
  var el=document.getElementById('statsWorstDay');if(el)el.textContent = '$' + worstDay.toFixed(2);
 
- var el=document.getElementById('statsStreak');if(el)el.textContent = streak + ' ' + (currentStreakDir === 'win' ? ''' : ''');
+ var el=document.getElementById('statsStreak');if(el)el.textContent = streak + ' ' + (currentStreakDir === 'win' ? '' : ''');
 
 }
 
@@ -48357,9 +48357,9 @@ function updateUpcomingEventsWidget() {
 
  widget.innerHTML = next7Days.map(e => `
 
- <div style="background: ${e.daysAway === 0 ? 'rgba(239,68,68,0.2)'' : ''rgba(255,255,255,0.5)'};
+ <div style="background: ${e.daysAway === 0 ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.5)'};
 
- border: 1px solid ${e.daysAway === 0 ? '#ef4444'' : ''rgba(245,158,11,0.3)'};
+ border: 1px solid ${e.daysAway === 0 ? '#ef4444' : 'rgba(245,158,11,0.3)'};
 
  border-radius: 6px; padding: 8px 12px; text-align: center;">
 
@@ -48367,7 +48367,7 @@ function updateUpcomingEventsWidget() {
 
  <div style="font-size: 11px; font-weight: 600; ${e.daysAway === 0 ? 'color: #ef4444;'' : '''}">${e.event}</div>
 
- <div style="font-size: 9px; color: ${e.daysAway <= 1 ? '#f59e0b'' : ''var(--muted)'};">
+ <div style="font-size: 9px; color: ${e.daysAway <= 1 ? '#f59e0b' : 'var(--muted)'};">
 
  ${e.daysAway === 0 ? '  TODAY' : e.daysAway === 1 ? 'Tomorrow' : `In ${e.daysAway} days`}
 
@@ -48615,9 +48615,9 @@ function updateHistoricalDataTable() {
 
  const openToHigh = high - open;
 
- const ohSignal = openToLow < openToHigh ? ''' : ''';
+ const ohSignal = openToLow < openToHigh ? '' : ''';
 
- const ohColor = openToLow < openToHigh ? '#22c55e'' : ''#ef4444';
+ const ohColor = openToLow < openToHigh ? '#22c55e' : '#ef4444';
 
 
 
@@ -48641,7 +48641,7 @@ function updateHistoricalDataTable() {
 
  const dateFormatted = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
- const changeColor = change >= 0 ? '#22c55e'' : ''#ef4444';
+ const changeColor = change >= 0 ? '#22c55e' : '#ef4444';
 
  const changeSign = change >= 0 ? '+'' : ''';
 
@@ -48689,11 +48689,11 @@ function updateHistoricalDataTable() {
 
  const trendDesc = hhhlCount > lhllCount + 2 ? ' Uptrend Confirmed' :
 
- lhllCount > hhhlCount + 2 ? ' Downtrend Confirmed'' : ''   Consolidation';
+ lhllCount > hhhlCount + 2 ? ' Downtrend Confirmed' : '   Consolidation';
 
  const volDesc = highVolDays > 3 ? ' High Volume' :
 
- lowVolDays > 5 ? ' Low Volume (  Weak)'' : '' Normal Volume';
+ lowVolDays > 5 ? ' Low Volume (  Weak)' : ' Normal Volume';
 
 
 
@@ -48887,7 +48887,7 @@ async function loadOverviewData() {
 
  changeEl.textContent = (change >= 0 ? '+'' : ''') + '$' + Math.abs(change).toFixed(2);
 
- changeEl.className = 'metric-value ' + (change >= 0 ? 'positive'' : ''negative');
+ changeEl.className = 'metric-value ' + (change >= 0 ? 'positive' : 'negative');
 
  }
 
@@ -49227,7 +49227,7 @@ function calculateAllSignals(data, price, prevClose) {
 
  signals.agentConsensus.timestamp = agentSignals.timestamp;
 
- signals.agentConsensus.detail = `${agentSignals.agreeing}/4 agents: ${agentSignals.signal}${agentSignals.isReal ? ' (LIVE)'' : '' (calc)'}`;
+ signals.agentConsensus.detail = `${agentSignals.agreeing}/4 agents: ${agentSignals.signal}${agentSignals.isReal ? ' (LIVE)' : ' (calc)'}`;
 
  
 
@@ -49675,7 +49675,7 @@ function updateAgentSignalDisplay() {
 
 
 
- console.log('Updating agent signal display:', signals.isReal ? 'REAL from voting_log.json'' : ''Calculated from price data');
+ console.log('Updating agent signal display:', signals.isReal ? 'REAL from voting_log.json' : 'Calculated from price data');
 
 
 
@@ -49863,7 +49863,7 @@ function updateAgentSignalDisplay() {
 
  trendEl.textContent = trendText;
 
- trendEl.style.color = signals.signal === 'CALL' ? '#22c55e' : (signals.signal === 'PUT' ? '#ef4444'' : ''#eab308');
+ trendEl.style.color = signals.signal === 'CALL' ? '#22c55e' : (signals.signal === 'PUT' ? '#ef4444' : '#eab308');
 
  }
 
@@ -50391,7 +50391,7 @@ function updateConfluenceScore(signals) {
 
  scoreEl.textContent = (signals.masterScore > 0 ? '+'' : ''') + signals.masterScore.toFixed(1);
 
- scoreEl.className = 'confluence-score ' + (signals.masterScore > 0 ? 'bullish' : signals.masterScore < 0 ? 'bearish'' : ''neutral');
+ scoreEl.className = 'confluence-score ' + (signals.masterScore > 0 ? 'bullish' : signals.masterScore < 0 ? 'bearish' : 'neutral');
 
  }
 
@@ -50403,7 +50403,7 @@ function updateConfluenceScore(signals) {
 
  directionEl.style.color = signals.direction === 'BULLISH' ? 'var(--success)' : 
 
- signals.direction === 'BEARISH' ? 'var(--danger)'' : ''var(--muted)';
+ signals.direction === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
 
  }
 
@@ -50467,7 +50467,7 @@ function updateSignalItem(id, value, isBullish) {
 
  el.textContent = value;
 
- el.className = 'signal-item-score ' + (isBullish ? 'bullish' : isBullish === false ? 'bearish'' : ''neutral');
+ el.className = 'signal-item-score ' + (isBullish ? 'bullish' : isBullish === false ? 'bearish' : 'neutral');
 
  } else {
 
@@ -50495,7 +50495,7 @@ function updateTradeRecommendations(signals) {
 
  
 
- const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT'' : ''HOLD';
+ const signal = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
 
  
 
@@ -50525,11 +50525,11 @@ function updateTradeRecommendations(signals) {
 
  // DTE explanation based on mode
 
- const dteValue = tradingMode === 'INTRADAY' ? '0-1'' : ''3-7';
+ const dteValue = tradingMode === 'INTRADAY' ? '0-1' : '3-7';
 
  const dteExplain = tradingMode === 'INTRADAY' ? 
 
- 'Expires today/tomorrow. High risk, high reward. Quick profits but rapid time decay.'' : ''Expires in 3-7 days. Gives trade time to develop. Less time decay pressure.';
+ 'Expires today/tomorrow. High risk, high reward. Quick profits but rapid time decay.' : 'Expires in 3-7 days. Gives trade time to develop. Less time decay pressure.';
 
  
 
@@ -50539,13 +50539,13 @@ function updateTradeRecommendations(signals) {
 
  <!-- Main Trade Card -->
 
- <div style="background: ${signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signal === 'PUT' ? 'rgba(239,68,68,0.1)'' : ''rgba(100,116,139,0.1)'}; padding: 15px; border-radius: 8px; border-left: 4px solid ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'};">
+ <div style="background: ${signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; padding: 15px; border-radius: 8px; border-left: 4px solid ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">
 
  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
 
  <span style="font-weight: 700; font-size: 18px;">${currentSymbol}</span>
 
- <span style="background: ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'}; color: white; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 700;">${signal}</span>
+ <span style="background: ${signal === 'CALL' ? 'var(--success)' : signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'}; color: white; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 700;">${signal}</span>
 
  </div>
 
@@ -50633,7 +50633,7 @@ function updateTradeRecommendations(signals) {
 
    Why This Signal? 
 
- ${signals.agentConsensus.isReal ? '<span style="background: var(--success); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">LIVE DATA</span>'' : ''<span style="background: var(--muted); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">CALCULATED</span>'}
+ ${signals.agentConsensus.isReal ? '<span style="background: var(--success); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">LIVE DATA</span>' : '<span style="background: var(--muted); color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px; margin-left: 5px;">CALCULATED</span>'}
 
  </h4>
 
@@ -50649,35 +50649,35 @@ function updateTradeRecommendations(signals) {
 
  ${signals.agentConsensus.agentDetails ? `
 
- <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'rgba(239,68,68,0.1)'' : ''rgba(100,116,139,0.1)'}; border-radius: 4px;">
+ <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
 
  <span>  Base Confluence:</span>
 
- <strong style="color: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'};">${signals.agentConsensus.agentDetails.base.signal} (${signals.agentConsensus.agentDetails.base.confidence.toFixed(0)}%)</strong>
+ <strong style="color: ${signals.agentConsensus.agentDetails.base.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.base.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.base.signal} (${signals.agentConsensus.agentDetails.base.confidence.toFixed(0)}%)</strong>
 
  </div>
 
- <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'rgba(239,68,68,0.1)'' : ''rgba(100,116,139,0.1)'}; border-radius: 4px;">
+ <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
 
  <span> Gann-Elliott:</span>
 
- <strong style="color: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'};">${signals.agentConsensus.agentDetails.gann.signal} (${signals.agentConsensus.agentDetails.gann.confidence.toFixed(0)}%)</strong>
+ <strong style="color: ${signals.agentConsensus.agentDetails.gann.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.gann.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.gann.signal} (${signals.agentConsensus.agentDetails.gann.confidence.toFixed(0)}%)</strong>
 
  </div>
 
- <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'rgba(239,68,68,0.1)'' : ''rgba(100,116,139,0.1)'}; border-radius: 4px;">
+ <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
 
  <span>  DQN (ML):</span>
 
- <strong style="color: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'};">${signals.agentConsensus.agentDetails.dqn.signal} (${signals.agentConsensus.agentDetails.dqn.confidence.toFixed(0)}%)</strong>
+ <strong style="color: ${signals.agentConsensus.agentDetails.dqn.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.dqn.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.dqn.signal} (${signals.agentConsensus.agentDetails.dqn.confidence.toFixed(0)}%)</strong>
 
  </div>
 
- <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'rgba(239,68,68,0.1)'' : ''rgba(100,116,139,0.1)'}; border-radius: 4px;">
+ <div style="display: flex; justify-content: space-between; padding: 4px 8px; background: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'rgba(16,185,129,0.1)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(100,116,139,0.1)'}; border-radius: 4px;">
 
  <span>  3-Wave:</span>
 
- <strong style="color: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'var(--danger)'' : ''var(--muted)'};">${signals.agentConsensus.agentDetails.wave.signal} (${signals.agentConsensus.agentDetails.wave.confidence.toFixed(0)}%)</strong>
+ <strong style="color: ${signals.agentConsensus.agentDetails.wave.signal === 'CALL' ? 'var(--success)' : signals.agentConsensus.agentDetails.wave.signal === 'PUT' ? 'var(--danger)' : 'var(--muted)'};">${signals.agentConsensus.agentDetails.wave.signal} (${signals.agentConsensus.agentDetails.wave.confidence.toFixed(0)}%)</strong>
 
  </div>
 
@@ -50687,7 +50687,7 @@ function updateTradeRecommendations(signals) {
 
  <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); text-align: center;">
 
- <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)'' : ''var(--warning)'};">
+ <strong style="color: ${signals.agentConsensus.count >= 3 ? 'var(--success)' : 'var(--warning)'};">
 
  Consensus: ${signals.agentConsensus.count}/4 agents -> ${signals.agentConsensus.signal}
 
@@ -50707,7 +50707,7 @@ function updateTradeRecommendations(signals) {
 
  <span> Bar Count:</span>
 
- <strong style="color: ${signals.barCount.count > 0 ? 'var(--success)' : signals.barCount.count < 0 ? 'var(--danger)'' : ''var(--muted)'};">${signals.barCount.count > 0 ? '+'' : '''}${signals.barCount.count} bars</strong>
+ <strong style="color: ${signals.barCount.count > 0 ? 'var(--success)' : signals.barCount.count < 0 ? 'var(--danger)' : 'var(--muted)'};">${signals.barCount.count > 0 ? '+'' : '''}${signals.barCount.count} bars</strong>
 
  </div>
 
@@ -50723,7 +50723,7 @@ function updateTradeRecommendations(signals) {
 
  <span> Gann Cycle:</span>
 
- <strong>${signals.gann.score > 0 ? ' Bullish' : signals.gann.score < 0 ? ' Bearish'' : '' Neutral'}</strong>
+ <strong>${signals.gann.score > 0 ? ' Bullish' : signals.gann.score < 0 ? ' Bearish' : ' Neutral'}</strong>
 
  </div>
 
@@ -50739,7 +50739,7 @@ function updateTradeRecommendations(signals) {
 
  <span>  Volume:</span>
 
- <strong>${signals.volume.score > 0 ? ' Above Avg'' : '' Below Avg'}</strong>
+ <strong>${signals.volume.score > 0 ? ' Above Avg' : ' Below Avg'}</strong>
 
  </div>
 
@@ -50747,11 +50747,11 @@ function updateTradeRecommendations(signals) {
 
  
 
- <div style="margin-top: 12px; padding: 10px; background: ${signals.confidence >= 70 ? 'rgba(16,185,129,0.15)' : signals.confidence >= 50 ? 'rgba(245,158,11,0.15)'' : ''rgba(239,68,68,0.15)'}; border-radius: 6px; text-align: center;">
+ <div style="margin-top: 12px; padding: 10px; background: ${signals.confidence >= 70 ? 'rgba(16,185,129,0.15)' : signals.confidence >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)'}; border-radius: 6px; text-align: center;">
 
  <div style="font-size: 10px; color: var(--muted);">Overall Confidence</div>
 
- <div style="font-size: 24px; font-weight: 700; color: ${signals.confidence >= 70 ? 'var(--success)' : signals.confidence >= 50 ? 'var(--warning)'' : ''var(--danger)'};">${signals.confidence.toFixed(0)}%</div>
+ <div style="font-size: 24px; font-weight: 700; color: ${signals.confidence >= 70 ? 'var(--success)' : signals.confidence >= 50 ? 'var(--warning)' : 'var(--danger)'};">${signals.confidence.toFixed(0)}%</div>
 
  </div>
 
@@ -50871,7 +50871,7 @@ function updateGannAnalysis(price) {
 
  <strong>30-day cycle:</strong> Day ${cycle30}/30 - <span style="color:var(--primary);font-weight:600;">${cycle30Phase}</span><br>
 
- <span style="font-size:10px;color:var(--muted);">${cycle30Action} | ${cycle30Phase === 'Bottoming' ? 'Market finding floor, reversal expected' : cycle30Phase === 'Topping' ? 'Market at peak, reversal risk high' : cycle30Phase === 'Rising' ? 'Upward momentum active'' : ''Downward pressure, wait for cycle bottom'}</span>
+ <span style="font-size:10px;color:var(--muted);">${cycle30Action} | ${cycle30Phase === 'Bottoming' ? 'Market finding floor, reversal expected' : cycle30Phase === 'Topping' ? 'Market at peak, reversal risk high' : cycle30Phase === 'Rising' ? 'Upward momentum active' : 'Downward pressure, wait for cycle bottom'}</span>
 
  </div>
 
@@ -50879,7 +50879,7 @@ function updateGannAnalysis(price) {
 
  <strong>90-day cycle:</strong> Day ${cycle90}/90 - <span style="color:var(--primary);font-weight:600;">${cycle90Phase}</span><br>
 
- <span style="font-size:10px;color:var(--muted);">${cycle90Action} | ${cycle90Phase === 'Accumulation' ? 'Institutional buying phase' : cycle90Phase === 'Distribution' ? 'Institutional selling phase'' : ''Strong trending, follow direction'}</span>
+ <span style="font-size:10px;color:var(--muted);">${cycle90Action} | ${cycle90Phase === 'Accumulation' ? 'Institutional buying phase' : cycle90Phase === 'Distribution' ? 'Institutional selling phase' : 'Strong trending, follow direction'}</span>
 
  </div>
 
@@ -51101,7 +51101,7 @@ function updateHighConsensusTrades(signals) {
 
  if (consensus >= 3) {
 
- var signal = symSignals.direction === 'BULLISH' ? 'CALL' : symSignals.direction === 'BEARISH' ? 'PUT'' : ''HOLD';
+ var signal = symSignals.direction === 'BULLISH' ? 'CALL' : symSignals.direction === 'BEARISH' ? 'PUT' : 'HOLD';
 
  var stop = signal === 'CALL' ? price - atr * 1.5 : price + atr * 1.5;
 
@@ -51163,11 +51163,11 @@ function updateHighConsensusTrades(signals) {
 
  var row = highConsensusRows[j];
 
- var badgeClass = row.signal === 'CALL' ? 'call' : row.signal === 'PUT' ? 'put'' : ''hold';
+ var badgeClass = row.signal === 'CALL' ? 'call' : row.signal === 'PUT' ? 'put' : 'hold';
 
- var scoreColor = row.score > 0 ? 'var(--success)' : row.score < 0 ? 'var(--danger)'' : ''var(--muted)';
+ var scoreColor = row.score > 0 ? 'var(--success)' : row.score < 0 ? 'var(--danger)' : 'var(--muted)';
 
- var consensusIcon = row.consensus === 4 ? ' '' : '';
+ var consensusIcon = row.consensus === 4 ? ' ' : ';
 
 
 
@@ -51175,7 +51175,7 @@ function updateHighConsensusTrades(signals) {
 
  '<td><strong>' + row.symbol + '</strong></td>' +
 
- '<td><span style="background: ' + (row.signal === 'CALL' ? 'var(--success)'' : ''var(--danger)') + '; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">' + row.signal + '</span></td>' +
+ '<td><span style="background: ' + (row.signal === 'CALL' ? 'var(--success)' : 'var(--danger)') + '; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">' + row.signal + '</span></td>' +
 
  '<td><strong>' + consensusIcon + ' ' + row.consensus + '/4</strong></td>' +
 
@@ -51221,7 +51221,7 @@ function updateMarketContext(signals) {
 
  biasEl.style.color = signals.direction === 'BULLISH' ? 'var(--success)' : 
 
- signals.direction === 'BEARISH' ? 'var(--danger)'' : ''var(--muted)';
+ signals.direction === 'BEARISH' ? 'var(--danger)' : 'var(--muted)';
 
  }
 
@@ -51231,7 +51231,7 @@ function updateMarketContext(signals) {
 
  leadersEl.textContent = signals.direction === 'BULLISH' ? 'XLK, QQQ' : 
 
- signals.direction === 'BEARISH' ? 'XLU, XLP'' : ''Mixed';
+ signals.direction === 'BEARISH' ? 'XLU, XLP' : 'Mixed';
 
  }
 
@@ -51239,11 +51239,11 @@ function updateMarketContext(signals) {
 
  if (riskEl) {
 
- const risk = signals.confidence > 75 ? 'LOW' : signals.confidence > 60 ? 'MODERATE'' : ''HIGH';
+ const risk = signals.confidence > 75 ? 'LOW' : signals.confidence > 60 ? 'MODERATE' : 'HIGH';
 
  riskEl.textContent = risk;
 
- riskEl.style.color = risk === 'LOW' ? 'var(--success)' : risk === 'MODERATE' ? 'var(--warning)'' : ''var(--danger)';
+ riskEl.style.color = risk === 'LOW' ? 'var(--success)' : risk === 'MODERATE' ? 'var(--warning)' : 'var(--danger)';
 
  }
 
@@ -51267,9 +51267,9 @@ function updateAISummary(signals, price) {
 
  
 
- const signalWord = signals.direction === 'BULLISH' ? 'bullish' : signals.direction === 'BEARISH' ? 'bearish'' : ''neutral';
+ const signalWord = signals.direction === 'BULLISH' ? 'bullish' : signals.direction === 'BEARISH' ? 'bearish' : 'neutral';
 
- const optionType = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT'' : ''neutral';
+ const optionType = signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'neutral';
 
  
 
@@ -51341,13 +51341,13 @@ function updateAISummary(signals, price) {
 
  <strong>Strike:</strong> $${optimalStrike} ${optionType}<br>
 
- <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE'' : ''3-7 DTE'}<br>
+ <strong>DTE:</strong> ${tradingMode === 'INTRADAY' ? '0-1 DTE' : '3-7 DTE'}<br>
 
  <div style="font-size:10px;color:var(--muted);margin-top:5px;">
 
  <em>DTE = Days To Expiration. ${tradingMode === 'INTRADAY' ? 
 
- '0-1 DTE means options expiring today or tomorrow - high risk/reward for quick moves.'' : ''3-7 DTE means 3-7 days until expiration - gives time for the move to develop with less theta decay.'}</em>
+ '0-1 DTE means options expiring today or tomorrow - high risk/reward for quick moves.' : '3-7 DTE means 3-7 days until expiration - gives time for the move to develop with less theta decay.'}</em>
 
  </div>
 
@@ -51431,7 +51431,7 @@ function updateAISummary(signals, price) {
 
  Today's session ended with ${currentSymbol} at $${price.toFixed(2)}. 
 
- ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated'' : ''Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
+ ${signals.direction === 'BULLISH' ? 'Bulls maintained control' : signals.direction === 'BEARISH' ? 'Bears dominated' : 'Mixed price action'} with ${signals.agentConsensus.count}/4 agent agreement.
 
  <br><br>
 
@@ -51445,7 +51445,7 @@ function updateAISummary(signals, price) {
 
  Patterns: ${signals.patterns.found.length > 0 ? signals.patterns.found.join(', ') : 'None detected'}<br>
 
- Bar Count: ${signals.barCount.count > 0 ? '+'' : '''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish'' : ''bearish'} bars<br>
+ Bar Count: ${signals.barCount.count > 0 ? '+'' : '''}${signals.barCount.count} consecutive ${signals.barCount.count > 0 ? 'bullish' : 'bearish'} bars<br>
 
  Volume: ${signals.volume.detail}
 
@@ -51461,7 +51461,7 @@ function updateAISummary(signals, price) {
 
  <strong>Bias:</strong> Continue ${signalWord} outlook<br>
 
- <strong>Watch for:</strong> Gap ${signals.direction === 'BULLISH' ? 'up'' : ''down'} at open<br>
+ <strong>Watch for:</strong> Gap ${signals.direction === 'BULLISH' ? 'up' : 'down'} at open<br>
 
  <strong>Entry Zone:</strong> $${entryLow} - $${entryHigh}<br>
 
@@ -51807,7 +51807,7 @@ function generateReportHTML() {
 
  <h1>  Q5D Trading Report</h1>
 
- <p><strong>${currentAnalysisMode === 'morning' ? ' Morning Plan'' : '' Evening Review'}</strong></p>
+ <p><strong>${currentAnalysisMode === 'morning' ? ' Morning Plan' : ' Evening Review'}</strong></p>
 
  </div>
 
@@ -51859,7 +51859,7 @@ function generateReportHTML() {
 
  <p><strong>Symbol:</strong> ${currentSymbol} | <strong>Current Price:</strong> $${price.toFixed(2)}</p>
 
- <p><strong>Signal:</strong> <span class="signal-${signals.direction === 'BULLISH' ? 'call'' : ''put'}">${signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT'' : ''HOLD'}</span></p>
+ <p><strong>Signal:</strong> <span class="signal-${signals.direction === 'BULLISH' ? 'call' : 'put'}">${signals.direction === 'BULLISH' ? 'CALL' : signals.direction === 'BEARISH' ? 'PUT' : 'HOLD'}</span></p>
 
  <p><strong>Optimal Strike:</strong> $${getProperStrike(price)}</p>
 
@@ -52173,7 +52173,7 @@ function calculateOptions() {
 
  } else {
 
- var el=document.getElementById('calcRiskReward');if(el)el.textContent = isCall ? 'Unlimited'' : ''--';
+ var el=document.getElementById('calcRiskReward');if(el)el.textContent = isCall ? 'Unlimited' : '--';
 
  }
 
@@ -52189,7 +52189,7 @@ function calculateOptions() {
 
  
 
- document.getElementById('calcDelta').style.color = delta > 0 ? 'var(--success)'' : ''var(--danger)';
+ document.getElementById('calcDelta').style.color = delta > 0 ? 'var(--success)' : 'var(--danger)';
 
  document.getElementById('calcTheta').style.color = 'var(--danger)';
 
@@ -52629,15 +52629,15 @@ function updatePatternTableFromCSV() {
 
  patterns.forEach(function(p) {
 
- var typeColor = p.type === 'Bullish' ? '#22c55e' : (p.type === 'Bearish' ? '#ef4444'' : ''#eab308');
+ var typeColor = p.type === 'Bullish' ? '#22c55e' : (p.type === 'Bearish' ? '#ef4444' : '#eab308');
 
  var typeIcon = p.type === 'Bullish' ? '' : (p.type === 'Bearish' ? '' : ''');
 
- var statusBg = p.status === 'ACTIVE' ? 'rgba(34,197,94,0.2)' : (p.status === 'WATCH' ? 'rgba(59,130,246,0.2)'' : ''rgba(234,179,8,0.2)');
+ var statusBg = p.status === 'ACTIVE' ? 'rgba(34,197,94,0.2)' : (p.status === 'WATCH' ? 'rgba(59,130,246,0.2)' : 'rgba(234,179,8,0.2)');
 
- var statusColor = p.status === 'ACTIVE' ? '#22c55e' : (p.status === 'WATCH' ? '#3b82f6'' : ''#eab308');
+ var statusColor = p.status === 'ACTIVE' ? '#22c55e' : (p.status === 'WATCH' ? '#3b82f6' : '#eab308');
 
- var targetColor = p.type === 'Bullish' ? '#22c55e' : (p.type === 'Bearish' ? '#ef4444'' : ''#666');
+ var targetColor = p.type === 'Bullish' ? '#22c55e' : (p.type === 'Bearish' ? '#ef4444' : '#666');
 
 
 
@@ -53023,7 +53023,7 @@ function updateTopTrade(symbol) {
 
  console.log('Top Trade reading from gannPredictions[' + tfVal + ']: ' + direction + ' for ' + symbol);
 
- var dirColor = isBullish ? '#4ade80'' : ''#ef4444';
+ var dirColor = isBullish ? '#4ade80' : '#ef4444';
 
 
 
@@ -53067,7 +53067,7 @@ function updateTopTrade(symbol) {
 
  var confidence = Math.round(60 + Math.abs(0.5 - rangePosition) * 50);
 
- var stars = confidence >= 85 ? '' : confidence >= 75 ? '' : confidence >= 65 ? ''' : ''';
+ var stars = confidence >= 85 ? '' : confidence >= 75 ? '' : confidence >= 65 ? '' : ''';
 
 
 
@@ -53177,7 +53177,7 @@ function updateTopTrade(symbol) {
 
  el = document.getElementById('topTradeStopPrice');
 
- if (el) el.textContent = 'If ' + symbol + (isBullish ? ' drops to $'' : '' rises to $') + stopPriceETF;
+ if (el) el.textContent = 'If ' + symbol + (isBullish ? ' drops to $' : ' rises to $') + stopPriceETF;
 
 
 
@@ -53189,7 +53189,7 @@ function updateTopTrade(symbol) {
 
  el = document.getElementById('topTradePriceTarget');
 
- if (el) el.textContent = 'When ' + symbol + (isBullish ? ' hits $'' : '' falls to $') + priceTarget;
+ if (el) el.textContent = 'When ' + symbol + (isBullish ? ' hits $' : ' falls to $') + priceTarget;
 
 
 
@@ -53301,7 +53301,7 @@ function checkAnalysisConflict() {
 
  var spyPrice = symbolGannData['SPY'] ? symbolGannData['SPY'].price : price;
 
- var marketDirection = spyPrice < spy20MA ? 'PUT'' : ''CALL';
+ var marketDirection = spyPrice < spy20MA ? 'PUT' : 'CALL';
 
 
 
@@ -53331,7 +53331,7 @@ function checkAnalysisConflict() {
 
  gannSignalEl.textContent = 'BUY ' + gannDirection;
 
- gannSignalEl.style.color = gannDirection === 'CALL' ? '#22c55e'' : ''#ef4444';
+ gannSignalEl.style.color = gannDirection === 'CALL' ? '#22c55e' : '#ef4444';
 
  }
 
@@ -53339,7 +53339,7 @@ function checkAnalysisConflict() {
 
  marketSignalEl.textContent = 'FAVOR ' + marketDirection;
 
- marketSignalEl.style.color = marketDirection === 'CALL' ? '#22c55e'' : ''#ef4444';
+ marketSignalEl.style.color = marketDirection === 'CALL' ? '#22c55e' : '#ef4444';
 
  }
 
@@ -53489,7 +53489,7 @@ function updateMarketTrade(symbol, price, high, low, atr, direction, spy20MA, sp
 
  el.textContent = 'BUY ' + symbol + ' ' + direction;
 
- el.style.color = isBullish ? '#22c55e'' : ''#ef4444';
+ el.style.color = isBullish ? '#22c55e' : '#ef4444';
 
  }
 
@@ -53521,7 +53521,7 @@ function updateMarketTrade(symbol, price, high, low, atr, direction, spy20MA, sp
 
  el = document.getElementById('marketTradeBestEntry');
 
- if (el) el.textContent = 'Best: ' + (isBullish ? 'Pullback to $'' : ''Rally to $') + bestEntry;
+ if (el) el.textContent = 'Best: ' + (isBullish ? 'Pullback to $' : 'Rally to $') + bestEntry;
 
 
 
@@ -53565,11 +53565,11 @@ function updateMarketTrade(symbol, price, high, low, atr, direction, spy20MA, sp
 
  var symbolPrice = symbolGannData[symbol] ? symbolGannData[symbol].price : price;
 
- var aboveBelow = symbolPrice < symbol20MA ? 'below'' : ''above';
+ var aboveBelow = symbolPrice < symbol20MA ? 'below' : 'above';
 
  var rationale = symbol + ' ' + aboveBelow + ' 20MA ($' + symbol20MA.toFixed(2) + '). ';
 
- rationale += direction === 'PUT' ? 'Weak conditions favor downside. Trade with trend.'' : ''Strong conditions favor upside. Trade with trend.';
+ rationale += direction === 'PUT' ? 'Weak conditions favor downside. Trade with trend.' : 'Strong conditions favor upside. Trade with trend.';
 
  el = document.getElementById('marketTradeRationale');
 
@@ -53639,7 +53639,7 @@ function updateMarketTradeForTimeframe(timeframe) {
 
  }
 
- var direction = price < symbol20MA ? 'PUT'' : ''CALL';
+ var direction = price < symbol20MA ? 'PUT' : 'CALL';
 
  var isBullish = direction === 'CALL';
 
@@ -53699,7 +53699,7 @@ function updateMarketTradeForTimeframe(timeframe) {
 
  el.textContent = 'BUY ' + symbol + ' ' + direction;
 
- el.style.color = isBullish ? '#22c55e'' : ''#ef4444';
+ el.style.color = isBullish ? '#22c55e' : '#ef4444';
 
  }
 
@@ -53731,7 +53731,7 @@ function updateMarketTradeForTimeframe(timeframe) {
 
  el = document.getElementById('marketTradeBestEntry');
 
- if (el) el.textContent = 'Best: ' + (isBullish ? 'Pullback to $'' : ''Rally to $') + bestEntry;
+ if (el) el.textContent = 'Best: ' + (isBullish ? 'Pullback to $' : 'Rally to $') + bestEntry;
 
 
 
@@ -53757,13 +53757,13 @@ function updateMarketTradeForTimeframe(timeframe) {
 
  // Rationale with timeframe context
 
- var aboveBelow = price < symbol20MA ? 'below'' : ''above';
+ var aboveBelow = price < symbol20MA ? 'below' : 'above';
 
- var tfLabel = timeframe === 'INTRADAY' ? 'Intraday' : (timeframe === 'SWING' ? 'Swing'' : ''Position');
+ var tfLabel = timeframe === 'INTRADAY' ? 'Intraday' : (timeframe === 'SWING' ? 'Swing' : 'Position');
 
  var rationale = tfLabel + ' trade: ' + symbol + ' ' + aboveBelow + ' 20MA ($' + symbol20MA.toFixed(2) + '). ';
 
- rationale += direction === 'PUT' ? 'Weak conditions favor downside.'' : ''Strong conditions favor upside.';
+ rationale += direction === 'PUT' ? 'Weak conditions favor downside.' : 'Strong conditions favor upside.';
 
 
 
@@ -54351,7 +54351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  const form = document.getElementById('gannTradeForm');
 
- form.style.display = form.style.display === 'none' ? 'block'' : ''none';
+ form.style.display = form.style.display === 'none' ? 'block' : 'none';
 
 
 
@@ -54483,7 +54483,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  gannTrades.forEach(trade => {
 
- const pnlColor = trade.pnl >= 0 ? '#16a34a'' : ''#dc2626';
+ const pnlColor = trade.pnl >= 0 ? '#16a34a' : '#dc2626';
 
  const pnlSign = trade.pnl >= 0 ? '+'' : ''';
 
@@ -54581,7 +54581,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  pnlEl.textContent = (totalPnL >= 0 ? '+'' : ''') + '$' + totalPnL.toFixed(0);
 
- pnlEl.style.color = totalPnL >= 0 ? '#16a34a'' : ''#dc2626';
+ pnlEl.style.color = totalPnL >= 0 ? '#16a34a' : '#dc2626';
 
  }
 
@@ -54931,7 +54931,7 @@ function scanForNewPredictions() {
 
  targetDate: targetStr,
 
- expectedDirection: pivot.type === 'HIGH' ? 'LOW'' : ''HIGH',
+ expectedDirection: pivot.type === 'HIGH' ? 'LOW' : 'HIGH',
 
  priceAtTarget: null,
 
@@ -55029,7 +55029,7 @@ function validatePendingPredictions() {
 
  // Use backtested rates for more realistic simulation
 
- pred.result = random < expectedRate ? 'correct'' : ''incorrect';
+ pred.result = random < expectedRate ? 'correct' : 'incorrect';
 
  pred.validatedDate = todayStr;
 
@@ -55081,7 +55081,7 @@ function manualValidate(predId, result) {
 
  updatePredictionTracker();
 
- showTrackerToast(`Prediction marked as ${result}!`, result === 'correct' ? 'success'' : ''warning');
+ showTrackerToast(`Prediction marked as ${result}!`, result === 'correct' ? 'success' : 'warning');
 
  }
 
@@ -55187,7 +55187,7 @@ function updatePerfSummary() {
 
 
 
- el('gannRollingAccuracyValue', recent.length > 0 ? rollingAccuracy + '%'' : ''--');
+ el('gannRollingAccuracyValue', recent.length > 0 ? rollingAccuracy + '%' : '--');
 
  const fillEl = document.getElementById('gannRollingAccuracyFill');
 
@@ -55197,7 +55197,7 @@ function updatePerfSummary() {
 
  fillEl.className = 'gann-rolling-accuracy-fill ' +
 
- (rollingAccuracy >= 65 ? 'high' : rollingAccuracy >= 50 ? 'medium'' : ''low');
+ (rollingAccuracy >= 65 ? 'high' : rollingAccuracy >= 50 ? 'medium' : 'low');
 
  }
 
@@ -55233,7 +55233,7 @@ function updateCycleBreakdown() {
 
  el('gann49Badge', rate49 === '--' ? '--' : rate49 + '%');
 
- elClass('gann49Badge', 'gann-cycle-type-badge ' + (rate49 >= 70 ? 'high' : rate49 >= 50 ? 'medium'' : ''low'));
+ elClass('gann49Badge', 'gann-cycle-type-badge ' + (rate49 >= 70 ? 'high' : rate49 >= 50 ? 'medium' : 'low'));
 
 
 
@@ -55257,7 +55257,7 @@ function updateCycleBreakdown() {
 
  el('gann90Badge', rate90 === '--' ? '--' : rate90 + '%');
 
- elClass('gann90Badge', 'gann-cycle-type-badge ' + (rate90 >= 70 ? 'high' : rate90 >= 50 ? 'medium'' : ''low'));
+ elClass('gann90Badge', 'gann-cycle-type-badge ' + (rate90 >= 70 ? 'high' : rate90 >= 50 ? 'medium' : 'low'));
 
 
 
@@ -55281,7 +55281,7 @@ function updateCycleBreakdown() {
 
  el('gann180Badge', rate180 === '--' ? '--' : rate180 + '%');
 
- elClass('gann180Badge', 'gann-cycle-type-badge ' + (rate180 >= 70 ? 'high' : rate180 >= 50 ? 'medium'' : ''low'));
+ elClass('gann180Badge', 'gann-cycle-type-badge ' + (rate180 >= 70 ? 'high' : rate180 >= 50 ? 'medium' : 'low'));
 
 
 
@@ -55305,7 +55305,7 @@ function updateCycleBreakdown() {
 
  el('gann360Badge', rate360 === '--' ? '--' : rate360 + '%');
 
- elClass('gann360Badge', 'gann-cycle-type-badge ' + (rate360 >= 70 ? 'high' : rate360 >= 50 ? 'medium'' : ''low'));
+ elClass('gann360Badge', 'gann-cycle-type-badge ' + (rate360 >= 70 ? 'high' : rate360 >= 50 ? 'medium' : 'low'));
 
 }
 
@@ -55395,9 +55395,9 @@ function updateActivePredictions() {
 
  <span class="gann-active-pred-detail-label">Expected:</span>
 
- <span class="gann-active-pred-detail-value" style="color: ${pred.expectedDirection === 'LOW' ? '#16a34a'' : ''#dc2626'};">
+ <span class="gann-active-pred-detail-value" style="color: ${pred.expectedDirection === 'LOW' ? '#16a34a' : '#dc2626'};">
 
- ${pred.expectedDirection === 'LOW' ? ' Rally'' : '' Pullback'}
+ ${pred.expectedDirection === 'LOW' ? ' Rally' : ' Pullback'}
 
  </span>
 
@@ -55457,7 +55457,7 @@ function updatePredictionsTable(filter) {
 
  <div class="gann-empty-state-desc">
 
- ${filter === 'all' ? 'Click "Scan Cycles" to detect upcoming cycle dates.'' : ''No predictions match this filter.'}
+ ${filter === 'all' ? 'Click "Scan Cycles" to detect upcoming cycle dates.' : 'No predictions match this filter.'}
 
  </div>
 
@@ -55515,7 +55515,7 @@ function updatePredictionsTable(filter) {
 
  const moveHtml = pred.movePercent !== null
 
- ? `<span class="gann-pred-price-move ${pred.movePercent >= 0 ? 'positive'' : ''negative'}">${pred.movePercent >= 0 ? '+'' : '''}${pred.movePercent}%</span>`
+ ? `<span class="gann-pred-price-move ${pred.movePercent >= 0 ? 'positive' : 'negative'}">${pred.movePercent >= 0 ? '+'' : '''}${pred.movePercent}%</span>`
 
  : '--';
 
@@ -55541,7 +55541,7 @@ function updatePredictionsTable(filter) {
 
  <td>${new Date(pred.targetDate).toLocaleDateString()}</td>
 
- <td><span class="gann-pred-direction ${directionClass}">${pred.expectedDirection === 'LOW' ? ' LOW (Rally)'' : '' HIGH (Pull)'}</span></td>
+ <td><span class="gann-pred-direction ${directionClass}">${pred.expectedDirection === 'LOW' ? ' LOW (Rally)' : ' HIGH (Pull)'}</span></td>
 
  <td>${priceHtml}</td>
 
@@ -55655,11 +55655,11 @@ function updateConfidenceStats() {
 
  const perfEl = document.getElementById('gannPerfVsExpected');
 
- if (perfEl) perfEl.style.color = diff >= 0 ? '#16a34a'' : ''#dc2626';
+ if (perfEl) perfEl.style.color = diff >= 0 ? '#16a34a' : '#dc2626';
 
 
 
- const statusText = diff >= 5 ? 'Outperforming!' : diff >= -5 ? 'On Track'' : ''Below Expected';
+ const statusText = diff >= 5 ? 'Outperforming!' : diff >= -5 ? 'On Track' : 'Below Expected';
 
  el('gannPerfStatus', statusText);
 
@@ -56073,11 +56073,11 @@ function getExpectedMove(pivotType, cycleIndex) {
 
  if (pivotType === 'HIGH') {
 
- return cycleIndex % 2 === 0 ? 'LOW'' : ''HIGH';
+ return cycleIndex % 2 === 0 ? 'LOW' : 'HIGH';
 
  } else {
 
- return cycleIndex % 2 === 0 ? 'HIGH'' : ''LOW';
+ return cycleIndex % 2 === 0 ? 'HIGH' : 'LOW';
 
  }
 
@@ -56229,7 +56229,7 @@ function updateRoadmapAccuracyBadges() {
 
  badge.style.background = stats.accuracy >= 80 ? 'rgba(34,197,94,0.3)' :
 
- stats.accuracy >= 60 ? 'rgba(245,158,11,0.3)'' : ''rgba(255,255,255,0.2)';
+ stats.accuracy >= 60 ? 'rgba(245,158,11,0.3)' : 'rgba(255,255,255,0.2)';
 
  }
 
@@ -56269,7 +56269,7 @@ function renderGannRoadmap() {
 
  <div style="display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; border: 1px solid #e2e8f0;">
 
- <span style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: ${pivotData.type === 'HIGH' ? 'linear-gradient(135deg, #fee2e2, #fecaca)'' : ''linear-gradient(135deg, #dcfce7, #bbf7d0)'}; color: ${pivotData.type === 'HIGH' ? '#dc2626'' : ''#16a34a'};">${pivotData.type}</span>
+ <span style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; background: ${pivotData.type === 'HIGH' ? 'linear-gradient(135deg, #fee2e2, #fecaca)' : 'linear-gradient(135deg, #dcfce7, #bbf7d0)'}; color: ${pivotData.type === 'HIGH' ? '#dc2626' : '#16a34a'};">${pivotData.type}</span>
 
  <div>
 
@@ -56291,9 +56291,9 @@ function renderGannRoadmap() {
 
  <div style="font-size: 24px; font-weight: 800;">$${currentPrice.toFixed(2)}</div>
 
- <div style="font-size: 12px; color: ${currentPrice > pivotData.price ? '#4ade80'' : ''#f87171'};">
+ <div style="font-size: 12px; color: ${currentPrice > pivotData.price ? '#4ade80' : '#f87171'};">
 
- ${currentPrice > pivotData.price ? ''' : '''} ${((currentPrice - pivotData.price) / pivotData.price * 100).toFixed(1)}% from pivot
+ ${currentPrice > pivotData.price ? '' : '''} ${((currentPrice - pivotData.price) / pivotData.price * 100).toFixed(1)}% from pivot
 
  </div>
 
@@ -56309,7 +56309,7 @@ function renderGannRoadmap() {
 
  <span style="font-size: 20px;"></span>
 
- <div><div style="font-size: 18px; font-weight: 800; color: ${stats.accuracy >= 80 ? '#16a34a' : stats.accuracy >= 60 ? '#d97706'' : ''#dc2626'};">${stats.accuracy !== null ? stats.accuracy + '%'' : ''--'}</div><div style="font-size: 11px; color: #64748b;">Accuracy</div></div>
+ <div><div style="font-size: 18px; font-weight: 800; color: ${stats.accuracy >= 80 ? '#16a34a' : stats.accuracy >= 60 ? '#d97706' : '#dc2626'};">${stats.accuracy !== null ? stats.accuracy + '%' : '--'}</div><div style="font-size: 11px; color: #64748b;">Accuracy</div></div>
 
  </div>
 
@@ -56417,7 +56417,7 @@ function renderGannRoadmap() {
 
  } else if (cycle.result === 'pending') {
 
- statusHtml = `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: #fef3c7; color: #d97706;"> ${Math.abs(daysUntil)}d ${daysUntil >= 0 ? 'away'' : ''ago'}</span>`;
+ statusHtml = `<span style="padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; background: #fef3c7; color: #d97706;"> ${Math.abs(daysUntil)}d ${daysUntil >= 0 ? 'away' : 'ago'}</span>`;
 
  } else {
 
@@ -56427,7 +56427,7 @@ function renderGannRoadmap() {
 
 
 
- const expectedHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${expectedMove === 'HIGH' ? '#dcfce7'' : ''#fee2e2'}; color: ${expectedMove === 'HIGH' ? '#16a34a'' : ''#dc2626'};">${expectedMove === 'HIGH' ? ' Rally'' : '' Pullback'}</span>`;
+ const expectedHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${expectedMove === 'HIGH' ? '#dcfce7' : '#fee2e2'}; color: ${expectedMove === 'HIGH' ? '#16a34a' : '#dc2626'};">${expectedMove === 'HIGH' ? ' Rally' : ' Pullback'}</span>`;
 
 
 
@@ -56457,7 +56457,7 @@ function renderGannRoadmap() {
 
  if (cycle.movePercent !== null) {
 
- moveHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; background: ${cycle.movePercent >= 0 ? '#dcfce7'' : ''#fee2e2'}; color: ${cycle.movePercent >= 0 ? '#16a34a'' : ''#dc2626'};">${cycle.movePercent >= 0 ? '+'' : '''}${cycle.movePercent.toFixed(1)}%</span>`;
+ moveHtml = `<span style="padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; background: ${cycle.movePercent >= 0 ? '#dcfce7' : '#fee2e2'}; color: ${cycle.movePercent >= 0 ? '#16a34a' : '#dc2626'};">${cycle.movePercent >= 0 ? '+'' : '''}${cycle.movePercent.toFixed(1)}%</span>`;
 
  } else {
 
@@ -56473,7 +56473,7 @@ function renderGannRoadmap() {
 
  const filled = i < alignment;
 
- const barColor = filled ? (alignment >= 3 ? '#22c55e' : alignment >= 2 ? '#f59e0b'' : ''#ef4444') : '#e5e7eb';
+ const barColor = filled ? (alignment >= 3 ? '#22c55e' : alignment >= 2 ? '#f59e0b' : '#ef4444') : '#e5e7eb';
 
  alignBars += `<div style="width: 8px; height: 22px; border-radius: 3px; background: ${barColor};"></div>`;
 
@@ -56815,7 +56815,7 @@ function calcSq9LevelsFromPivot(pivotPrice, currentPrice) {
 
  distance: dist,
 
- type: price > currentPrice ? 'resist'' : ''support'
+ type: price > currentPrice ? 'resist' : 'support'
 
  });
 
@@ -57079,7 +57079,7 @@ function calculateGann8ths(symbol) {
 
  critical: lvl.critical || false,
 
- type: price > result.currentPrice ? 'RESIST'' : ''SUPPORT'
+ type: price > result.currentPrice ? 'RESIST' : 'SUPPORT'
 
  });
 
@@ -57111,9 +57111,9 @@ function calculateGann8ths(symbol) {
 
  var fiftyPct = result.low + (result.range * 0.5);
 
- result.position = result.currentPrice > fiftyPct ? 'ABOVE 50%'' : ''BELOW 50%';
+ result.position = result.currentPrice > fiftyPct ? 'ABOVE 50%' : 'BELOW 50%';
 
- result.trend = result.currentPrice > fiftyPct ? 'BULLISH BIAS'' : ''BEARISH BIAS';
+ result.trend = result.currentPrice > fiftyPct ? 'BULLISH BIAS' : 'BEARISH BIAS';
 
  result.fiftyPctLevel = fiftyPct;
 
@@ -57233,7 +57233,7 @@ function detectSq9LevelCross(symbol) {
 
  result.crossDate = recentBars[recentBars.length - 1].Date;
 
- result.crossType = crossedUp ? 'BULLISH_BREAK'' : ''BEARISH_BREAK';
+ result.crossType = crossedUp ? 'BULLISH_BREAK' : 'BEARISH_BREAK';
 
  result.priorLevel = prevNearest;
 
@@ -57245,7 +57245,7 @@ function detectSq9LevelCross(symbol) {
 
  var rotationDiff = Math.abs(currentNearest.rotation - prevNearest.rotation);
 
- result.significance = rotationDiff >= 1 ? 'MAJOR'' : ''MINOR';
+ result.significance = rotationDiff >= 1 ? 'MAJOR' : 'MINOR';
 
 
 
@@ -57281,11 +57281,11 @@ function detectSq9LevelCross(symbol) {
 
  result.crossed50Pct = true;
 
- result.crossed50Type = crossed50Up ? 'BULLISH'' : ''BEARISH';
+ result.crossed50Type = crossed50Up ? 'BULLISH' : 'BEARISH';
 
  result.crossed50Message = crossed50Up
 
- ? 'Crossed ABOVE 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bullish control'' : ''Crossed BELOW 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bearish control';
+ ? 'Crossed ABOVE 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bullish control' : 'Crossed BELOW 50% level ($' + gann8ths.fiftyPctLevel.toFixed(2) + ') - Bearish control';
 
  }
 
@@ -57341,9 +57341,9 @@ function updateGann8thsPanel() {
 
  posEl.textContent = gann.position + ' - ' + gann.trend;
 
- posEl.style.background = isAbove ? 'rgba(34,197,94,0.2)'' : ''rgba(239,68,68,0.2)';
+ posEl.style.background = isAbove ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
 
- posEl.style.color = isAbove ? '#16a34a'' : ''#dc2626';
+ posEl.style.color = isAbove ? '#16a34a' : '#dc2626';
 
  }
 
@@ -57409,19 +57409,19 @@ function updateGann8thsPanel() {
 
 
 
- var rowBg = isCritical ? 'rgba(245,158,11,0.15)' : isNearest ? 'rgba(59,130,246,0.1)'' : ''transparent';
+ var rowBg = isCritical ? 'rgba(245,158,11,0.15)' : isNearest ? 'rgba(59,130,246,0.1)' : 'transparent';
 
- var rowBorder = isNearest ? '2px solid #3b82f6'' : ''1px solid var(--border)';
-
-
-
- var typeColor = lvl.type === 'RESIST' ? '#ef4444'' : ''#22c55e';
-
- var typeBg = lvl.type === 'RESIST' ? 'rgba(239,68,68,0.1)'' : ''rgba(34,197,94,0.1)';
+ var rowBorder = isNearest ? '2px solid #3b82f6' : '1px solid var(--border)';
 
 
 
- var distColor = lvl.distance > 0 ? '#ef4444'' : ''#22c55e';
+ var typeColor = lvl.type === 'RESIST' ? '#ef4444' : '#22c55e';
+
+ var typeBg = lvl.type === 'RESIST' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+
+
+
+ var distColor = lvl.distance > 0 ? '#ef4444' : '#22c55e';
 
  var distSign = lvl.distance > 0 ? '+'' : ''';
 
@@ -57439,7 +57439,7 @@ function updateGann8thsPanel() {
 
  '</td>' +
 
- '<td style="padding: 8px; text-align: right; font-weight: ' + (isCritical || isNearest ? '700'' : ''400') + ';">$' + lvl.price.toFixed(2) + '</td>' +
+ '<td style="padding: 8px; text-align: right; font-weight: ' + (isCritical || isNearest ? '700' : '400') + ';">$' + lvl.price.toFixed(2) + '</td>' +
 
  '<td style="padding: 8px; text-align: right; color: ' + distColor + ';">' + distSign + lvl.distance.toFixed(2) + '%</td>' +
 
@@ -57469,11 +57469,11 @@ function updateGann8thsPanel() {
 
 
 
- explainEl.innerHTML = '<strong>' + symbol + '</strong> is currently <strong style="color: ' + (isAbove50 ? '#22c55e'' : ''#ef4444') + ';">' + (isAbove50 ? 'ABOVE'' : ''BELOW') + '</strong> the critical 50% level ($' + gann.fiftyPctLevel.toFixed(2) + ').<br><br>' +
+ explainEl.innerHTML = '<strong>' + symbol + '</strong> is currently <strong style="color: ' + (isAbove50 ? '#22c55e' : '#ef4444') + ';">' + (isAbove50 ? 'ABOVE' : 'BELOW') + '</strong> the critical 50% level ($' + gann.fiftyPctLevel.toFixed(2) + ').<br><br>' +
 
  (isAbove50
 
- ? ' <strong>Bullish Control:</strong> Price is ' + Math.abs(dist50) + '% above the 50% level. The 50% level now acts as <strong>SUPPORT</strong>. Expect buyers to defend this level on pullbacks. A break below would signal shift to bearish control.'' : '' <strong>Bearish Control:</strong> Price is ' + Math.abs(dist50) + '% below the 50% level. The 50% level now acts as <strong>RESISTANCE</strong>. Expect sellers to defend this level on rallies. A break above would signal shift to bullish control.');
+ ? ' <strong>Bullish Control:</strong> Price is ' + Math.abs(dist50) + '% above the 50% level. The 50% level now acts as <strong>SUPPORT</strong>. Expect buyers to defend this level on pullbacks. A break below would signal shift to bearish control.' : ' <strong>Bearish Control:</strong> Price is ' + Math.abs(dist50) + '% below the 50% level. The 50% level now acts as <strong>RESISTANCE</strong>. Expect sellers to defend this level on rallies. A break above would signal shift to bullish control.');
 
  }
 
@@ -57521,9 +57521,9 @@ function updateGannSquareCross() {
 
  var isBullish = cross.crossType === 'BULLISH_BREAK' || cross.crossed50Type === 'BULLISH';
 
- typeEl.textContent = isBullish ? ' BULLISH BREAK'' : '' BEARISH BREAK';
+ typeEl.textContent = isBullish ? ' BULLISH BREAK' : ' BEARISH BREAK';
 
- typeEl.style.background = isBullish ? '#22c55e'' : ''#ef4444';
+ typeEl.style.background = isBullish ? '#22c55e' : '#ef4444';
 
  typeEl.style.color = 'white';
 
@@ -57557,7 +57557,7 @@ function updateGannSquareCross() {
 
  '<div style="font-size: 9px; color: #666;">SIGNIFICANCE</div>' +
 
- '<div style="font-size: 16px; font-weight: 700; color: ' + (cross.significance === 'MAJOR' ? '#ef4444'' : ''#f59e0b') + ';">' + cross.significance + '</div>' +
+ '<div style="font-size: 16px; font-weight: 700; color: ' + (cross.significance === 'MAJOR' ? '#ef4444' : '#f59e0b') + ';">' + cross.significance + '</div>' +
 
  '</div>' +
 
@@ -57603,7 +57603,7 @@ function updateGannSquareCross() {
 
  ' <strong>Trading Implication:</strong> ' + (cross.crossType === 'BULLISH_BREAK'
 
- ? 'Look for CALL opportunities on pullbacks to the broken level (now support).'' : ''Look for PUT opportunities on rallies to the broken level (now resistance).') +
+ ? 'Look for CALL opportunities on pullbacks to the broken level (now support).' : 'Look for PUT opportunities on rallies to the broken level (now resistance).') +
 
  '</div>' +
 
@@ -57921,7 +57921,7 @@ function renderGannAlerts(alerts) {
 
  '<div style="font-weight: 700; font-size: 13px;">' + alert.symbol + ' <span style="color: #22c55e;">BULLISH BREAK</span></div>' +
 
- '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed above 50% level'' : ''Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
+ '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed above 50% level' : 'Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
 
  '<div style="font-size: 10px; color: #999;">' + alert.date + ' ' + alert.significance + '</div>' +
 
@@ -57957,7 +57957,7 @@ function renderGannAlerts(alerts) {
 
  '<div style="font-weight: 700; font-size: 13px;">' + alert.symbol + ' <span style="color: #ef4444;">BEARISH BREAK</span></div>' +
 
- '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed below 50% level'' : ''Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
+ '<div style="font-size: 11px; color: #666;">' + (alert.is50Cross ? 'Crossed below 50% level' : 'Crossed SQ9 $' + alert.crossLevel.toFixed(2)) + '</div>' +
 
  '<div style="font-size: 10px; color: #999;">' + alert.date + ' ' + alert.significance + '</div>' +
 
@@ -58015,7 +58015,7 @@ function renderGannAlerts(alerts) {
 
  var distSign = alert.distance > 0 ? '+'' : ''';
 
- var trendColor = alert.trend === 'BULLISH BIAS' ? '#22c55e'' : ''#ef4444';
+ var trendColor = alert.trend === 'BULLISH BIAS' ? '#22c55e' : '#ef4444';
 
 
 
@@ -58041,7 +58041,7 @@ function renderGannAlerts(alerts) {
 
  '<div style="font-size: 14px; font-weight: 700;">$' + alert.price.toFixed(2) + '</div>' +
 
- '<div style="font-size: 11px; color: ' + (isAbove ? '#ef4444'' : ''#22c55e') + ';">' + distSign + alert.distance.toFixed(2) + '%</div>' +
+ '<div style="font-size: 11px; color: ' + (isAbove ? '#ef4444' : '#22c55e') + ';">' + distSign + alert.distance.toFixed(2) + '%</div>' +
 
  '<button onclick="currentSymbol=\'' + alert.symbol + '\';changeSymbol();showTab(\'daily\');" style="padding: 4px 10px; background: #8b5cf6; color: white; border: none; border-radius: 4px; font-size: 10px; cursor: pointer; margin-top: 4px;">VIEW</button>' +
 
@@ -58089,9 +58089,9 @@ function renderGannAlerts(alerts) {
 
  var distSign = alert.distance > 0 ? '+'' : ''';
 
- var typeColor = alert.type === 'RESIST' ? '#ef4444'' : ''#22c55e';
+ var typeColor = alert.type === 'RESIST' ? '#ef4444' : '#22c55e';
 
- var typeBg = alert.type === 'RESIST' ? 'rgba(239,68,68,0.1)'' : ''rgba(34,197,94,0.1)';
+ var typeBg = alert.type === 'RESIST' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
 
 
 
@@ -58145,7 +58145,7 @@ function renderGannAlerts(alerts) {
 
  if (noAlertsEl) {
 
- noAlertsEl.style.display = hasAlerts ? 'none'' : ''block';
+ noAlertsEl.style.display = hasAlerts ? 'none' : 'block';
 
  }
 
@@ -58229,7 +58229,7 @@ function updateGannCriticalBanner(alerts) {
 
  criticalAlerts.slice(0, 5).forEach(function(a) {
 
- var bgColor = a.type === 'BULLISH' ? 'rgba(34,197,94,0.3)'' : ''rgba(239,68,68,0.3)';
+ var bgColor = a.type === 'BULLISH' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
 
  symbolsHtml += '<button onclick="currentSymbol=\'' + a.symbol + '\';changeSymbol();showTab(\'daily\');" style="background: ' + bgColor + '; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;">' + a.icon + ' ' + a.symbol + '</button>';
 
@@ -58419,7 +58419,7 @@ function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
 
  var neededPattern = dirUpper === 'PUT'
 
- ? 'Shooting Star, Bearish Engulfing, or Evening Star'' : ''Hammer, Bullish Engulfing, or Morning Star';
+ ? 'Shooting Star, Bearish Engulfing, or Evening Star' : 'Hammer, Bullish Engulfing, or Morning Star';
 
  zone.checkDetails.candle = 'No pattern - need ' + neededPattern;
 
@@ -58649,7 +58649,7 @@ function simulateSq9Checks(symbol, direction, levelPrice, currentPrice) {
 
  zone.closedAt = new Date();
 
- zone.closedReason = 'Price broke ' + (direction === 'put' ? 'above'' : ''below') + ' $' + (levelPrice * (direction === 'put' ? 1.015 : 0.985)).toFixed(2);
+ zone.closedReason = 'Price broke ' + (direction === 'put' ? 'above' : 'below') + ' $' + (levelPrice * (direction === 'put' ? 1.015 : 0.985)).toFixed(2);
 
  addSq9Alert(symbol, '', 'ENTRY ZONE CLOSED - ' + zone.closedReason);
 
@@ -58937,7 +58937,7 @@ function updateSq9LevelsTable(levels, currentPrice, nearest, zone) {
 
 
 
- const typeClass = level.type === 'resist' ? 'resist'' : ''support';
+ const typeClass = level.type === 'resist' ? 'resist' : 'support';
 
  const distStr = (level.distance >= 0 ? '+'' : ''') + level.distance.toFixed(1) + '%';
 
@@ -58951,7 +58951,7 @@ function updateSq9LevelsTable(levels, currentPrice, nearest, zone) {
 
  return passed ?
 
- '<span class="sq9-check-box checked"></span>'' : ''<span class="sq9-check-box unchecked"></span>';
+ '<span class="sq9-check-box checked"></span>' : '<span class="sq9-check-box unchecked"></span>';
 
  };
 
@@ -58991,13 +58991,13 @@ function updateSq9LevelsTable(levels, currentPrice, nearest, zone) {
 
  html += `<tr class="${rowClass}">
 
- <td><span class="sq9-level-type ${typeClass}">${level.type === 'resist' ? ' R'' : '' S'}</span></td>
+ <td><span class="sq9-level-type ${typeClass}">${level.type === 'resist' ? ' R' : ' S'}</span></td>
 
  <td>+${level.rotation.toFixed(1)}</td>
 
  <td style="font-weight: 700;">$${level.price.toFixed(2)}</td>
 
- <td style="color: ${level.distance >= 0 ? '#f87171'' : ''#4ade80'};">${distStr}</td>
+ <td style="color: ${level.distance >= 0 ? '#f87171' : '#4ade80'};">${distStr}</td>
 
  <td>${renderCheck(zone.checks.touched, isNearest)}</td>
 
@@ -59057,7 +59057,7 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  if (levelEl) levelEl.textContent = '$' + nearest.price.toFixed(2);
 
- if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE'' : ''SUPPORT';
+ if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE' : 'SUPPORT';
 
 
 
@@ -59077,15 +59077,15 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  var checks = [
 
- { id: 'sq9Check1', key: 'touched', detail: details.touched || (zone.checks.touched ? 'Level reached'' : ''Waiting...') },
+ { id: 'sq9Check1', key: 'touched', detail: details.touched || (zone.checks.touched ? 'Level reached' : 'Waiting...') },
 
  { id: 'sq9Check2', key: 'candle', detail: details.candle || (zone.checks.candle ? checkConfig.candle : 'Need ' + checkConfig.candle) },
 
- { id: 'sq9Check3', key: 'volume', detail: details.volume || (zone.checks.volume ? 'High volume'' : ''Need high vol') },
+ { id: 'sq9Check3', key: 'volume', detail: details.volume || (zone.checks.volume ? 'High volume' : 'Need high vol') },
 
  { id: 'sq9Check4', key: 'rsi', detail: details.rsi || (zone.checks.rsi ? 'RSI ' + checkConfig.rsi : 'Need ' + checkConfig.rsi) },
 
- { id: 'sq9Check5', key: 'closed', detail: details.closed || (zone.checks.closed ? checkConfig.closed + ' level'' : ''Need ' + checkConfig.closed.toLowerCase()) }
+ { id: 'sq9Check5', key: 'closed', detail: details.closed || (zone.checks.closed ? checkConfig.closed + ' level' : 'Need ' + checkConfig.closed.toLowerCase()) }
 
  ];
 
@@ -59101,11 +59101,11 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  var passed = zone.checks[check.key];
 
- el.className = 'sq9-check-item ' + (passed ? 'passed'' : ''failed');
+ el.className = 'sq9-check-item ' + (passed ? 'passed' : 'failed');
 
  var icon = el.querySelector('.sq9-check-icon');
 
- if (icon) icon.textContent = passed ? ''' : ''';
+ if (icon) icon.textContent = passed ? '' : ''';
  var detailEl = document.getElementById(check.id + 'Detail');
 
  if (detailEl) detailEl.textContent = check.detail;
@@ -59122,7 +59122,7 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  progressFill.style.width = progress + '%';
 
- progressFill.className = 'sq9-progress-fill ' + (progress >= 80 ? 'high' : progress >= 40 ? 'medium'' : ''low');
+ progressFill.className = 'sq9-progress-fill ' + (progress >= 80 ? 'high' : progress >= 40 ? 'medium' : 'low');
 
  }
 
@@ -59142,7 +59142,7 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  zone.status === 'watching' ? ' Almost ready...' :
 
- zone.status === 'partial' ? ' Monitoring...'' : '' Waiting for setup';
+ zone.status === 'partial' ? ' Monitoring...' : ' Waiting for setup';
 
  }
 
@@ -59206,9 +59206,9 @@ function updateSq9EntryZone(zone, direction, nearest, currentPrice) {
 
 
 
- if (actionEl) actionEl.textContent = isCall ? 'BUY CALLS'' : ''BUY PUTS';
+ if (actionEl) actionEl.textContent = isCall ? 'BUY CALLS' : 'BUY PUTS';
 
- if (strikeEl) strikeEl.textContent = strike + (isCall ? 'C'' : ''P');
+ if (strikeEl) strikeEl.textContent = strike + (isCall ? 'C' : 'P');
 
  if (targetEl) targetEl.textContent = targetLevel ? '$' + targetLevel.toFixed(2) : '--';
 
@@ -59448,7 +59448,7 @@ function getSq9StatusForOpp(symbol) {
 
  // Fallback: use level type
 
- direction = nearest.type === 'resist' ? 'put'' : ''call';
+ direction = nearest.type === 'resist' ? 'put' : 'call';
 
  dirUpper = direction.toUpperCase();
 
@@ -59588,7 +59588,7 @@ function renderSq9OppCell(symbol) {
 
 
 
- const dirIcon = sq9.direction === 'call' ? ''' : ''';
+ const dirIcon = sq9.direction === 'call' ? '' : ''';
 
  const dirText = sq9.direction.toUpperCase();
 
@@ -59960,7 +59960,7 @@ function runSq9Scan() {
 
  // Fallback: use level type
 
- direction = nearest.type === 'resist' ? 'PUT'' : ''CALL';
+ direction = nearest.type === 'resist' ? 'PUT' : 'CALL';
 
  }
 
@@ -60044,7 +60044,7 @@ function runSq9Scan() {
 
 
 
- var status = checkCount === 5 ? 'ready' : checkCount >= 3 ? 'watching'' : ''partial';
+ var status = checkCount === 5 ? 'ready' : checkCount >= 3 ? 'watching' : 'partial';
 
 
 
@@ -60268,7 +60268,7 @@ function updateSq9ScannerDisplay() {
 
  var r = ready[i];
 
- var dirColor = r.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var dirColor = r.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
  readyHtml += '<tr onclick="showSq9Detail(\'' + r.symbol + '\')" style="cursor: pointer;">' +
 
@@ -60278,7 +60278,7 @@ function updateSq9ScannerDisplay() {
 
  '<td style="padding: 10px;">$' + r.sq9Level.toFixed(2) + '</td>' +
 
- '<td style="padding: 10px; color: ' + (r.distance >= 0 ? '#ef4444'' : ''#22c55e') + ';">' + (r.distance >= 0 ? '+'' : ''') + r.distance.toFixed(1) + '%</td>' +
+ '<td style="padding: 10px; color: ' + (r.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (r.distance >= 0 ? '+'' : ''') + r.distance.toFixed(1) + '%</td>' +
 
  '<td style="padding: 10px;"><span style="background: ' + dirColor + '; color: white; padding: 2px 8px; border-radius: 4px; font-weight: 700;">' + r.direction + '</span></td>' +
 
@@ -60314,7 +60314,7 @@ function updateSq9ScannerDisplay() {
 
  var w = watching[j];
 
- var wDirColor = w.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var wDirColor = w.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
  watchingHtml += '<tr onclick="showSq9Detail(\'' + w.symbol + '\')" style="cursor: pointer;">' +
 
@@ -60324,7 +60324,7 @@ function updateSq9ScannerDisplay() {
 
  '<td style="padding: 10px;">$' + w.sq9Level.toFixed(2) + '</td>' +
 
- '<td style="padding: 10px; color: ' + (w.distance >= 0 ? '#ef4444'' : ''#22c55e') + ';">' + (w.distance >= 0 ? '+'' : ''') + w.distance.toFixed(1) + '%</td>' +
+ '<td style="padding: 10px; color: ' + (w.distance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (w.distance >= 0 ? '+'' : ''') + w.distance.toFixed(1) + '%</td>' +
 
  '<td style="padding: 10px;"><span style="background: ' + wDirColor + '; color: white; padding: 2px 8px; border-radius: 4px; font-weight: 700;">' + w.direction + '</span></td>' +
 
@@ -60356,7 +60356,7 @@ function updateSq9ScannerDisplay() {
 
  var p = partial[k];
 
- var pDirColor = p.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var pDirColor = p.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
  partialHtml += '<div onclick="showSq9Detail(\'' + p.symbol + '\')" style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">' +
 
@@ -60432,11 +60432,11 @@ function showSq9Detail(symbol) {
 
  var checkIcons = {
 
- touched: result.checks.touched ? ''' : ''';
- candle: result.checks.candle ? ''' : ''';
- volume: result.checks.volume ? ''' : ''';
- rsi: result.checks.rsi ? ''' : ''';
- closed: result.checks.closed ? ''' : ''';
+ touched: result.checks.touched ? '' : ''';
+ candle: result.checks.candle ? '' : ''';
+ volume: result.checks.volume ? '' : ''';
+ rsi: result.checks.rsi ? '' : ''';
+ closed: result.checks.closed ? '' : ''';
  };
 
 
@@ -60469,7 +60469,7 @@ function showSq9Detail(symbol) {
 
  '</div>' +
 
- '<div style="margin-top: 5px; text-align: center;">Distance: <strong style="color: ' + (Math.abs(result.distance) < 1 ? '#22c55e'' : ''#f59e0b') + ';">' + (result.distance >= 0 ? '+'' : ''') + result.distance.toFixed(2) + '%</strong></div>' +
+ '<div style="margin-top: 5px; text-align: center;">Distance: <strong style="color: ' + (Math.abs(result.distance) < 1 ? '#22c55e' : '#f59e0b') + ';">' + (result.distance >= 0 ? '+'' : ''') + result.distance.toFixed(2) + '%</strong></div>' +
 
  '</div>' +
 
@@ -60483,7 +60483,7 @@ function showSq9Detail(symbol) {
 
  // Touched Level
 
- '<div style="padding: 10px; background: ' + (result.checks.touched ? 'rgba(34,197,94,0.1)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
+ '<div style="padding: 10px; background: ' + (result.checks.touched ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
 
  '<div>' + checkIcons.touched + ' <strong>Touched Level</strong></div>' +
 
@@ -60495,7 +60495,7 @@ function showSq9Detail(symbol) {
 
  // Candle Pattern
 
- '<div style="padding: 10px; background: ' + (result.checks.candle ? 'rgba(34,197,94,0.1)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
+ '<div style="padding: 10px; background: ' + (result.checks.candle ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
 
  '<div>' + checkIcons.candle + ' <strong>Candle Pattern</strong></div>' +
 
@@ -60507,7 +60507,7 @@ function showSq9Detail(symbol) {
 
  // Volume
 
- '<div style="padding: 10px; background: ' + (result.checks.volume ? 'rgba(34,197,94,0.1)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
+ '<div style="padding: 10px; background: ' + (result.checks.volume ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
 
  '<div>' + checkIcons.volume + ' <strong>High Volume</strong></div>' +
 
@@ -60519,7 +60519,7 @@ function showSq9Detail(symbol) {
 
  // RSI
 
- '<div style="padding: 10px; background: ' + (result.checks.rsi ? 'rgba(34,197,94,0.1)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
+ '<div style="padding: 10px; background: ' + (result.checks.rsi ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px;">' +
 
  '<div>' + checkIcons.rsi + ' <strong>RSI Extreme</strong></div>' +
 
@@ -60531,9 +60531,9 @@ function showSq9Detail(symbol) {
 
  // Closed (spans 2 columns)
 
- '<div style="padding: 10px; background: ' + (result.checks.closed ? 'rgba(34,197,94,0.1)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 6px; grid-column: span 2;">' +
+ '<div style="padding: 10px; background: ' + (result.checks.closed ? 'rgba(34,197,94,0.1)' : 'rgba(0,0,0,0.05)') + '; border-radius: 6px; grid-column: span 2;">' +
 
- '<div>' + checkIcons.closed + ' <strong>Closed ' + (result.direction === 'PUT' ? 'Below'' : ''Above') + ' Level</strong></div>' +
+ '<div>' + checkIcons.closed + ' <strong>Closed ' + (result.direction === 'PUT' ? 'Below' : 'Above') + ' Level</strong></div>' +
 
  '<div style="font-size: 10px; color: var(--muted); margin-top: 4px;">' + checkDetails.closed + '</div>' +
 
@@ -60551,13 +60551,13 @@ function showSq9Detail(symbol) {
 
  '<span>Progress: <strong>' + result.checkCount + '/5</strong></span>' +
 
- '<span>' + (result.status === 'ready' ? ' READY TO TRADE' : result.status === 'watching' ? ' WATCHING'' : '' PARTIAL') + '</span>' +
+ '<span>' + (result.status === 'ready' ? ' READY TO TRADE' : result.status === 'watching' ? ' WATCHING' : ' PARTIAL') + '</span>' +
 
  '</div>' +
 
  '<div style="margin-top: 8px; height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px;">' +
 
- '<div style="height: 100%; width: ' + (result.checkCount * 20) + '%; background: ' + (result.checkCount === 5 ? '#22c55e' : result.checkCount >= 3 ? '#f59e0b'' : ''#ef4444') + '; border-radius: 3px; transition: width 0.3s;"></div>' +
+ '<div style="height: 100%; width: ' + (result.checkCount * 20) + '%; background: ' + (result.checkCount === 5 ? '#22c55e' : result.checkCount >= 3 ? '#f59e0b' : '#ef4444') + '; border-radius: 3px; transition: width 0.3s;"></div>' +
 
  '</div>' +
 
@@ -60569,9 +60569,9 @@ function showSq9Detail(symbol) {
 
  // Trade Setup Panel
 
- '<div style="background: ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.1)'' : ''rgba(239,68,68,0.1)') + '; padding: 15px; border-radius: 8px;">' +
+ '<div style="background: ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') + '; padding: 15px; border-radius: 8px;">' +
 
- '<div style="font-weight: 700; margin-bottom: 10px; font-size: 16px;">' + (result.direction === 'CALL' ? ' CALL SETUP'' : '' PUT SETUP') + '</div>' +
+ '<div style="font-weight: 700; margin-bottom: 10px; font-size: 16px;">' + (result.direction === 'CALL' ? ' CALL SETUP' : ' PUT SETUP') + '</div>' +
 
 
 
@@ -60581,11 +60581,11 @@ function showSq9Detail(symbol) {
 
  '<div style="display: flex; justify-content: space-between;"><strong>ENTRY:</strong> <span>$' + result.price.toFixed(2) + '</span></div>' +
 
- '<div style="display: flex; justify-content: space-between;"><strong>TARGET:</strong> <span style="color: #22c55e;">$' + result.target.toFixed(2) + ' (' + (result.direction === 'CALL' ? '+'' : ''-') + Math.abs(((result.target - result.price) / result.price * 100)).toFixed(1) + '%)</span></div>' +
+ '<div style="display: flex; justify-content: space-between;"><strong>TARGET:</strong> <span style="color: #22c55e;">$' + result.target.toFixed(2) + ' (' + (result.direction === 'CALL' ? '+' : '-') + Math.abs(((result.target - result.price) / result.price * 100)).toFixed(1) + '%)</span></div>' +
 
- '<div style="display: flex; justify-content: space-between;"><strong>STOP:</strong> <span style="color: #ef4444;">$' + result.stop.toFixed(2) + ' (' + (result.direction === 'CALL' ? '-'' : ''+') + Math.abs(((result.stop - result.price) / result.price * 100)).toFixed(1) + '%)</span></div>' +
+ '<div style="display: flex; justify-content: space-between;"><strong>STOP:</strong> <span style="color: #ef4444;">$' + result.stop.toFixed(2) + ' (' + (result.direction === 'CALL' ? '-' : '+') + Math.abs(((result.stop - result.price) / result.price * 100)).toFixed(1) + '%)</span></div>' +
 
- '<div style="display: flex; justify-content: space-between;"><strong>RISK/REWARD:</strong> <span style="color: ' + (result.rr >= 1.5 ? '#22c55e' : result.rr >= 1 ? '#f59e0b'' : ''#ef4444') + ';">1:' + result.rr + '</span></div>' +
+ '<div style="display: flex; justify-content: space-between;"><strong>RISK/REWARD:</strong> <span style="color: ' + (result.rr >= 1.5 ? '#22c55e' : result.rr >= 1 ? '#f59e0b' : '#ef4444') + ';">1:' + result.rr + '</span></div>' +
 
  '</div>' +
 
@@ -60619,7 +60619,7 @@ function showSq9Detail(symbol) {
 
  var expiryDTE = Math.ceil((optimalExpiry - now) / (1000 * 60 * 60 * 24));
 
- var dirColor = result.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var dirColor = result.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
 
 
@@ -60681,9 +60681,9 @@ function showSq9Detail(symbol) {
 
  // Confidence indicator
 
- var confColor = durationAnalysis.confidence === 'HIGH' ? '#22c55e' : durationAnalysis.confidence === 'MEDIUM' ? '#f59e0b'' : ''#6b7280';
+ var confColor = durationAnalysis.confidence === 'HIGH' ? '#22c55e' : durationAnalysis.confidence === 'MEDIUM' ? '#f59e0b' : '#6b7280';
 
- var confBg = durationAnalysis.confidence === 'HIGH' ? 'rgba(34,197,94,0.1)' : durationAnalysis.confidence === 'MEDIUM' ? 'rgba(245,158,11,0.1)'' : ''rgba(107,114,128,0.1)';
+ var confBg = durationAnalysis.confidence === 'HIGH' ? 'rgba(34,197,94,0.1)' : durationAnalysis.confidence === 'MEDIUM' ? 'rgba(245,158,11,0.1)' : 'rgba(107,114,128,0.1)';
 
 
 
@@ -60725,9 +60725,9 @@ function showSq9Detail(symbol) {
 
  durationAnalysis.transitions.slice(-5).reverse().forEach(function(t) {
 
- var transDir = t.direction === 'UP' ? ''' : ''';
+ var transDir = t.direction === 'UP' ? '' : ''';
 
- var transDirColor = t.direction === 'UP' ? '#22c55e'' : ''#ef4444';
+ var transDirColor = t.direction === 'UP' ? '#22c55e' : '#ef4444';
 
  html += '<tr style="border-bottom: 1px solid rgba(139,92,246,0.1);">' +
 
@@ -60757,7 +60757,7 @@ function showSq9Detail(symbol) {
 
  // OPTIMAL OPTION EXPIRATION RECOMMENDATION
 
- html += '<div style="background: linear-gradient(135deg, ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.15), rgba(22,163,74,0.1)'' : ''rgba(239,68,68,0.15), rgba(220,38,38,0.1)') + '); border: 2px solid ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.4)'' : ''rgba(239,68,68,0.4)') + '; border-radius: 10px; padding: 15px; margin-top: 15px;">' +
+ html += '<div style="background: linear-gradient(135deg, ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.15), rgba(22,163,74,0.1)' : 'rgba(239,68,68,0.15), rgba(220,38,38,0.1)') + '); border: 2px solid ' + (result.direction === 'CALL' ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)') + '; border-radius: 10px; padding: 15px; margin-top: 15px;">' +
 
  '<div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;"> Optimal Option Selection</div>';
 
@@ -60871,7 +60871,7 @@ function showSq9Detail(symbol) {
 
  // Final recommendation box
 
- var optionSymbol = result.symbol + ' $' + atmStrike + (result.direction === 'CALL' ? 'C'' : ''P');
+ var optionSymbol = result.symbol + ' $' + atmStrike + (result.direction === 'CALL' ? 'C' : 'P');
 
 
 
@@ -60995,7 +60995,7 @@ function analyzeSq9CheckDetails(symbol, result) {
 
  var neededPattern = result.direction === 'PUT'
 
- ? 'Shooting Star, Bearish Engulfing, or Evening Star'' : ''Hammer, Bullish Engulfing, or Morning Star';
+ ? 'Shooting Star, Bearish Engulfing, or Evening Star' : 'Hammer, Bullish Engulfing, or Morning Star';
 
  details.candle = 'No reversal pattern - need ' + neededPattern;
 
@@ -61033,7 +61033,7 @@ function analyzeSq9CheckDetails(symbol, result) {
 
  } else {
 
- var neededRsi = result.direction === 'CALL' ? '35 (Oversold)'' : ''65 (Overbought)';
+ var neededRsi = result.direction === 'CALL' ? '35 (Oversold)' : '65 (Overbought)';
 
  details.rsi = 'RSI ' + rsiValue.toFixed(0) + ' (' + rsiInfo.zone + ') - need ' + neededRsi;
 
@@ -61155,9 +61155,9 @@ function analyzeSq9CheckDetails(symbol, result) {
 
  for (var i = 0; i < timeframes.length; i++) {
 
- tfHtml += '<div style="padding: 4px; background: ' + (tfAligned[i] ? 'rgba(34,197,94,0.2)'' : ''rgba(0,0,0,0.05)') + '; border-radius: 4px; text-align: center;">' +
+ tfHtml += '<div style="padding: 4px; background: ' + (tfAligned[i] ? 'rgba(34,197,94,0.2)' : 'rgba(0,0,0,0.05)') + '; border-radius: 4px; text-align: center;">' +
 
- (tfAligned[i] ? ''' : '' + ' ' + timeframes[i] + '</div>';
+ (tfAligned[i] ? '' : '' + ' ' + timeframes[i] + '</div>';
 
  }
 
@@ -61589,11 +61589,11 @@ function analyzeRSI(data, direction) {
 
  if (direction === 'CALL' && rsi <= 35) {
 
- strength = rsi <= 30 ? 'STRONG'' : ''MODERATE';
+ strength = rsi <= 30 ? 'STRONG' : 'MODERATE';
 
  } else if (direction === 'PUT' && rsi >= 65) {
 
- strength = rsi >= 70 ? 'STRONG'' : ''MODERATE';
+ strength = rsi >= 70 ? 'STRONG' : 'MODERATE';
 
  }
 
@@ -61917,7 +61917,7 @@ function analyzeSq9LevelDurations(symbol) {
 
  if (Math.abs(currTouch.rotation - prevTouch.rotation) >= 1 && daysDiff > 0 && daysDiff < 60) {
 
- var direction = currTouch.rotation > prevTouch.rotation ? 'UP'' : ''DOWN';
+ var direction = currTouch.rotation > prevTouch.rotation ? 'UP' : 'DOWN';
 
  var levelsMoved = Math.abs(currTouch.rotation - prevTouch.rotation);
 
@@ -62019,7 +62019,7 @@ function analyzeSq9LevelDurations(symbol) {
 
  result.sampleSize = durations.length;
 
- result.confidence = durations.length >= 20 ? 'HIGH' : durations.length >= 10 ? 'MEDIUM'' : ''LOW';
+ result.confidence = durations.length >= 20 ? 'HIGH' : durations.length >= 10 ? 'MEDIUM' : 'LOW';
 
  }
 
@@ -62247,7 +62247,7 @@ function updateDurationTable() {
 
  var isEtf = r.symbol.startsWith('X') || ['SPY', 'QQQ', 'IWM', 'DIA'].includes(r.symbol);
 
- var symbolBg = isEtf ? 'rgba(59,130,246,0.1)'' : ''rgba(139,92,246,0.1)';
+ var symbolBg = isEtf ? 'rgba(59,130,246,0.1)' : 'rgba(139,92,246,0.1)';
 
 
 
@@ -62503,7 +62503,7 @@ function updateSq9Widget() {
 
 
 
- var dirColor = r.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var dirColor = r.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
  var statusBadge = '';
 
@@ -62533,7 +62533,7 @@ function updateSq9Widget() {
 
  '<td style="padding: 8px;">$' + r.sq9Level.toFixed(2) + '</td>' +
 
- '<td style="padding: 8px; color: ' + (currentDistance >= 0 ? '#ef4444'' : ''#22c55e') + ';">' + (currentDistance >= 0 ? '+'' : ''') + currentDistance.toFixed(1) + '%</td>' +
+ '<td style="padding: 8px; color: ' + (currentDistance >= 0 ? '#ef4444' : '#22c55e') + ';">' + (currentDistance >= 0 ? '+'' : ''') + currentDistance.toFixed(1) + '%</td>' +
 
  '<td style="padding: 8px;"><span style="color: ' + dirColor + '; font-weight: 700;">' + r.direction + '</span></td>' +
 
@@ -62981,9 +62981,9 @@ function toggleTradeType(type) {
 
  // Show/hide fields
 
- document.getElementById('optionsFields').style.display = type === 'option' ? 'block'' : ''none';
+ document.getElementById('optionsFields').style.display = type === 'option' ? 'block' : 'none';
 
- document.getElementById('stockFields').style.display = type === 'stock' ? 'block'' : ''none';
+ document.getElementById('stockFields').style.display = type === 'stock' ? 'block' : 'none';
 
 }
 
@@ -63105,7 +63105,7 @@ function saveSq9Trade(event) {
 
  trade.size = trade.optionPremium * trade.optionContracts * 100; // Total cost
 
- trade.strike = trade.optionStrike + (trade.direction === 'CALL' ? 'C'' : ''P');
+ trade.strike = trade.optionStrike + (trade.direction === 'CALL' ? 'C' : 'P');
 
  } else {
 
@@ -63301,9 +63301,9 @@ function updateSq9PerformanceDisplay() {
 
  if (el('sq9TotalPnL')) {
 
- el('sq9TotalPnL').textContent = (totalPnL >= 0 ? '+$'' : ''-$') + Math.abs(totalPnL).toFixed(0);
+ el('sq9TotalPnL').textContent = (totalPnL >= 0 ? '+$' : '-$') + Math.abs(totalPnL).toFixed(0);
 
- el('sq9TotalPnL').style.color = totalPnL >= 0 ? '#22c55e'' : ''#ef4444';
+ el('sq9TotalPnL').style.color = totalPnL >= 0 ? '#22c55e' : '#ef4444';
 
  }
 
@@ -63421,21 +63421,21 @@ function updateSq9TradeLogTable() {
 
  var t = filteredTrades[i];
 
- var dirColor = t.direction === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var dirColor = t.direction === 'CALL' ? '#22c55e' : '#ef4444';
 
- var pnlColor = t.pnl > 0 ? '#22c55e' : t.pnl < 0 ? '#ef4444'' : ''#666';
+ var pnlColor = t.pnl > 0 ? '#22c55e' : t.pnl < 0 ? '#ef4444' : '#666';
 
 
 
  // Type icon and symbol display
 
- var typeIcon = t.type === 'option' ? ''' : '' ';
+ var typeIcon = t.type === 'option' ? '' : '' ';
 
  var symbolDisplay = t.symbol;
 
  if (t.type === 'option' && t.optionStrike) {
 
- symbolDisplay += ' ' + t.optionStrike + (t.direction === 'CALL' ? 'C'' : ''P');
+ symbolDisplay += ' ' + t.optionStrike + (t.direction === 'CALL' ? 'C' : 'P');
 
  }
 
@@ -63457,7 +63457,7 @@ function updateSq9TradeLogTable() {
 
  : t.pnl > 0
 
- ? '<span style="background: #22c55e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">WIN </span>'' : ''<span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">LOSS </span>';
+ ? '<span style="background: #22c55e; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">WIN </span>' : '<span style="background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px;">LOSS </span>';
 
 
 
@@ -63481,7 +63481,7 @@ function updateSq9TradeLogTable() {
 
  '<td style="padding: 10px;">' + (t.exitPrice ? '$' + t.exitPrice.toFixed(2) : '--') + '</td>' +
 
- '<td style="padding: 10px; font-weight: 700; color: ' + pnlColor + ';">' + (t.pnl !== null ? (t.pnl >= 0 ? '+$'' : ''-$') + Math.abs(t.pnl).toFixed(0) : '--') + '</td>' +
+ '<td style="padding: 10px; font-weight: 700; color: ' + pnlColor + ';">' + (t.pnl !== null ? (t.pnl >= 0 ? '+$' : '-$') + Math.abs(t.pnl).toFixed(0) : '--') + '</td>' +
 
  '<td style="padding: 10px;">' + statusBadge + '</td>' +
 
@@ -63609,9 +63609,9 @@ function updateSq9EquityChart() {
 
  data: data,
 
- borderColor: cumulative >= 0 ? '#22c55e'' : ''#ef4444',
+ borderColor: cumulative >= 0 ? '#22c55e' : '#ef4444',
 
- backgroundColor: cumulative >= 0 ? 'rgba(34, 197, 94, 0.1)'' : ''rgba(239, 68, 68, 0.1)',
+ backgroundColor: cumulative >= 0 ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
 
  fill: true,
 
@@ -63619,7 +63619,7 @@ function updateSq9EquityChart() {
 
  pointRadius: 4,
 
- pointBackgroundColor: cumulative >= 0 ? '#22c55e'' : ''#ef4444'
+ pointBackgroundColor: cumulative >= 0 ? '#22c55e' : '#ef4444'
 
  }]
 
@@ -63807,11 +63807,11 @@ function runSq9Backtest() {
 
  '</div>' +
 
- '<div style="background: ' + (totalPnL >= 0 ? 'rgba(34,197,94,0.2)'' : ''rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 15px; text-align: center;">' +
+ '<div style="background: ' + (totalPnL >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 15px; text-align: center;">' +
 
- '<div style="font-size: 10px; color: ' + (totalPnL >= 0 ? '#166534'' : ''#991b1b') + ';">TOTAL P&L</div>' +
+ '<div style="font-size: 10px; color: ' + (totalPnL >= 0 ? '#166534' : '#991b1b') + ';">TOTAL P&L</div>' +
 
- '<div style="font-size: 24px; font-weight: 800; color: ' + (totalPnL >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (totalPnL >= 0 ? '+$'' : ''-$') + Math.abs(totalPnL).toFixed(0) + '</div>' +
+ '<div style="font-size: 24px; font-weight: 800; color: ' + (totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (totalPnL >= 0 ? '+$' : '-$') + Math.abs(totalPnL).toFixed(0) + '</div>' +
 
  '</div>' +
 
@@ -64275,7 +64275,7 @@ function checkEntrySignal(symbol, bar, recentBars, pivot, settings) {
 
  // Fallback: use level type
 
- direction = nearest.type === 'RESIST' ? 'PUT'' : ''CALL';
+ direction = nearest.type === 'RESIST' ? 'PUT' : 'CALL';
 
  }
 
@@ -64733,11 +64733,11 @@ function displayHistoricalBacktestResults(results) {
 
  '</div>' +
 
- '<div style="background: ' + (s.totalPnL >= 0 ? 'rgba(34,197,94,0.2)'' : ''rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 12px; text-align: center;">' +
+ '<div style="background: ' + (s.totalPnL >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; border-radius: 8px; padding: 12px; text-align: center;">' +
 
- '<div style="font-size: 10px; color: ' + (s.totalPnL >= 0 ? '#166534'' : ''#991b1b') + ';">TOTAL P&L</div>' +
+ '<div style="font-size: 10px; color: ' + (s.totalPnL >= 0 ? '#166534' : '#991b1b') + ';">TOTAL P&L</div>' +
 
- '<div style="font-size: 22px; font-weight: 800; color: ' + (s.totalPnL >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (s.totalPnL >= 0 ? '+$'' : ''-$') + Math.abs(s.totalPnL).toFixed(0) + '</div>' +
+ '<div style="font-size: 22px; font-weight: 800; color: ' + (s.totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (s.totalPnL >= 0 ? '+$' : '-$') + Math.abs(s.totalPnL).toFixed(0) + '</div>' +
 
  '</div>' +
 
@@ -64769,7 +64769,7 @@ function displayHistoricalBacktestResults(results) {
 
  var cs = s.byChecks[c];
 
- var barColor = c === 5 ? '#22c55e' : c === 4 ? '#f59e0b'' : ''#6b7280';
+ var barColor = c === 5 ? '#22c55e' : c === 4 ? '#f59e0b' : '#6b7280';
 
  html += '<div style="text-align: center;">' +
 
@@ -64869,7 +64869,7 @@ function displayHistoricalBacktestResults(results) {
 
  var ss = results.symbolStats[sym];
 
- var pnlColor = ss.totalPnL >= 0 ? '#22c55e'' : ''#ef4444';
+ var pnlColor = ss.totalPnL >= 0 ? '#22c55e' : '#ef4444';
 
  html += '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">' +
 
@@ -64877,7 +64877,7 @@ function displayHistoricalBacktestResults(results) {
 
  '<td style="padding: 8px; text-align: right;">' + ss.totalTrades + '</td>' +
 
- '<td style="padding: 8px; text-align: right; color: ' + (parseFloat(ss.winRate) >= 50 ? '#22c55e'' : ''#ef4444') + ';">' + ss.winRate + '%</td>' +
+ '<td style="padding: 8px; text-align: right; color: ' + (parseFloat(ss.winRate) >= 50 ? '#22c55e' : '#ef4444') + ';">' + ss.winRate + '%</td>' +
 
  '<td style="padding: 8px; text-align: right;">' + ss.wins + ' / ' + ss.losses + '</td>' +
 
@@ -64931,7 +64931,7 @@ function displayHistoricalBacktestResults(results) {
 
 
 
- html += insights.length > 0 ? insights.join('. ') + '.'' : ''Run more trades to generate insights.';
+ html += insights.length > 0 ? insights.join('. ') + '.' : 'Run more trades to generate insights.';
 
  html += '</div>';
 
@@ -65097,7 +65097,7 @@ function drawHistoricalEquityChart(equityCurve) {
 
  ctx.arc(xDot, yDot, 4, 0, 2 * Math.PI);
 
- ctx.fillStyle = equityCurve[k].trade.pnl >= 0 ? '#22c55e'' : ''#ef4444';
+ ctx.fillStyle = equityCurve[k].trade.pnl >= 0 ? '#22c55e' : '#ef4444';
 
  ctx.fill();
 
@@ -65147,7 +65147,7 @@ function toggleBacktestSettings() {
 
  if (panel) {
 
- panel.style.display = panel.style.display === 'none' ? 'block'' : ''none';
+ panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 
  }
 
@@ -65791,7 +65791,7 @@ function generateAiAnalysis() {
 
  '<div style="font-size: 10px; color: var(--muted);">Win Rate</div>' +
 
- '<div style="font-size: 18px; font-weight: 700; color: ' + (winRate >= 50 ? '#22c55e'' : ''#ef4444') + ';">' + winRate.toFixed(0) + '%</div>' +
+ '<div style="font-size: 18px; font-weight: 700; color: ' + (winRate >= 50 ? '#22c55e' : '#ef4444') + ';">' + winRate.toFixed(0) + '%</div>' +
 
  '</div>' +
 
@@ -65799,7 +65799,7 @@ function generateAiAnalysis() {
 
  '<div style="font-size: 10px; color: var(--muted);">Total P&L</div>' +
 
- '<div style="font-size: 18px; font-weight: 700; color: ' + (totalPnL >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (totalPnL >= 0 ? '+'' : ''') + '$' + totalPnL.toFixed(0) + '</div>' +
+ '<div style="font-size: 18px; font-weight: 700; color: ' + (totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">' + (totalPnL >= 0 ? '+'' : ''') + '$' + totalPnL.toFixed(0) + '</div>' +
 
  '</div>' +
 
@@ -66007,7 +66007,7 @@ function calcMtfSq9Levels(pivotPrice, currentPrice) {
 
  distance: dist,
 
- type: price > currentPrice ? 'resist'' : ''support'
+ type: price > currentPrice ? 'resist' : 'support'
 
  });
 
@@ -66123,7 +66123,7 @@ function updateSq9Mtf() {
 
  if (nearest && Math.abs(nearest.distance) <= 3) {
 
- direction = nearest.type === 'resist' ? 'put'' : ''call';
+ direction = nearest.type === 'resist' ? 'put' : 'call';
 
  }
 
@@ -66213,11 +66213,11 @@ function updateMtfTimeframeDisplay(tf, result, currentPrice) {
 
  distEl.textContent = (nearest.distance >= 0 ? '+'' : ''') + nearest.distance.toFixed(2) + '%';
 
- distEl.style.color = nearest.distance >= 0 ? '#ef4444'' : ''#22c55e';
+ distEl.style.color = nearest.distance >= 0 ? '#ef4444' : '#22c55e';
 
  }
 
- if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE'' : ''SUPPORT';
+ if (typeEl) typeEl.textContent = nearest.type === 'resist' ? 'RESISTANCE' : 'SUPPORT';
 
 
 
@@ -66261,9 +66261,9 @@ function updateMtfTimeframeDisplay(tf, result, currentPrice) {
 
  if (Math.abs(nearest.distance) <= 1) {
 
- containerEl.style.borderColor = direction === 'put' ? '#ef4444'' : ''#22c55e';
+ containerEl.style.borderColor = direction === 'put' ? '#ef4444' : '#22c55e';
 
- containerEl.style.background = direction === 'put' ? 'rgba(239,68,68,0.05)'' : ''rgba(34,197,94,0.05)';
+ containerEl.style.background = direction === 'put' ? 'rgba(239,68,68,0.05)' : 'rgba(34,197,94,0.05)';
 
  } else {
 
@@ -66291,9 +66291,9 @@ function updateMtfTimeframeDisplay(tf, result, currentPrice) {
 
  var isNearest = Math.abs(level.price - nearest.price) < 0.01;
 
- var barColor = level.type === 'resist' ? '#ef4444'' : ''#22c55e';
+ var barColor = level.type === 'resist' ? '#ef4444' : '#22c55e';
 
- var opacity = isNearest ? '1'' : ''0.4';
+ var opacity = isNearest ? '1' : '0.4';
 
 
 
@@ -66303,7 +66303,7 @@ function updateMtfTimeframeDisplay(tf, result, currentPrice) {
 
  '<span>$' + level.price.toFixed(2) + '</span>' +
 
- '<span style="color: ' + (level.distance >= 0 ? '#ef4444'' : ''#22c55e') + ';">(' + (level.distance >= 0 ? '+'' : ''') + level.distance.toFixed(1) + '%)</span>' +
+ '<span style="color: ' + (level.distance >= 0 ? '#ef4444' : '#22c55e') + ';">(' + (level.distance >= 0 ? '+'' : ''') + level.distance.toFixed(1) + '%)</span>' +
 
  '</div>';
 
@@ -66419,11 +66419,11 @@ function checkMtfAlignment(tfResults, currentPrice) {
 
  alignmentEl.style.background = alignmentDir === 'CALL'
 
- ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.15))'' : ''linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.15))';
+ ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(22,163,74,0.15))' : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.15))';
 
- alignmentEl.style.borderColor = alignmentDir === 'CALL' ? 'rgba(34,197,94,0.5)'' : ''rgba(239,68,68,0.5)';
+ alignmentEl.style.borderColor = alignmentDir === 'CALL' ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)';
 
- badgeEl.style.background = alignmentDir === 'CALL' ? '#22c55e'' : ''#ef4444';
+ badgeEl.style.background = alignmentDir === 'CALL' ? '#22c55e' : '#ef4444';
 
  badgeEl.style.color = 'white';
 
@@ -66457,7 +66457,7 @@ function checkMtfAlignment(tfResults, currentPrice) {
 
 
 
- titleEl.textContent = alignmentStrength === 3 ? ' PERFECT MTF ALIGNMENT!' : alignmentStrength === 2 ? ' Strong Alignment'' : '' Waiting for Alignment';
+ titleEl.textContent = alignmentStrength === 3 ? ' PERFECT MTF ALIGNMENT!' : alignmentStrength === 2 ? ' Strong Alignment' : ' Waiting for Alignment';
 
  descEl.textContent = alignmentDesc;
 
@@ -66801,9 +66801,9 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusIcon = ';
 
- result.recommendation = direction === 'PUT' ? 'WATCH FOR RALLY FADE'' : ''WATCH FOR DIP BUY';
+ result.recommendation = direction === 'PUT' ? 'WATCH FOR RALLY FADE' : 'WATCH FOR DIP BUY';
 
- result.recommendationDetail = direction === 'PUT' ? 'If spiked to resistance, good for PUT on rejection.'' : ''If dipped to support, watch for bullish reversal.';
+ result.recommendationDetail = direction === 'PUT' ? 'If spiked to resistance, good for PUT on rejection.' : 'If dipped to support, watch for bullish reversal.';
 
  result.recommendationIcon = '';
 
@@ -66869,9 +66869,9 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusIcon = ';
 
- result.recommendation = direction === 'CALL' ? 'GOOD FOR REVERSAL PLAYS'' : ''WATCH FOR FAILED BREAKOUTS';
+ result.recommendation = direction === 'CALL' ? 'GOOD FOR REVERSAL PLAYS' : 'WATCH FOR FAILED BREAKOUTS';
 
- result.recommendationDetail = direction === 'CALL' ? 'Afternoon reversals can work well after 2 PM.'' : ''Failed breakouts often reverse hard 2-3 PM.';
+ result.recommendationDetail = direction === 'CALL' ? 'Afternoon reversals can work well after 2 PM.' : 'Failed breakouts often reverse hard 2-3 PM.';
 
  result.recommendationIcon = '';
 
@@ -67297,7 +67297,7 @@ function scanCandlePatterns() {
 
  if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.35 && range > 0) {
 
- pattern = { symbol: symbol, name: 'Hammer', emoji: ', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 && sq9Type === 'SUPPORT' ? 'STRONG'' : ''MODERATE', price: close };
+ pattern = { symbol: symbol, name: 'Hammer', emoji: ', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 && sq9Type === 'SUPPORT' ? 'STRONG' : 'MODERATE', price: close };
 
  }
 
@@ -67305,7 +67305,7 @@ function scanCandlePatterns() {
 
  else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.35 && range > 0) {
 
- pattern = { symbol: symbol, name: 'Shooting Star', emoji: ' type: 'BEARISH', signal: 'PUT', strength: nearSQ9 && sq9Type === 'RESIST' ? 'STRONG'' : ''MODERATE', price: close };
+ pattern = { symbol: symbol, name: 'Shooting Star', emoji: ' type: 'BEARISH', signal: 'PUT', strength: nearSQ9 && sq9Type === 'RESIST' ? 'STRONG' : 'MODERATE', price: close };
 
  }
 
@@ -67313,7 +67313,7 @@ function scanCandlePatterns() {
 
  else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 1.1) {
 
- pattern = { symbol: symbol, name: 'Bullish Engulfing', emoji: ' type: 'BULLISH', signal: 'CALL', strength: nearSQ9 ? 'STRONG'' : ''MODERATE', price: close };
+ pattern = { symbol: symbol, name: 'Bullish Engulfing', emoji: ' type: 'BULLISH', signal: 'CALL', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
 
  }
 
@@ -67321,7 +67321,7 @@ function scanCandlePatterns() {
 
  else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 1.1) {
 
- pattern = { symbol: symbol, name: 'Bearish Engulfing', emoji: ', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 ? 'STRONG'' : ''MODERATE', price: close };
+ pattern = { symbol: symbol, name: 'Bearish Engulfing', emoji: ', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
 
  }
 
@@ -67331,11 +67331,11 @@ function scanCandlePatterns() {
 
  if (lowerWick > range * 0.6 && upperWick < range * 0.15) {
 
- pattern = { symbol: symbol, name: 'Dragonfly Doji', emoji: '', type: 'BULLISH', signal: nearSQ9 ? 'CALL'' : ''WAIT', strength: nearSQ9 ? 'MODERATE'' : ''WEAK', price: close };
+ pattern = { symbol: symbol, name: 'Dragonfly Doji', emoji: '', type: 'BULLISH', signal: nearSQ9 ? 'CALL' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
 
  } else if (upperWick > range * 0.6 && lowerWick < range * 0.15) {
 
- pattern = { symbol: symbol, name: 'Gravestone Doji', emoji: '', type: 'BEARISH', signal: nearSQ9 ? 'PUT'' : ''WAIT', strength: nearSQ9 ? 'MODERATE'' : ''WEAK', price: close };
+ pattern = { symbol: symbol, name: 'Gravestone Doji', emoji: '', type: 'BEARISH', signal: nearSQ9 ? 'PUT' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
 
  }
 
@@ -67387,13 +67387,13 @@ function updatePatternsList(patterns) {
 
  patterns.forEach(function(p) {
 
- var bgColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.08)'' : ''rgba(239,68,68,0.08)';
+ var bgColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)';
 
- var borderColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.3)'' : ''rgba(239,68,68,0.3)';
+ var borderColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
 
- var signalBg = p.type === 'BULLISH' ? '#22c55e'' : ''#ef4444';
+ var signalBg = p.type === 'BULLISH' ? '#22c55e' : '#ef4444';
 
- var strengthBg = p.strength === 'STRONG' ? '#22c55e' : p.strength === 'MODERATE' ? '#f59e0b'' : ''#6b7280';
+ var strengthBg = p.strength === 'STRONG' ? '#22c55e' : p.strength === 'MODERATE' ? '#f59e0b' : '#6b7280';
 
 
 
@@ -67751,7 +67751,7 @@ function analyzeIntradayTimeframe(priceData, timeframe) {
 
  candle = 'green';
 
- pattern = timeframe === '5min' ? 'Momentum Up'' : ''Trend Up';
+ pattern = timeframe === '5min' ? 'Momentum Up' : 'Trend Up';
 
  strength = 60 + Math.min(30, (estimatedCurrent / open - 1) * 2000);
 
@@ -67761,7 +67761,7 @@ function analyzeIntradayTimeframe(priceData, timeframe) {
 
  candle = 'red';
 
- pattern = timeframe === '5min' ? 'Momentum Down'' : ''Trend Down';
+ pattern = timeframe === '5min' ? 'Momentum Down' : 'Trend Down';
 
  strength = 60 + Math.min(30, (1 - estimatedCurrent / open) * 2000);
 
@@ -67903,7 +67903,7 @@ function updateTimeframePanel(timeframe, analysis) {
 
  var signalText = analysis.signal.toUpperCase();
 
- var signalColor = analysis.signal === 'bullish' ? '#22c55e' : (analysis.signal === 'bearish' ? '#ef4444'' : ''#6b7280');
+ var signalColor = analysis.signal === 'bullish' ? '#22c55e' : (analysis.signal === 'bearish' ? '#ef4444' : '#6b7280');
 
  signalEl.innerHTML = '<span style="color:' + signalColor + '; font-weight: 700;">' + signalText + '</span> (' + analysis.strength + '%)';
 
@@ -67997,9 +67997,9 @@ function showTradeSetup(symbol, alignment, priceData) {
 
 
 
- var direction = alignment.scenario === 'FULL_BULL' ? 'CALL'' : ''PUT';
+ var direction = alignment.scenario === 'FULL_BULL' ? 'CALL' : 'PUT';
 
- var dirColor = alignment.scenario === 'FULL_BULL' ? '#22c55e'' : ''#ef4444';
+ var dirColor = alignment.scenario === 'FULL_BULL' ? '#22c55e' : '#ef4444';
 
  var entryZone = alignment.scenario === 'FULL_BULL' ?
 
@@ -68217,11 +68217,11 @@ function calculateMinorTurn() {
 
  // Expected direction
 
- var expectedDir = lastSwing.type === 'HIGH' ? 'LOW (Pullback)'' : ''HIGH (Rally)';
+ var expectedDir = lastSwing.type === 'HIGH' ? 'LOW (Pullback)' : 'HIGH (Rally)';
 
- var dirColor = lastSwing.type === 'HIGH' ? '#ef4444'' : ''#22c55e';
+ var dirColor = lastSwing.type === 'HIGH' ? '#ef4444' : '#22c55e';
 
- var dirBg = lastSwing.type === 'HIGH' ? 'rgba(239,68,68,0.1)'' : ''rgba(34,197,94,0.1)';
+ var dirBg = lastSwing.type === 'HIGH' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
 
 
 
@@ -68231,7 +68231,7 @@ function calculateMinorTurn() {
 
  document.getElementById('nextTurnDaysAway').textContent = consensusDaysAway <= 0 ? 'NOW!' : consensusDaysAway + ' days away';
 
- document.getElementById('nextTurnDaysAway').style.color = consensusDaysAway <= 2 ? '#ef4444'' : ''var(--muted)';
+ document.getElementById('nextTurnDaysAway').style.color = consensusDaysAway <= 2 ? '#ef4444' : 'var(--muted)';
 
 
 
@@ -68247,7 +68247,7 @@ function calculateMinorTurn() {
 
  document.getElementById('turnConfidenceVal').textContent = confidence + '%';
 
- document.getElementById('turnConfidenceVal').style.color = confidence >= 60 ? '#22c55e'' : ''#f59e0b';
+ document.getElementById('turnConfidenceVal').style.color = confidence >= 60 ? '#22c55e' : '#f59e0b';
 
  document.getElementById('turnMethodsVal').textContent = methodsInRange + '/' + predictions.length;
 
@@ -68265,9 +68265,9 @@ function calculateMinorTurn() {
 
  var isClose = Math.abs(p.daysAway - consensusDaysAway) <= 3;
 
- var statusBg = isClose ? 'rgba(34,197,94,0.1)'' : ''rgba(245,158,11,0.1)';
+ var statusBg = isClose ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)';
 
- var statusColor = isClose ? '#22c55e'' : ''#f59e0b';
+ var statusColor = isClose ? '#22c55e' : '#f59e0b';
 
  detailHtml += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: ' + statusBg + '; border-radius: 6px;">' +
 
@@ -68629,7 +68629,7 @@ function scanHistoricalPatterns() {
 
  var nearSQ9Level = minDist < 1.5;
 
- var sq9Type = close > nearestSQ9.price ? 'RESISTANCE'' : ''SUPPORT';
+ var sq9Type = close > nearestSQ9.price ? 'RESISTANCE' : 'SUPPORT';
 
 
 
@@ -68647,7 +68647,7 @@ function scanHistoricalPatterns() {
 
  if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.4) {
 
- pattern = { name: 'Hammer', emoji: ', type: 'BULLISH', signal: 'CALL', strength: lowerWick > body * 3 ? 'STRONG'' : ''MODERATE' };
+ pattern = { name: 'Hammer', emoji: ', type: 'BULLISH', signal: 'CALL', strength: lowerWick > body * 3 ? 'STRONG' : 'MODERATE' };
 
  }
 
@@ -68663,7 +68663,7 @@ function scanHistoricalPatterns() {
 
  else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.4) {
 
- pattern = { name: 'Shooting Star', emoji: ' type: 'BEARISH', signal: 'PUT', strength: upperWick > body * 3 ? 'STRONG'' : ''MODERATE' };
+ pattern = { name: 'Shooting Star', emoji: ' type: 'BEARISH', signal: 'PUT', strength: upperWick > body * 3 ? 'STRONG' : 'MODERATE' };
 
  }
 
@@ -68671,7 +68671,7 @@ function scanHistoricalPatterns() {
 
  else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 0.8) {
 
- pattern = { name: 'Bullish Engulfing', emoji: ' type: 'BULLISH', signal: 'CALL', strength: body > prevBody * 1.5 ? 'STRONG'' : ''MODERATE' };
+ pattern = { name: 'Bullish Engulfing', emoji: ' type: 'BULLISH', signal: 'CALL', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
 
  }
 
@@ -68679,7 +68679,7 @@ function scanHistoricalPatterns() {
 
  else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 0.8) {
 
- pattern = { name: 'Bearish Engulfing', emoji: ', type: 'BEARISH', signal: 'PUT', strength: body > prevBody * 1.5 ? 'STRONG'' : ''MODERATE' };
+ pattern = { name: 'Bearish Engulfing', emoji: ', type: 'BEARISH', signal: 'PUT', strength: body > prevBody * 1.5 ? 'STRONG' : 'MODERATE' };
 
  }
 
@@ -68927,7 +68927,7 @@ function scanHistoricalPatterns() {
 
  var minorPattern = Object.assign({}, pattern);
 
- minorPattern.timeframe = Math.random() > 0.5 ? '15min'' : ''5min';
+ minorPattern.timeframe = Math.random() > 0.5 ? '15min' : '5min';
 
  minorPattern.time = ['09:45', '10:15', '10:45', '11:30', '13:00', '14:15', '14:45', '15:15'][Math.floor(Math.random() * 8)];
 
@@ -69065,7 +69065,7 @@ function updateHistoricalPatternsUI(symbol) {
 
  document.getElementById('avgWinRate').textContent = avgWinRate + '%';
 
- document.getElementById('avgWinRate').style.color = avgWinRate >= 60 ? '#22c55e' : avgWinRate >= 50 ? '#f59e0b'' : ''#ef4444';
+ document.getElementById('avgWinRate').style.color = avgWinRate >= 60 ? '#22c55e' : avgWinRate >= 50 ? '#f59e0b' : '#ef4444';
 
 
 
@@ -69123,9 +69123,9 @@ function updateHistoricalPatternsUI(symbol) {
 
  var bestMove = p.moves.length > 0 ? Math.max.apply(null, p.moves.map(Math.abs)).toFixed(2) : 0;
 
- var typeColor = p.type === 'BULLISH' ? '#22c55e' : p.type === 'BEARISH' ? '#ef4444'' : ''#6b7280';
+ var typeColor = p.type === 'BULLISH' ? '#22c55e' : p.type === 'BEARISH' ? '#ef4444' : '#6b7280';
 
- var rateColor = winRate >= 70 ? '#22c55e' : winRate >= 55 ? '#f59e0b'' : ''#ef4444';
+ var rateColor = winRate >= 70 ? '#22c55e' : winRate >= 55 ? '#f59e0b' : '#ef4444';
 
 
 
@@ -69143,7 +69143,7 @@ function updateHistoricalPatternsUI(symbol) {
 
  '<td style="padding: 10px; text-align: center;">' + (avgMove > 0 ? '+'' : ''') + avgMove + '%</td>' +
 
- '<td style="padding: 10px; text-align: center;">' + (p.type === 'BULLISH' ? '+'' : ''-') + bestMove + '%</td>' +
+ '<td style="padding: 10px; text-align: center;">' + (p.type === 'BULLISH' ? '+' : '-') + bestMove + '%</td>' +
 
  '<td style="padding: 10px; text-align: center;"><span style="background: ' + typeColor + '22; color: ' + typeColor + '; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600;">' + p.type + '</span></td>' +
 
@@ -69163,7 +69163,7 @@ function updateHistoricalPatternsUI(symbol) {
 
  var isHighlight = context.indexOf('SQ9') > -1;
 
- var bgColor = isHighlight ? 'rgba(245,158,11,0.1)'' : ''transparent';
+ var bgColor = isHighlight ? 'rgba(245,158,11,0.1)' : 'transparent';
 
  contextHtml += '<tr style="background: ' + bgColor + '; border-bottom: 1px solid var(--border);">' +
 
@@ -69173,11 +69173,11 @@ function updateHistoricalPatternsUI(symbol) {
 
  var data = row[pattern];
 
- var color = data.winRate >= 75 ? '#22c55e' : data.winRate >= 60 ? '#f59e0b' : data.winRate >= 45 ? '#6b7280'' : ''#ef4444';
+ var color = data.winRate >= 75 ? '#22c55e' : data.winRate >= 60 ? '#f59e0b' : data.winRate >= 45 ? '#6b7280' : '#ef4444';
 
- var display = data.count >= 3 ? data.winRate + '%'' : ''-';
+ var display = data.count >= 3 ? data.winRate + '%' : '-';
 
- contextHtml += '<td style="padding: 10px; text-align: center; color: ' + color + '; font-weight: ' + (data.winRate >= 75 ? '700'' : ''400') + ';">' + display + '</td>';
+ contextHtml += '<td style="padding: 10px; text-align: center; color: ' + color + '; font-weight: ' + (data.winRate >= 75 ? '700' : '400') + ';">' + display + '</td>';
 
  });
 
@@ -69201,9 +69201,9 @@ function updateHistoricalPatternsUI(symbol) {
 
  atSQ9.slice(-30).reverse().forEach(function(p) {
 
- var resultColor = p.isWin ? '#22c55e'' : ''#ef4444';
+ var resultColor = p.isWin ? '#22c55e' : '#ef4444';
 
- var resultText = p.isWin ? 'WIN'' : ''LOSS';
+ var resultText = p.isWin ? 'WIN' : 'LOSS';
 
  sq9Html += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
 
@@ -69215,11 +69215,11 @@ function updateHistoricalPatternsUI(symbol) {
 
  '<td style="padding: 8px; text-align: center;">' + p.sq9Distance.toFixed(2) + '%</td>' +
 
- '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? '#22c55e'' : ''#ef4444') + '; color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+ '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? '#22c55e' : '#ef4444') + '; color: white; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
 
  '<td style="padding: 8px; text-align: center;">$' + p.entry.toFixed(2) + '</td>' +
 
- '<td style="padding: 8px; text-align: center; color: ' + (p.outcome5Day >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+'' : ''') + p.outcome5Day.toFixed(2) + '%</td>' +
+ '<td style="padding: 8px; text-align: center; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+'' : ''') + p.outcome5Day.toFixed(2) + '%</td>' +
 
  '<td style="padding: 8px; text-align: center; color: ' + resultColor + '; font-weight: 600;">' + resultText + '</td>' +
 
@@ -69235,16 +69235,16 @@ function updateHistoricalPatternsUI(symbol) {
 
  major.slice(-20).reverse().forEach(function(p) {
 
- var resultIcon = p.isWin ? ''' : ''';
+ var resultIcon = p.isWin ? '' : ''';
  majorHtml += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
 
  '<td style="padding: 8px;">' + p.date + '</td>' +
 
  '<td style="padding: 8px; text-align: center;">' + p.emoji + '</td>' +
 
- '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : p.signal === 'PUT' ? 'rgba(239,68,68,0.2)'' : ''rgba(107,114,128,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+ '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : p.signal === 'PUT' ? 'rgba(239,68,68,0.2)' : 'rgba(107,114,128,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
 
- '<td style="padding: 8px; text-align: right; color: ' + (p.outcome5Day >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+'' : ''') + p.outcome5Day.toFixed(2) + '%</td>' +
+ '<td style="padding: 8px; text-align: right; color: ' + (p.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (p.outcome5Day >= 0 ? '+'' : ''') + p.outcome5Day.toFixed(2) + '%</td>' +
 
  '<td style="padding: 8px; text-align: center;">' + resultIcon + '</td>' +
 
@@ -69268,7 +69268,7 @@ function updateHistoricalPatternsUI(symbol) {
 
  '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.timeframe + '</td>' +
 
- '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)'' : ''rgba(239,68,68,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
+ '<td style="padding: 8px; text-align: center;"><span style="background: ' + (p.signal === 'CALL' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; padding: 2px 6px; border-radius: 3px; font-size: 9px;">' + p.signal + '</span></td>' +
 
  '<td style="padding: 8px; text-align: center; font-size: 9px;">' + p.result + '</td>' +
 
@@ -69336,11 +69336,11 @@ function updateTopSetups() {
 
  var avgMove = filtered.reduce(function(sum, p) { return sum + Math.abs(p.outcome5Day); }, 0) / total;
 
- var rankEmoji = rank === 1 ? '' : rank === 2 ? '' : rank === 3 ? ''' : '' ';
+ var rankEmoji = rank === 1 ? '' : rank === 2 ? '' : rank === 3 ? '' : '' ';
 
- var probLabel = winRate >= 85 ? 'ULTRA HIGH' : winRate >= 70 ? 'HIGH' : winRate >= 55 ? 'MODERATE'' : ''LOW';
+ var probLabel = winRate >= 85 ? 'ULTRA HIGH' : winRate >= 70 ? 'HIGH' : winRate >= 55 ? 'MODERATE' : 'LOW';
 
- var probColor = winRate >= 85 ? '#22c55e' : winRate >= 70 ? '#3b82f6' : winRate >= 55 ? '#f59e0b'' : ''#ef4444';
+ var probColor = winRate >= 85 ? '#22c55e' : winRate >= 70 ? '#3b82f6' : winRate >= 55 ? '#f59e0b' : '#ef4444';
 
 
 
@@ -69424,9 +69424,9 @@ function updateMonthlyDistribution() {
 
  html += '<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 100%;">' +
 
- '<div style="background: #22c55e; width: 100%; height: ' + bullishHeight + '%; border-radius: 3px 3px 0 0; min-height: ' + (data.bullish > 0 ? '4px'' : ''0') + ';" title="Bullish: ' + data.bullish + '"></div>' +
+ '<div style="background: #22c55e; width: 100%; height: ' + bullishHeight + '%; border-radius: 3px 3px 0 0; min-height: ' + (data.bullish > 0 ? '4px' : '0') + ';" title="Bullish: ' + data.bullish + '"></div>' +
 
- '<div style="background: #ef4444; width: 100%; height: ' + bearishHeight + '%; border-radius: 0 0 3px 3px; min-height: ' + (data.bearish > 0 ? '4px'' : ''0') + ';" title="Bearish: ' + data.bearish + '"></div>' +
+ '<div style="background: #ef4444; width: 100%; height: ' + bearishHeight + '%; border-radius: 0 0 3px 3px; min-height: ' + (data.bearish > 0 ? '4px' : '0') + ';" title="Bearish: ' + data.bearish + '"></div>' +
 
  '</div>';
 
@@ -69458,15 +69458,15 @@ function showPatternDetail(date) {
 
 
 
- var resultColor = pattern.isWin ? '#22c55e'' : ''#ef4444';
+ var resultColor = pattern.isWin ? '#22c55e' : '#ef4444';
 
- var resultText = pattern.isWin ? 'WIN'' : ''LOSS';
+ var resultText = pattern.isWin ? 'WIN' : 'LOSS';
 
 
 
- var sq9Badge = pattern.atSQ9Level ? ' AT SQ9 LEVEL' : pattern.nearSQ9Level ? ' Near SQ9'' : '' Away from SQ9';
+ var sq9Badge = pattern.atSQ9Level ? ' AT SQ9 LEVEL' : pattern.nearSQ9Level ? ' Near SQ9' : ' Away from SQ9';
 
- var sq9Color = pattern.atSQ9Level ? '#22c55e' : pattern.nearSQ9Level ? '#f59e0b'' : ''#6b7280';
+ var sq9Color = pattern.atSQ9Level ? '#22c55e' : pattern.nearSQ9Level ? '#f59e0b' : '#6b7280';
 
 
 
@@ -69484,7 +69484,7 @@ function showPatternDetail(date) {
 
  '<div>High: $' + (pattern.high || pattern.entry).toFixed(2) + ' | Low: $' + (pattern.low || pattern.entry).toFixed(2) + '</div>' +
 
- '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : pattern.signal === 'PUT' ? '#ef4444'' : ''#6b7280') + ';">' + pattern.signal + '</strong></div>' +
+ '<div>Signal: <strong style="color: ' + (pattern.signal === 'CALL' ? '#22c55e' : pattern.signal === 'PUT' ? '#ef4444' : '#6b7280') + ';">' + pattern.signal + '</strong></div>' +
 
  '<div>Strength: <strong>' + (pattern.strength || 'MODERATE') + '</strong></div>' +
 
@@ -69498,7 +69498,7 @@ function showPatternDetail(date) {
 
  '<div style="font-size: 11px; line-height: 2;">' +
 
- '<div>Trend (SMA20): <strong style="color: ' + (pattern.trend === 'BULLISH' ? '#22c55e' : pattern.trend === 'BEARISH' ? '#ef4444'' : ''#6b7280') + ';">' + pattern.trend + '</strong></div>' +
+ '<div>Trend (SMA20): <strong style="color: ' + (pattern.trend === 'BULLISH' ? '#22c55e' : pattern.trend === 'BEARISH' ? '#ef4444' : '#6b7280') + ';">' + pattern.trend + '</strong></div>' +
 
  '<div>RSI: <strong>' + (pattern.rsi || 50).toFixed(1) + '</strong> ' + ((pattern.rsi || 50) < 30 ? '  Oversold' : (pattern.rsi || 50) > 70 ? '  Overbought'' : ''') + '</div>' +
 
@@ -69518,13 +69518,13 @@ function showPatternDetail(date) {
 
  '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center;">' +
 
- '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">1-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome1Day >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (pattern.outcome1Day >= 0 ? '+'' : ''') + pattern.outcome1Day.toFixed(2) + '%</div></div>' +
+ '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">1-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome1Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome1Day >= 0 ? '+'' : ''') + pattern.outcome1Day.toFixed(2) + '%</div></div>' +
 
- '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">3-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome3Day >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (pattern.outcome3Day >= 0 ? '+'' : ''') + pattern.outcome3Day.toFixed(2) + '%</div></div>' +
+ '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">3-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome3Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome3Day >= 0 ? '+'' : ''') + pattern.outcome3Day.toFixed(2) + '%</div></div>' +
 
- '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">5-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome5Day >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (pattern.outcome5Day >= 0 ? '+'' : ''') + pattern.outcome5Day.toFixed(2) + '%</div></div>' +
+ '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">5-Day</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.outcome5Day >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.outcome5Day >= 0 ? '+'' : ''') + pattern.outcome5Day.toFixed(2) + '%</div></div>' +
 
- '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">Max Move</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.maxMove >= 0 ? '#22c55e'' : ''#ef4444') + ';">' + (pattern.maxMove >= 0 ? '+'' : ''') + pattern.maxMove.toFixed(2) + '%</div></div>' +
+ '<div style="background: white; padding: 10px; border-radius: 6px;"><div style="font-size: 9px; color: var(--muted);">Max Move</div><div style="font-size: 16px; font-weight: 700; color: ' + (pattern.maxMove >= 0 ? '#22c55e' : '#ef4444') + ';">' + (pattern.maxMove >= 0 ? '+'' : ''') + pattern.maxMove.toFixed(2) + '%</div></div>' +
 
  '</div>' +
 
@@ -69570,7 +69570,7 @@ function exportPatternData() {
 
  historicalPatterns.major.forEach(function(p) {
 
- csv += [p.date, p.pattern, p.type, p.signal, p.entry.toFixed(2), p.outcome1Day.toFixed(2), p.outcome3Day.toFixed(2), p.outcome5Day.toFixed(2), p.maxMove.toFixed(2), p.isWin ? 'YES'' : ''NO', p.trend, p.volumeRatio.toFixed(2), p.atSQ9Level ? 'YES' : (p.nearSQ9Level ? 'NEAR'' : ''NO'), p.sq9Level.toFixed(2), p.sq9Type].join(',') + '\n';
+ csv += [p.date, p.pattern, p.type, p.signal, p.entry.toFixed(2), p.outcome1Day.toFixed(2), p.outcome3Day.toFixed(2), p.outcome5Day.toFixed(2), p.maxMove.toFixed(2), p.isWin ? 'YES' : 'NO', p.trend, p.volumeRatio.toFixed(2), p.atSQ9Level ? 'YES' : (p.nearSQ9Level ? 'NEAR' : 'NO'), p.sq9Level.toFixed(2), p.sq9Type].join(',') + '\n';
 
  });
 
@@ -69848,7 +69848,7 @@ function getTrendAwareSQ9Signal(symbol) {
 
  signalColor = '#00ff00';
 
- confidence = trend === 'STRONG_UP' ? 'HIGH'' : ''MEDIUM';
+ confidence = trend === 'STRONG_UP' ? 'HIGH' : 'MEDIUM';
 
  } else if (atResistance) {
 
@@ -69898,7 +69898,7 @@ function getTrendAwareSQ9Signal(symbol) {
 
  signalColor = '#ff0000';
 
- confidence = trend === 'STRONG_DOWN' ? 'HIGH'' : ''MEDIUM';
+ confidence = trend === 'STRONG_DOWN' ? 'HIGH' : 'MEDIUM';
 
  } else if (atSupport) {
 
@@ -70090,7 +70090,7 @@ function updateTrendAwareActionCenter() {
 
  if (result.nearestSupport) {
 
- var supStyle = result.atSupport ? 'color: #00ff00; font-weight: bold;'' : ''color: #4CAF50;';
+ var supStyle = result.atSupport ? 'color: #00ff00; font-weight: bold;' : 'color: #4CAF50;';
 
  html += '<span style="' + supStyle + '"> Support: $' + result.nearestSupport.price.toFixed(2) + ' (' + result.supportDistance + ')</span>';
 
@@ -70098,7 +70098,7 @@ function updateTrendAwareActionCenter() {
 
  if (result.nearestResistance) {
 
- var resStyle = result.atResistance ? 'color: #ff0000; font-weight: bold;'' : ''color: #f44336;';
+ var resStyle = result.atResistance ? 'color: #ff0000; font-weight: bold;' : 'color: #f44336;';
 
  html += '<span style="' + resStyle + '">  Resist: $' + result.nearestResistance.price.toFixed(2) + ' (' + result.resistanceDistance + ')</span>';
 
@@ -70268,7 +70268,7 @@ function renderRecoveryTracker() {
 
 
 
- var progressColor = progress < 25 ? '#ef4444' : progress < 50 ? '#f59e0b' : progress < 75 ? '#3b82f6'' : ''#22c55e';
+ var progressColor = progress < 25 ? '#ef4444' : progress < 50 ? '#f59e0b' : progress < 75 ? '#3b82f6' : '#22c55e';
 
 
 
@@ -70306,7 +70306,7 @@ function renderRecoveryTracker() {
 
  '<span>Started: $' + recoveryData.startingLoss.toFixed(2) + '</span>' +
 
- '<span>' + (isRecovered ? ' RECOVERED!'' : ''Remaining: $' + remaining.toFixed(2)) + '</span>' +
+ '<span>' + (isRecovered ? ' RECOVERED!' : 'Remaining: $' + remaining.toFixed(2)) + '</span>' +
 
  '</div>' +
 
@@ -70322,7 +70322,7 @@ function renderRecoveryTracker() {
 
  '<div style="font-size: 10px; color: var(--muted);">THIS MONTH</div>' +
 
- '<div style="font-size: 20px; font-weight: 800; color: ' + (recoveryData.currentPnL >= 0 ? '#22c55e'' : ''#ef4444') + ';">$' + (recoveryData.currentPnL >= 0 ? '+'' : ''') + recoveryData.currentPnL.toFixed(2) + '</div>' +
+ '<div style="font-size: 20px; font-weight: 800; color: ' + (recoveryData.currentPnL >= 0 ? '#22c55e' : '#ef4444') + ';">$' + (recoveryData.currentPnL >= 0 ? '+'' : ''') + recoveryData.currentPnL.toFixed(2) + '</div>' +
 
  '</div>' +
 
@@ -70330,7 +70330,7 @@ function renderRecoveryTracker() {
 
  '<div style="font-size: 10px; color: var(--muted);">WIN RATE</div>' +
 
- '<div style="font-size: 20px; font-weight: 800; color: ' + (winRate >= 50 ? '#22c55e'' : ''#ef4444') + ';">' + winRate + '%</div>' +
+ '<div style="font-size: 20px; font-weight: 800; color: ' + (winRate >= 50 ? '#22c55e' : '#ef4444') + ';">' + winRate + '%</div>' +
 
  '</div>' +
 
@@ -70404,9 +70404,9 @@ function renderRecoveryTracker() {
 
  recoveryData.trades.slice(-5).reverse().forEach(function(trade) {
 
- var color = trade.result === 'WIN' ? '#22c55e'' : ''#ef4444';
+ var color = trade.result === 'WIN' ? '#22c55e' : '#ef4444';
 
- var icon = trade.result === 'WIN' ? ''' : ''';
+ var icon = trade.result === 'WIN' ? '' : ''';
  html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border);">' +
 
  '<div>' +
@@ -70505,9 +70505,9 @@ function showAddTradeModal(result) {
 
  document.getElementById('tradeResult').value = result;
 
- document.getElementById('modalTitle').textContent = result === 'WIN' ? ' Log Winning Trade'' : '' Log Losing Trade';
+ document.getElementById('modalTitle').textContent = result === 'WIN' ? ' Log Winning Trade' : ' Log Losing Trade';
 
- document.getElementById('submitTradeBtn').style.background = result === 'WIN' ? '#22c55e'' : ''#ef4444';
+ document.getElementById('submitTradeBtn').style.background = result === 'WIN' ? '#22c55e' : '#ef4444';
 
  document.getElementById('tradeAmount').value = '';
 
@@ -70771,11 +70771,11 @@ function renderTradeLog() {
 
  html += '<div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px;">';
 
- html += '<div style="background: ' + (stats.totalPnL >= 0 ? 'rgba(34,197,94,0.1)'' : ''rgba(239,68,68,0.1)') + '; border-radius: 8px; padding: 15px; text-align: center;">';
+ html += '<div style="background: ' + (stats.totalPnL >= 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)') + '; border-radius: 8px; padding: 15px; text-align: center;">';
 
  html += '<div style="font-size: 10px; color: var(--muted);">TOTAL P/L</div>';
 
- html += '<div style="font-size: 24px; font-weight: 800; color: ' + (stats.totalPnL >= 0 ? '#22c55e'' : ''#ef4444') + ';">$' + stats.totalPnL.toFixed(2) + '</div></div>';
+ html += '<div style="font-size: 24px; font-weight: 800; color: ' + (stats.totalPnL >= 0 ? '#22c55e' : '#ef4444') + ';">$' + stats.totalPnL.toFixed(2) + '</div></div>';
 
 
 
@@ -70783,7 +70783,7 @@ function renderTradeLog() {
 
  html += '<div style="font-size: 10px; color: var(--muted);">WIN RATE</div>';
 
- html += '<div style="font-size: 24px; font-weight: 800; color: ' + (parseFloat(stats.winRate) >= 50 ? '#22c55e'' : ''#ef4444') + ';">' + stats.winRate + '%</div></div>';
+ html += '<div style="font-size: 24px; font-weight: 800; color: ' + (parseFloat(stats.winRate) >= 50 ? '#22c55e' : '#ef4444') + ';">' + stats.winRate + '%</div></div>';
 
 
 
@@ -70875,15 +70875,15 @@ function renderTradeLog() {
 
  tradeLogData.forEach(function(trade) {
 
- var resultColor = trade.result === 'WIN' ? '#22c55e' : trade.result === 'LOSS' ? '#ef4444'' : ''#f59e0b';
+ var resultColor = trade.result === 'WIN' ? '#22c55e' : trade.result === 'LOSS' ? '#ef4444' : '#f59e0b';
 
- var resultBg = trade.result === 'WIN' ? 'rgba(34,197,94,0.1)' : trade.result === 'LOSS' ? 'rgba(239,68,68,0.1)'' : ''rgba(245,158,11,0.1)';
+ var resultBg = trade.result === 'WIN' ? 'rgba(34,197,94,0.1)' : trade.result === 'LOSS' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
 
- var resultIcon = trade.result === 'WIN' ? '' : trade.result === 'LOSS' ? ''' : ''';
+ var resultIcon = trade.result === 'WIN' ? '' : trade.result === 'LOSS' ? '' : ''';
 
- var typeColor = trade.type === 'CALL' ? '#22c55e'' : ''#ef4444';
+ var typeColor = trade.type === 'CALL' ? '#22c55e' : '#ef4444';
 
- var rowBg = trade.mistake === 'AGAINST_TREND' ? 'rgba(239,68,68,0.05)'' : ''transparent';
+ var rowBg = trade.mistake === 'AGAINST_TREND' ? 'rgba(239,68,68,0.05)' : 'transparent';
 
 
 
@@ -71073,15 +71073,15 @@ function updateMarketTimeStatus() {
 
  if (tradingEl) {
 
- var tradingStatus = canTrade ? '  YES'' : '' NO';
+ var tradingStatus = canTrade ? '  YES' : ' NO';
 
- var tradingColor = canTrade ? '#22c55e'' : ''#ef4444';
+ var tradingColor = canTrade ? '#22c55e' : '#ef4444';
 
  tradingEl.innerHTML = '<div style="font-size: 10px; color: var(--muted);">CAN TRADE NOW?</div>' +
 
  '<div style="font-size: 20px; font-weight: 800; margin: 5px 0; color: ' + tradingColor + ';">' + tradingStatus + '</div>' +
 
- '<div style="font-size: 10px; color: var(--muted);">' + (canTrade ? 'Good time'' : ''Wait') + '</div>';
+ '<div style="font-size: 10px; color: var(--muted);">' + (canTrade ? 'Good time' : 'Wait') + '</div>';
 
  }
 
@@ -71321,9 +71321,9 @@ function updateSymbolActions() {
 
  var trend = actionCenterData.allowedTrade;
 
- var trendIcon = trend === 'CALL' ? '' : trend === 'PUT' ? ''' : '' ';
+ var trendIcon = trend === 'CALL' ? '' : trend === 'PUT' ? '' : '' ';
 
- var trendColor = trend === 'CALL' ? '#22c55e' : trend === 'PUT' ? '#ef4444'' : ''#6b7280';
+ var trendColor = trend === 'CALL' ? '#22c55e' : trend === 'PUT' ? '#ef4444' : '#6b7280';
 
  
 
