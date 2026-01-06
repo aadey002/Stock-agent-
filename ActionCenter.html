@@ -326,7 +326,33 @@
             <div class="signal-text">CALLS ONLY</div>
             <div class="signal-detail">Daily trend is UP. Only look for CALL entries at support levels.</div>
         </div>
-        
+
+        <!-- QUALIFIED TRADE SETUPS - $700 ACCOUNT SIZED -->
+        <div class="card" style="border-color: #22c55e; border-width: 3px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <div class="card-title" style="color: #166534; font-size: 18px;">🎯 QUALIFIED TRADE SETUPS</div>
+                    <div style="font-size: 11px; color: #666;">Scans 5 criteria + $700 account sizing</div>
+                </div>
+                <button onclick="scanQualifiedSetups()" style="padding: 10px 20px; background: #22c55e; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;">🔍 SCAN NOW</button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; padding: 12px; background: rgba(34,197,94,0.1); border-radius: 8px;">
+                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Account</div><div style="font-size: 16px; font-weight: 800; color: #166534;">$700</div></div>
+                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Max Risk</div><div style="font-size: 16px; font-weight: 800; color: #ef4444;">$14</div><div style="font-size: 9px; color: #888;">2%</div></div>
+                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Position Size</div><div style="font-size: 16px; font-weight: 800;">$50-75</div><div style="font-size: 9px; color: #888;">1 contract</div></div>
+                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Option Price</div><div style="font-size: 16px; font-weight: 800;">$0.30-1.00</div></div>
+            </div>
+            <div id="qualifiedSetupsContainer" style="min-height: 100px;">
+                <div style="text-align: center; padding: 30px; color: #666;">Click "SCAN NOW" to find qualified setups matching all 5 criteria...</div>
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 10px; display: flex; justify-content: center; gap: 20px;">
+                <span>✅ = Criteria Met</span>
+                <span>⏰ = Wait for Time Window</span>
+                <span style="color: #22c55e; font-weight: 700;">UPTREND → CALLS</span>
+                <span style="color: #ef4444; font-weight: 700;">DOWNTREND → PUTS</span>
+            </div>
+        </div>
+
         <!-- YOUR POSITIONS -->
         <div class="card">
             <div class="card-title">YOUR POSITIONS - MONDAY ACTION PLAN</div>
@@ -580,6 +606,344 @@
             document.getElementById('canTradeStatus').innerHTML = '<div class="status-label">Can Trade?</div><div class="status-value" style="color:' + (canTrade ? '#22c55e' : '#ef4444') + ';">' + (canTrade ? 'YES' : 'NO') + '</div><div class="status-detail">' + (canTrade ? 'Good time' : 'Wait') + '</div>';
         }
         
+
+        // =====================================================
+        // QUALIFIED TRADE SETUPS SCANNER - $700 ACCOUNT
+        // =====================================================
+
+        var ACCOUNT_SIZE = 700;
+        var MAX_RISK_PCT = 0.02; // 2%
+        var MAX_RISK_DOLLARS = ACCOUNT_SIZE * MAX_RISK_PCT; // $14
+        var POSITION_SIZE_MIN = 50;
+        var POSITION_SIZE_MAX = 75;
+        var OPTION_PRICE_MIN = 0.30;
+        var OPTION_PRICE_MAX = 1.00;
+
+        async function scanQualifiedSetups() {
+            var container = document.getElementById('qualifiedSetupsContainer');
+            if (!container) return;
+
+            container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;"><span style="font-size: 24px;">⏳</span><br>Scanning all symbols for qualified setups...</div>';
+
+            var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLV'];
+            var setups = [];
+
+            for (var i = 0; i < symbols.length; i++) {
+                try {
+                    var setup = await analyzeForQualifiedTrade(symbols[i]);
+                    if (setup) {
+                        setups.push(setup);
+                    }
+                } catch (e) {
+                    console.warn('Error analyzing ' + symbols[i], e);
+                }
+            }
+
+            if (setups.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;"><span style="font-size: 28px;">😴</span><br><strong>No Qualified Setups Right Now</strong><br><br><div style="font-size: 11px; max-width: 400px; margin: 0 auto; text-align: left; color: #888;"><strong>All 5 criteria must be met:</strong><br>1. Clear trend (not neutral)<br>2. At SQ9 support/resistance<br>3. Confirming candle pattern<br>4. Optimal entry time window<br>5. Direction matches trend</div></div>';
+                return;
+            }
+
+            var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px;">';
+            setups.forEach(function(s) {
+                html += renderQualifiedSetupCard(s);
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function checkEntryTimeWindow() {
+            var now = new Date();
+            var hour = now.getHours();
+            var min = now.getMinutes();
+            var day = now.getDay();
+            var time = hour + min / 60;
+
+            if (day === 0 || day === 6) return { ok: false, status: 'WEEKEND', msg: 'Market closed' };
+            if (time < 9.5) return { ok: false, status: 'PRE-MARKET', msg: 'Wait for open' };
+            if (time < 10) return { ok: false, status: 'OPENING', msg: 'Avoid first 30 min' };
+            if (time >= 10 && time <= 11.5) return { ok: true, status: 'PRIME TIME', msg: 'Best entry window' };
+            if (time > 11.5 && time < 13) return { ok: false, status: 'LUNCH', msg: 'Low volume' };
+            if (time >= 13 && time <= 15) return { ok: true, status: 'AFTERNOON', msg: 'Good entry window' };
+            if (time > 15 && time < 16) return { ok: false, status: 'POWER HOUR', msg: 'Too volatile' };
+            return { ok: false, status: 'CLOSED', msg: 'After hours' };
+        }
+
+        function detectPatternForSetup(candles) {
+            if (!candles || candles.length < 3) return { pattern: null, type: null };
+
+            var c0 = candles[candles.length - 1];
+            var c1 = candles[candles.length - 2];
+
+            var o0 = c0.open, h0 = c0.high, l0 = c0.low, cl0 = c0.close;
+            var o1 = c1.open, cl1 = c1.close;
+
+            var body0 = Math.abs(cl0 - o0);
+            var range0 = h0 - l0;
+            var upperWick = h0 - Math.max(o0, cl0);
+            var lowerWick = Math.min(o0, cl0) - l0;
+
+            // Bullish patterns
+            if (lowerWick > body0 * 2 && upperWick < body0 * 0.5 && cl0 > o0) {
+                return { pattern: 'HAMMER', type: 'BULLISH', emoji: '🔨' };
+            }
+            if (cl1 < o1 && cl0 > o0 && o0 <= cl1 && cl0 >= o1) {
+                return { pattern: 'BULLISH ENGULF', type: 'BULLISH', emoji: '🟢' };
+            }
+
+            // Bearish patterns
+            if (upperWick > body0 * 2 && lowerWick < body0 * 0.5 && cl0 < o0) {
+                return { pattern: 'SHOOTING STAR', type: 'BEARISH', emoji: '💫' };
+            }
+            if (cl1 > o1 && cl0 < o0 && o0 >= cl1 && cl0 <= o1) {
+                return { pattern: 'BEARISH ENGULF', type: 'BEARISH', emoji: '🔴' };
+            }
+
+            // Doji (neutral, can work at levels)
+            if (body0 < range0 * 0.1 && range0 > 0) {
+                return { pattern: 'DOJI', type: 'NEUTRAL', emoji: '⚖️' };
+            }
+
+            return { pattern: null, type: null };
+        }
+
+        function calcSQ9Levels(price) {
+            if (!price || price <= 0) return null;
+            var sqrt = Math.sqrt(price);
+            return {
+                support: {
+                    deg45: Math.pow(sqrt - 0.25, 2),
+                    deg90: Math.pow(sqrt - 0.5, 2),
+                    deg180: Math.pow(sqrt - 1.0, 2)
+                },
+                resistance: {
+                    deg45: Math.pow(sqrt + 0.25, 2),
+                    deg90: Math.pow(sqrt + 0.5, 2),
+                    deg180: Math.pow(sqrt + 1.0, 2)
+                }
+            };
+        }
+
+        async function analyzeForQualifiedTrade(symbol) {
+            // Fetch price data
+            var data = [];
+            try {
+                var response = await fetch('../data/' + symbol + '.csv?t=' + Date.now());
+                if (!response.ok) {
+                    response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
+                }
+                if (response.ok) {
+                    var text = await response.text();
+                    var lines = text.trim().split('\n').slice(1);
+                    data = lines.map(function(line) {
+                        var cols = line.split(',');
+                        return {
+                            date: cols[0],
+                            open: parseFloat(cols[1]),
+                            high: parseFloat(cols[2]),
+                            low: parseFloat(cols[3]),
+                            close: parseFloat(cols[4]),
+                            volume: parseFloat(cols[5])
+                        };
+                    }).filter(function(d) { return !isNaN(d.close); });
+                }
+            } catch (e) {
+                console.warn('Failed to fetch ' + symbol);
+                return null;
+            }
+
+            if (data.length < 50) return null;
+
+            var closes = data.slice(-50).map(function(d) { return d.close; });
+            var currentPrice = closes[closes.length - 1];
+
+            // CRITERION 1: TREND CHECK
+            var sma20 = closes.slice(-20).reduce(function(a,b) { return a+b; }, 0) / 20;
+            var sma50 = closes.reduce(function(a,b) { return a+b; }, 0) / 50;
+
+            var trend = 'NEUTRAL';
+            var direction = null;
+            if (currentPrice > sma20 && sma20 > sma50) {
+                trend = 'UPTREND';
+                direction = 'CALL';
+            } else if (currentPrice < sma20 && sma20 < sma50) {
+                trend = 'DOWNTREND';
+                direction = 'PUT';
+            }
+
+            if (trend === 'NEUTRAL') return null; // No trade in neutral
+
+            // CRITERION 2: AT KEY LEVEL
+            var sq9 = calcSQ9Levels(currentPrice);
+            var tolerance = 0.005; // 0.5%
+            var nearestLevel = null;
+            var levelType = null;
+            var levelDistance = Infinity;
+
+            // For CALLS, check support levels
+            // For PUTS, check resistance levels
+            if (direction === 'CALL') {
+                Object.values(sq9.support).forEach(function(level) {
+                    var dist = Math.abs((currentPrice - level) / level);
+                    if (dist < tolerance && dist < levelDistance) {
+                        nearestLevel = level;
+                        levelType = 'SUPPORT';
+                        levelDistance = dist;
+                    }
+                });
+            } else {
+                Object.values(sq9.resistance).forEach(function(level) {
+                    var dist = Math.abs((currentPrice - level) / level);
+                    if (dist < tolerance && dist < levelDistance) {
+                        nearestLevel = level;
+                        levelType = 'RESISTANCE';
+                        levelDistance = dist;
+                    }
+                });
+            }
+
+            if (!nearestLevel) return null; // Not at key level
+
+            // CRITERION 3: CANDLE PATTERN
+            var patternInfo = detectPatternForSetup(data.slice(-5));
+            var patternMatch = false;
+
+            if (direction === 'CALL' && (patternInfo.type === 'BULLISH' || patternInfo.type === 'NEUTRAL')) {
+                patternMatch = true;
+            } else if (direction === 'PUT' && (patternInfo.type === 'BEARISH' || patternInfo.type === 'NEUTRAL')) {
+                patternMatch = true;
+            }
+
+            if (!patternMatch && patternInfo.pattern) return null;
+
+            // CRITERION 4: TIME CHECK
+            var timeCheck = checkEntryTimeWindow();
+
+            // CRITERION 5: All criteria met - Generate recommendation
+            // Calculate ATR for stops/targets
+            var atrSum = 0;
+            for (var i = 1; i < Math.min(15, data.length); i++) {
+                var tr = Math.max(
+                    data[data.length - i].high - data[data.length - i].low,
+                    Math.abs(data[data.length - i].high - data[data.length - i - 1].close),
+                    Math.abs(data[data.length - i].low - data[data.length - i - 1].close)
+                );
+                atrSum += tr;
+            }
+            var atr = atrSum / 14;
+
+            var entry = currentPrice;
+            var stop, target1, target2;
+
+            if (direction === 'CALL') {
+                stop = nearestLevel - (atr * 0.3);
+                target1 = entry + (atr * 1.0);
+                target2 = entry + (atr * 2.0);
+            } else {
+                stop = nearestLevel + (atr * 0.3);
+                target1 = entry - (atr * 1.0);
+                target2 = entry - (atr * 2.0);
+            }
+
+            // Calculate option recommendation for $700 account
+            var stockRisk = Math.abs(entry - stop);
+            var optionDelta = 0.40; // Approximate ATM delta
+            var suggestedPremium = Math.min(OPTION_PRICE_MAX, Math.max(OPTION_PRICE_MIN, stockRisk * optionDelta));
+            suggestedPremium = Math.round(suggestedPremium * 20) / 20; // Round to nearest 0.05
+
+            var contracts = 1;
+            var totalCost = suggestedPremium * 100 * contracts;
+            var maxLoss = suggestedPremium * 100 * 0.5; // 50% stop on option
+
+            // Get strike price (ATM or slightly OTM)
+            var strikeIncrement = currentPrice < 50 ? 1 : 5;
+            var strike = Math.round(currentPrice / strikeIncrement) * strikeIncrement;
+            if (direction === 'CALL') strike = strike; // ATM for calls
+            else strike = strike; // ATM for puts
+
+            return {
+                symbol: symbol,
+                direction: direction,
+                trend: trend,
+                currentPrice: currentPrice,
+                entry: entry,
+                stop: stop,
+                target1: target1,
+                target2: target2,
+                levelType: levelType,
+                nearestLevel: nearestLevel,
+                pattern: patternInfo.pattern || 'None',
+                patternEmoji: patternInfo.emoji || '',
+                timeCheck: timeCheck,
+                sma20: sma20,
+                sma50: sma50,
+                // Option details
+                strike: strike,
+                suggestedPremium: suggestedPremium,
+                contracts: contracts,
+                totalCost: totalCost,
+                maxLoss: maxLoss,
+                riskReward: ((Math.abs(target1 - entry)) / stockRisk).toFixed(1)
+            };
+        }
+
+        function renderQualifiedSetupCard(s) {
+            var isCall = s.direction === 'CALL';
+            var bgColor = isCall ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+            var borderColor = isCall ? '#22c55e' : '#ef4444';
+            var dirColor = isCall ? '#22c55e' : '#ef4444';
+
+            var timeStatus = s.timeCheck.ok
+                ? '<span style="color: #22c55e; font-weight: 700;">✅ ' + s.timeCheck.status + '</span>'
+                : '<span style="color: #f59e0b; font-weight: 700;">⏰ ' + s.timeCheck.status + '</span>';
+
+            return '<div style="background: ' + bgColor + '; border: 2px solid ' + borderColor + '; border-radius: 12px; padding: 15px;">' +
+                // Header
+                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">' +
+                    '<span style="font-size: 20px; font-weight: 900;">' + s.symbol + '</span>' +
+                    '<span style="background: ' + dirColor + '; color: white; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 13px;">' +
+                        'BUY ' + s.direction +
+                    '</span>' +
+                '</div>' +
+
+                // Criteria checks
+                '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; font-size: 10px;">' +
+                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">✅ ' + s.trend + '</span>' +
+                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">✅ SQ9 ' + s.levelType + '</span>' +
+                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">' + s.patternEmoji + ' ' + s.pattern + '</span>' +
+                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">' + timeStatus + '</span>' +
+                '</div>' +
+
+                // Option recommendation
+                '<div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px;">' +
+                    '<div style="font-size: 11px; color: #666; margin-bottom: 5px;">RECOMMENDED TRADE</div>' +
+                    '<div style="font-size: 15px; font-weight: 800; color: ' + dirColor + ';">' +
+                        s.symbol + ' $' + s.strike + ' ' + s.direction +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; font-size: 11px;">' +
+                        '<div><div style="color: #888; font-size: 9px;">Premium</div><div style="font-weight: 700;">$' + s.suggestedPremium.toFixed(2) + '</div></div>' +
+                        '<div><div style="color: #888; font-size: 9px;">Contracts</div><div style="font-weight: 700;">' + s.contracts + '</div></div>' +
+                        '<div><div style="color: #888; font-size: 9px;">Total Cost</div><div style="font-weight: 700;">$' + s.totalCost.toFixed(0) + '</div></div>' +
+                    '</div>' +
+                '</div>' +
+
+                // Stock levels
+                '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 10px;">' +
+                    '<div><div style="color: #888;">Entry</div><div style="font-weight: 700;">$' + s.entry.toFixed(2) + '</div></div>' +
+                    '<div><div style="color: #888;">Stop</div><div style="font-weight: 700; color: #ef4444;">$' + s.stop.toFixed(2) + '</div></div>' +
+                    '<div><div style="color: #888;">Target 1</div><div style="font-weight: 700; color: #22c55e;">$' + s.target1.toFixed(2) + '</div></div>' +
+                    '<div><div style="color: #888;">Target 2</div><div style="font-weight: 700; color: #22c55e;">$' + s.target2.toFixed(2) + '</div></div>' +
+                '</div>' +
+
+                // Footer
+                '<div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 9px; color: #888; display: flex; justify-content: space-between;">' +
+                    '<span>SQ9: $' + s.nearestLevel.toFixed(2) + '</span>' +
+                    '<span>R:R ' + s.riskReward + '</span>' +
+                    '<span>Max Loss: $' + s.maxLoss.toFixed(0) + '</span>' +
+                '</div>' +
+            '</div>';
+        }
+
         loadData(); 
         refreshStatus(); 
         setInterval(refreshStatus, 60000);
