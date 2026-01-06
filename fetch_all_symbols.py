@@ -8,10 +8,12 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-# Main ETFs + All Sector ETFs (must match web/index.html SYMBOLS array)
+# Main ETFs + All Sector ETFs + Individual Stocks (must match web/index.html SYMBOLS array)
 SYMBOLS = [
     'SPY', 'QQQ', 'IWM', 'DIA',  # Main ETFs
-    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY'  # Sector ETFs
+    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',  # Sector ETFs
+    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',  # Tech Giants
+    'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'  # Other Major Stocks
 ]
 DATA_DIR = 'data'
 LOOKBACK_DAYS = 1095  # 3 years

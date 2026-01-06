@@ -3624,6 +3624,22 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <option value="XLRE">XLRE - Real Estate</option>
                                 <option value="XLC">XLC - Comm Services</option>
                             </optgroup>
+                            <optgroup label="Individual Stocks">
+                                <option value="MSFT">MSFT - Microsoft</option>
+                                <option value="AAPL">AAPL - Apple</option>
+                                <option value="AMZN">AMZN - Amazon</option>
+                                <option value="GOOGL">GOOGL - Alphabet</option>
+                                <option value="META">META - Meta</option>
+                                <option value="TSLA">TSLA - Tesla</option>
+                                <option value="NVDA">NVDA - Nvidia</option>
+                                <option value="JPM">JPM - JPMorgan</option>
+                                <option value="MA">MA - Mastercard</option>
+                                <option value="LLY">LLY - Eli Lilly</option>
+                                <option value="WMT">WMT - Walmart</option>
+                                <option value="ORCL">ORCL - Oracle</option>
+                                <option value="CVX">CVX - Chevron</option>
+                                <option value="CSCO">CSCO - Cisco</option>
+                            </optgroup>
                         </select>
                     </div>
                     <button id="refreshBtn" class="refresh-btn" onclick="refreshAllData()" style="display: flex; align-items: center; gap: 5px;"><span id="refreshIcon">🔄</span> Refresh</button>
@@ -10576,12 +10592,15 @@ function autoCalculateGannPredictions(symbol) {
     console.log('Auto-calc complete:', JSON.stringify(gannPredictions));
 }
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
     'XLF': 'Financials', 'XLE': 'Energy', 'XLK': 'Technology', 'XLV': 'Healthcare',
     'XLI': 'Industrials', 'XLB': 'Materials', 'XLU': 'Utilities', 'XLP': 'Consumer Staples',
-    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services'
+    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services',
+    'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'GOOGL': 'Alphabet', 'META': 'Meta',
+    'TSLA': 'Tesla', 'NVDA': 'Nvidia', 'JPM': 'JPMorgan', 'MA': 'Mastercard', 'LLY': 'Eli Lilly',
+    'WMT': 'Walmart', 'ORCL': 'Oracle', 'CVX': 'Chevron', 'CSCO': 'Cisco'
 };
 
 const TRADING_PARAMS = {
@@ -11753,7 +11772,7 @@ async function fetchLatestPrice(symbol) {
 
 // Update ALL symbolGannData prices from CSV data (not just current symbol)
 function updateAllSymbolGannDataFromCSV() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
 
     symbols.forEach(function(symbol) {
         var data = allSymbolsData[symbol];
@@ -21647,6 +21666,146 @@ const symbolGannData = {
         sector: 'Consumer Disc',
         atr: 4.2,
         sacredLevels: [196, 216, 233, 250]
+    },
+    MSFT: {
+        price: 420.00,
+        low: 380.00,
+        high: 430.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 15',
+        sector: 'Technology',
+        atr: 6.5,
+        sacredLevels: [400, 420, 440, 460]
+    },
+    AAPL: {
+        price: 250.00,
+        low: 220.00,
+        high: 255.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 20',
+        sector: 'Technology',
+        atr: 4.0,
+        sacredLevels: [225, 240, 256, 270]
+    },
+    AMZN: {
+        price: 225.00,
+        low: 180.00,
+        high: 230.00,
+        lowDate: 'Oct 15',
+        highDate: 'Dec 10',
+        sector: 'Technology',
+        atr: 5.5,
+        sacredLevels: [196, 210, 225, 240]
+    },
+    GOOGL: {
+        price: 195.00,
+        low: 165.00,
+        high: 200.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 15',
+        sector: 'Technology',
+        atr: 4.0,
+        sacredLevels: [180, 192, 205, 218]
+    },
+    META: {
+        price: 610.00,
+        low: 540.00,
+        high: 620.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 20',
+        sector: 'Technology',
+        atr: 12.0,
+        sacredLevels: [576, 600, 625, 650]
+    },
+    TSLA: {
+        price: 420.00,
+        low: 330.00,
+        high: 450.00,
+        lowDate: 'Oct 20',
+        highDate: 'Dec 15',
+        sector: 'Technology',
+        atr: 15.0,
+        sacredLevels: [361, 400, 441, 484]
+    },
+    NVDA: {
+        price: 140.00,
+        low: 115.00,
+        high: 150.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 10',
+        sector: 'Technology',
+        atr: 5.0,
+        sacredLevels: [121, 133, 144, 156]
+    },
+    JPM: {
+        price: 250.00,
+        low: 210.00,
+        high: 260.00,
+        lowDate: 'Oct 27',
+        highDate: 'Dec 15',
+        sector: 'Financials',
+        atr: 4.5,
+        sacredLevels: [225, 244, 256, 270]
+    },
+    MA: {
+        price: 530.00,
+        low: 470.00,
+        high: 540.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 20',
+        sector: 'Financials',
+        atr: 9.0,
+        sacredLevels: [484, 512, 540, 576]
+    },
+    LLY: {
+        price: 780.00,
+        low: 700.00,
+        high: 800.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 15',
+        sector: 'Healthcare',
+        atr: 18.0,
+        sacredLevels: [729, 765, 800, 841]
+    },
+    WMT: {
+        price: 92.00,
+        low: 82.00,
+        high: 95.00,
+        lowDate: 'Oct 20',
+        highDate: 'Dec 10',
+        sector: 'Consumer Staples',
+        atr: 1.8,
+        sacredLevels: [81, 88, 95, 100]
+    },
+    ORCL: {
+        price: 175.00,
+        low: 145.00,
+        high: 180.00,
+        lowDate: 'Oct 15',
+        highDate: 'Dec 20',
+        sector: 'Technology',
+        atr: 4.5,
+        sacredLevels: [156, 169, 182, 196]
+    },
+    CVX: {
+        price: 145.00,
+        low: 130.00,
+        high: 155.00,
+        lowDate: 'Nov 1',
+        highDate: 'Dec 10',
+        sector: 'Energy',
+        atr: 3.0,
+        sacredLevels: [133, 144, 156, 169]
+    },
+    CSCO: {
+        price: 58.00,
+        low: 52.00,
+        high: 60.00,
+        lowDate: 'Oct 20',
+        highDate: 'Dec 15',
+        sector: 'Technology',
+        atr: 1.2,
+        sacredLevels: [52, 56, 60, 64]
     }
 };
 
