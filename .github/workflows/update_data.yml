@@ -27,7 +27,11 @@ jobs:
           pip install pandas yfinance numpy
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Fetch market data
+      - name: Fetch all symbol data
+        run: |
+          python fetch_all_symbols.py
+
+      - name: Run agents
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
