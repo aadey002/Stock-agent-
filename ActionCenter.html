@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Action Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; 
+            background: #f8fafc; 
+            color: #1e293b; 
+            line-height: 1.5; 
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #1e3a5f, #7c3aed);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 15px; }
+        .rules-box {
+            background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .rule-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .rule-num {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        .rule-title { font-weight: 700; font-size: 12px; display: inline; }
+        .rule-desc { font-size: 10px; color: #666; margin-top: 4px; }
+        .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .status-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .status-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
+        .status-value { font-size: 20px; font-weight: 800; margin: 5px 0; }
+        .status-detail { font-size: 10px; }
+        .signal-box {
+            border: 3px solid #22c55e;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: rgba(34,197,94,0.1);
+        }
+        .signal-text { font-size: 42px; font-weight: 900; color: #22c55e; }
+        .signal-detail { font-size: 16px; color: #64748b; margin-top: 10px; }
+        .recovery-box {
+            background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(59,130,246,0.05));
+            border: 2px solid rgba(34,197,94,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+            background: #ef4444;
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .stat-box {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-label { font-size: 10px; color: #64748b; }
+        .stat-value { font-size: 18px; font-weight: 800; }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-gray { background: #6b7280; color: white; }
+        .btn-group { display: flex; gap: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .badge-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .badge-warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
+        .badge-success { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .timeline-item.urgent {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid #ef4444;
+        }
+        .timeline-time { font-weight: 700; min-width: 80px; }
+        .trade-log { background: white; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .trade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; color: #64748b; margin-bottom: 4px; }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .green { color: #22c55e; }
+        .red { color: #ef4444; }
+        @media (max-width: 768px) {
+            .status-grid, .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .signal-text { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <h1>TRADE ACTION CENTER</h1>
+            <p>Stop guessing. Follow the signals. Only trade when ALL conditions align.</p>
+        </div>
+        
+        <!-- RECOVERY TRACKER -->
+        <div class="recovery-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <div style="font-size: 16px; font-weight: 700;">RECOVERY TRACKER</div>
+                    <div style="font-size: 11px; color: #64748b;">Track progress from -$228.73 (December losses)</div>
+                </div>
+                <button class="btn btn-gray" onclick="resetTracker()" style="padding: 6px 12px; font-size: 11px;">Reset</button>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-size: 12px; color: #64748b;">Recovery Progress</span>
+                <span id="progressPercent" style="font-size: 12px; font-weight: 700; color: #ef4444;">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
+                <span>Started: -$228.73</span>
+                <span id="remainingAmount">Remaining: -$228.73</span>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">JANUARY P/L</div>
+                    <div id="currentPnL" class="stat-value red">$0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">WIN RATE</div>
+                    <div id="winRate" class="stat-value">0%</div>
+                </div>
+                <div class="stat-box" style="background: rgba(34,197,94,0.1);">
+                    <div class="stat-label green">WINS</div>
+                    <div id="winCount" class="stat-value green">0</div>
+                </div>
+                <div class="stat-box" style="background: rgba(239,68,68,0.1);">
+                    <div class="stat-label red">LOSSES</div>
+                    <div id="lossCount" class="stat-value red">0</div>
+                </div>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 15px;">
+                <button class="btn btn-success" onclick="showModal('WIN')" style="flex: 1;">+ LOG WIN</button>
+                <button class="btn btn-danger" onclick="showModal('LOSS')" style="flex: 1;">+ LOG LOSS</button>
+            </div>
+        </div>
+        
+        <!-- THE 5 RULES -->
+        <div class="rules-box">
+            <div style="font-size: 16px; font-weight: 800; color: #ef4444; margin-bottom: 15px;">THE 5 RULES - NEVER BREAK THESE</div>
+            <div class="rules-grid">
+                <div class="rule-item">
+                    <span class="rule-num">1</span>
+                    <span class="rule-title">TREND IS KING</span>
+                    <div class="rule-desc">UP trend = CALLS only. DOWN trend = PUTS only.</div>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">2</span>
+                    <span class="rule-title">WAIT FOR LEVEL</span>
+                    <div class="rule-desc">Only enter at SQ9 support/resistance.</div>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">3</span>
+                    <span class="rule-title">CANDLE CONFIRMS</span>
+                    <div class="rule-desc">Must see reversal candle at level.</div>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">4</span>
+                    <span class="rule-title">RIGHT TIME</span>
+                    <div class="rule-desc">10-11:30 AM or 1-3 PM only.</div>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-num">5</span>
+                    <span class="rule-title">SIZE RIGHT</span>
+                    <div class="rule-desc">Max 2% risk per trade. Use stops.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MARKET STATUS -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="card-title">CURRENT MARKET STATUS</div>
+                <button class="btn btn-primary" onclick="refreshStatus()" style="padding: 8px 16px; font-size: 12px;">REFRESH</button>
+            </div>
+            <div class="status-grid">
+                <div id="timeStatus" class="status-box">
+                    <div class="status-label">Trading Time</div>
+                    <div class="status-value">--</div>
+                    <div class="status-detail">--</div>
+                </div>
+                <div class="status-box">
+                    <div class="status-label">SPY Trend</div>
+                    <div class="status-value green">UP</div>
+                    <div class="status-detail green" style="font-weight: 700;">CALLS ONLY</div>
+                </div>
+                <div class="status-box">
+                    <div class="status-label">Market Mood</div>
+                    <div class="status-value">NORMAL</div>
+                    <div class="status-detail">Good conditions</div>
+                </div>
+                <div id="canTradeStatus" class="status-box">
+                    <div class="status-label">Can Trade?</div>
+                    <div class="status-value">--</div>
+                    <div class="status-detail">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MAIN SIGNAL -->
+        <div class="signal-box">
+            <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">TODAY'S PRIMARY SIGNAL</div>
+            <div class="signal-text">CALLS ONLY</div>
+            <div class="signal-detail">Daily trend is UP. Only look for CALL entries at support levels.</div>
+        </div>
+        
+        <!-- YOUR POSITIONS -->
+        <div class="card">
+            <div class="card-title">YOUR POSITIONS - MONDAY ACTION PLAN</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Entry</th>
+                        <th>P/L</th>
+                        <th>Expiry</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: rgba(239,68,68,0.05);">
+                        <td><strong>SPY $685 Put</strong></td>
+                        <td>$0.49</td>
+                        <td class="red" style="font-weight: 700;">-83.5%</td>
+                        <td><span class="badge badge-danger">1/6 TODAY</span></td>
+                        <td><strong class="red">LET EXPIRE</strong></td>
+                    </tr>
+                    <tr style="background: rgba(239,68,68,0.05);">
+                        <td><strong>SPY $683 Put</strong></td>
+                        <td>$0.62</td>
+                        <td class="red" style="font-weight: 700;">-75.5%</td>
+                        <td><span class="badge badge-warning">1/7 Wed</span></td>
+                        <td><strong class="red">SELL AT OPEN</strong></td>
+                    </tr>
+                    <tr style="background: rgba(239,68,68,0.05);">
+                        <td><strong>SPY $681 Put</strong></td>
+                        <td>$0.41</td>
+                        <td class="red" style="font-weight: 700;">-77.2%</td>
+                        <td><span class="badge badge-warning">1/7 Wed</span></td>
+                        <td><strong class="red">SELL AT OPEN</strong></td>
+                    </tr>
+                    <tr style="background: rgba(34,197,94,0.05);">
+                        <td><strong>IWM $270 Call</strong></td>
+                        <td>$0.79</td>
+                        <td class="green" style="font-weight: 700;">+13.1%</td>
+                        <td><span class="badge badge-success">2/6 Feb</span></td>
+                        <td><strong class="green">HOLD - Target $1.20</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- MONDAY TIMELINE -->
+        <div class="card">
+            <div class="card-title">MONDAY JANUARY 6 - YOUR TIMELINE</div>
+            <div class="timeline-item">
+                <div class="timeline-time">8:00 AM</div>
+                <div>Check SPY and IWM pre-market prices</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-time">9:25 AM</div>
+                <div>Set up SELL orders for SPY $683 and $681 puts</div>
+            </div>
+            <div class="timeline-item urgent">
+                <div class="timeline-time red">9:30 AM</div>
+                <div><strong>EXECUTE: Sell SPY puts immediately. Be OUT by 9:45 AM.</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-time">10:00 AM</div>
+                <div>Set IWM alerts: Sell at $1.20 (profit) or $0.55 (stop). Then STOP TRADING.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-time">4:00 PM</div>
+                <div>SPY $685 Put expires. Log results. Expected cash: ~$465</div>
+            </div>
+        </div>
+        
+        <!-- TRADE LOG -->
+        <div class="card">
+            <div class="card-title">TRADE LOG - JANUARY 2026</div>
+            <div id="tradeLog" class="trade-log">
+                <div style="text-align: center; padding: 30px; color: #64748b;">
+                    No trades logged yet. Use the buttons above to log wins and losses.
+                </div>
+            </div>
+        </div>
+        
+        <!-- WHY YOU LOST -->
+        <div class="card" style="border-color: #ef4444;">
+            <div class="card-title red">WHY YOUR SPY PUTS LOST MONEY</div>
+            <div style="display: grid; gap: 10px; font-size: 12px;">
+                <div style="display: flex; gap: 10px;">
+                    <span class="red" style="font-weight: 700;">X</span>
+                    <div><strong>Bought PUTS in UPTREND</strong> - SPY was going UP, but you bet it would go DOWN.</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <span class="red" style="font-weight: 700;">X</span>
+                    <div><strong>Fought the trend</strong> - IWM CALL is up +13% because it's WITH the trend.</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <span class="green" style="font-weight: 700;">OK</span>
+                    <div><strong>What worked:</strong> IWM CALL bought WITH the uptrend = profit. Follow the trend!</div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- MODAL -->
+    <div id="tradeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="modalTitle" style="font-size: 16px; font-weight: 700;">Log Trade</div>
+                <button class="modal-close" onclick="hideModal()">X</button>
+            </div>
+            <input type="hidden" id="tradeType">
+            <div class="form-group">
+                <label>Symbol</label>
+                <input type="text" id="tradeSymbol" placeholder="SPY, IWM, QQQ...">
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" id="tradeAmount" placeholder="25.00" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <input type="text" id="tradeNotes" placeholder="Setup, entry reason...">
+            </div>
+            <button id="submitBtn" class="btn btn-success" onclick="submitTrade()" style="width: 100%;">Log Trade</button>
+        </div>
+    </div>
+    
+    <script>
+        var recoveryData = { startingLoss: -228.73, currentPnL: 0, trades: [] };
+        
+        function loadData() {
+            var saved = localStorage.getItem('actionCenterData2026');
+            if (saved) { try { recoveryData = JSON.parse(saved); } catch(e) {} }
+            updateDisplay();
+        }
+        
+        function saveData() { 
+            localStorage.setItem('actionCenterData2026', JSON.stringify(recoveryData)); 
+        }
+        
+        function updateDisplay() {
+            var progress = ((recoveryData.currentPnL - recoveryData.startingLoss) / Math.abs(recoveryData.startingLoss) * 100);
+            var remaining = Math.abs(recoveryData.startingLoss) - recoveryData.currentPnL;
+            var progressColor = progress < 25 ? '#ef4444' : progress < 50 ? '#f59e0b' : progress < 75 ? '#3b82f6' : '#22c55e';
+            
+            document.getElementById('progressPercent').textContent = Math.min(100, Math.max(0, progress)).toFixed(1) + '%';
+            document.getElementById('progressPercent').style.color = progressColor;
+            document.getElementById('progressFill').style.width = Math.min(100, Math.max(0, progress)) + '%';
+            document.getElementById('progressFill').style.background = progressColor;
+            document.getElementById('remainingAmount').textContent = remaining <= 0 ? 'RECOVERED!' : 'Remaining: -$' + remaining.toFixed(2);
+            
+            document.getElementById('currentPnL').textContent = (recoveryData.currentPnL >= 0 ? '+' : '') + '$' + recoveryData.currentPnL.toFixed(2);
+            document.getElementById('currentPnL').className = 'stat-value ' + (recoveryData.currentPnL >= 0 ? 'green' : 'red');
+            
+            var wins = recoveryData.trades.filter(function(t) { return t.result === 'WIN'; });
+            var losses = recoveryData.trades.filter(function(t) { return t.result === 'LOSS'; });
+            var winRate = recoveryData.trades.length > 0 ? (wins.length / recoveryData.trades.length * 100).toFixed(0) : 0;
+            
+            document.getElementById('winRate').textContent = winRate + '%';
+            document.getElementById('winRate').className = 'stat-value ' + (winRate >= 50 ? 'green' : 'red');
+            document.getElementById('winCount').textContent = wins.length;
+            document.getElementById('lossCount').textContent = losses.length;
+            
+            renderTradeLog();
+        }
+        
+        function renderTradeLog() {
+            var container = document.getElementById('tradeLog');
+            if (recoveryData.trades.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #64748b;">No trades logged yet.</div>';
+                return;
+            }
+            var html = '';
+            recoveryData.trades.slice().reverse().forEach(function(t) {
+                var icon = t.result === 'WIN' ? '[WIN]' : '[LOSS]';
+                var color = t.result === 'WIN' ? 'green' : 'red';
+                html += '<div class="trade-item"><div><span class="' + color + '" style="font-weight: 700;">' + icon + ' ' + t.symbol + '</span><span style="font-size: 10px; color: #64748b; margin-left: 10px;">' + t.date + '</span>' + (t.notes ? '<div style="font-size: 10px; color: #64748b;">' + t.notes + '</div>' : '') + '</div><div class="' + color + '" style="font-weight: 700;">' + (t.amount >= 0 ? '+' : '') + '$' + t.amount.toFixed(2) + '</div></div>';
+            });
+            container.innerHTML = html;
+        }
+        
+        function showModal(type) {
+            document.getElementById('tradeType').value = type;
+            document.getElementById('modalTitle').textContent = type === 'WIN' ? 'Log Winning Trade' : 'Log Losing Trade';
+            document.getElementById('submitBtn').className = 'btn ' + (type === 'WIN' ? 'btn-success' : 'btn-danger');
+            document.getElementById('tradeSymbol').value = '';
+            document.getElementById('tradeAmount').value = '';
+            document.getElementById('tradeNotes').value = '';
+            document.getElementById('tradeModal').classList.add('show');
+        }
+        
+        function hideModal() { 
+            document.getElementById('tradeModal').classList.remove('show'); 
+        }
+        
+        function submitTrade() {
+            var type = document.getElementById('tradeType').value;
+            var symbol = document.getElementById('tradeSymbol').value.toUpperCase() || 'UNKNOWN';
+            var amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
+            var notes = document.getElementById('tradeNotes').value;
+            if (amount === 0) { alert('Please enter an amount'); return; }
+            if (type === 'LOSS' && amount > 0) amount = -amount;
+            if (type === 'WIN' && amount < 0) amount = Math.abs(amount);
+            recoveryData.trades.push({ 
+                date: new Date().toISOString().split('T')[0], 
+                result: type, 
+                amount: amount, 
+                symbol: symbol, 
+                notes: notes 
+            });
+            recoveryData.currentPnL += amount;
+            saveData(); 
+            updateDisplay(); 
+            hideModal();
+        }
+        
+        function resetTracker() {
+            if (confirm('Reset all data? This will clear your trade log.')) {
+                recoveryData = { startingLoss: -228.73, currentPnL: 0, trades: [] };
+                saveData(); 
+                updateDisplay();
+            }
+        }
+        
+        function refreshStatus() {
+            var now = new Date();
+            var hour = now.getHours();
+            var min = now.getMinutes();
+            var day = now.getDay();
+            var time = hour + min / 60;
+            var status, color, detail, canTrade;
+            
+            if (day === 0 || day === 6) { 
+                status = 'CLOSED'; color = '#6b7280'; detail = 'Weekend'; canTrade = false; 
+            } else if (time < 9.5) { 
+                status = 'PRE-MKT'; color = '#f59e0b'; detail = 'Wait for open'; canTrade = false; 
+            } else if (time < 10) { 
+                status = 'AVOID'; color = '#ef4444'; detail = 'Opening chaos'; canTrade = false; 
+            } else if (time < 11.5) { 
+                status = 'PRIME'; color = '#22c55e'; detail = 'Best time'; canTrade = true; 
+            } else if (time < 13) { 
+                status = 'LUNCH'; color = '#f59e0b'; detail = 'Low volume'; canTrade = false; 
+            } else if (time < 15) { 
+                status = 'GOOD'; color = '#22c55e'; detail = 'Afternoon'; canTrade = true; 
+            } else if (time < 16) { 
+                status = 'PWR HR'; color = '#f59e0b'; detail = 'Quick only'; canTrade = false; 
+            } else { 
+                status = 'CLOSED'; color = '#6b7280'; detail = 'After hours'; canTrade = false; 
+            }
+            
+            document.getElementById('timeStatus').innerHTML = '<div class="status-label">Trading Time</div><div class="status-value" style="color:' + color + ';">' + status + '</div><div class="status-detail">' + detail + '</div>';
+            document.getElementById('canTradeStatus').innerHTML = '<div class="status-label">Can Trade?</div><div class="status-value" style="color:' + (canTrade ? '#22c55e' : '#ef4444') + ';">' + (canTrade ? 'YES' : 'NO') + '</div><div class="status-detail">' + (canTrade ? 'Good time' : 'Wait') + '</div>';
+        }
+        
+        loadData(); 
+        refreshStatus(); 
+        setInterval(refreshStatus, 60000);
+    </script>
+</body>
+</html>
