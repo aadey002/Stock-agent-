@@ -5786,19 +5786,39 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div class="sq9-monitor-header">
                     <div class="sq9-monitor-title">🎯 SQ9 Entry Signal Monitor</div>
                     <div class="sq9-etf-tabs" id="sq9EtfTabs" style="flex-wrap: wrap;">
+                        <!-- Main ETFs -->
                         <button class="sq9-etf-tab active" onclick="selectSq9Etf('SPY')">SPY</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('QQQ')">QQQ</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('DIA')">DIA</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('IWM')">IWM</button>
+                        <!-- Sector ETFs -->
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLK')">XLK</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLF')">XLF</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLE')">XLE</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLK')">XLK</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLV')">XLV</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLI')">XLI</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLB')">XLB</button>
-                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLU')">XLU</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLP')">XLP</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLU')">XLU</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLB')">XLB</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLC')">XLC</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('XLRE')">XLRE</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('XLY')">XLY</button>
+                        <!-- Tech Giants -->
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('MSFT')">MSFT</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AAPL')">AAPL</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AMZN')">AMZN</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('GOOGL')">GOOGL</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('META')">META</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('TSLA')">TSLA</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('NVDA')">NVDA</button>
+                        <!-- Other Major Stocks -->
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('JPM')">JPM</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('MA')">MA</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('LLY')">LLY</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('WMT')">WMT</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('ORCL')">ORCL</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('CVX')">CVX</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('CSCO')">CSCO</button>
                     </div>
                 </div>
 
@@ -9284,10 +9304,18 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
 
                 <!-- ETF Selection Tabs -->
-                <div class="gann-etf-tabs" id="gannRoadmapEtfTabs">
-                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">📊 SPY</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">💻 QQQ</button>
-                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">🏭 IWM</button>
+                <div class="gann-etf-tabs" id="gannRoadmapEtfTabs" style="flex-wrap: wrap;">
+                    <button class="gann-etf-tab active" onclick="selectRoadmapETF('SPY')">SPY</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('QQQ')">QQQ</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('IWM')">IWM</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('DIA')">DIA</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('MSFT')">MSFT</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AAPL')">AAPL</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('GOOGL')">GOOGL</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AMZN')">AMZN</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('META')">META</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('TSLA')">TSLA</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('NVDA')">NVDA</button>
                 </div>
 
                 <!-- Pivot Selection Tabs -->
@@ -9561,14 +9589,36 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <select id="sq9MtfSymbol" onchange="updateSq9Mtf()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; font-weight: 600;">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="AAPL">AAPL</option>
-                            <option value="AMD">AMD</option>
-                            <option value="META">META</option>
+                            <optgroup label="Major ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Tech Giants">
+                                <option value="MSFT">MSFT</option>
+                                <option value="AAPL">AAPL</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="NVDA">NVDA</option>
+                            </optgroup>
+                            <optgroup label="Other Stocks">
+                                <option value="JPM">JPM</option>
+                                <option value="MA">MA</option>
+                                <option value="LLY">LLY</option>
+                                <option value="WMT">WMT</option>
+                                <option value="ORCL">ORCL</option>
+                                <option value="CVX">CVX</option>
+                                <option value="CSCO">CSCO</option>
+                            </optgroup>
+                            <optgroup label="Sectors">
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                            </optgroup>
                         </select>
                         <div style="font-size: 14px; font-weight: 600;">
                             <span id="sq9MtfSymbolDisplay">SPY</span>:
@@ -11980,6 +12030,7 @@ function generateDynamicOpportunities() {
         { sym: 'SPY', sector: 'Index' },
         { sym: 'QQQ', sector: 'Tech' },
         { sym: 'IWM', sector: 'Small Cap' },
+        { sym: 'DIA', sector: 'Index' },
         { sym: 'XLF', sector: 'Financial' },
         { sym: 'XLE', sector: 'Energy' },
         { sym: 'XLK', sector: 'Technology' },
@@ -11988,7 +12039,23 @@ function generateDynamicOpportunities() {
         { sym: 'XLB', sector: 'Materials' },
         { sym: 'XLU', sector: 'Utilities' },
         { sym: 'XLP', sector: 'Staples' },
-        { sym: 'XLY', sector: 'Discretionary' }
+        { sym: 'XLY', sector: 'Discretionary' },
+        { sym: 'XLRE', sector: 'Real Estate' },
+        { sym: 'XLC', sector: 'Comm Svcs' },
+        { sym: 'MSFT', sector: 'Technology' },
+        { sym: 'AAPL', sector: 'Technology' },
+        { sym: 'AMZN', sector: 'Technology' },
+        { sym: 'GOOGL', sector: 'Technology' },
+        { sym: 'META', sector: 'Technology' },
+        { sym: 'TSLA', sector: 'Technology' },
+        { sym: 'NVDA', sector: 'Technology' },
+        { sym: 'JPM', sector: 'Financial' },
+        { sym: 'MA', sector: 'Financial' },
+        { sym: 'LLY', sector: 'Healthcare' },
+        { sym: 'WMT', sector: 'Staples' },
+        { sym: 'ORCL', sector: 'Technology' },
+        { sym: 'CVX', sector: 'Energy' },
+        { sym: 'CSCO', sector: 'Technology' }
     ];
 
     var rows = [];
@@ -27504,6 +27571,102 @@ const gannRoadmapData = {
                 { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 280.00, significance: '360° full circle' }
             ]
         }
+    },
+    DIA: {
+        HIGH: { date: '2025-02-19', price: 450.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-05-20', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 430.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-08-18', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 460.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-02-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 480.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 380.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 440.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 470.00, significance: '360° full circle' }
+        ]}
+    },
+    MSFT: {
+        HIGH: { date: '2025-01-15', price: 450.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-04-15', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-07-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 440.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-01-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 480.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 350.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 400.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 430.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 470.00, significance: '360° full circle' }
+        ]}
+    },
+    AAPL: {
+        HIGH: { date: '2025-01-10', price: 260.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-04-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 240.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-07-09', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 255.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-01-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 280.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 200.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 230.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 250.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 270.00, significance: '360° full circle' }
+        ]}
+    },
+    GOOGL: {
+        HIGH: { date: '2025-02-01', price: 210.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-05-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 190.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-07-31', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 200.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-01-27', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 150.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 180.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 195.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 210.00, significance: '360° full circle' }
+        ]}
+    },
+    AMZN: {
+        HIGH: { date: '2025-02-10', price: 240.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-05-11', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-08-09', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 235.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-02-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 260.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 170.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 200.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 220.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 250.00, significance: '360° full circle' }
+        ]}
+    },
+    META: {
+        HIGH: { date: '2025-02-15', price: 650.00, type: 'HIGH', label: 'Feb 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-05-16', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 600.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-08-14', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 640.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-02-10', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 700.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 480.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 560.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 600.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 680.00, significance: '360° full circle' }
+        ]}
+    },
+    TSLA: {
+        HIGH: { date: '2024-12-18', price: 480.00, type: 'HIGH', label: 'Dec 2024 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-03-18', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 400.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-06-16', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 450.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2025-12-13', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 520.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 280.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 360.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 420.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 500.00, significance: '360° full circle' }
+        ]}
+    },
+    NVDA: {
+        HIGH: { date: '2025-01-06', price: 150.00, type: 'HIGH', label: 'Jan 2025 ATH', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-04-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 130.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-07-05', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 145.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-01-01', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 170.00, significance: '360° full circle' }
+        ]},
+        LOW: { date: '2025-04-07', price: 90.00, type: 'LOW', label: 'Apr 2025 Low', cycles: [
+            { days: 90, name: '90d Quarter', targetDate: '2025-07-06', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 120.00, significance: '90° angle' },
+            { days: 180, name: '180d Half', targetDate: '2025-10-04', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 140.00, significance: '180° opposition' },
+            { days: 360, name: '360d Annual', targetDate: '2026-04-02', actualPrice: null, actualMove: null, result: 'future', movePercent: null, predPrice: 160.00, significance: '360° full circle' }
+        ]}
     }
 };
 
@@ -28154,19 +28317,39 @@ let sq9EntryZones = {};
 
 // Pivot Data for SQ9 Calculations
 const sq9PivotData = {
+    // Main ETFs
     SPY: { date: '2025-04-07', price: 481.80, type: 'LOW', label: 'Apr 7 LOW' },
     QQQ: { date: '2025-04-07', price: 402.39, type: 'LOW', label: 'Apr 7 LOW' },
     DIA: { date: '2025-04-07', price: 364.42, type: 'LOW', label: 'Apr 7 LOW' },
     IWM: { date: '2025-04-07', price: 171.73, type: 'LOW', label: 'Apr 7 LOW' },
+    // Sector ETFs
+    XLK: { date: '2025-04-07', price: 186.50, type: 'LOW', label: 'Apr 7 LOW' },
     XLF: { date: '2025-04-07', price: 42.35, type: 'LOW', label: 'Apr 7 LOW' },
     XLE: { date: '2025-04-07', price: 78.12, type: 'LOW', label: 'Apr 7 LOW' },
-    XLK: { date: '2025-04-07', price: 186.50, type: 'LOW', label: 'Apr 7 LOW' },
     XLV: { date: '2025-04-07', price: 131.25, type: 'LOW', label: 'Apr 7 LOW' },
     XLI: { date: '2025-04-07', price: 112.80, type: 'LOW', label: 'Apr 7 LOW' },
-    XLB: { date: '2025-04-07', price: 79.45, type: 'LOW', label: 'Apr 7 LOW' },
-    XLU: { date: '2025-04-07', price: 68.90, type: 'LOW', label: 'Apr 7 LOW' },
     XLP: { date: '2025-04-07', price: 75.20, type: 'LOW', label: 'Apr 7 LOW' },
-    XLY: { date: '2025-04-07', price: 175.30, type: 'LOW', label: 'Apr 7 LOW' }
+    XLU: { date: '2025-04-07', price: 68.90, type: 'LOW', label: 'Apr 7 LOW' },
+    XLB: { date: '2025-04-07', price: 79.45, type: 'LOW', label: 'Apr 7 LOW' },
+    XLC: { date: '2025-04-07', price: 78.50, type: 'LOW', label: 'Apr 7 LOW' },
+    XLRE: { date: '2025-04-07', price: 36.80, type: 'LOW', label: 'Apr 7 LOW' },
+    XLY: { date: '2025-04-07', price: 175.30, type: 'LOW', label: 'Apr 7 LOW' },
+    // Tech Giants
+    MSFT: { date: '2025-04-07', price: 356.25, type: 'LOW', label: 'Apr 7 LOW' },
+    AAPL: { date: '2025-04-07', price: 169.50, type: 'LOW', label: 'Apr 7 LOW' },
+    AMZN: { date: '2025-04-07', price: 161.02, type: 'LOW', label: 'Apr 7 LOW' },
+    GOOGL: { date: '2025-04-07', price: 146.80, type: 'LOW', label: 'Apr 7 LOW' },
+    META: { date: '2025-04-07', price: 480.50, type: 'LOW', label: 'Apr 7 LOW' },
+    TSLA: { date: '2025-04-07', price: 138.80, type: 'LOW', label: 'Apr 7 LOW' },
+    NVDA: { date: '2025-04-07', price: 86.50, type: 'LOW', label: 'Apr 7 LOW' },
+    // Other Major Stocks
+    JPM: { date: '2025-04-07', price: 218.50, type: 'LOW', label: 'Apr 7 LOW' },
+    MA: { date: '2025-04-07', price: 468.20, type: 'LOW', label: 'Apr 7 LOW' },
+    LLY: { date: '2025-04-07', price: 710.00, type: 'LOW', label: 'Apr 7 LOW' },
+    WMT: { date: '2025-04-07', price: 80.50, type: 'LOW', label: 'Apr 7 LOW' },
+    ORCL: { date: '2025-04-07', price: 125.80, type: 'LOW', label: 'Apr 7 LOW' },
+    CVX: { date: '2025-04-07', price: 135.20, type: 'LOW', label: 'Apr 7 LOW' },
+    CSCO: { date: '2025-04-07', price: 51.80, type: 'LOW', label: 'Apr 7 LOW' }
 };
 
 // Calculate SQ9 levels from pivot
@@ -28254,18 +28437,40 @@ function calculateGann8ths(symbol) {
     if (!priceData || priceData.length < 50) {
         // Use known ranges as fallback
         var knownRanges = {
+            // Main ETFs
             'SPY': { high: 710.00, low: 481.80 },
             'QQQ': { high: 540.00, low: 402.39 },
             'IWM': { high: 265.00, low: 171.73 },
             'DIA': { high: 450.00, low: 365.45 },
+            // Sector ETFs
+            'XLK': { high: 240.00, low: 185.20 },
             'XLF': { high: 52.00, low: 42.80 },
             'XLE': { high: 98.00, low: 78.50 },
-            'XLK': { high: 240.00, low: 185.20 },
-            'NVDA': { high: 153.00, low: 86.50 },
-            'TSLA': { high: 490.00, low: 138.80 },
+            'XLV': { high: 160.00, low: 131.25 },
+            'XLI': { high: 145.00, low: 112.80 },
+            'XLP': { high: 85.00, low: 75.20 },
+            'XLU': { high: 82.00, low: 68.90 },
+            'XLB': { high: 95.00, low: 79.45 },
+            'XLC': { high: 105.00, low: 78.50 },
+            'XLRE': { high: 45.00, low: 36.80 },
+            'XLY': { high: 220.00, low: 175.30 },
+            // Tech Giants
+            'MSFT': { high: 470.00, low: 356.25 },
             'AAPL': { high: 260.00, low: 169.50 },
-            'AMD': { high: 185.00, low: 95.80 },
-            'META': { high: 640.00, low: 480.50 }
+            'AMZN': { high: 240.00, low: 161.02 },
+            'GOOGL': { high: 210.00, low: 146.80 },
+            'META': { high: 640.00, low: 480.50 },
+            'TSLA': { high: 490.00, low: 138.80 },
+            'NVDA': { high: 153.00, low: 86.50 },
+            // Other Major Stocks
+            'JPM': { high: 280.00, low: 218.50 },
+            'MA': { high: 560.00, low: 468.20 },
+            'LLY': { high: 970.00, low: 710.00 },
+            'WMT': { high: 105.00, low: 80.50 },
+            'ORCL': { high: 195.00, low: 125.80 },
+            'CVX': { high: 170.00, low: 135.20 },
+            'CSCO': { high: 65.00, low: 51.80 },
+            'AMD': { high: 185.00, low: 95.80 }
         };
 
         if (knownRanges[symbol]) {
