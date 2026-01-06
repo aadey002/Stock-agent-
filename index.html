@@ -34365,17 +34365,43 @@ var historicalPatterns = {
     stats: {}
 };
 
-function scanHistoricalPatterns() {
+async function scanHistoricalPatterns() {
     var symbol = document.getElementById('histPatternSymbol').value || 'SPY';
     var period = parseInt(document.getElementById('histPatternPeriod').value) || 365;
 
     var priceData = null;
-    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 30) {
         priceData = allSymbolsData[symbol];
+    } else {
+        // Try to fetch from CSV file
+        try {
+            var response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
+            if (response.ok) {
+                var text = await response.text();
+                var lines = text.trim().split('\n').slice(1);
+                priceData = lines.map(function(line) {
+                    var cols = line.split(',');
+                    return {
+                        Date: cols[0],
+                        Open: parseFloat(cols[1]),
+                        High: parseFloat(cols[2]),
+                        Low: parseFloat(cols[3]),
+                        Close: parseFloat(cols[4]),
+                        Volume: parseFloat(cols[5])
+                    };
+                }).filter(function(d) { return !isNaN(d.Close); });
+                // Cache it for future use
+                if (typeof allSymbolsData !== 'undefined') {
+                    allSymbolsData[symbol] = priceData;
+                }
+            }
+        } catch (e) {
+            console.log('Error fetching CSV for ' + symbol + ':', e);
+        }
     }
 
     if (!priceData || priceData.length < 30) {
-        alert('Insufficient data for ' + symbol);
+        alert('Insufficient data for ' + symbol + '. Please ensure ' + symbol + '.csv exists in the data folder.');
         return;
     }
 
