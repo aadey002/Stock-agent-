@@ -22271,7 +22271,7 @@ function updateVIXDisplay() {
 
  if (currentVIX < 15) {
 
- vixLabelEl.textContent = 'Low Vol ;
+ vixLabelEl.textContent = 'Low Vol ';
 
  vixLabelEl.style.color = '#22c55e';
 
@@ -28777,7 +28777,7 @@ function updateMarketAnalysisTab() {
 
  } else if (vixCurrent < 16) {
 
- vixStatus = 'Low Vol ;
+ vixStatus = 'Low Vol ';
 
  vixStatusColor = '#22c55e';
 
@@ -28795,7 +28795,7 @@ function updateMarketAnalysisTab() {
 
  } else {
 
- vixStatus = 'High Fear ;
+ vixStatus = 'High Fear ';
 
  vixStatusColor = '#ef4444';
 
@@ -29095,7 +29095,7 @@ function updateMarketAnalysisTab() {
 
  if (breadthPct >= 70) {
 
- breadthStatus = 'Strong ;
+ breadthStatus = 'Strong ';
 
  breadthColor = '#22c55e';
 
@@ -41005,7 +41005,7 @@ function checkConnections() {
 
  var el=document.getElementById('connDataStatus');if(el)el.textContent = 'Failed';
 
- var el=document.getElementById('connDataLight');if(el)el.textContent = ';
+ var el=document.getElementById('connDataLight');if(el)el.textContent = '';
 
  }
 
@@ -41035,7 +41035,7 @@ function checkConnections() {
 
  var el=document.getElementById('connLocalStorageStatus');if(el)el.textContent = 'Blocked';
 
- var el=document.getElementById('connLocalStorageLight');if(el)el.textContent = ';
+ var el=document.getElementById('connLocalStorageLight');if(el)el.textContent = '';
 
  healthStatus.alerts.push({ type: 'warning', message: 'Local storage unavailable - trade log may not persist' });
 
@@ -41105,7 +41105,7 @@ function updateOverallHealth() {
 
  healthStatus.workflowStatus = 'critical';
 
- var el=document.getElementById('workflowStatusLight');if(el)el.textContent = ';
+ var el=document.getElementById('workflowStatusLight');if(el)el.textContent = '';
 
  }
 
@@ -41121,7 +41121,7 @@ function updateOverallHealth() {
 
  else if (healthStatus.dataFreshness === 'warning') dataFreshLight.textContent = '
 
- else dataFreshLight.textContent = ';
+ else dataFreshLight.textContent = '';
 
  }
 
@@ -41137,7 +41137,7 @@ function updateOverallHealth() {
 
  else if (healthStatus.dataQuality === 'warning') dataQualityLight.textContent = '
 
- else dataQualityLight.textContent = ';
+ else dataQualityLight.textContent = '';
 
  }
 
@@ -41201,7 +41201,7 @@ function updateOverallHealth() {
 
  banner.className = 'health-banner critical';
 
- icon.textContent = ';
+ icon.textContent = '';
 
  title.textContent = 'ATTENTION NEEDED';
 
@@ -41631,7 +41631,7 @@ function toggleTroubleshoot(header) {
 
  content.classList.add('show');
 
- toggle.textContent = ';
+ toggle.textContent = '';
 
  }
 
@@ -54069,7 +54069,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  vixEl.style.color = '#22c55e';
 
- vixLabelEl.textContent = 'Low Vol ;
+ vixLabelEl.textContent = 'Low Vol ';
 
  vixLabelEl.style.color = '#22c55e';
 
@@ -54113,7 +54113,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  trendEl.style.color = '#22c55e';
 
- trendLabelEl.textContent = 'Above 20MA ;
+ trendLabelEl.textContent = 'Above 20MA ';
 
  trendLabelEl.style.color = '#22c55e';
 
@@ -54151,7 +54151,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
  breadthEl.style.color = '#22c55e';
 
- breadthLabelEl.textContent = 'Positive ;
+ breadthLabelEl.textContent = 'Positive ';
 
  breadthLabelEl.style.color = '#22c55e';
 
@@ -66719,7 +66719,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusColor = '#f59e0b';
 
- result.statusIcon = ';
+ result.statusIcon = '';
 
  result.recommendation = 'WAIT FOR MARKET OPEN';
 
@@ -66733,7 +66733,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.recommendationColor = '#d97706';
 
- result.actionEmoji = ';
+ result.actionEmoji = '';
 
  } else if (isAfterHours) {
 
@@ -66741,7 +66741,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusColor = '#6b7280';
 
- result.statusIcon = ';
+ result.statusIcon = '';
 
  result.recommendation = 'MARKET CLOSED';
 
@@ -66749,7 +66749,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.recommendationIcon = '';
 
- result.actionEmoji = ';
+ result.actionEmoji = '';
 
  } else {
 
@@ -66791,7 +66791,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.recommendationColor = '#dc2626';
 
- result.actionEmoji = ';
+ result.actionEmoji = '';
 
  } else {
 
@@ -66799,7 +66799,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusColor = '#f59e0b';
 
- result.statusIcon = ';
+ result.statusIcon = '';
 
  result.recommendation = direction === 'PUT' ? 'WATCH FOR RALLY FADE' : 'WATCH FOR DIP BUY';
 
@@ -66823,7 +66823,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusColor = '#22c55e';
 
- result.statusIcon = ';
+ result.statusIcon = '';
 
  result.recommendation = 'OPTIMAL ENTRY TIME';
 
@@ -66837,7 +66837,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.recommendationColor = '#16a34a';
 
- result.actionEmoji = ';
+ result.actionEmoji = '';
 
  } else if (isLunchHour) {
 
@@ -66867,7 +66867,7 @@ function getOptimalEntryTiming(direction, marketTime) {
 
  result.statusColor = '#22c55e';
 
- result.statusIcon = ';
+ result.statusIcon = '';
 
  result.recommendation = direction === 'CALL' ? 'GOOD FOR REVERSAL PLAYS' : 'WATCH FOR FAILED BREAKOUTS';
 
@@ -67919,7 +67919,7 @@ function updateTimeframePanel(timeframe, analysis) {
 
  } else if (analysis.candle === 'red') {
 
- candleEl.textContent = ';
+ candleEl.textContent = '';
 
  panel.style.borderColor = 'rgba(239,68,68,0.5)';
 
@@ -69734,7 +69734,7 @@ function getTrendAwareSQ9Signal(symbol) {
 
  trend = 'UP';
 
- trendEmoji = ';
+ trendEmoji = '';
 
  trendColor = '#4CAF50';
 
@@ -69742,7 +69742,7 @@ function getTrendAwareSQ9Signal(symbol) {
 
  trend = 'STRONG_DOWN';
 
- trendEmoji = ';
+ trendEmoji = '';
 
  trendColor = '#ff0000';
 
@@ -69872,7 +69872,7 @@ function getTrendAwareSQ9Signal(symbol) {
 
  action = 'BIAS: CALLS - Wait for pullback to support';
 
- signalEmoji = ';
+ signalEmoji = '';
 
  signalColor = '#4CAF50';
 
