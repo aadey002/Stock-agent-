@@ -11577,6 +11577,19 @@ function initTabs() {
                     updateMarketAnalysisTab();
                 }
             }
+
+            // Trigger Patterns update when tab is clicked
+            if (btn.dataset.tab === 'patterns') {
+                if (typeof updatePatternTableFromCSV === 'function') {
+                    updatePatternTableFromCSV();
+                }
+                if (typeof updatePatternDetection === 'function') {
+                    updatePatternDetection(currentSymbol);
+                }
+                if (typeof updateTechnicalPatterns === 'function') {
+                    updateTechnicalPatterns(currentSymbol);
+                }
+            }
         };
     });
 }
