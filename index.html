@@ -25541,7 +25541,7 @@ function generateDynamicOpportunities() {
 
  var aligned = (gannSignal === mktSignal) || gannSignal === 'HOLD';
 
- var alignIcon = aligned ? ' : ' 
+ var alignIcon = aligned ? '' : '';
 
  var alignColor = aligned ? '#22c55e' : '#f59e0b';
 
@@ -29221,7 +29221,7 @@ function updateMarketAnalysisTab() {
 
  el = document.getElementById('mktOverallScore');
 
- if (el) { el.textContent = score + '/3 ' + (score >= 2 ? ' : '; el.style.color = overallColor; }
+ if (el) { el.textContent = score + '/3 ' + (score >= 2 ? '' : ''; el.style.color = overallColor; }
 
  el = document.getElementById('mktOverallAdvice');
 
@@ -31145,9 +31145,9 @@ function verifyPastPredictions() {
 
  console.log('Verified ' + sym + ' ' + entry.date + ': ' +
 
- 'Gann=' + entry.gannPred + (entry.gannCorrect ? ' : ') + ', ' +
+ 'Gann=' + entry.gannPred + (entry.gannCorrect ? '' : '') + ', ' +
 
- 'Mkt=' + entry.mktPred + (entry.mktCorrect ? ' : ') + ', ' +
+ 'Mkt=' + entry.mktPred + (entry.mktCorrect ? '' : '') + ', ' +
 
  'Move=' + entry.actualMove.toFixed(2) + '%');
 
@@ -33519,7 +33519,7 @@ function backtestPivotGann() {
 
  for (var i = 0; i < methods.length; i++) {
 
- var icon = methods[i].pct >= 55 ? ' : (methods[i].pct >= 50 ? ' : ';
+ var icon = methods[i].pct >= 55 ? '' : (methods[i].pct >= 50 ? '' : '';
 
  msg += icon + ' ' + methods[i].name + ': ' + methods[i].pct + '%\n';
 
@@ -34163,9 +34163,9 @@ function backtestBiblicalNumbers() {
 
  var r = calendarRanked[i];
 
- var icon = r.pct >= 55 ? ' : (r.pct >= 50 ? ' : ';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : '';
 
- var highlight = (r.days == 144 || r.days == 49 || r.days == 40) ? ' : '';
+ var highlight = (r.days == 144 || r.days == 49 || r.days == 40) ? '' : ''';
 
  msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + highlight + '\n';
 
@@ -34183,7 +34183,7 @@ function backtestBiblicalNumbers() {
 
  var r = tradingRanked[i];
 
- var icon = r.pct >= 55 ? ' : (r.pct >= 50 ? ' : ';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : '';
 
  var highlight = r.days == 35 ? '   DEATH ZONE' : '';
 
@@ -34617,9 +34617,9 @@ function runBiblicalBacktestOnData(data, label) {
 
  var r = ranked[i];
 
- var icon = r.pct >= 55 ? ' : (r.pct >= 50 ? ' : ';
+ var icon = r.pct >= 55 ? '' : (r.pct >= 50 ? '' : '';
 
- var star = (r.days == 144 || r.days == 49 || r.days == 40 || r.days == 360) ? ' : '';
+ var star = (r.days == 144 || r.days == 49 || r.days == 40 || r.days == 360) ? '' : ''';
 
  msg += icon + ' ' + r.days + ' days: ' + r.pct + '% (' + r.reversals + '/' + r.total + ') - ' + r.name + star + '\n';
 
@@ -35239,7 +35239,7 @@ function updatePredictionLogDisplay() {
 
  var mktColor = entry.mktPred === 'CALL' ? '#22c55e' : '#ef4444';
 
- var alignedIcon = entry.aligned ? ' : ' 
+ var alignedIcon = entry.aligned ? '' : '';
 
  var actualColor = entry.actualMove >= 0 ? '#22c55e' : '#ef4444';
 
@@ -35247,9 +35247,9 @@ function updatePredictionLogDisplay() {
 
 
 
- var gannCheckIcon = entry.verified ? (entry.gannCorrect ? ' : ' : '
+ var gannCheckIcon = entry.verified ? (entry.gannCorrect ? '' : '' : ''
 
- var mktCheckIcon = entry.verified ? (entry.mktCorrect ? ' : ' : '
+ var mktCheckIcon = entry.verified ? (entry.mktCorrect ? '' : '' : ''
 
 
 
@@ -36021,7 +36021,7 @@ function updateBarCountAnalysis() {
 
  <td style="font-size:10px;">${r.o.toFixed(0)}/${r.high.toFixed(0)}/${r.low.toFixed(0)}/${r.c.toFixed(0)}</td>
 
- <td>${r.isBullish ? ' : ''}</td>
+ <td>${r.isBullish ? '' : ''}</td>
 
  <td class="${r.baseCount > 0 ? 'positive' : 'negative'}">${r.baseCount > 0 ? '+' : ''}${r.baseCount}</td>
 
@@ -36591,7 +36591,7 @@ function updateSignalsFibonacci() {
 
  const direction = closestLevel.price > currentPrice ? 'below' : 'above';
 
- const levelType = closestLevel.type === 'resistance' ? ' : closestLevel.type === 'support' ? ' : ';
+ const levelType = closestLevel.type === 'resistance' ? '' : closestLevel.type === 'support' ? '' : '';
 
  proximityEl.innerHTML = `${levelType} <strong>${currentSymbol}</strong> is <strong>${Math.abs(closestPct)}%</strong> away from <strong>${closestLevel.name}</strong> ($${closestLevel.price.toFixed(2)})`;
 
@@ -37673,7 +37673,7 @@ ATR: $${atr.toFixed(2)}
 
  sectors.forEach((s, i) => {
 
- const emoji = i === 0 ? ' : (i === 1 ? ' : (i === 2 ? ' : ' '));
+ const emoji = i === 0 ? '' : (i === 1 ? '' : (i === 2 ? '' : ''));
 
  const perfColor = parseFloat(s.perf) >= 0 ? '+' : '';
 
@@ -37953,7 +37953,7 @@ function generateBarCountResponse() {
 
  const streakDir = lastDir ? ' Bullish' : ' Bearish';
 
- const streakEmoji = currentStreak >= 5 ? ' : (currentStreak >= 3 ? ' : '');
+ const streakEmoji = currentStreak >= 5 ? '' : (currentStreak >= 3 ? '' : '');
 
  
 
@@ -38121,7 +38121,7 @@ function generateBreakoutResponse() {
 
  response += ` Price: $${b.price} (+${b.change}%)\n`;
 
- response += ` Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? ' : ''}\n`;
+ response += ` Volume: ${b.volRatio}% of avg ${parseFloat(b.volRatio) > 150 ? '' : ''}\n`;
 
  response += ` Breaking 5-day high: ${b.above5Day ? ' YES' : ' No'}\n`;
 
@@ -38455,7 +38455,7 @@ function generateMomentumResponse() {
 
  momentum.slice(0, 3).forEach((m, i) => {
 
- const emoji = i === 0 ? ' : (i === 1 ? ' : ');
+ const emoji = i === 0 ? '' : (i === 1 ? '' : '');
 
  response += `${emoji} **${m.symbol}** - $${m.price}\n`;
 
@@ -38969,7 +38969,7 @@ Current market conditions don't show clear setups:
 
 **${bestTrade.symbol} ${bestTrade.signal}**
 
-Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? ' : ' 
+Agent Consensus: ${bestTrade.consensus}/4 ${bestTrade.consensus >= 3 ? '' : ''}
 
 
 
@@ -39109,7 +39109,7 @@ function generateMarketUpdateResponse() {
 
  const marketBias = bullish > bearish ? 'BULLISH' : (bearish > bullish ? 'BEARISH' : 'MIXED');
 
- const biasEmoji = marketBias === 'BULLISH' ? ' : (marketBias === 'BEARISH' ? '' : '  
+ const biasEmoji = marketBias === 'BULLISH' ? '' : (marketBias === 'BEARISH' ? '' : '  
 
  
 
@@ -39163,7 +39163,7 @@ function generateQuickSectorSummary() {
 
  const signal = lat.Bias || 'HOLD';
 
- const emoji = signal === 'CALL' ? ' : (signal === 'PUT' ? '' : '');
+ const emoji = signal === 'CALL' ? '' : (signal === 'PUT' ? '' : '');
 
  summary += `${emoji} ${SYMBOL_NAMES[symbol]}: ${signal}\n`;
 
@@ -39547,7 +39547,7 @@ function renderTrades() {
 
  const statusClass = trade.status.toLowerCase();
 
- const directionEmoji = trade.direction === 'CALL' ? ' : '';
+ const directionEmoji = trade.direction === 'CALL' ? '' : '';
 
  const typeEmoji = trade.type === 'INTRADAY' ? '' : ' ';
 
@@ -41425,7 +41425,7 @@ function renderSystemLog() {
 
  tbody.innerHTML = recentLog.map(entry => {
 
- const statusIcon = entry.status === 'Success' ? ' : entry.status === 'Warning' ? ' : ';
+ const statusIcon = entry.status === 'Success' ? '' : entry.status === 'Warning' ? '' : '';
 
  return `
 
@@ -41493,7 +41493,7 @@ function updateComponentStatus() {
 
  }
 
- if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? ' : healthStatus.dataFreshness === 'warning' ? ' : ';
+ if (dataFetchLightEl) dataFetchLightEl.textContent = healthStatus.dataFreshness === 'healthy' ? '' : healthStatus.dataFreshness === 'warning' ? '' : '';
 
  }
 
@@ -41523,7 +41523,7 @@ function updateComponentStatus() {
 
  }
 
- if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? ' : healthStatus.workflowStatus === 'warning' ? ' : ';
+ if (workflowLightEl) workflowLightEl.textContent = healthStatus.workflowStatus === 'healthy' ? '' : healthStatus.workflowStatus === 'warning' ? '' : '';
 
  }
 
@@ -42965,7 +42965,7 @@ function renderEnhancedPF(panelType, data, container, settings) {
 
  patternEl.className = `pattern-alert-mtf ${patternResult.pattern.type}`;
 
- patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? ' : '} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
+ patternEl.innerHTML = `${patternResult.pattern.type === 'bullish' ? '' : ''} <strong>${patternResult.pattern.name}</strong> <span style="float:right;">Strength: ${patternResult.pattern.strength}%</span>`;
 
  updateMTFSignal(panelType, patternResult.signal);
 
@@ -47369,7 +47369,7 @@ function updateConfluenceDisplay(confluence) {
 
  <div class="confluence-factor">
 
- <span class="confluence-factor-icon">${f.active ? ' : '</span>
+ <span class="confluence-factor-icon">${f.active ? '' : ''</span>
 
  <span class="confluence-factor-text">${f.text}</span>
 
@@ -48159,7 +48159,7 @@ function updateTradeStatistics() {
 
  var el=document.getElementById('statsWorstDay');if(el)el.textContent = '$' + worstDay.toFixed(2);
 
- var el=document.getElementById('statsStreak');if(el)el.textContent = streak + ' ' + (currentStreakDir === 'win' ? ' : ');
+ var el=document.getElementById('statsStreak');if(el)el.textContent = streak + ' ' + (currentStreakDir === 'win' ? '' : '');
 
 }
 
@@ -48625,7 +48625,7 @@ function updateHistoricalDataTable() {
 
  const openToHigh = high - open;
 
- const ohSignal = openToLow < openToHigh ? ' : ';
+ const ohSignal = openToLow < openToHigh ? '' : '';
 
  const ohColor = openToLow < openToHigh ? '#22c55e' : '#ef4444';
 
@@ -52645,7 +52645,7 @@ function updatePatternTableFromCSV() {
 
  var typeColor = p.type === 'Bullish' ? '#22c55e' : (p.type === 'Bearish' ? '#ef4444' : '#eab308');
 
- var typeIcon = p.type === 'Bullish' ? ' : (p.type === 'Bearish' ? '  : '');
+ var typeIcon = p.type === 'Bullish' ? '' : (p.type === 'Bearish' ? '  : '');
 
  var statusBg = p.status === 'ACTIVE' ? 'rgba(34,197,94,0.2)' : (p.status === 'WATCH' ? 'rgba(59,130,246,0.2)' : 'rgba(234,179,8,0.2)');
 
@@ -53081,7 +53081,7 @@ function updateTopTrade(symbol) {
 
  var confidence = Math.round(60 + Math.abs(0.5 - rangePosition) * 50);
 
- var stars = confidence >= 85 ? ' : confidence >= 75 ? '' : confidence >= 65 ? ' : '';
+ var stars = confidence >= 85 ? '' : confidence >= 75 ? '' : confidence >= 65 ? '' : '';
 
 
 
@@ -56307,7 +56307,7 @@ function renderGannRoadmap() {
 
  <div style="font-size: 12px; color: ${currentPrice > pivotData.price ? '#4ade80' : '#f87171'};">
 
- ${currentPrice > pivotData.price ? ' : ''} ${((currentPrice - pivotData.price) / pivotData.price * 100).toFixed(1)}% from pivot
+ ${currentPrice > pivotData.price ? '' : ''} ${((currentPrice - pivotData.price) / pivotData.price * 100).toFixed(1)}% from pivot
 
  </div>
 
@@ -59129,7 +59129,7 @@ function updateSq9Checklist(zone, direction, nearest) {
 
  var icon = el.querySelector('.sq9-check-icon');
 
- if (icon) icon.textContent = passed ? ' : '
+ if (icon) icon.textContent = passed ? '' : '
 
  var detailEl = document.getElementById(check.id + 'Detail');
 
@@ -59613,7 +59613,7 @@ function renderSq9OppCell(symbol) {
 
 
 
- const dirIcon = sq9.direction === 'call' ? ' : '';
+ const dirIcon = sq9.direction === 'call' ? '' : '';
 
  const dirText = sq9.direction.toUpperCase();
 
@@ -60457,15 +60457,15 @@ function showSq9Detail(symbol) {
 
  var checkIcons = {
 
- touched: result.checks.touched ? ' : '
+ touched: result.checks.touched ? '' : '
 
- candle: result.checks.candle ? ' : '
+ candle: result.checks.candle ? '' : '
 
- volume: result.checks.volume ? ' : '
+ volume: result.checks.volume ? '' : '
 
- rsi: result.checks.rsi ? ' : '
+ rsi: result.checks.rsi ? '' : '
 
- closed: result.checks.closed ? ' : '
+ closed: result.checks.closed ? '' : '
 
  };
 
@@ -60755,7 +60755,7 @@ function showSq9Detail(symbol) {
 
  durationAnalysis.transitions.slice(-5).reverse().forEach(function(t) {
 
- var transDir = t.direction === 'UP' ? ' : '';
+ var transDir = t.direction === 'UP' ? '' : '';
 
  var transDirColor = t.direction === 'UP' ? '#22c55e' : '#ef4444';
 
@@ -61189,7 +61189,7 @@ function analyzeSq9CheckDetails(symbol, result) {
 
  tfHtml += '<div style="padding: 4px; background: ' + (tfAligned[i] ? 'rgba(34,197,94,0.2)' : 'rgba(0,0,0,0.05)') + '; border-radius: 4px; text-align: center;">' +
 
- (tfAligned[i] ? ' : ' + ' ' + timeframes[i] + '</div>';
+ (tfAligned[i] ? '' : ' + ' ' + timeframes[i] + '</div>';
 
  }
 
@@ -63461,7 +63461,7 @@ function updateSq9TradeLogTable() {
 
  // Type icon and symbol display
 
- var typeIcon = t.type === 'option' ? ' : ' ';
+ var typeIcon = t.type === 'option' ? '' : ' ';
 
  var symbolDisplay = t.symbol;
 
@@ -69273,7 +69273,7 @@ function updateHistoricalPatternsUI(symbol) {
 
  major.slice(-20).reverse().forEach(function(p) {
 
- var resultIcon = p.isWin ? ' : '
+ var resultIcon = p.isWin ? '' : '
 
  majorHtml += '<tr style="border-bottom: 1px solid var(--border); cursor: pointer;" onclick="showPatternDetail(\'' + p.date + '\')">' +
 
@@ -69375,7 +69375,7 @@ function updateTopSetups() {
 
  var avgMove = filtered.reduce(function(sum, p) { return sum + Math.abs(p.outcome5Day); }, 0) / total;
 
- var rankEmoji = rank === 1 ? ' : rank === 2 ? ' : rank === 3 ? ' : ' ';
+ var rankEmoji = rank === 1 ? '' : rank === 2 ? '' : rank === 3 ? '' : ' ';
 
  var probLabel = winRate >= 85 ? 'ULTRA HIGH' : winRate >= 70 ? 'HIGH' : winRate >= 55 ? 'MODERATE' : 'LOW';
 
@@ -70445,7 +70445,7 @@ function renderRecoveryTracker() {
 
  var color = trade.result === 'WIN' ? '#22c55e' : '#ef4444';
 
- var icon = trade.result === 'WIN' ? ' : '
+ var icon = trade.result === 'WIN' ? '' : '
 
  html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border);">' +
 
@@ -70919,7 +70919,7 @@ function renderTradeLog() {
 
  var resultBg = trade.result === 'WIN' ? 'rgba(34,197,94,0.1)' : trade.result === 'LOSS' ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
 
- var resultIcon = trade.result === 'WIN' ? ' : trade.result === 'LOSS' ? ' : '';
+ var resultIcon = trade.result === 'WIN' ? '' : trade.result === 'LOSS' ? '' : '';
 
  var typeColor = trade.type === 'CALL' ? '#22c55e' : '#ef4444';
 
@@ -71361,7 +71361,7 @@ function updateSymbolActions() {
 
  var trend = actionCenterData.allowedTrade;
 
- var trendIcon = trend === 'CALL' ? ' : trend === 'PUT' ? ' : ' ';
+ var trendIcon = trend === 'CALL' ? '' : trend === 'PUT' ? '' : ' ';
 
  var trendColor = trend === 'CALL' ? '#22c55e' : trend === 'PUT' ? '#ef4444' : '#6b7280';
 
