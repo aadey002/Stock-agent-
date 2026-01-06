@@ -9498,10 +9498,100 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- CANDLE PATTERN VISUAL GUIDE -->
+            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(239,68,68,0.05)); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 700;">Candle Pattern Scanner</div>
+                        <div style="font-size: 11px; color: var(--muted);">Reversal patterns at SQ9 levels</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="togglePatternGuide()" id="patternGuideBtn" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; cursor: pointer;">Show Guide</button>
+                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">Scan Now</button>
+                    </div>
+                </div>
+
+                <!-- Today's Detected Patterns -->
+                <div id="detectedPatterns" style="margin-bottom: 15px;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">Today's Detected Patterns</div>
+                    <div id="patternsList" style="display: grid; gap: 10px;">
+                        <div style="text-align: center; padding: 20px; color: var(--muted); background: var(--bg); border-radius: 8px;">
+                            Click "Scan Now" to detect patterns...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collapsible Pattern Guide -->
+                <div id="patternGuidePanel" style="display: none;">
+                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 15px; padding-top: 15px; border-top: 1px solid var(--border);">Pattern Visual Guide</div>
+
+                    <!-- BULLISH PATTERNS -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #22c55e; margin-bottom: 10px;">
+                            <span style="background: rgba(34,197,94,0.2); padding: 4px 10px; border-radius: 4px;">BULLISH PATTERNS</span>
+                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 SUPPORT - Buy CALLS</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
+                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Hammer</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">[=]<br>|<br>|<br>|</div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long lower wick</div>
+                            </div>
+                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Bull Engulfing</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #ef4444;">[r]</span> <span style="color: #22c55e;">[G]</span><br><span style="color: #ef4444;"></span> <span style="color: #22c55e;">[G]</span></div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Green engulfs red</div>
+                            </div>
+                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Dragonfly Doji</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">---<br>|<br>|<br>|</div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long lower</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BEARISH PATTERNS -->
+                    <div style="margin-bottom: 15px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #ef4444; margin-bottom: 10px;">
+                            <span style="background: rgba(239,68,68,0.2); padding: 4px 10px; border-radius: 4px;">BEARISH PATTERNS</span>
+                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 RESISTANCE - Buy PUTS</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
+                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Shooting Star</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">|<br>|<br>|<br>[=]</div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long upper wick</div>
+                            </div>
+                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Bear Engulfing</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #22c55e;">[g]</span> <span style="color: #ef4444;">[R]</span><br><span style="color: #22c55e;"></span> <span style="color: #ef4444;">[R]</span></div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Red engulfs green</div>
+                            </div>
+                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">Gravestone Doji</div>
+                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">|<br>|<br>|<br>---</div>
+                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long upper</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div style="padding: 10px; background: rgba(139,92,246,0.05); border-radius: 8px; border: 1px solid rgba(139,92,246,0.2);">
+                    <div style="font-size: 10px; font-weight: 700; color: #8b5cf6; margin-bottom: 6px;">Quick Reference</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; font-size: 9px;">
+                        <div><span style="color: #22c55e;">Hammer</span> = CALL at support</div>
+                        <div><span style="color: #ef4444;">Shooting Star</span> = PUT at resist</div>
+                        <div><span style="color: #22c55e;">Bull Engulf</span> = CALL</div>
+                        <div><span style="color: #ef4444;">Bear Engulf</span> = PUT</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary Stats -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                 <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(22,163,74,0.1)); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 15px; text-align: center;">
-                    <div style="font-size: 10px; color: #22c55e; margin-bottom: 5px;">🟢 READY (5/5)</div>
+                    <div style="font-size: 10px; color: #22c55e; margin-bottom: 5px;">READY (5/5)</div>
                     <div id="sq9ReadyCount" style="font-size: 28px; font-weight: 800; color: #22c55e;">0</div>
                 </div>
                 <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 15px; text-align: center;">
@@ -33833,6 +33923,152 @@ if (sq9TabBtn) {
         setTimeout(updateTimingPanel, 300);
     });
 }
+
+// ============================================
+// CANDLE PATTERN SCANNER
+// ============================================
+
+function togglePatternGuide() {
+    var panel = document.getElementById('patternGuidePanel');
+    var btn = document.getElementById('patternGuideBtn');
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        btn.textContent = 'Hide Guide';
+    } else {
+        panel.style.display = 'none';
+        btn.textContent = 'Show Guide';
+    }
+}
+
+function scanCandlePatterns() {
+    var symbols = [
+        'SPY', 'QQQ', 'IWM', 'DIA',
+        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
+    ];
+    var detectedPatterns = [];
+
+    symbols.forEach(function(symbol) {
+        var priceData = null;
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+            priceData = allSymbolsData[symbol];
+        }
+
+        if (!priceData || priceData.length < 5) return;
+
+        var candle = priceData[priceData.length - 1];
+        var prevCandle = priceData[priceData.length - 2];
+
+        var open = parseFloat(candle.Open);
+        var high = parseFloat(candle.High);
+        var low = parseFloat(candle.Low);
+        var close = parseFloat(candle.Close);
+        var body = Math.abs(close - open);
+        var upperWick = high - Math.max(open, close);
+        var lowerWick = Math.min(open, close) - low;
+        var range = high - low;
+        var isGreen = close > open;
+
+        var prevOpen = parseFloat(prevCandle.Open);
+        var prevClose = parseFloat(prevCandle.Close);
+        var prevBody = Math.abs(prevClose - prevOpen);
+        var prevIsGreen = prevClose > prevOpen;
+
+        // Check SQ9 level proximity
+        var nearSQ9 = false;
+        var sq9Type = '';
+        if (typeof sq9PivotData !== 'undefined' && sq9PivotData[symbol]) {
+            var pivot = sq9PivotData[symbol].price;
+            var levels = calcSq9LevelsFromPivot(pivot, close);
+            if (levels && levels.length > 0) {
+                var nearest = findNearestSq9Level(levels, close);
+                if (nearest && Math.abs(nearest.distance) < 2) {
+                    nearSQ9 = true;
+                    sq9Type = nearest.type.toUpperCase();
+                }
+            }
+        }
+
+        var pattern = null;
+
+        // HAMMER
+        if (lowerWick > body * 2 && upperWick < body * 0.5 && body < range * 0.35 && range > 0) {
+            pattern = { symbol: symbol, name: 'Hammer', emoji: 'H', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 && sq9Type === 'SUPPORT' ? 'STRONG' : 'MODERATE', price: close };
+        }
+        // SHOOTING STAR
+        else if (upperWick > body * 2 && lowerWick < body * 0.5 && body < range * 0.35 && range > 0) {
+            pattern = { symbol: symbol, name: 'Shooting Star', emoji: 'S', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 && sq9Type === 'RESIST' ? 'STRONG' : 'MODERATE', price: close };
+        }
+        // BULLISH ENGULFING
+        else if (isGreen && !prevIsGreen && open <= prevClose && close >= prevOpen && body > prevBody * 1.1) {
+            pattern = { symbol: symbol, name: 'Bullish Engulfing', emoji: 'BE', type: 'BULLISH', signal: 'CALL', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
+        }
+        // BEARISH ENGULFING
+        else if (!isGreen && prevIsGreen && open >= prevClose && close <= prevOpen && body > prevBody * 1.1) {
+            pattern = { symbol: symbol, name: 'Bearish Engulfing', emoji: 'BE', type: 'BEARISH', signal: 'PUT', strength: nearSQ9 ? 'STRONG' : 'MODERATE', price: close };
+        }
+        // DOJI variants
+        else if (body < range * 0.1 && range > 0) {
+            if (lowerWick > range * 0.6 && upperWick < range * 0.15) {
+                pattern = { symbol: symbol, name: 'Dragonfly Doji', emoji: 'DD', type: 'BULLISH', signal: nearSQ9 ? 'CALL' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
+            } else if (upperWick > range * 0.6 && lowerWick < range * 0.15) {
+                pattern = { symbol: symbol, name: 'Gravestone Doji', emoji: 'GD', type: 'BEARISH', signal: nearSQ9 ? 'PUT' : 'WAIT', strength: nearSQ9 ? 'MODERATE' : 'WEAK', price: close };
+            }
+        }
+
+        if (pattern) {
+            detectedPatterns.push(pattern);
+        }
+    });
+
+    updatePatternsList(detectedPatterns);
+}
+
+function updatePatternsList(patterns) {
+    var container = document.getElementById('patternsList');
+    if (!container) return;
+
+    if (patterns.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted); background: var(--bg); border-radius: 8px;">No clear reversal patterns detected. Check back later.</div>';
+        return;
+    }
+
+    var strengthOrder = { 'STRONG': 0, 'MODERATE': 1, 'WEAK': 2 };
+    patterns.sort(function(a, b) { return strengthOrder[a.strength] - strengthOrder[b.strength]; });
+
+    var html = '';
+    patterns.forEach(function(p) {
+        var bgColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)';
+        var borderColor = p.type === 'BULLISH' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+        var signalBg = p.type === 'BULLISH' ? '#22c55e' : '#ef4444';
+        var strengthBg = p.strength === 'STRONG' ? '#22c55e' : p.strength === 'MODERATE' ? '#f59e0b' : '#6b7280';
+
+        html += '<div style="background: ' + bgColor + '; border: 1px solid ' + borderColor + '; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px;">' +
+            '<div style="font-size: 18px; font-weight: bold; width: 30px;">' + p.emoji + '</div>' +
+            '<div style="flex: 1;">' +
+                '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">' +
+                    '<span style="font-weight: 700;">' + p.symbol + '</span>' +
+                    '<span style="font-size: 11px; color: var(--muted);">' + p.name + '</span>' +
+                    '<span style="background: ' + strengthBg + '; color: white; padding: 1px 5px; border-radius: 3px; font-size: 9px;">' + p.strength + '</span>' +
+                '</div>' +
+                '<div style="font-size: 11px;">$' + p.price.toFixed(2) + '</div>' +
+            '</div>' +
+            '<div style="background: ' + signalBg + '; color: white; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11px;">' + p.signal + '</div>' +
+        '</div>';
+    });
+
+    container.innerHTML = html;
+}
+
+// Auto-scan patterns on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
+            scanCandlePatterns();
+        }
+    }, 5000);
+});
 
 // Debug function to verify all prices
 function debugSq9Prices() {
