@@ -28023,9 +28023,21 @@ function getTrendAwareSQ9Signal(symbol) {
 
 // Update action center with trend-aware signals
 function updateTrendAwareActionCenter() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK'];
     var container = document.getElementById('trendAwareSignals');
     if (!container) return;
+
+    // Check if data is loaded
+    if (typeof allSymbolsData === 'undefined' || Object.keys(allSymbolsData).length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 30px; color: #f59e0b; background: rgba(245,158,11,0.1); border-radius: 8px;">Data not loaded yet. Please wait a few seconds and click "Refresh Signals" again.</div>';
+        return;
+    }
+
+    var symbols = [
+        'SPY', 'QQQ', 'IWM', 'DIA',
+        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
+    ];
 
     var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
 
@@ -33941,6 +33953,16 @@ function togglePatternGuide() {
 }
 
 function scanCandlePatterns() {
+    var container = document.getElementById('patternsList');
+
+    // Check if data is loaded
+    if (typeof allSymbolsData === 'undefined' || Object.keys(allSymbolsData).length === 0) {
+        if (container) {
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #f59e0b; background: rgba(245,158,11,0.1); border-radius: 8px;">Data not loaded yet. Please wait a few seconds and try again.</div>';
+        }
+        return;
+    }
+
     var symbols = [
         'SPY', 'QQQ', 'IWM', 'DIA',
         'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
@@ -33951,7 +33973,7 @@ function scanCandlePatterns() {
 
     symbols.forEach(function(symbol) {
         var priceData = null;
-        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        if (allSymbolsData[symbol]) {
             priceData = allSymbolsData[symbol];
         }
 
