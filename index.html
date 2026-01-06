@@ -10346,7 +10346,16 @@ var invertGannSignal = false; // Set to true to invert Gann signals
 
 // Symbol filter for performance table (null = show all, array = selected symbols)
 var selectedFilterSymbols = null; // null means all selected
-var allSymbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+var allSymbols = [
+    // Main ETFs
+    'SPY', 'QQQ', 'IWM', 'DIA',
+    // Sector ETFs
+    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
+    // Tech Giants
+    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+    // Other Major Stocks
+    'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
+];
 
 // Initialize symbol filter checkboxes
 function initSymbolFilter() {
@@ -15381,17 +15390,26 @@ function clearAndBackfillAgentPredictions(startDate) {
 }
 
 // ==========================================
-// TRUE GANN BACKTEST - Sq9 + Time Cycles (ALL 12 ETFs)
+// TRUE GANN BACKTEST - Sq9 + Time Cycles (ALL SYMBOLS)
 // ==========================================
 
 function backtestRealGann() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var symbols = [
+        // Main ETFs
+        'SPY', 'QQQ', 'IWM', 'DIA',
+        // Sector ETFs
+        'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
+        // Tech Giants
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        // Other Major Stocks
+        'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
+    ];
 
     // Show loading
     var loadingDiv = document.createElement('div');
     loadingDiv.id = 'gannBacktestLoading';
     loadingDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center; min-width: 350px;';
-    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing 12 ETFs x 2 Years</div>';
+    loadingDiv.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔮</div><div style="font-size: 14px; font-weight: 600;">Running TRUE Gann Backtest...</div><div id="gannBacktestProgress" style="font-size: 12px; color: #666; margin-top: 10px;">Analyzing ' + symbols.length + ' symbols x 2 Years</div>';
     document.body.appendChild(loadingDiv);
 
     var results = {
@@ -15419,7 +15437,7 @@ function backtestRealGann() {
         var data = allSymbolsData[sym];
 
         var prog = document.getElementById('gannBacktestProgress');
-        if (prog) prog.textContent = 'Processing ' + sym + ' (' + (symbolIndex + 1) + '/12)...';
+        if (prog) prog.textContent = 'Processing ' + sym + ' (' + (symbolIndex + 1) + '/' + symbols.length + ')...';
 
         if (!data || data.length < 100) {
             console.log(sym + ': Not enough data, skipping');
