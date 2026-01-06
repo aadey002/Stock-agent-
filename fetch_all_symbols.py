@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 SYMBOLS = [
     'SPY', 'QQQ', 'IWM', 'DIA',  # Main ETFs
     'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',  # Sector ETFs
-    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',  # Tech Giants
+    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',  # Tech Giants
     'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'  # Other Major Stocks
 ]
 DATA_DIR = 'data'

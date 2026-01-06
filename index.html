@@ -3632,6 +3632,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <option value="META">META - Meta</option>
                                 <option value="TSLA">TSLA - Tesla</option>
                                 <option value="NVDA">NVDA - Nvidia</option>
+                                <option value="AMD">AMD - AMD</option>
                                 <option value="JPM">JPM - JPMorgan</option>
                                 <option value="MA">MA - Mastercard</option>
                                 <option value="LLY">LLY - Eli Lilly</option>
@@ -5823,6 +5824,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('META')">META</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('TSLA')">TSLA</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('NVDA')">NVDA</button>
+                        <button class="sq9-etf-tab" onclick="selectSq9Etf('AMD')">AMD</button>
                         <!-- Other Major Stocks -->
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('JPM')">JPM</button>
                         <button class="sq9-etf-tab" onclick="selectSq9Etf('MA')">MA</button>
@@ -9328,6 +9330,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <button class="gann-etf-tab" onclick="selectRoadmapETF('META')">META</button>
                     <button class="gann-etf-tab" onclick="selectRoadmapETF('TSLA')">TSLA</button>
                     <button class="gann-etf-tab" onclick="selectRoadmapETF('NVDA')">NVDA</button>
+                    <button class="gann-etf-tab" onclick="selectRoadmapETF('AMD')">AMD</button>
                 </div>
 
                 <!-- Pivot Selection Tabs -->
@@ -10454,7 +10457,7 @@ var allSymbols = [
     // Sector ETFs
     'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
     // Tech Giants
-    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
     // Other Major Stocks
     'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
 ];
@@ -10753,14 +10756,14 @@ function autoCalculateGannPredictions(symbol) {
     console.log('Auto-calc complete:', JSON.stringify(gannPredictions));
 }
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
+const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
 const SYMBOL_NAMES = {
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
     'XLF': 'Financials', 'XLE': 'Energy', 'XLK': 'Technology', 'XLV': 'Healthcare',
     'XLI': 'Industrials', 'XLB': 'Materials', 'XLU': 'Utilities', 'XLP': 'Consumer Staples',
     'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services',
     'MSFT': 'Microsoft', 'AAPL': 'Apple', 'AMZN': 'Amazon', 'GOOGL': 'Alphabet', 'META': 'Meta',
-    'TSLA': 'Tesla', 'NVDA': 'Nvidia', 'JPM': 'JPMorgan', 'MA': 'Mastercard', 'LLY': 'Eli Lilly',
+    'TSLA': 'Tesla', 'NVDA': 'Nvidia', 'AMD': 'AMD', 'JPM': 'JPMorgan', 'MA': 'Mastercard', 'LLY': 'Eli Lilly',
     'WMT': 'Walmart', 'ORCL': 'Oracle', 'CVX': 'Chevron', 'CSCO': 'Cisco'
 };
 
@@ -11933,7 +11936,7 @@ async function fetchLatestPrice(symbol) {
 
 // Update ALL symbolGannData prices from CSV data (not just current symbol)
 function updateAllSymbolGannDataFromCSV() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD', 'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'];
 
     symbols.forEach(function(symbol) {
         var data = allSymbolsData[symbol];
@@ -15502,7 +15505,7 @@ function backtestRealGann() {
         // Sector ETFs
         'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
         // Tech Giants
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
         // Other Major Stocks
         'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
     ];
@@ -21924,6 +21927,16 @@ const symbolGannData = {
         atr: 5.0,
         sacredLevels: [121, 133, 144, 156]
     },
+    AMD: {
+        price: 125.00,
+        low: 95.00,
+        high: 140.00,
+        lowDate: 'Oct 27',
+        highDate: 'Dec 10',
+        sector: 'Technology',
+        atr: 4.5,
+        sacredLevels: [100, 121, 133, 144]
+    },
     JPM: {
         price: 250.00,
         low: 210.00,
@@ -28065,7 +28078,7 @@ function updateTrendAwareActionCenter() {
     var symbols = [
         'SPY', 'QQQ', 'IWM', 'DIA',
         'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
         'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
     ];
 
@@ -28730,6 +28743,7 @@ const sq9PivotData = {
     META: { date: '2025-04-07', price: 480.50, type: 'LOW', label: 'Apr 7 LOW' },
     TSLA: { date: '2025-04-07', price: 138.80, type: 'LOW', label: 'Apr 7 LOW' },
     NVDA: { date: '2025-04-07', price: 86.50, type: 'LOW', label: 'Apr 7 LOW' },
+    AMD: { date: '2025-04-07', price: 95.80, type: 'LOW', label: 'Apr 7 LOW' },
     // Other Major Stocks
     JPM: { date: '2025-04-07', price: 218.50, type: 'LOW', label: 'Apr 7 LOW' },
     MA: { date: '2025-04-07', price: 468.20, type: 'LOW', label: 'Apr 7 LOW' },
@@ -33996,7 +34010,7 @@ function scanCandlePatterns() {
     var symbols = [
         'SPY', 'QQQ', 'IWM', 'DIA',
         'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',
-        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA',
+        'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',
         'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'
     ];
     var detectedPatterns = [];
