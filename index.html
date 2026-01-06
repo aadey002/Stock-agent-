@@ -25782,6 +25782,36 @@ function detectPatternsFromCSV(data) {
     return patterns.slice(-10);
 }
 
+// Wrapper function to update Top Trade Display with current symbol
+function updateTopTradeDisplay() {
+    var symbol = currentSymbol || 'SPY';
+
+    // First ensure symbolGannData has latest prices from allSymbolsData
+    if (allSymbolsData && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        var latestRow = allSymbolsData[symbol][allSymbolsData[symbol].length - 1];
+        var price = parseFloat(latestRow.Close);
+        if (!isNaN(price) && symbolGannData[symbol]) {
+            symbolGannData[symbol].price = price;
+            console.log('updateTopTradeDisplay: Updated ' + symbol + ' price to $' + price.toFixed(2));
+        }
+    }
+
+    // Call both update functions
+    if (typeof updateTopTrade === 'function') {
+        updateTopTrade(symbol);
+    }
+    if (typeof updateTopTradeRecommendation === 'function') {
+        updateTopTradeRecommendation(symbol);
+    }
+
+    // Update timestamp
+    var timeEl = document.getElementById('topTradeTime');
+    if (timeEl) {
+        timeEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    }
+
+    console.log('Top Trade Display updated for ' + symbol);
+}
 
 // Update Today's Top Trade section
 function updateTopTrade(symbol) {
