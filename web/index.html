@@ -11686,12 +11686,35 @@ function autoCalculateGannPredictions(symbol) {
     console.log('Auto-calc complete:', JSON.stringify(gannPredictions));
 }
 
-const SYMBOLS = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'XLRE', 'XLC'];
+// Full 43-symbol watchlist
+const SYMBOLS = [
+    // Index ETFs (4)
+    'SPY', 'QQQ', 'IWM', 'DIA',
+    // Sector ETFs (9)
+    'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY',
+    // Mega Caps (10)
+    'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX',
+    // Additional Liquid Stocks (20)
+    'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST', 'CRM',
+    'INTC', 'CSCO', 'ADBE', 'ORCL', 'PFE', 'MRK', 'ABBV', 'LLY', 'CVX', 'XOM'
+];
 const SYMBOL_NAMES = {
+    // Index ETFs
     'SPY': 'S&P 500 ETF', 'QQQ': 'Nasdaq 100 ETF', 'IWM': 'Russell 2000 ETF', 'DIA': 'Dow Jones ETF',
+    // Sector ETFs
     'XLF': 'Financials', 'XLE': 'Energy', 'XLK': 'Technology', 'XLV': 'Healthcare',
     'XLI': 'Industrials', 'XLB': 'Materials', 'XLU': 'Utilities', 'XLP': 'Consumer Staples',
-    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services'
+    'XLY': 'Consumer Discretionary', 'XLRE': 'Real Estate', 'XLC': 'Communication Services',
+    // Mega Caps
+    'AAPL': 'Apple Inc', 'MSFT': 'Microsoft', 'NVDA': 'NVIDIA', 'TSLA': 'Tesla',
+    'AMZN': 'Amazon', 'GOOGL': 'Alphabet', 'META': 'Meta Platforms', 'JPM': 'JPMorgan Chase',
+    'AMD': 'AMD', 'NFLX': 'Netflix',
+    // Liquid Stocks
+    'V': 'Visa', 'MA': 'Mastercard', 'UNH': 'UnitedHealth', 'HD': 'Home Depot',
+    'PG': 'Procter & Gamble', 'BAC': 'Bank of America', 'WMT': 'Walmart', 'DIS': 'Disney',
+    'COST': 'Costco', 'CRM': 'Salesforce', 'INTC': 'Intel', 'CSCO': 'Cisco',
+    'ADBE': 'Adobe', 'ORCL': 'Oracle', 'PFE': 'Pfizer', 'MRK': 'Merck',
+    'ABBV': 'AbbVie', 'LLY': 'Eli Lilly', 'CVX': 'Chevron', 'XOM': 'ExxonMobil'
 };
 
 const TRADING_PARAMS = {
