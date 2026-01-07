@@ -19794,7 +19794,7 @@ async function loadTradesFromCSV() {
                     status: status,
                     type: 'SWING',
                     contracts: 1,
-                    consensus: pnlValue > 0 ? '3/4' : '2/4',
+                    consensus: pnlValue > 20 ? '4/4' : (pnlValue > 0 ? '3/4' : (pnlValue > -50 ? '2/4' : '1/4')),
                     notes: 'Exp: ' + (cols[12] || 'N/A'),
                     fromCSV: true
                 };
@@ -20164,15 +20164,23 @@ function updateDirectionPerformance() {
 function updateConsensusAnalysis() {
     const consensusLevels = ['4/4', '3/4', '2/4', '1/4'];
     const ids = ['ultra44', 'super34', 'single24', 'weak14'];
-    
+
+    console.log('Consensus analysis running, trades:', trades.length);
+
     consensusLevels.forEach((level, i) => {
-        const levelTrades = trades.filter(t => t.consensus === level && t.status !== 'OPEN' && t.pnl !== null);
-        const wins = levelTrades.filter(t => t.pnl > 0).length;
-        const winRate = levelTrades.length > 0 ? ((wins / levelTrades.length) * 100).toFixed(0) : '--';
-        
-        document.getElementById(`${ids[i]}WinRate`).textContent = winRate + '%';
-        document.getElementById(`${ids[i]}WinRate`).style.color = winRate !== '--' && parseFloat(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
-        document.getElementById(`${ids[i]}Count`).textContent = `${levelTrades.length} trades`;
+        try {
+            const levelTrades = trades.filter(t => t.consensus === level && t.status !== 'OPEN' && t.pnl !== null);
+            const wins = levelTrades.filter(t => t.pnl > 0).length;
+            const winRate = levelTrades.length > 0 ? ((wins / levelTrades.length) * 100).toFixed(0) : '--';
+
+            var el1 = document.getElementById(ids[i] + 'WinRate');
+            var el2 = document.getElementById(ids[i] + 'Count');
+            if (el1) {
+                el1.textContent = winRate + '%';
+                el1.style.color = winRate !== '--' && parseFloat(winRate) >= 50 ? 'var(--success)' : 'var(--danger)';
+            }
+            if (el2) el2.textContent = levelTrades.length + ' trades';
+        } catch(e) { console.log('Consensus err:', e); }
     });
 }
 
