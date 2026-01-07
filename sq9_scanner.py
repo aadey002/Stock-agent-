@@ -332,20 +332,20 @@ def save_results(results):
         'results': results
     }
 
-    with open('sq9_scanner.json', 'w') as f:
+    with open('data/sq9_scanner.json', 'w') as f:
         json.dump(json_data, f, indent=2)
-    print(f"\nSaved {len(results)} setups to sq9_scanner.json")
+    print(f"\nSaved {len(results)} setups to data/sq9_scanner.json")
 
     # Save CSV for spreadsheet analysis
     csv_columns = ['symbol', 'price', 'change_pct', 'pivot_price', 'pivot_date',
                    'sq9_level', 'sq9_type', 'distance_pct', 'direction',
                    'check_count', 'status', 'target', 'stop', 'rr_ratio', 'is_etf', 'scan_time']
 
-    with open('sq9_scanner.csv', 'w', newline='') as f:
+    with open('data/sq9_scanner.csv', 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=csv_columns, extrasaction='ignore')
         writer.writeheader()
         writer.writerows(results)
-    print(f"Saved to sq9_scanner.csv")
+    print(f"Saved to data/sq9_scanner.csv")
 
     # Print summary
     print(f"\n{'='*60}")

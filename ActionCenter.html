@@ -1043,7 +1043,12 @@
 
     function filterTrades(dir) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn' + (dir === 'all' ? 'All' : dir)).classList.add('active');
+        // Map dir to button ID: 'all' -> 'btnAll', 'CALL' -> 'btnCall', 'PUT' -> 'btnPut'
+        let btnId = 'btnAll';
+        if (dir === 'CALL') btnId = 'btnCall';
+        else if (dir === 'PUT') btnId = 'btnPut';
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.add('active');
 
         document.querySelectorAll('.trade-card').forEach(card => {
             if (dir === 'all') {
