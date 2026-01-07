@@ -3,951 +3,1073 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Action Center</title>
+    <title>Trade Action Center - Stock Agent 4</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; 
-            background: #f8fafc; 
-            color: #1e293b; 
-            line-height: 1.5; 
+        :root {
+            --bg: #0a0a0f;
+            --card: #12121a;
+            --border: #1e1e2e;
+            --text: #e4e4e7;
+            --text-dim: #888;
+            --accent: #2563eb;
+            --green: #22c55e;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --purple: #8b5cf6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             padding: 20px;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
+
         .header {
-            background: linear-gradient(135deg, #1e3a5f, #7c3aed);
-            color: white;
-            border-radius: 12px;
-            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
         }
-        .header h1 { font-size: 28px; margin-bottom: 5px; }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #e2e8f0;
+
+        .header h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 15px; }
-        .rules-box {
-            background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
-            border: 2px solid #ef4444;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        .rule-item {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-        }
-        .rule-num {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 24px;
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             font-size: 12px;
-            font-weight: 700;
-            margin-right: 8px;
+            color: var(--text-dim);
         }
-        .rule-title { font-weight: 700; font-size: 12px; display: inline; }
-        .rule-desc { font-size: 10px; color: #666; margin-top: 4px; }
-        .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .status-box {
-            background: #f8fafc;
-            border-radius: 8px;
+
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: var(--card);
+            border-radius: 10px;
             padding: 15px;
-            text-align: center;
+            border-left: 4px solid var(--accent);
         }
-        .status-label { font-size: 10px; color: #64748b; text-transform: uppercase; }
-        .status-value { font-size: 20px; font-weight: 800; margin: 5px 0; }
-        .status-detail { font-size: 10px; }
-        .signal-box {
-            border: 3px solid #22c55e;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-            background: rgba(34,197,94,0.1);
-        }
-        .signal-text { font-size: 42px; font-weight: 900; color: #22c55e; }
-        .signal-detail { font-size: 16px; color: #64748b; margin-top: 10px; }
-        .recovery-box {
-            background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(59,130,246,0.05));
-            border: 2px solid rgba(34,197,94,0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .progress-bar {
-            background: #e5e7eb;
-            border-radius: 10px;
-            height: 20px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.5s;
-            background: #ef4444;
-        }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-        .stat-box {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
-        .stat-label { font-size: 10px; color: #64748b; }
-        .stat-value { font-size: 18px; font-weight: 800; }
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-success { background: #22c55e; color: white; }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-primary { background: #3b82f6; color: white; }
-        .btn-gray { background: #6b7280; color: white; }
-        .btn-group { display: flex; gap: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-weight: 600; }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
+
+        .status-card .label {
             font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .status-card .value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .status-card .detail {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header .subtitle {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .filter-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover { background: var(--border); }
+        .filter-btn.active { background: var(--accent); border-color: var(--accent); }
+
+        .trades-container {
+            background: var(--card);
+            border-radius: 12px;
+            border: 2px solid var(--green);
+            overflow: hidden;
+            min-height: 300px;
+        }
+
+        .trade-card {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .trade-card:hover { background: rgba(37,99,235,0.05); }
+        .trade-card.selected { border-left-color: var(--green); background: rgba(34,197,94,0.05); }
+
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .trade-symbol {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .trade-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-etf { background: var(--accent); color: white; }
+        .badge-stock { background: var(--purple); color: white; }
+
+        .trade-direction {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .direction-call { background: rgba(34,197,94,0.15); color: var(--green); }
+        .direction-put { background: rgba(239,68,68,0.15); color: var(--red); }
+
+        .trade-score {
+            text-align: right;
+        }
+
+        .trade-score .number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .trade-score .label {
+            font-size: 10px;
+            color: var(--green);
+        }
+
+        .trade-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .metric {
+            background: var(--bg);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric .label {
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-bottom: 2px;
+        }
+
+        .metric .value {
+            font-size: 13px;
             font-weight: 600;
         }
-        .badge-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
-        .badge-warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
-        .badge-success { background: rgba(34,197,94,0.1); color: #22c55e; }
-        .timeline-item {
-            display: flex;
-            gap: 15px;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 10px;
+
+        .trade-targets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
-        .timeline-item.urgent {
-            background: rgba(239,68,68,0.1);
-            border: 1px solid #ef4444;
-        }
-        .timeline-time { font-weight: 700; min-width: 80px; }
-        .trade-log { background: white; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .trade-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.show { display: flex; }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            max-width: 400px;
-            width: 90%;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 11px; color: #64748b; margin-bottom: 4px; }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
+
+        .target-box {
+            padding: 8px;
             border-radius: 6px;
+            text-align: center;
+        }
+
+        .target-box.entry { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); }
+        .target-box.stop { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+        .target-box.target { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); }
+
+        .target-box .label {
+            font-size: 9px;
+            margin-bottom: 2px;
+        }
+
+        .target-box.entry .label { color: var(--green); }
+        .target-box.stop .label { color: var(--red); }
+        .target-box.target .label { color: var(--purple); }
+
+        .target-box .value {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .target-box.entry .value { color: var(--green); }
+        .target-box.stop .value { color: var(--red); }
+        .target-box.target .value { color: var(--purple); }
+
+        .watching-section {
+            margin-top: 20px;
+        }
+
+        .watching-container {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--yellow);
+            overflow: hidden;
+        }
+
+        .watching-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .watching-table th {
+            padding: 10px;
+            text-align: left;
+            background: rgba(245,158,11,0.15);
+            font-weight: 600;
+        }
+
+        .watching-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .watching-table tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .watching-table tr:hover { background: rgba(245,158,11,0.05); }
+
+        /* Right Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+        .checklist-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .checklist-header h3 {
             font-size: 14px;
         }
-        .green { color: #22c55e; }
-        .red { color: #ef4444; }
-        @media (max-width: 768px) {
-            .status-grid, .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .signal-text { font-size: 28px; }
+
+        .checklist-symbol {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .check-row {
+            padding: 10px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            background: var(--bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .check-row .check-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .check-row .check-value {
+            font-size: 11px;
+            text-align: right;
+        }
+
+        .check-row.pass {
+            background: rgba(34,197,94,0.1);
+            border-left-color: var(--green);
+        }
+
+        .check-row.warn {
+            background: rgba(245,158,11,0.1);
+            border-left-color: var(--yellow);
+        }
+
+        .check-row.fail {
+            background: rgba(239,68,68,0.1);
+            border-left-color: var(--red);
+        }
+
+        .check-row.info {
+            background: rgba(59,130,246,0.1);
+            border-left-color: #3b82f6;
+        }
+
+        .checklist-result {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            background: var(--bg);
+        }
+
+        .checklist-result.ready {
+            background: rgba(34,197,94,0.15);
+            border: 2px solid rgba(34,197,94,0.4);
+        }
+
+        .checklist-result.watching {
+            background: rgba(245,158,11,0.15);
+            border: 2px solid rgba(245,158,11,0.4);
+        }
+
+        .checklist-result.notready {
+            background: rgba(239,68,68,0.15);
+            border: 2px solid rgba(239,68,68,0.4);
+        }
+
+        .research-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .research-btn {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .research-btn:hover { background: var(--border); }
+
+        .research-btn strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .research-btn span {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        .time-windows {
+            font-size: 12px;
+        }
+
+        .time-window {
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .time-window.am { background: rgba(34,197,94,0.1); }
+        .time-window.pm { background: rgba(59,130,246,0.1); }
+
+        .time-window strong {
+            color: var(--green);
+        }
+
+        .time-window.pm strong {
+            color: #3b82f6;
+        }
+
+        .current-time-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background: var(--bg);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .rules-card {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .rules-card h3 {
+            font-size: 14px;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .rules-card ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 11px;
+            color: #78350f;
+            line-height: 1.8;
+        }
+
+        .rules-card li strong {
+            color: #92400e;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .status-bar { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .status-bar { grid-template-columns: repeat(2, 1fr); }
+            .trade-metrics { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div style="margin-bottom: 20px;"><a href="index.html" style="display: inline-block; padding: 10px 20px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 700;">← Back to Main Dashboard</a></div>
-        <div style="margin-bottom: 20px;"><a href="index.html" style="display: inline-block; padding: 10px 20px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 700;">← Back to Main Dashboard</a></div>
-
-        <!-- HEADER -->
-        <div class="header">
-            <h1>TRADE ACTION CENTER</h1>
-            <p>Stop guessing. Follow the signals. Only trade when ALL conditions align.</p>
-        </div>
-        
-        <!-- RECOVERY TRACKER -->
-        <div class="recovery-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div>
-                    <div style="font-size: 16px; font-weight: 700;">RECOVERY TRACKER</div>
-                    <div style="font-size: 11px; color: #64748b;">Track progress from -$228.73 (December losses)</div>
-                </div>
-                <button class="btn btn-gray" onclick="resetTracker()" style="padding: 6px 12px; font-size: 11px;">Reset</button>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <span style="font-size: 12px; color: #64748b;">Recovery Progress</span>
-                <span id="progressPercent" style="font-size: 12px; font-weight: 700; color: #ef4444;">0%</span>
-            </div>
-            <div class="progress-bar">
-                <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b;">
-                <span>Started: -$228.73</span>
-                <span id="remainingAmount">Remaining: -$228.73</span>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">JANUARY P/L</div>
-                    <div id="currentPnL" class="stat-value red">$0.00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">WIN RATE</div>
-                    <div id="winRate" class="stat-value">0%</div>
-                </div>
-                <div class="stat-box" style="background: rgba(34,197,94,0.1);">
-                    <div class="stat-label green">WINS</div>
-                    <div id="winCount" class="stat-value green">0</div>
-                </div>
-                <div class="stat-box" style="background: rgba(239,68,68,0.1);">
-                    <div class="stat-label red">LOSSES</div>
-                    <div id="lossCount" class="stat-value red">0</div>
-                </div>
-            </div>
-            
-            <div class="btn-group" style="margin-top: 15px;">
-                <button class="btn btn-success" onclick="showModal('WIN')" style="flex: 1;">+ LOG WIN</button>
-                <button class="btn btn-danger" onclick="showModal('LOSS')" style="flex: 1;">+ LOG LOSS</button>
-            </div>
-        </div>
-        
-        <!-- THE 5 RULES -->
-        <div class="rules-box">
-            <div style="font-size: 16px; font-weight: 800; color: #ef4444; margin-bottom: 15px;">THE 5 RULES - NEVER BREAK THESE</div>
-            <div class="rules-grid">
-                <div class="rule-item">
-                    <span class="rule-num">1</span>
-                    <span class="rule-title">TREND IS KING</span>
-                    <div class="rule-desc">UP trend = CALLS only. DOWN trend = PUTS only.</div>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">2</span>
-                    <span class="rule-title">WAIT FOR LEVEL</span>
-                    <div class="rule-desc">Only enter at SQ9 support/resistance.</div>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">3</span>
-                    <span class="rule-title">CANDLE CONFIRMS</span>
-                    <div class="rule-desc">Must see reversal candle at level.</div>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">4</span>
-                    <span class="rule-title">RIGHT TIME</span>
-                    <div class="rule-desc">10-11:30 AM or 1-3 PM only.</div>
-                </div>
-                <div class="rule-item">
-                    <span class="rule-num">5</span>
-                    <span class="rule-title">SIZE RIGHT</span>
-                    <div class="rule-desc">Max 2% risk per trade. Use stops.</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- MARKET STATUS -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div class="card-title">CURRENT MARKET STATUS</div>
-                <button class="btn btn-primary" onclick="refreshStatus()" style="padding: 8px 16px; font-size: 12px;">REFRESH</button>
-            </div>
-            <div class="status-grid">
-                <div id="timeStatus" class="status-box">
-                    <div class="status-label">Trading Time</div>
-                    <div class="status-value">--</div>
-                    <div class="status-detail">--</div>
-                </div>
-                <div class="status-box">
-                    <div class="status-label">SPY Trend</div>
-                    <div class="status-value green">UP</div>
-                    <div class="status-detail green" style="font-weight: 700;">CALLS ONLY</div>
-                </div>
-                <div class="status-box">
-                    <div class="status-label">Market Mood</div>
-                    <div class="status-value">NORMAL</div>
-                    <div class="status-detail">Good conditions</div>
-                </div>
-                <div id="canTradeStatus" class="status-box">
-                    <div class="status-label">Can Trade?</div>
-                    <div class="status-value">--</div>
-                    <div class="status-detail">--</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- MAIN SIGNAL -->
-        <div class="signal-box">
-            <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">TODAY'S PRIMARY SIGNAL</div>
-            <div class="signal-text">CALLS ONLY</div>
-            <div class="signal-detail">Daily trend is UP. Only look for CALL entries at support levels.</div>
-        </div>
-
-        <!-- QUALIFIED TRADE SETUPS - $700 ACCOUNT SIZED -->
-        <div class="card" style="border-color: #22c55e; border-width: 3px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div>
-                    <div class="card-title" style="color: #166534; font-size: 18px;">🎯 QUALIFIED TRADE SETUPS</div>
-                    <div style="font-size: 11px; color: #666;">Scans 5 criteria + $700 account sizing</div>
-                </div>
-                <button onclick="scanQualifiedSetups()" style="padding: 10px 20px; background: #22c55e; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;">🔍 SCAN NOW</button>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; padding: 12px; background: rgba(34,197,94,0.1); border-radius: 8px;">
-                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Account</div><div style="font-size: 16px; font-weight: 800; color: #166534;">$700</div></div>
-                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Max Risk</div><div style="font-size: 16px; font-weight: 800; color: #ef4444;">$14</div><div style="font-size: 9px; color: #888;">2%</div></div>
-                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Position Size</div><div style="font-size: 16px; font-weight: 800;">$50-75</div><div style="font-size: 9px; color: #888;">1 contract</div></div>
-                <div style="text-align: center;"><div style="font-size: 10px; color: #666;">Option Price</div><div style="font-size: 16px; font-weight: 800;">$0.30-1.00</div></div>
-            </div>
-            <div id="qualifiedSetupsContainer" style="min-height: 100px;">
-                <div style="text-align: center; padding: 30px; color: #666;">Click "SCAN NOW" to find qualified setups matching all 5 criteria...</div>
-            </div>
-            <div style="margin-top: 15px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 10px; display: flex; justify-content: center; gap: 20px;">
-                <span>✅ = Criteria Met</span>
-                <span>⏰ = Wait for Time Window</span>
-                <span style="color: #22c55e; font-weight: 700;">UPTREND → CALLS</span>
-                <span style="color: #ef4444; font-weight: 700;">DOWNTREND → PUTS</span>
-            </div>
-        </div>
-
-        <!-- YOUR POSITIONS -->
-        <div class="card">
-            <div class="card-title">YOUR POSITIONS - MONDAY ACTION PLAN</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Position</th>
-                        <th>Entry</th>
-                        <th>P/L</th>
-                        <th>Expiry</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="background: rgba(239,68,68,0.05);">
-                        <td><strong>SPY $685 Put</strong></td>
-                        <td>$0.49</td>
-                        <td class="red" style="font-weight: 700;">-83.5%</td>
-                        <td><span class="badge badge-danger">1/6 TODAY</span></td>
-                        <td><strong class="red">LET EXPIRE</strong></td>
-                    </tr>
-                    <tr style="background: rgba(239,68,68,0.05);">
-                        <td><strong>SPY $683 Put</strong></td>
-                        <td>$0.62</td>
-                        <td class="red" style="font-weight: 700;">-75.5%</td>
-                        <td><span class="badge badge-warning">1/7 Wed</span></td>
-                        <td><strong class="red">SELL AT OPEN</strong></td>
-                    </tr>
-                    <tr style="background: rgba(239,68,68,0.05);">
-                        <td><strong>SPY $681 Put</strong></td>
-                        <td>$0.41</td>
-                        <td class="red" style="font-weight: 700;">-77.2%</td>
-                        <td><span class="badge badge-warning">1/7 Wed</span></td>
-                        <td><strong class="red">SELL AT OPEN</strong></td>
-                    </tr>
-                    <tr style="background: rgba(34,197,94,0.05);">
-                        <td><strong>IWM $270 Call</strong></td>
-                        <td>$0.79</td>
-                        <td class="green" style="font-weight: 700;">+13.1%</td>
-                        <td><span class="badge badge-success">2/6 Feb</span></td>
-                        <td><strong class="green">HOLD - Target $1.20</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- MONDAY TIMELINE -->
-        <div class="card">
-            <div class="card-title">MONDAY JANUARY 6 - YOUR TIMELINE</div>
-            <div class="timeline-item">
-                <div class="timeline-time">8:00 AM</div>
-                <div>Check SPY and IWM pre-market prices</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">9:25 AM</div>
-                <div>Set up SELL orders for SPY $683 and $681 puts</div>
-            </div>
-            <div class="timeline-item urgent">
-                <div class="timeline-time red">9:30 AM</div>
-                <div><strong>EXECUTE: Sell SPY puts immediately. Be OUT by 9:45 AM.</strong></div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">10:00 AM</div>
-                <div>Set IWM alerts: Sell at $1.20 (profit) or $0.55 (stop). Then STOP TRADING.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-time">4:00 PM</div>
-                <div>SPY $685 Put expires. Log results. Expected cash: ~$465</div>
-            </div>
-        </div>
-        
-        <!-- TRADE LOG -->
-        <div class="card">
-            <div class="card-title">TRADE LOG - JANUARY 2026</div>
-            <div id="tradeLog" class="trade-log">
-                <div style="text-align: center; padding: 30px; color: #64748b;">
-                    No trades logged yet. Use the buttons above to log wins and losses.
-                </div>
-            </div>
-        </div>
-        
-        <!-- WHY YOU LOST -->
-        <div class="card" style="border-color: #ef4444;">
-            <div class="card-title red">WHY YOUR SPY PUTS LOST MONEY</div>
-            <div style="display: grid; gap: 10px; font-size: 12px;">
-                <div style="display: flex; gap: 10px;">
-                    <span class="red" style="font-weight: 700;">X</span>
-                    <div><strong>Bought PUTS in UPTREND</strong> - SPY was going UP, but you bet it would go DOWN.</div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <span class="red" style="font-weight: 700;">X</span>
-                    <div><strong>Fought the trend</strong> - IWM CALL is up +13% because it's WITH the trend.</div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <span class="green" style="font-weight: 700;">OK</span>
-                    <div><strong>What worked:</strong> IWM CALL bought WITH the uptrend = profit. Follow the trend!</div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-    
-    <!-- MODAL -->
-    <div id="tradeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div id="modalTitle" style="font-size: 16px; font-weight: 700;">Log Trade</div>
-                <button class="modal-close" onclick="hideModal()">X</button>
-            </div>
-            <input type="hidden" id="tradeType">
-            <div class="form-group">
-                <label>Symbol</label>
-                <input type="text" id="tradeSymbol" placeholder="SPY, IWM, QQQ...">
-            </div>
-            <div class="form-group">
-                <label>Amount ($)</label>
-                <input type="number" id="tradeAmount" placeholder="25.00" step="0.01">
-            </div>
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <input type="text" id="tradeNotes" placeholder="Setup, entry reason...">
-            </div>
-            <button id="submitBtn" class="btn btn-success" onclick="submitTrade()" style="width: 100%;">Log Trade</button>
+    <!-- Header -->
+    <div class="header">
+        <h1>🎯 Trade Action Center</h1>
+        <div class="header-right">
+            <span id="lastUpdate">Loading...</span>
+            <a href="index.html" style="color: var(--accent); text-decoration: none;">← Back to Dashboard</a>
         </div>
     </div>
-    
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-card" id="trendCard" style="border-left-color: var(--green);">
+            <div class="label">Market Trend</div>
+            <div class="value" id="trendValue" style="color: var(--green);">BULLISH</div>
+            <div class="detail" id="trendDetail">CALLS ONLY today</div>
+        </div>
+
+        <div class="status-card" style="border-left-color: var(--accent);">
+            <div class="label">Qualified Setups</div>
+            <div class="value" id="qualifiedCount" style="color: var(--accent);">0</div>
+            <div class="detail">From 50 symbols</div>
+        </div>
+
+        <div class="status-card" style="border-left-color: var(--purple);">
+            <div class="label">Account</div>
+            <div class="value" style="color: var(--purple);">$700</div>
+            <div class="detail">Available</div>
+        </div>
+
+        <div class="status-card" style="border-left-color: var(--yellow);">
+            <div class="label">Max Position</div>
+            <div class="value" style="color: var(--yellow);">$50-75</div>
+            <div class="detail">1 contract</div>
+        </div>
+
+        <div class="status-card" style="border-left-color: var(--red);">
+            <div class="label">Daily Risk</div>
+            <div class="value" id="dailyRisk" style="color: var(--green);">$0 / $14</div>
+            <div class="detail">2% max</div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- Left: Trade Lists -->
+        <div>
+            <!-- Qualified Trades -->
+            <div class="section-header">
+                <h2>🎯 QUALIFIED TRADES <span class="subtitle">All 5 criteria met</span></h2>
+                <div class="filter-btns">
+                    <button class="filter-btn active" onclick="filterTrades('all')" id="btnAll">ALL</button>
+                    <button class="filter-btn" onclick="filterTrades('CALL')" id="btnCall">📈 CALLS</button>
+                    <button class="filter-btn" onclick="filterTrades('PUT')" id="btnPut">📉 PUTS</button>
+                    <button class="filter-btn" onclick="refreshData()">🔄</button>
+                </div>
+            </div>
+
+            <div class="trades-container" id="qualifiedTrades">
+                <div class="empty-state">
+                    <div class="icon">⏳</div>
+                    <h3>Loading...</h3>
+                    <p>Fetching qualified setups from 50 symbols</p>
+                </div>
+            </div>
+
+            <!-- Watching Section -->
+            <div class="watching-section">
+                <div class="section-header">
+                    <h2 style="color: var(--yellow);">⏳ WATCHING <span class="subtitle">2-4 criteria met</span></h2>
+                </div>
+
+                <div class="watching-container" id="watchingTrades">
+                    <div class="empty-state" style="padding: 20px;">
+                        <p>Loading watching setups...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="sidebar">
+            <!-- Checklist -->
+            <div class="checklist-card">
+                <div class="checklist-header">
+                    <h3>✅ TRADE CHECKLIST</h3>
+                    <span class="checklist-symbol" id="checklistSymbol">Click a trade</span>
+                </div>
+
+                <div id="checklistRows">
+                    <div class="check-row" id="checkRow1">
+                        <span class="check-label">1. Trend (Multi-Agent)</span>
+                        <span class="check-value" id="checkTrend">—</span>
+                    </div>
+                    <div class="check-row" id="checkRow2">
+                        <span class="check-label">2. SQ9 Level</span>
+                        <span class="check-value" id="checkSQ9">—</span>
+                    </div>
+                    <div class="check-row" id="checkRow3">
+                        <span class="check-label">3. Candle Pattern</span>
+                        <span class="check-value" id="checkCandle">—</span>
+                    </div>
+                    <div class="check-row" id="checkRow4">
+                        <span class="check-label">4. Time Window</span>
+                        <span class="check-value" id="checkTime">—</span>
+                    </div>
+                    <div class="check-row" id="checkRow5">
+                        <span class="check-label">5. Fib R:R</span>
+                        <span class="check-value" id="checkRR">—</span>
+                    </div>
+                </div>
+
+                <div class="checklist-result" id="checklistResult">
+                    <span style="color: var(--text-dim); font-size: 12px;">Click a trade to see checklist</span>
+                </div>
+            </div>
+
+            <!-- Research Links -->
+            <div class="checklist-card">
+                <h3 style="font-size: 14px; margin-bottom: 12px;">🔍 RESEARCH</h3>
+                <div class="research-links">
+                    <a href="index.html#sq9-scanner" class="research-btn">
+                        <strong>SQ9 Scanner</strong>
+                        <span>All 50 symbols - price levels</span>
+                    </a>
+                    <a href="index.html#patterns" class="research-btn">
+                        <strong>Pattern Scanner</strong>
+                        <span>Candle patterns + 3 bar</span>
+                    </a>
+                    <a href="index.html#signals" class="research-btn">
+                        <strong>Multi-TF Signals</strong>
+                        <span>Timeframe alignment</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Time Windows -->
+            <div class="checklist-card">
+                <h3 style="font-size: 14px; margin-bottom: 12px;">⏰ ENTRY WINDOWS</h3>
+                <div class="time-windows">
+                    <div class="time-window am">
+                        <strong>AM:</strong> 10:00 - 11:30 ET
+                    </div>
+                    <div class="time-window pm">
+                        <strong>PM:</strong> 1:00 - 3:00 ET
+                    </div>
+                    <div class="current-time-status" id="timeStatus">
+                        Checking...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="rules-card">
+                <h3>⚠️ DR. TEE'S RULES</h3>
+                <ul>
+                    <li><strong>UPTREND = CALLS ONLY</strong></li>
+                    <li><strong>DOWNTREND = PUTS ONLY</strong></li>
+                    <li>Multi-Agent trend (Mkt 50%)</li>
+                    <li>3 bar confirm required</li>
+                    <li>Fib entry/stop/target</li>
+                    <li>Max $50-75 per trade</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script>
-        var recoveryData = { startingLoss: -228.73, currentPnL: 0, trades: [] };
-        
-        function loadData() {
-            var saved = localStorage.getItem('actionCenterData2026');
-            if (saved) { try { recoveryData = JSON.parse(saved); } catch(e) {} }
-            updateDisplay();
-        }
-        
-        function saveData() { 
-            localStorage.setItem('actionCenterData2026', JSON.stringify(recoveryData)); 
-        }
-        
-        function updateDisplay() {
-            var progress = ((recoveryData.currentPnL - recoveryData.startingLoss) / Math.abs(recoveryData.startingLoss) * 100);
-            var remaining = Math.abs(recoveryData.startingLoss) - recoveryData.currentPnL;
-            var progressColor = progress < 25 ? '#ef4444' : progress < 50 ? '#f59e0b' : progress < 75 ? '#3b82f6' : '#22c55e';
-            
-            document.getElementById('progressPercent').textContent = Math.min(100, Math.max(0, progress)).toFixed(1) + '%';
-            document.getElementById('progressPercent').style.color = progressColor;
-            document.getElementById('progressFill').style.width = Math.min(100, Math.max(0, progress)) + '%';
-            document.getElementById('progressFill').style.background = progressColor;
-            document.getElementById('remainingAmount').textContent = remaining <= 0 ? 'RECOVERED!' : 'Remaining: -$' + remaining.toFixed(2);
-            
-            document.getElementById('currentPnL').textContent = (recoveryData.currentPnL >= 0 ? '+' : '') + '$' + recoveryData.currentPnL.toFixed(2);
-            document.getElementById('currentPnL').className = 'stat-value ' + (recoveryData.currentPnL >= 0 ? 'green' : 'red');
-            
-            var wins = recoveryData.trades.filter(function(t) { return t.result === 'WIN'; });
-            var losses = recoveryData.trades.filter(function(t) { return t.result === 'LOSS'; });
-            var winRate = recoveryData.trades.length > 0 ? (wins.length / recoveryData.trades.length * 100).toFixed(0) : 0;
-            
-            document.getElementById('winRate').textContent = winRate + '%';
-            document.getElementById('winRate').className = 'stat-value ' + (winRate >= 50 ? 'green' : 'red');
-            document.getElementById('winCount').textContent = wins.length;
-            document.getElementById('lossCount').textContent = losses.length;
-            
-            renderTradeLog();
-        }
-        
-        function renderTradeLog() {
-            var container = document.getElementById('tradeLog');
-            if (recoveryData.trades.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #64748b;">No trades logged yet.</div>';
-                return;
-            }
-            var html = '';
-            recoveryData.trades.slice().reverse().forEach(function(t) {
-                var icon = t.result === 'WIN' ? '[WIN]' : '[LOSS]';
-                var color = t.result === 'WIN' ? 'green' : 'red';
-                html += '<div class="trade-item"><div><span class="' + color + '" style="font-weight: 700;">' + icon + ' ' + t.symbol + '</span><span style="font-size: 10px; color: #64748b; margin-left: 10px;">' + t.date + '</span>' + (t.notes ? '<div style="font-size: 10px; color: #64748b;">' + t.notes + '</div>' : '') + '</div><div class="' + color + '" style="font-weight: 700;">' + (t.amount >= 0 ? '+' : '') + '$' + t.amount.toFixed(2) + '</div></div>';
-            });
-            container.innerHTML = html;
-        }
-        
-        function showModal(type) {
-            document.getElementById('tradeType').value = type;
-            document.getElementById('modalTitle').textContent = type === 'WIN' ? 'Log Winning Trade' : 'Log Losing Trade';
-            document.getElementById('submitBtn').className = 'btn ' + (type === 'WIN' ? 'btn-success' : 'btn-danger');
-            document.getElementById('tradeSymbol').value = '';
-            document.getElementById('tradeAmount').value = '';
-            document.getElementById('tradeNotes').value = '';
-            document.getElementById('tradeModal').classList.add('show');
-        }
-        
-        function hideModal() { 
-            document.getElementById('tradeModal').classList.remove('show'); 
-        }
-        
-        function submitTrade() {
-            var type = document.getElementById('tradeType').value;
-            var symbol = document.getElementById('tradeSymbol').value.toUpperCase() || 'UNKNOWN';
-            var amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
-            var notes = document.getElementById('tradeNotes').value;
-            if (amount === 0) { alert('Please enter an amount'); return; }
-            if (type === 'LOSS' && amount > 0) amount = -amount;
-            if (type === 'WIN' && amount < 0) amount = Math.abs(amount);
-            recoveryData.trades.push({ 
-                date: new Date().toISOString().split('T')[0], 
-                result: type, 
-                amount: amount, 
-                symbol: symbol, 
-                notes: notes 
-            });
-            recoveryData.currentPnL += amount;
-            saveData(); 
-            updateDisplay(); 
-            hideModal();
-        }
-        
-        function resetTracker() {
-            if (confirm('Reset all data? This will clear your trade log.')) {
-                recoveryData = { startingLoss: -228.73, currentPnL: 0, trades: [] };
-                saveData(); 
-                updateDisplay();
-            }
-        }
-        
-        function refreshStatus() {
-            var now = new Date();
-            var hour = now.getHours();
-            var min = now.getMinutes();
-            var day = now.getDay();
-            var time = hour + min / 60;
-            var status, color, detail, canTrade;
-            
-            if (day === 0 || day === 6) { 
-                status = 'CLOSED'; color = '#6b7280'; detail = 'Weekend'; canTrade = false; 
-            } else if (time < 9.5) { 
-                status = 'PRE-MKT'; color = '#f59e0b'; detail = 'Wait for open'; canTrade = false; 
-            } else if (time < 10) { 
-                status = 'AVOID'; color = '#ef4444'; detail = 'Opening chaos'; canTrade = false; 
-            } else if (time < 11.5) { 
-                status = 'PRIME'; color = '#22c55e'; detail = 'Best time'; canTrade = true; 
-            } else if (time < 13) { 
-                status = 'LUNCH'; color = '#f59e0b'; detail = 'Low volume'; canTrade = false; 
-            } else if (time < 15) { 
-                status = 'GOOD'; color = '#22c55e'; detail = 'Afternoon'; canTrade = true; 
-            } else if (time < 16) { 
-                status = 'PWR HR'; color = '#f59e0b'; detail = 'Quick only'; canTrade = false; 
-            } else { 
-                status = 'CLOSED'; color = '#6b7280'; detail = 'After hours'; canTrade = false; 
-            }
-            
-            document.getElementById('timeStatus').innerHTML = '<div class="status-label">Trading Time</div><div class="status-value" style="color:' + color + ';">' + status + '</div><div class="status-detail">' + detail + '</div>';
-            document.getElementById('canTradeStatus').innerHTML = '<div class="status-label">Can Trade?</div><div class="status-value" style="color:' + (canTrade ? '#22c55e' : '#ef4444') + ';">' + (canTrade ? 'YES' : 'NO') + '</div><div class="status-detail">' + (canTrade ? 'Good time' : 'Wait') + '</div>';
-        }
-        
+    // =========================================================================
+    // TRADE ACTION CENTER - DR. TEE'S RULES
+    // =========================================================================
 
-        // =====================================================
-        // QUALIFIED TRADE SETUPS SCANNER - $700 ACCOUNT
-        // =====================================================
+    let tradeData = {
+        qualified: [],
+        watching: [],
+        marketTrend: 'NEUTRAL',
+        lastUpdate: null
+    };
 
-        var ACCOUNT_SIZE = 700;
-        var MAX_RISK_PCT = 0.02; // 2%
-        var MAX_RISK_DOLLARS = ACCOUNT_SIZE * MAX_RISK_PCT; // $14
-        var POSITION_SIZE_MIN = 50;
-        var POSITION_SIZE_MAX = 75;
-        var OPTION_PRICE_MIN = 0.30;
-        var OPTION_PRICE_MAX = 1.00;
+    // Load data from SQ9 scanner JSON
+    async function loadData() {
+        try {
+            const response = await fetch('data/sq9_scanner.json?' + Date.now());
+            if (!response.ok) throw new Error('Data not found');
 
-        async function scanQualifiedSetups() {
-            var container = document.getElementById('qualifiedSetupsContainer');
-            if (!container) return;
+            const data = await response.json();
 
-            container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;"><span style="font-size: 24px;">⏳</span><br>Scanning all symbols for qualified setups...</div>';
-
-            var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLV'];
-            var setups = [];
-
-            for (var i = 0; i < symbols.length; i++) {
-                try {
-                    var setup = await analyzeForQualifiedTrade(symbols[i]);
-                    if (setup) {
-                        setups.push(setup);
-                    }
-                } catch (e) {
-                    console.warn('Error analyzing ' + symbols[i], e);
-                }
-            }
-
-            if (setups.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;"><span style="font-size: 28px;">😴</span><br><strong>No Qualified Setups Right Now</strong><br><br><div style="font-size: 11px; max-width: 400px; margin: 0 auto; text-align: left; color: #888;"><strong>All 5 criteria must be met:</strong><br>1. Clear trend (not neutral)<br>2. At SQ9 support/resistance<br>3. Confirming candle pattern<br>4. Optimal entry time window<br>5. Direction matches trend</div></div>';
-                return;
-            }
-
-            var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px;">';
-            setups.forEach(function(s) {
-                html += renderQualifiedSetupCard(s);
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        function checkEntryTimeWindow() {
-            var now = new Date();
-            var hour = now.getHours();
-            var min = now.getMinutes();
-            var day = now.getDay();
-            var time = hour + min / 60;
-
-            if (day === 0 || day === 6) return { ok: false, status: 'WEEKEND', msg: 'Market closed' };
-            if (time < 9.5) return { ok: false, status: 'PRE-MARKET', msg: 'Wait for open' };
-            if (time < 10) return { ok: false, status: 'OPENING', msg: 'Avoid first 30 min' };
-            if (time >= 10 && time <= 11.5) return { ok: true, status: 'PRIME TIME', msg: 'Best entry window' };
-            if (time > 11.5 && time < 13) return { ok: false, status: 'LUNCH', msg: 'Low volume' };
-            if (time >= 13 && time <= 15) return { ok: true, status: 'AFTERNOON', msg: 'Good entry window' };
-            if (time > 15 && time < 16) return { ok: false, status: 'POWER HOUR', msg: 'Too volatile' };
-            return { ok: false, status: 'CLOSED', msg: 'After hours' };
-        }
-
-        function detectPatternForSetup(candles) {
-            if (!candles || candles.length < 3) return { pattern: null, type: null };
-
-            var c0 = candles[candles.length - 1];
-            var c1 = candles[candles.length - 2];
-
-            var o0 = c0.open, h0 = c0.high, l0 = c0.low, cl0 = c0.close;
-            var o1 = c1.open, cl1 = c1.close;
-
-            var body0 = Math.abs(cl0 - o0);
-            var range0 = h0 - l0;
-            var upperWick = h0 - Math.max(o0, cl0);
-            var lowerWick = Math.min(o0, cl0) - l0;
-
-            // Bullish patterns
-            if (lowerWick > body0 * 2 && upperWick < body0 * 0.5 && cl0 > o0) {
-                return { pattern: 'HAMMER', type: 'BULLISH', emoji: '🔨' };
-            }
-            if (cl1 < o1 && cl0 > o0 && o0 <= cl1 && cl0 >= o1) {
-                return { pattern: 'BULLISH ENGULF', type: 'BULLISH', emoji: '🟢' };
-            }
-
-            // Bearish patterns
-            if (upperWick > body0 * 2 && lowerWick < body0 * 0.5 && cl0 < o0) {
-                return { pattern: 'SHOOTING STAR', type: 'BEARISH', emoji: '💫' };
-            }
-            if (cl1 > o1 && cl0 < o0 && o0 >= cl1 && cl0 <= o1) {
-                return { pattern: 'BEARISH ENGULF', type: 'BEARISH', emoji: '🔴' };
-            }
-
-            // Doji (neutral, can work at levels)
-            if (body0 < range0 * 0.1 && range0 > 0) {
-                return { pattern: 'DOJI', type: 'NEUTRAL', emoji: '⚖️' };
-            }
-
-            return { pattern: null, type: null };
-        }
-
-        function calcSQ9Levels(price) {
-            if (!price || price <= 0) return null;
-            var sqrt = Math.sqrt(price);
-            return {
-                support: {
-                    deg45: Math.pow(sqrt - 0.25, 2),
-                    deg90: Math.pow(sqrt - 0.5, 2),
-                    deg180: Math.pow(sqrt - 1.0, 2)
-                },
-                resistance: {
-                    deg45: Math.pow(sqrt + 0.25, 2),
-                    deg90: Math.pow(sqrt + 0.5, 2),
-                    deg180: Math.pow(sqrt + 1.0, 2)
-                }
-            };
-        }
-
-        async function analyzeForQualifiedTrade(symbol) {
-            // Fetch price data
-            var data = [];
-            try {
-                var response = await fetch('../data/' + symbol + '.csv?t=' + Date.now());
-                if (!response.ok) {
-                    response = await fetch('data/' + symbol + '.csv?t=' + Date.now());
-                }
-                if (response.ok) {
-                    var text = await response.text();
-                    var lines = text.trim().split('\n').slice(1);
-                    data = lines.map(function(line) {
-                        var cols = line.split(',');
-                        return {
-                            date: cols[0],
-                            open: parseFloat(cols[1]),
-                            high: parseFloat(cols[2]),
-                            low: parseFloat(cols[3]),
-                            close: parseFloat(cols[4]),
-                            volume: parseFloat(cols[5])
-                        };
-                    }).filter(function(d) { return !isNaN(d.close); });
-                }
-            } catch (e) {
-                console.warn('Failed to fetch ' + symbol);
-                return null;
-            }
-
-            if (data.length < 50) return null;
-
-            var closes = data.slice(-50).map(function(d) { return d.close; });
-            var currentPrice = closes[closes.length - 1];
-
-            // CRITERION 1: TREND CHECK
-            var sma20 = closes.slice(-20).reduce(function(a,b) { return a+b; }, 0) / 20;
-            var sma50 = closes.reduce(function(a,b) { return a+b; }, 0) / 50;
-
-            var trend = 'NEUTRAL';
-            var direction = null;
-            if (currentPrice > sma20 && sma20 > sma50) {
-                trend = 'UPTREND';
-                direction = 'CALL';
-            } else if (currentPrice < sma20 && sma20 < sma50) {
-                trend = 'DOWNTREND';
-                direction = 'PUT';
-            }
-
-            if (trend === 'NEUTRAL') return null; // No trade in neutral
-
-            // CRITERION 2: AT KEY LEVEL
-            var sq9 = calcSQ9Levels(currentPrice);
-            var tolerance = 0.005; // 0.5%
-            var nearestLevel = null;
-            var levelType = null;
-            var levelDistance = Infinity;
-
-            // For CALLS, check support levels
-            // For PUTS, check resistance levels
-            if (direction === 'CALL') {
-                Object.values(sq9.support).forEach(function(level) {
-                    var dist = Math.abs((currentPrice - level) / level);
-                    if (dist < tolerance && dist < levelDistance) {
-                        nearestLevel = level;
-                        levelType = 'SUPPORT';
-                        levelDistance = dist;
-                    }
-                });
+            // Determine market trend from SPY or majority
+            const spySetup = data.results.find(r => r.symbol === 'SPY');
+            if (spySetup) {
+                tradeData.marketTrend = spySetup.direction === 'CALL' ? 'BULLISH' : 'BEARISH';
             } else {
-                Object.values(sq9.resistance).forEach(function(level) {
-                    var dist = Math.abs((currentPrice - level) / level);
-                    if (dist < tolerance && dist < levelDistance) {
-                        nearestLevel = level;
-                        levelType = 'RESISTANCE';
-                        levelDistance = dist;
-                    }
-                });
+                // Use majority direction
+                const calls = data.results.filter(r => r.direction === 'CALL').length;
+                const puts = data.results.filter(r => r.direction === 'PUT').length;
+                tradeData.marketTrend = calls > puts ? 'BULLISH' : 'BEARISH';
             }
 
-            if (!nearestLevel) return null; // Not at key level
+            // Filter qualified (READY + matches trend)
+            tradeData.qualified = data.results.filter(r => {
+                if (r.status !== 'READY') return false;
+                if (tradeData.marketTrend === 'BULLISH' && r.direction !== 'CALL') return false;
+                if (tradeData.marketTrend === 'BEARISH' && r.direction !== 'PUT') return false;
+                return true;
+            });
 
-            // CRITERION 3: CANDLE PATTERN
-            var patternInfo = detectPatternForSetup(data.slice(-5));
-            var patternMatch = false;
+            // Filter watching
+            tradeData.watching = data.results.filter(r => {
+                return r.status === 'WATCHING' ||
+                       (r.status === 'READY' &&
+                        ((tradeData.marketTrend === 'BULLISH' && r.direction === 'PUT') ||
+                         (tradeData.marketTrend === 'BEARISH' && r.direction === 'CALL')));
+            });
 
-            if (direction === 'CALL' && (patternInfo.type === 'BULLISH' || patternInfo.type === 'NEUTRAL')) {
-                patternMatch = true;
-            } else if (direction === 'PUT' && (patternInfo.type === 'BEARISH' || patternInfo.type === 'NEUTRAL')) {
-                patternMatch = true;
-            }
+            tradeData.lastUpdate = new Date();
 
-            if (!patternMatch && patternInfo.pattern) return null;
+            updateUI();
+            console.log('Loaded:', tradeData.qualified.length, 'qualified,', tradeData.watching.length, 'watching');
 
-            // CRITERION 4: TIME CHECK
-            var timeCheck = checkEntryTimeWindow();
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('qualifiedTrades').innerHTML =
+                '<div class="empty-state"><div class="icon">⚠️</div><h3>Data Not Available</h3><p>Run sq9_scanner.py first</p></div>';
+        }
+    }
 
-            // CRITERION 5: All criteria met - Generate recommendation
-            // Calculate ATR for stops/targets
-            var atrSum = 0;
-            for (var i = 1; i < Math.min(15, data.length); i++) {
-                var tr = Math.max(
-                    data[data.length - i].high - data[data.length - i].low,
-                    Math.abs(data[data.length - i].high - data[data.length - i - 1].close),
-                    Math.abs(data[data.length - i].low - data[data.length - i - 1].close)
-                );
-                atrSum += tr;
-            }
-            var atr = atrSum / 14;
+    function updateUI() {
+        // Update trend card
+        const trendCard = document.getElementById('trendCard');
+        const trendValue = document.getElementById('trendValue');
+        const trendDetail = document.getElementById('trendDetail');
 
-            var entry = currentPrice;
-            var stop, target1, target2;
+        if (tradeData.marketTrend === 'BULLISH') {
+            trendCard.style.borderLeftColor = 'var(--green)';
+            trendValue.style.color = 'var(--green)';
+            trendValue.textContent = 'BULLISH';
+            trendDetail.textContent = 'CALLS ONLY today';
+        } else {
+            trendCard.style.borderLeftColor = 'var(--red)';
+            trendValue.style.color = 'var(--red)';
+            trendValue.textContent = 'BEARISH';
+            trendDetail.textContent = 'PUTS ONLY today';
+        }
 
-            if (direction === 'CALL') {
-                stop = nearestLevel - (atr * 0.3);
-                target1 = entry + (atr * 1.0);
-                target2 = entry + (atr * 2.0);
+        // Update count
+        document.getElementById('qualifiedCount').textContent = tradeData.qualified.length;
+
+        // Update timestamp
+        document.getElementById('lastUpdate').textContent = 'Updated: ' + tradeData.lastUpdate.toLocaleTimeString();
+
+        // Render trades
+        renderQualifiedTrades(tradeData.qualified);
+        renderWatchingTrades(tradeData.watching);
+
+        // Update time status
+        updateTimeStatus();
+    }
+
+    function renderQualifiedTrades(trades) {
+        const container = document.getElementById('qualifiedTrades');
+
+        if (trades.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">🔍</div>
+                    <h3>No Qualified Setups</h3>
+                    <p>No trades meet all 5 criteria right now.<br>Check WATCHING section below.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = trades.map((t, idx) => `
+            <div class="trade-card" data-idx="${idx}" data-dir="${t.direction}" onclick="selectTrade('qualified', ${idx})">
+                <div class="trade-header">
+                    <div>
+                        <span class="trade-symbol">${t.symbol}</span>
+                        <span class="trade-badge ${t.is_etf ? 'badge-etf' : 'badge-stock'}">${t.is_etf ? 'ETF' : 'STOCK'}</span>
+                        <span class="trade-direction ${t.direction === 'CALL' ? 'direction-call' : 'direction-put'}">
+                            ${t.direction === 'CALL' ? '📈' : '📉'} ${t.direction}
+                        </span>
+                    </div>
+                    <div class="trade-score">
+                        <div class="number">${t.check_count}/5</div>
+                        <div class="label">READY</div>
+                    </div>
+                </div>
+
+                <div class="trade-metrics">
+                    <div class="metric">
+                        <div class="label">PRICE</div>
+                        <div class="value">${t.price.toFixed(2)}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">SQ9</div>
+                        <div class="value">${t.sq9_level.toFixed(2)}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">DIST</div>
+                        <div class="value" style="color: ${Math.abs(t.distance_pct) <= 1.5 ? 'var(--green)' : 'var(--yellow)'}">
+                            ${t.distance_pct >= 0 ? '+' : ''}${t.distance_pct.toFixed(1)}%
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">R:R</div>
+                        <div class="value">1:${t.rr_ratio.toFixed(1)}</div>
+                    </div>
+                </div>
+
+                <div class="trade-targets">
+                    <div class="target-box entry">
+                        <div class="label">FIB ENTRY</div>
+                        <div class="value">${(t.fib_entry || t.price).toFixed(2)}</div>
+                    </div>
+                    <div class="target-box stop">
+                        <div class="label">FIB STOP</div>
+                        <div class="value">${(t.fib_stop || t.stop).toFixed(2)}</div>
+                    </div>
+                    <div class="target-box target">
+                        <div class="label">FIB TARGET</div>
+                        <div class="value">${(t.fib_target || t.target).toFixed(2)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderWatchingTrades(trades) {
+        const container = document.getElementById('watchingTrades');
+
+        if (trades.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="padding:20px;"><p>No watching setups</p></div>';
+            return;
+        }
+
+        let html = '<table class="watching-table"><thead><tr>';
+        html += '<th>Symbol</th><th>Dir</th><th>Score</th><th style="color:var(--green)">✓ Available</th><th style="color:var(--red)">✗ Missing</th>';
+        html += '</tr></thead><tbody>';
+
+        trades.slice(0, 10).forEach((t, idx) => {
+            const available = [];
+            const missing = [];
+
+            // Check each criterion
+            const agreeCount = t.agent_agreement || 1;
+            if (agreeCount >= 2) available.push('Trend(' + agreeCount + '/3)');
+            else missing.push('Trend');
+
+            if (Math.abs(t.distance_pct) <= 1.5) available.push('SQ9');
+            else if (Math.abs(t.distance_pct) <= 3) available.push('SQ9~');
+            else missing.push('SQ9');
+
+            if (t.candle_pattern || t.three_bar_valid) available.push('Candle');
+            else missing.push('Candle');
+
+            if (isInTradingWindow()) available.push('Time');
+            else missing.push('Time');
+
+            if (t.rr_ratio >= 1.5) available.push('R:R');
+            else if (t.rr_ratio >= 1.2) available.push('R:R~');
+            else missing.push('R:R');
+
+            html += `<tr onclick="selectTrade('watching', ${idx})">
+                <td style="font-weight:600;">${t.symbol}</td>
+                <td style="color:${t.direction === 'CALL' ? 'var(--green)' : 'var(--red)'}; font-weight:600;">${t.direction}</td>
+                <td style="font-weight:600;">${t.check_count}/5</td>
+                <td style="font-size:10px;color:var(--green);">${available.join(', ') || '—'}</td>
+                <td style="font-size:10px;color:var(--red);">${missing.join(', ') || '—'}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    function selectTrade(type, idx) {
+        const trade = type === 'qualified' ? tradeData.qualified[idx] : tradeData.watching[idx];
+        if (!trade) return;
+
+        // Update symbol
+        const symbolEl = document.getElementById('checklistSymbol');
+        symbolEl.textContent = trade.symbol + ' ' + trade.direction;
+        symbolEl.style.color = trade.direction === 'CALL' ? 'var(--green)' : 'var(--red)';
+
+        // === CHECK 1: MULTI-AGENT TREND ===
+        const row1 = document.getElementById('checkRow1');
+        const check1 = document.getElementById('checkTrend');
+        const agentCount = trade.agent_agreement || 1;
+        const confidence = trade.trend_confidence || 50;
+        const mktSignal = trade.market_signal || trade.direction;
+
+        row1.className = 'check-row';
+        if (agentCount >= 3) {
+            check1.innerHTML = '✅ ULTRA (' + agentCount + '/3)';
+            row1.classList.add('pass');
+        } else if (agentCount >= 2) {
+            check1.innerHTML = '✅ SUPER (' + agentCount + '/3)';
+            row1.classList.add('pass');
+        } else {
+            check1.innerHTML = '⚠️ ' + mktSignal + ' (1/3)';
+            row1.classList.add('warn');
+        }
+
+        // === CHECK 2: SQ9 LEVEL ===
+        const row2 = document.getElementById('checkRow2');
+        const check2 = document.getElementById('checkSQ9');
+        const dist = Math.abs(trade.distance_pct);
+
+        row2.className = 'check-row';
+        if (dist <= 1.5) {
+            check2.innerHTML = '✅ AT LEVEL (' + trade.distance_pct.toFixed(1) + '%)';
+            row2.classList.add('pass');
+        } else if (dist <= 3.0) {
+            check2.innerHTML = '⚠️ ' + trade.distance_pct.toFixed(1) + '% (approaching)';
+            row2.classList.add('warn');
+        } else {
+            check2.innerHTML = '❌ ' + trade.distance_pct.toFixed(1) + '% (far)';
+            row2.classList.add('fail');
+        }
+
+        // === CHECK 3: CANDLE PATTERN ===
+        const row3 = document.getElementById('checkRow3');
+        const check3 = document.getElementById('checkCandle');
+        const hasPattern = trade.candle_pattern;
+        const has3Bar = trade.three_bar_valid;
+
+        row3.className = 'check-row';
+        if (hasPattern && has3Bar) {
+            check3.innerHTML = '✅ ' + trade.candle_pattern + ' + 3bar';
+            row3.classList.add('pass');
+        } else if (hasPattern) {
+            check3.innerHTML = '✅ ' + trade.candle_pattern;
+            row3.classList.add('pass');
+        } else if (has3Bar) {
+            const barDesc = trade.direction === 'CALL' ? '3 green↑' : '3 red↓';
+            check3.innerHTML = '✅ ' + barDesc;
+            row3.classList.add('pass');
+        } else {
+            check3.innerHTML = '❌ No pattern';
+            row3.classList.add('fail');
+        }
+
+        // === CHECK 4: TIME WINDOW ===
+        const row4 = document.getElementById('checkRow4');
+        const check4 = document.getElementById('checkTime');
+        const timeOK = isInTradingWindow();
+        const timeStr = getTimeStatus();
+
+        row4.className = 'check-row';
+        if (timeOK) {
+            check4.innerHTML = '✅ ' + timeStr;
+            row4.classList.add('pass');
+        } else {
+            check4.innerHTML = '⏳ ' + timeStr;
+            row4.classList.add('warn');
+        }
+
+        // === CHECK 5: FIBONACCI R:R ===
+        const row5 = document.getElementById('checkRow5');
+        const check5 = document.getElementById('checkRR');
+        const rr = trade.rr_ratio;
+
+        row5.className = 'check-row';
+        if (rr >= 2.0) {
+            check5.innerHTML = '✅ 1:' + rr.toFixed(1) + ' (Excellent)';
+            row5.classList.add('pass');
+        } else if (rr >= 1.5) {
+            check5.innerHTML = '✅ 1:' + rr.toFixed(1) + ' (Good)';
+            row5.classList.add('pass');
+        } else if (rr >= 1.2) {
+            check5.innerHTML = '⚠️ 1:' + rr.toFixed(1) + ' (OK)';
+            row5.classList.add('warn');
+        } else {
+            check5.innerHTML = '❌ 1:' + rr.toFixed(1) + ' (Low)';
+            row5.classList.add('fail');
+        }
+
+        // === RESULT ===
+        const result = document.getElementById('checklistResult');
+        const checks = [agentCount >= 2, dist <= 1.5, hasPattern || has3Bar, timeOK, rr >= 1.2];
+        const passCount = checks.filter(Boolean).length;
+
+        result.className = 'checklist-result';
+        if (passCount >= 4 && type === 'qualified') {
+            result.classList.add('ready');
+            result.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--green);">✅ ${passCount}/5 READY</div>
+                <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">
+                    Entry: ${(trade.fib_entry || trade.price).toFixed(2)} |
+                    Stop: ${(trade.fib_stop || trade.stop).toFixed(2)} |
+                    Target: ${(trade.fib_target || trade.target).toFixed(2)}
+                </div>`;
+        } else if (passCount >= 3) {
+            result.classList.add('watching');
+            result.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--yellow);">⏳ ${passCount}/5 ALMOST</div>
+                <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">Needs ${5-passCount} more</div>`;
+        } else {
+            result.classList.add('notready');
+            result.innerHTML = `<div style="font-size:15px;font-weight:700;color:var(--red);">❌ ${passCount}/5 NOT READY</div>`;
+        }
+
+        // Highlight selected
+        document.querySelectorAll('.trade-card').forEach(c => c.classList.remove('selected'));
+        if (type === 'qualified') {
+            document.querySelectorAll('.trade-card')[idx]?.classList.add('selected');
+        }
+    }
+
+    function isInTradingWindow() {
+        const h = new Date().getHours();
+        const m = new Date().getMinutes();
+        const t = h + m/60;
+        return (t >= 10 && t <= 11.5) || (t >= 13 && t <= 15);
+    }
+
+    function getTimeStatus() {
+        const h = new Date().getHours();
+        const m = new Date().getMinutes();
+        const t = h + m/60;
+        if (t >= 10 && t <= 11.5) return 'AM Window';
+        if (t >= 13 && t <= 15) return 'PM Window';
+        if (t < 10) return 'Wait 10AM';
+        if (t > 11.5 && t < 13) return 'Wait 1PM';
+        return 'After hours';
+    }
+
+    function updateTimeStatus() {
+        const el = document.getElementById('timeStatus');
+        const inWindow = isInTradingWindow();
+        const status = getTimeStatus();
+
+        if (inWindow) {
+            el.textContent = '🟢 ' + status + ' - OPEN';
+            el.style.background = 'rgba(34,197,94,0.2)';
+            el.style.color = 'var(--green)';
+        } else {
+            el.textContent = '⏳ ' + status;
+            el.style.background = 'rgba(245,158,11,0.2)';
+            el.style.color = 'var(--yellow)';
+        }
+    }
+
+    function filterTrades(dir) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn' + (dir === 'all' ? 'All' : dir)).classList.add('active');
+
+        document.querySelectorAll('.trade-card').forEach(card => {
+            if (dir === 'all') {
+                card.style.display = 'block';
             } else {
-                stop = nearestLevel + (atr * 0.3);
-                target1 = entry - (atr * 1.0);
-                target2 = entry - (atr * 2.0);
+                card.style.display = card.dataset.dir === dir ? 'block' : 'none';
             }
+        });
+    }
 
-            // Calculate option recommendation for $700 account
-            var stockRisk = Math.abs(entry - stop);
-            var optionDelta = 0.40; // Approximate ATM delta
-            var suggestedPremium = Math.min(OPTION_PRICE_MAX, Math.max(OPTION_PRICE_MIN, stockRisk * optionDelta));
-            suggestedPremium = Math.round(suggestedPremium * 20) / 20; // Round to nearest 0.05
+    function refreshData() {
+        loadData();
+    }
 
-            var contracts = 1;
-            var totalCost = suggestedPremium * 100 * contracts;
-            var maxLoss = suggestedPremium * 100 * 0.5; // 50% stop on option
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData();
+        updateTimeStatus();
 
-            // Get strike price (ATM or slightly OTM)
-            var strikeIncrement = currentPrice < 50 ? 1 : 5;
-            var strike = Math.round(currentPrice / strikeIncrement) * strikeIncrement;
-            if (direction === 'CALL') strike = strike; // ATM for calls
-            else strike = strike; // ATM for puts
-
-            return {
-                symbol: symbol,
-                direction: direction,
-                trend: trend,
-                currentPrice: currentPrice,
-                entry: entry,
-                stop: stop,
-                target1: target1,
-                target2: target2,
-                levelType: levelType,
-                nearestLevel: nearestLevel,
-                pattern: patternInfo.pattern || 'None',
-                patternEmoji: patternInfo.emoji || '',
-                timeCheck: timeCheck,
-                sma20: sma20,
-                sma50: sma50,
-                // Option details
-                strike: strike,
-                suggestedPremium: suggestedPremium,
-                contracts: contracts,
-                totalCost: totalCost,
-                maxLoss: maxLoss,
-                riskReward: ((Math.abs(target1 - entry)) / stockRisk).toFixed(1)
-            };
-        }
-
-        function renderQualifiedSetupCard(s) {
-            var isCall = s.direction === 'CALL';
-            var bgColor = isCall ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
-            var borderColor = isCall ? '#22c55e' : '#ef4444';
-            var dirColor = isCall ? '#22c55e' : '#ef4444';
-
-            var timeStatus = s.timeCheck.ok
-                ? '<span style="color: #22c55e; font-weight: 700;">✅ ' + s.timeCheck.status + '</span>'
-                : '<span style="color: #f59e0b; font-weight: 700;">⏰ ' + s.timeCheck.status + '</span>';
-
-            return '<div style="background: ' + bgColor + '; border: 2px solid ' + borderColor + '; border-radius: 12px; padding: 15px;">' +
-                // Header
-                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">' +
-                    '<span style="font-size: 20px; font-weight: 900;">' + s.symbol + '</span>' +
-                    '<span style="background: ' + dirColor + '; color: white; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 13px;">' +
-                        'BUY ' + s.direction +
-                    '</span>' +
-                '</div>' +
-
-                // Criteria checks
-                '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; font-size: 10px;">' +
-                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">✅ ' + s.trend + '</span>' +
-                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">✅ SQ9 ' + s.levelType + '</span>' +
-                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">' + s.patternEmoji + ' ' + s.pattern + '</span>' +
-                    '<span style="background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 4px;">' + timeStatus + '</span>' +
-                '</div>' +
-
-                // Option recommendation
-                '<div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px;">' +
-                    '<div style="font-size: 11px; color: #666; margin-bottom: 5px;">RECOMMENDED TRADE</div>' +
-                    '<div style="font-size: 15px; font-weight: 800; color: ' + dirColor + ';">' +
-                        s.symbol + ' $' + s.strike + ' ' + s.direction +
-                    '</div>' +
-                    '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; font-size: 11px;">' +
-                        '<div><div style="color: #888; font-size: 9px;">Premium</div><div style="font-weight: 700;">$' + s.suggestedPremium.toFixed(2) + '</div></div>' +
-                        '<div><div style="color: #888; font-size: 9px;">Contracts</div><div style="font-weight: 700;">' + s.contracts + '</div></div>' +
-                        '<div><div style="color: #888; font-size: 9px;">Total Cost</div><div style="font-weight: 700;">$' + s.totalCost.toFixed(0) + '</div></div>' +
-                    '</div>' +
-                '</div>' +
-
-                // Stock levels
-                '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 10px;">' +
-                    '<div><div style="color: #888;">Entry</div><div style="font-weight: 700;">$' + s.entry.toFixed(2) + '</div></div>' +
-                    '<div><div style="color: #888;">Stop</div><div style="font-weight: 700; color: #ef4444;">$' + s.stop.toFixed(2) + '</div></div>' +
-                    '<div><div style="color: #888;">Target 1</div><div style="font-weight: 700; color: #22c55e;">$' + s.target1.toFixed(2) + '</div></div>' +
-                    '<div><div style="color: #888;">Target 2</div><div style="font-weight: 700; color: #22c55e;">$' + s.target2.toFixed(2) + '</div></div>' +
-                '</div>' +
-
-                // Footer
-                '<div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 9px; color: #888; display: flex; justify-content: space-between;">' +
-                    '<span>SQ9: $' + s.nearestLevel.toFixed(2) + '</span>' +
-                    '<span>R:R ' + s.riskReward + '</span>' +
-                    '<span>Max Loss: $' + s.maxLoss.toFixed(0) + '</span>' +
-                '</div>' +
-            '</div>';
-        }
-
-        loadData(); 
-        refreshStatus(); 
-        setInterval(refreshStatus, 60000);
+        // Auto-refresh every 60 seconds during market hours
+        setInterval(function() {
+            const h = new Date().getHours();
+            const d = new Date().getDay();
+            if (d >= 1 && d <= 5 && h >= 9 && h < 16) {
+                loadData();
+            }
+            updateTimeStatus();
+        }, 60000);
+    });
     </script>
 </body>
 </html>
