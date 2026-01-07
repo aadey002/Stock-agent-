@@ -12704,18 +12704,39 @@ function generateDynamicOpportunities() {
     if (!tbody) return;
 
     var symbols = [
+        // Major Indexes
         { sym: 'SPY', sector: 'Index' },
-        { sym: 'QQQ', sector: 'Tech' },
+        { sym: 'QQQ', sector: 'Tech Index' },
         { sym: 'IWM', sector: 'Small Cap' },
-        { sym: 'XLF', sector: 'Financial' },
-        { sym: 'XLE', sector: 'Energy' },
-        { sym: 'XLK', sector: 'Technology' },
-        { sym: 'XLV', sector: 'Healthcare' },
-        { sym: 'XLI', sector: 'Industrial' },
-        { sym: 'XLB', sector: 'Materials' },
-        { sym: 'XLU', sector: 'Utilities' },
-        { sym: 'XLP', sector: 'Staples' },
-        { sym: 'XLY', sector: 'Discretionary' }
+        { sym: 'DIA', sector: 'Dow Index' },
+        // Tech Stocks
+        { sym: 'AAPL', sector: 'Tech' },
+        { sym: 'MSFT', sector: 'Tech' },
+        { sym: 'GOOGL', sector: 'Tech' },
+        { sym: 'AMZN', sector: 'Tech' },
+        { sym: 'META', sector: 'Tech' },
+        { sym: 'NVDA', sector: 'Tech' },
+        { sym: 'TSLA', sector: 'Tech' },
+        { sym: 'AMD', sector: 'Tech' },
+        { sym: 'ORCL', sector: 'Tech' },
+        { sym: 'CSCO', sector: 'Tech' },
+        // Financials
+        { sym: 'JPM', sector: 'Financial' },
+        { sym: 'MA', sector: 'Financial' },
+        // Healthcare
+        { sym: 'LLY', sector: 'Healthcare' },
+        // Energy
+        { sym: 'CVX', sector: 'Energy' },
+        // Sector ETFs
+        { sym: 'XLF', sector: 'Financial ETF' },
+        { sym: 'XLE', sector: 'Energy ETF' },
+        { sym: 'XLK', sector: 'Technology ETF' },
+        { sym: 'XLV', sector: 'Healthcare ETF' },
+        { sym: 'XLI', sector: 'Industrial ETF' },
+        { sym: 'XLB', sector: 'Materials ETF' },
+        { sym: 'XLU', sector: 'Utilities ETF' },
+        { sym: 'XLP', sector: 'Staples ETF' },
+        { sym: 'XLY', sector: 'Discretionary ETF' }
     ];
 
     var rows = [];
