@@ -9818,31 +9818,57 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <select id="turnCalcSymbol" onchange="calculateMinorTurn()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="DIA">DIA</option>
-                            <option value="XLF">XLF</option>
-                            <option value="XLE">XLE</option>
-                            <option value="XLK">XLK</option>
-                            <option value="XLV">XLV</option>
-                            <option value="XLRE">XLRE</option>
-                            <option value="XLC">XLC</option>
-                            <option value="AMD">AMD</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="AAPL">AAPL</option>
-                            <option value="META">META</option>
-                            <option value="MSFT">MSFT</option>
-                            <option value="AMZN">AMZN</option>
-                            <option value="GOOGL">GOOGL</option>
-                            <option value="JPM">JPM</option>
-                            <option value="MA">MA</option>
-                            <option value="LLY">LLY</option>
-                            <option value="WMT">WMT</option>
-                            <option value="ORCL">ORCL</option>
-                            <option value="CVX">CVX</option>
-                            <option value="CSCO">CSCO</option>
+                            <optgroup label="Index ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sector ETFs">
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                            </optgroup>
+                            <optgroup label="Mega Caps">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="NVDA">NVDA</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="JPM">JPM</option>
+                                <option value="AMD">AMD</option>
+                                <option value="NFLX">NFLX</option>
+                            </optgroup>
+                            <optgroup label="Liquid Stocks">
+                                <option value="V">V</option>
+                                <option value="MA">MA</option>
+                                <option value="UNH">UNH</option>
+                                <option value="HD">HD</option>
+                                <option value="PG">PG</option>
+                                <option value="BAC">BAC</option>
+                                <option value="WMT">WMT</option>
+                                <option value="DIS">DIS</option>
+                                <option value="COST">COST</option>
+                                <option value="CRM">CRM</option>
+                                <option value="INTC">INTC</option>
+                                <option value="CSCO">CSCO</option>
+                                <option value="ADBE">ADBE</option>
+                                <option value="ORCL">ORCL</option>
+                                <option value="PFE">PFE</option>
+                                <option value="MRK">MRK</option>
+                                <option value="ABBV">ABBV</option>
+                                <option value="LLY">LLY</option>
+                                <option value="CVX">CVX</option>
+                                <option value="XOM">XOM</option>
+                            </optgroup>
                         </select>
                         <button onclick="calculateMinorTurn()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Calculate</button>
                     </div>
@@ -9897,31 +9923,57 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <select id="mtfSymbolSelect" onchange="scanMTFPatterns()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="DIA">DIA</option>
-                            <option value="XLF">XLF</option>
-                            <option value="XLE">XLE</option>
-                            <option value="XLK">XLK</option>
-                            <option value="XLV">XLV</option>
-                            <option value="XLRE">XLRE</option>
-                            <option value="XLC">XLC</option>
-                            <option value="AMD">AMD</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="AAPL">AAPL</option>
-                            <option value="META">META</option>
-                            <option value="MSFT">MSFT</option>
-                            <option value="AMZN">AMZN</option>
-                            <option value="GOOGL">GOOGL</option>
-                            <option value="JPM">JPM</option>
-                            <option value="MA">MA</option>
-                            <option value="LLY">LLY</option>
-                            <option value="WMT">WMT</option>
-                            <option value="ORCL">ORCL</option>
-                            <option value="CVX">CVX</option>
-                            <option value="CSCO">CSCO</option>
+                            <optgroup label="Index ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sector ETFs">
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                            </optgroup>
+                            <optgroup label="Mega Caps">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="NVDA">NVDA</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="JPM">JPM</option>
+                                <option value="AMD">AMD</option>
+                                <option value="NFLX">NFLX</option>
+                            </optgroup>
+                            <optgroup label="Liquid Stocks">
+                                <option value="V">V</option>
+                                <option value="MA">MA</option>
+                                <option value="UNH">UNH</option>
+                                <option value="HD">HD</option>
+                                <option value="PG">PG</option>
+                                <option value="BAC">BAC</option>
+                                <option value="WMT">WMT</option>
+                                <option value="DIS">DIS</option>
+                                <option value="COST">COST</option>
+                                <option value="CRM">CRM</option>
+                                <option value="INTC">INTC</option>
+                                <option value="CSCO">CSCO</option>
+                                <option value="ADBE">ADBE</option>
+                                <option value="ORCL">ORCL</option>
+                                <option value="PFE">PFE</option>
+                                <option value="MRK">MRK</option>
+                                <option value="ABBV">ABBV</option>
+                                <option value="LLY">LLY</option>
+                                <option value="CVX">CVX</option>
+                                <option value="XOM">XOM</option>
+                            </optgroup>
                         </select>
                         <button onclick="scanMTFPatterns()" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
                     </div>
@@ -30607,12 +30659,14 @@ var sq9CurrentFilter = 'all';
 // Extended watchlist for scanner
 var sq9Watchlist = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
-// Extended pivot data
+// Extended pivot data - Full 43-symbol watchlist (Apr 2025 lows)
 var sq9ExtendedPivots = {
+    // Index ETFs (4)
     SPY: { price: 481.80, date: '2025-04-07' },
     QQQ: { price: 402.39, date: '2025-04-07' },
     IWM: { price: 171.73, date: '2025-04-07' },
     DIA: { price: 364.42, date: '2025-04-07' },
+    // Sector ETFs (9)
     XLF: { price: 42.35, date: '2025-04-07' },
     XLE: { price: 78.12, date: '2025-04-07' },
     XLK: { price: 186.50, date: '2025-04-07' },
@@ -30621,7 +30675,39 @@ var sq9ExtendedPivots = {
     XLB: { price: 79.45, date: '2025-04-07' },
     XLU: { price: 68.90, date: '2025-04-07' },
     XLP: { price: 75.20, date: '2025-04-07' },
-    XLY: { price: 175.30, date: '2025-04-07' }
+    XLY: { price: 175.30, date: '2025-04-07' },
+    // Mega Caps (10)
+    AAPL: { price: 170.27, date: '2025-04-07' },
+    MSFT: { price: 360.92, date: '2025-04-07' },
+    NVDA: { price: 86.62, date: '2025-04-07' },
+    TSLA: { price: 221.86, date: '2025-04-07' },
+    AMZN: { price: 167.55, date: '2025-04-07' },
+    GOOGL: { price: 147.22, date: '2025-04-07' },
+    META: { price: 480.28, date: '2025-04-07' },
+    JPM: { price: 215.36, date: '2025-04-07' },
+    AMD: { price: 83.12, date: '2025-04-07' },
+    NFLX: { price: 829.72, date: '2025-04-07' },
+    // Additional Liquid Stocks (20)
+    V: { price: 293.48, date: '2025-04-07' },
+    MA: { price: 473.19, date: '2025-04-07' },
+    UNH: { price: 439.48, date: '2025-04-07' },
+    HD: { price: 323.77, date: '2025-04-07' },
+    PG: { price: 158.42, date: '2025-04-07' },
+    BAC: { price: 35.53, date: '2025-04-07' },
+    WMT: { price: 81.12, date: '2025-04-07' },
+    DIS: { price: 83.91, date: '2025-04-07' },
+    COST: { price: 855.67, date: '2025-04-07' },
+    CRM: { price: 244.48, date: '2025-04-07' },
+    INTC: { price: 19.43, date: '2025-04-07' },
+    CSCO: { price: 52.28, date: '2025-04-07' },
+    ADBE: { price: 374.21, date: '2025-04-07' },
+    ORCL: { price: 123.68, date: '2025-04-07' },
+    PFE: { price: 23.49, date: '2025-04-07' },
+    MRK: { price: 80.72, date: '2025-04-07' },
+    ABBV: { price: 163.83, date: '2025-04-07' },
+    LLY: { price: 721.37, date: '2025-04-07' },
+    CVX: { price: 132.04, date: '2025-04-07' },
+    XOM: { price: 101.54, date: '2025-04-07' }
 };
 
 function runSq9Scan() {
@@ -30631,8 +30717,18 @@ function runSq9Scan() {
 
     document.getElementById('sq9ScanTime').textContent = timeStr;
 
-    // Use the same symbol list as opportunities table
-    var symbolsToScan = ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY', 'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX'];
+    // Full 43-symbol watchlist matching Python scanner
+    var symbolsToScan = [
+        // Index ETFs (4)
+        'SPY', 'QQQ', 'IWM', 'DIA',
+        // Sector ETFs (9)
+        'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY',
+        // Mega Caps (10)
+        'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX',
+        // Additional Liquid Stocks (20)
+        'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST', 'CRM',
+        'INTC', 'CSCO', 'ADBE', 'ORCL', 'PFE', 'MRK', 'ABBV', 'LLY', 'CVX', 'XOM'
+    ];
 
     console.log('🎯 SQ9 Scan starting... checking allSymbolsData availability');
 
@@ -34464,6 +34560,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // MULTI-TIMEFRAME SIGNAL SYSTEM
 // ============================================
 
+function updateMTFDisplay(signal, message, timeframes) {
+    // Update all timeframe panels with neutral/error state
+    ['Daily', '15min', '5min'].forEach(function(tf) {
+        var analysis = { signal: signal, pattern: message, candle: 'flat', strength: 0 };
+        updateTimeframePanel(tf, analysis);
+    });
+    // Update alignment banner
+    var banner = document.getElementById('mtfAlignmentBanner');
+    if (banner) {
+        banner.innerHTML = '<div style="padding: 15px; text-align: center; color: #888;">' + message + '</div>';
+    }
+    // Hide trade setup
+    hideTradeSetup();
+}
+
 function scanMTFPatterns() {
     var symbol = document.getElementById('mtfSymbolSelect').value || 'SPY';
     var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
@@ -34792,13 +34903,24 @@ function calculateMinorTurn() {
     var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
 
     if (!priceData || priceData.length < 50) {
-        console.log('Insufficient data for turn calculation');
+        console.log('Insufficient data for turn calculation: ' + symbol + ' has ' + (priceData ? priceData.length : 0) + ' bars');
+        // Update UI to show error message
+        var dateEl = document.getElementById('nextTurnDate');
+        var daysEl = document.getElementById('nextTurnDaysAway');
+        if (dateEl) dateEl.textContent = 'Insufficient Data';
+        if (daysEl) daysEl.textContent = symbol + ' needs 50+ bars (' + (priceData ? priceData.length : 0) + ' available)';
         return;
     }
 
     // Find swing points
     var swings = findSwingPoints(priceData, 5);
-    if (swings.length < 3) return;
+    if (swings.length < 3) {
+        var dateEl = document.getElementById('nextTurnDate');
+        var daysEl = document.getElementById('nextTurnDaysAway');
+        if (dateEl) dateEl.textContent = 'Not Enough Swings';
+        if (daysEl) daysEl.textContent = 'Need 3+ swing points to calculate';
+        return;
+    }
 
     // Calculate avg swing length
     var swingLengths = [];
