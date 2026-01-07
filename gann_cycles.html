@@ -1169,9 +1169,33 @@
                 <div class="card-title">
                     <span class="icon">&#128208;</span> Sq9 Levels
                     <select id="sq9Symbol" style="margin-left: auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px;" onchange="updateSq9Display()">
-                        <option value="SPY">SPY</option>
+                                                <option value="SPY">SPY</option>
                         <option value="QQQ">QQQ</option>
                         <option value="IWM">IWM</option>
+                        <option value="DIA">DIA</option>
+                        <option value="AAPL">AAPL</option>
+                        <option value="MSFT">MSFT</option>
+                        <option value="GOOGL">GOOGL</option>
+                        <option value="AMZN">AMZN</option>
+                        <option value="META">META</option>
+                        <option value="NVDA">NVDA</option>
+                        <option value="TSLA">TSLA</option>
+                        <option value="AMD">AMD</option>
+                        <option value="ORCL">ORCL</option>
+                        <option value="CSCO">CSCO</option>
+                        <option value="JPM">JPM</option>
+                        <option value="MA">MA</option>
+                        <option value="LLY">LLY</option>
+                        <option value="CVX">CVX</option>
+                        <option value="XLF">XLF</option>
+                        <option value="XLE">XLE</option>
+                        <option value="XLK">XLK</option>
+                        <option value="XLV">XLV</option>
+                        <option value="XLI">XLI</option>
+                        <option value="XLB">XLB</option>
+                        <option value="XLU">XLU</option>
+                        <option value="XLP">XLP</option>
+                        <option value="XLY">XLY</option>
                     </select>
                 </div>
                 <div id="sq9Levels">
@@ -1189,9 +1213,33 @@
                     <div class="form-group">
                         <label class="form-label">Underlying</label>
                         <select id="calcSymbol" class="form-select" onchange="updateOptionsCalc()">
-                            <option value="SPY">SPY</option>
+                                                        <option value="SPY">SPY</option>
                             <option value="QQQ">QQQ</option>
                             <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="MSFT">MSFT</option>
+                            <option value="GOOGL">GOOGL</option>
+                            <option value="AMZN">AMZN</option>
+                            <option value="META">META</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AMD">AMD</option>
+                            <option value="ORCL">ORCL</option>
+                            <option value="CSCO">CSCO</option>
+                            <option value="JPM">JPM</option>
+                            <option value="MA">MA</option>
+                            <option value="LLY">LLY</option>
+                            <option value="CVX">CVX</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1420,9 +1468,33 @@
                     <div class="form-group">
                         <label class="form-label">Symbol</label>
                         <select id="tradeSymbol" class="form-select" required>
-                            <option value="SPY">SPY</option>
+                                                        <option value="SPY">SPY</option>
                             <option value="QQQ">QQQ</option>
                             <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                            <option value="AAPL">AAPL</option>
+                            <option value="MSFT">MSFT</option>
+                            <option value="GOOGL">GOOGL</option>
+                            <option value="AMZN">AMZN</option>
+                            <option value="META">META</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AMD">AMD</option>
+                            <option value="ORCL">ORCL</option>
+                            <option value="CSCO">CSCO</option>
+                            <option value="JPM">JPM</option>
+                            <option value="MA">MA</option>
+                            <option value="LLY">LLY</option>
+                            <option value="CVX">CVX</option>
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1625,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 
 async function fetchLivePrices() {
-    const symbols = ['SPY', 'QQQ', 'IWM'];
+    const symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
     const liveIndicator = document.getElementById('liveIndicator');
     const liveStatus = document.getElementById('liveStatus');
 
@@ -1661,7 +1733,31 @@ async function fetchLivePrices() {
             currentPrices = {
                 SPY: { price: 598.27, open: 596.50, high: 600.00, low: 595.00, change: 0.29 },
                 QQQ: { price: 524.18, open: 522.00, high: 526.00, low: 521.00, change: 0.42 },
-                IWM: { price: 248.20, open: 247.00, high: 249.00, low: 246.50, change: 0.49 }
+                IWM: { price: 248.20, open: 247.00, high: 249.00, low: 246.50, change: 0.49 },
+                DIA: { price: 438.50, open: 437.00, high: 440.00, low: 436.00, change: 0.34 },
+                AAPL: { price: 243.00, open: 242.00, high: 245.00, low: 241.00, change: 0.41 },
+                MSFT: { price: 438.00, open: 436.00, high: 440.00, low: 435.00, change: 0.46 },
+                GOOGL: { price: 192.00, open: 191.00, high: 194.00, low: 190.00, change: 0.52 },
+                AMZN: { price: 227.00, open: 226.00, high: 229.00, low: 225.00, change: 0.44 },
+                META: { price: 617.00, open: 615.00, high: 620.00, low: 613.00, change: 0.33 },
+                NVDA: { price: 140.00, open: 139.00, high: 142.00, low: 138.00, change: 0.72 },
+                TSLA: { price: 389.00, open: 386.00, high: 392.00, low: 384.00, change: 0.78 },
+                AMD: { price: 125.00, open: 124.00, high: 127.00, low: 123.00, change: 0.81 },
+                ORCL: { price: 172.00, open: 171.00, high: 174.00, low: 170.00, change: 0.58 },
+                CSCO: { price: 58.00, open: 57.50, high: 58.50, low: 57.00, change: 0.87 },
+                JPM: { price: 243.00, open: 242.00, high: 245.00, low: 241.00, change: 0.41 },
+                MA: { price: 522.00, open: 520.00, high: 525.00, low: 518.00, change: 0.38 },
+                LLY: { price: 790.00, open: 788.00, high: 795.00, low: 785.00, change: 0.25 },
+                CVX: { price: 144.00, open: 143.00, high: 146.00, low: 142.00, change: 0.70 },
+                XLF: { price: 50.85, open: 50.50, high: 51.20, low: 50.30, change: 0.69 },
+                XLE: { price: 45.51, open: 45.20, high: 46.00, low: 45.00, change: 0.69 },
+                XLK: { price: 235.60, open: 234.00, high: 237.00, low: 233.00, change: 0.68 },
+                XLV: { price: 145.20, open: 144.50, high: 146.00, low: 144.00, change: 0.48 },
+                XLI: { price: 138.90, open: 138.00, high: 140.00, low: 137.50, change: 0.65 },
+                XLB: { price: 45.00, open: 44.50, high: 45.50, low: 44.20, change: 1.12 },
+                XLU: { price: 78.50, open: 78.00, high: 79.20, low: 77.80, change: 0.64 },
+                XLP: { price: 82.30, open: 82.00, high: 83.00, low: 81.50, change: 0.37 },
+                XLY: { price: 225.45, open: 224.00, high: 227.00, low: 223.00, change: 0.65 }
             };
         }
 
@@ -1682,7 +1778,7 @@ async function fetchLivePrices() {
 }
 
 function updatePriceDisplay() {
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         const data = currentPrices[symbol];
         if (!data) return;
 
@@ -1748,7 +1844,7 @@ function getUpcomingCycles(symbol) {
 
 function getCurrentSignal() {
     const allUpcoming = [];
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
     });
 
@@ -1907,7 +2003,7 @@ function updateActiveAlerts() {
     const container = document.getElementById('activeAlerts');
     const allUpcoming = [];
 
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
     });
 
@@ -2054,7 +2150,7 @@ function updateETFTable() {
     const today = new Date();
 
     let html = '';
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         const data = currentPrices[symbol];
         const pivots = majorPivots[symbol];
 
@@ -2098,7 +2194,7 @@ function updatePivotTimelines() {
     const today = new Date();
 
     let html = '';
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         const pivots = majorPivots[symbol];
 
         pivots.slice(0, 2).forEach(function(pivot) {
@@ -2157,7 +2253,7 @@ function updateCalendar() {
     const cycleDates = {};
     const entryDates = {};
 
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         getUpcomingCycles(symbol).forEach(function(u) {
             const dateStr = u.targetDate.toISOString().split('T')[0];
             cycleDates[dateStr] = true;
@@ -2219,7 +2315,7 @@ function updateUpcomingDates() {
     const container = document.getElementById('upcomingDates');
     const allUpcoming = [];
 
-    ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
         allUpcoming.push.apply(allUpcoming, getUpcomingCycles(symbol));
     });
 
@@ -2465,7 +2561,7 @@ function saveAlertHistory() {
 function checkPriceAlerts() {
     // Check Sq9 alerts
     if (settings.alerts && settings.alerts.sq9) {
-        ['SPY', 'QQQ', 'IWM'].forEach(function(symbol) {
+        ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(function(symbol) {
             const proximity = checkSq9Proximity(symbol);
             if (proximity && proximity.distance < 1.0) {
                 triggerAlert({
@@ -2789,7 +2885,7 @@ function selectRoadmapPivot(pivot) {
 }
 
 function updateRoadmapAccuracyBadges() {
-    ['SPY', 'QQQ', 'IWM'].forEach(etf => {
+    ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'].forEach(etf => {
         const allCycles = [...gannRoadmapData[etf].HIGH.cycles, ...gannRoadmapData[etf].LOW.cycles];
         const stats = calcAccuracyStats(allCycles);
         const badge = document.getElementById(`${etf.toLowerCase()}RoadmapAccuracy`);
