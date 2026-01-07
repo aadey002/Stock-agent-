@@ -7214,7 +7214,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <div class="card" style="margin-bottom: 20px;">
                 <div class="card-title">📊 Historical Backtest Results (SPY)</div>
                 <div id="backtestPeriod" style="font-size: 11px; color: #666; margin-bottom: 15px;">Analyzing last 252 trading days...</div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
                     <!-- Gann Performance -->
                     <div style="background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #8b5cf6;">
                         <div style="font-size: 11px; color: #7c3aed; font-weight: 600;">🔮 GANN ANALYSIS</div>
@@ -7228,6 +7228,13 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div id="btMktWinRate" style="font-size: 36px; font-weight: 800; color: #ef4444;">---%</div>
                         <div id="btMktRecord" style="font-size: 12px; color: #666;">-/- trades</div>
                         <div id="btMktAvgReturn" style="font-size: 10px; color: #22c55e; margin-top: 5px;">Avg: +0.0%</div>
+                    </div>
+                    <!-- SQ9 Performance -->
+                    <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #3b82f6;">
+                        <div style="font-size: 11px; color: #2563eb; font-weight: 600;">🎯 SQ9 LEVELS</div>
+                        <div id="btSq9WinRate" style="font-size: 36px; font-weight: 800; color: #3b82f6;">---%</div>
+                        <div id="btSq9Record" style="font-size: 12px; color: #666;">-/- trades</div>
+                        <div id="btSq9AvgReturn" style="font-size: 10px; color: #22c55e; margin-top: 5px;">Avg: +0.0%</div>
                     </div>
                     <!-- Aligned Performance -->
                     <div style="background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.2)); border-radius: 10px; padding: 20px; text-align: center; border: 2px solid #22c55e;">
@@ -7258,6 +7265,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             </div>
                             <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 4px; margin-bottom: 6px;">
                                 <strong>📊 Market:</strong> CALL if price > 20MA, PUT if price < 20MA
+                            </div>
+                            <div style="padding: 8px; background: rgba(59,130,246,0.1); border-radius: 4px; margin-bottom: 6px;">
+                                <strong>🎯 SQ9:</strong> CALL at support (within 3%), PUT at resistance (within 3%)
                             </div>
                             <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 4px;">
                                 <strong>✅ Correct:</strong> If next-day move matches prediction direction
@@ -7291,7 +7301,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
 
                 <!-- Recent Predictions Summary -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 15px;">
                     <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; text-align: center;">
                         <div style="font-size: 10px; color: #666;">Total Logged</div>
                         <div id="logTotalCount" style="font-size: 24px; font-weight: 700; color: #333;">0</div>
@@ -7299,6 +7309,10 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="background: rgba(139,92,246,0.1); border-radius: 8px; padding: 12px; text-align: center;">
                         <div style="font-size: 10px; color: #7c3aed;">🔮 Gann Accuracy</div>
                         <div id="logGannAccuracy" style="font-size: 24px; font-weight: 700; color: #7c3aed;">--%</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 8px; padding: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: #2563eb;">🎯 SQ9 Accuracy</div>
+                        <div id="logSq9Accuracy" style="font-size: 24px; font-weight: 700; color: #3b82f6;">--%</div>
                     </div>
                     <div style="background: rgba(239,68,68,0.1); border-radius: 8px; padding: 12px; text-align: center;">
                         <div style="font-size: 10px; color: #dc2626;">📊 Market Accuracy</div>
@@ -7329,20 +7343,22 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
                         <thead style="position: sticky; top: 0; background: #f0f0f0;">
                             <tr>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">DATE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">SYMBOL</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">PRICE</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1);">🔮 GANN</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1);">📊 MKT</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">ALIGNED</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">NEXT DAY</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd;">ACTUAL</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1);">G ✓</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1);">M ✓</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">DATE</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">SYMBOL</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">PRICE</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1); font-size: 10px;">🔮 GANN</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(59,130,246,0.1); font-size: 10px;">🎯 SQ9</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1); font-size: 10px;">📊 MKT</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">ALIGNED</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">NEXT DAY</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; font-size: 10px;">ACTUAL</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(139,92,246,0.1); font-size: 10px;">G✓</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(59,130,246,0.1); font-size: 10px;">S✓</th>
+                                <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd; background: rgba(239,68,68,0.1); font-size: 10px;">M✓</th>
                             </tr>
                         </thead>
                         <tbody id="predictionLogBody">
-                            <tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">No predictions logged yet. Click "Save Today's Predictions" to start tracking.</td></tr>
+                            <tr><td colspan="12" style="text-align: center; padding: 30px; color: #666;">No predictions logged yet. Click "Save Today's Predictions" to start tracking.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -15949,6 +15965,52 @@ function autoSavePredictions() {
     }
 }
 
+// Calculate SQ9 Prediction based on pivot levels
+function getSq9Prediction(symbol, currentPrice) {
+    // Get pivot data
+    var pivot = (typeof sq9PivotData !== 'undefined' && sq9PivotData[symbol]) ||
+                (typeof sq9ExtendedPivots !== 'undefined' && sq9ExtendedPivots[symbol]);
+
+    if (!pivot || !pivot.price || !currentPrice) {
+        return { pred: 'HOLD', level: null, type: null, distance: null };
+    }
+
+    // Calculate SQ9 levels from pivot
+    var levels = typeof calcSq9LevelsFromPivot === 'function' ? calcSq9LevelsFromPivot(pivot.price, currentPrice) : null;
+    if (!levels) {
+        return { pred: 'HOLD', level: null, type: null, distance: null };
+    }
+
+    // Find nearest level
+    var nearest = typeof findNearestSq9Level === 'function' ? findNearestSq9Level(levels, currentPrice) : null;
+    if (!nearest) {
+        return { pred: 'HOLD', level: null, type: null, distance: null };
+    }
+
+    var distPct = Math.abs(nearest.distance);
+    var sq9Type = nearest.type; // 'support' or 'resist'
+
+    // SQ9 Prediction Logic:
+    // At support (within 3%) = CALL (expect bounce)
+    // At resistance (within 3%) = PUT (expect rejection)
+    // Far from level = HOLD
+    var sq9Pred = 'HOLD';
+    if (distPct <= 3.0) {
+        if (sq9Type === 'support') {
+            sq9Pred = 'CALL'; // At support, expect bounce up
+        } else {
+            sq9Pred = 'PUT'; // At resistance, expect rejection down
+        }
+    }
+
+    return {
+        pred: sq9Pred,
+        level: nearest.price,
+        type: sq9Type,
+        distance: nearest.distance
+    };
+}
+
 // Save today's predictions for all symbols
 function saveTodaysPrediction() {
     var symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
@@ -15999,6 +16061,10 @@ function saveTodaysPrediction() {
         // MARKET Prediction
         var mktPred = price > ma20 ? 'CALL' : 'PUT';
 
+        // SQ9 Prediction
+        var sq9Result = getSq9Prediction(sym, price);
+        var sq9Pred = sq9Result.pred;
+
         var aligned = gannPred === mktPred || gannPred === 'HOLD';
 
         log.push({
@@ -16006,11 +16072,15 @@ function saveTodaysPrediction() {
             symbol: sym,
             price: price,
             gannPred: gannPred,
+            sq9Pred: sq9Pred,
+            sq9Level: sq9Result.level,
+            sq9Type: sq9Result.type,
             mktPred: mktPred,
             aligned: aligned,
             nextDayPrice: null,
             actualMove: null,
             gannCorrect: null,
+            sq9Correct: null,
             mktCorrect: null,
             verified: false
         });
@@ -16110,10 +16180,21 @@ function verifyPastPredictions() {
             entry.gannCorrect = (entry.gannPred === 'CALL' && moveUp) || (entry.gannPred === 'PUT' && !moveUp);
         }
         entry.mktCorrect = (entry.mktPred === 'CALL' && moveUp) || (entry.mktPred === 'PUT' && !moveUp);
+
+        // Check SQ9 prediction if it exists
+        if (entry.sq9Pred && entry.sq9Pred !== 'HOLD') {
+            entry.sq9Correct = (entry.sq9Pred === 'CALL' && moveUp) || (entry.sq9Pred === 'PUT' && !moveUp);
+        } else if (entry.sq9Pred === 'HOLD') {
+            entry.sq9Correct = true; // HOLD is always "correct"
+        } else {
+            entry.sq9Correct = null; // No SQ9 prediction made
+        }
+
         entry.verified = true;
 
         console.log('Verified ' + sym + ' ' + entry.date + ': ' +
             'Gann=' + entry.gannPred + (entry.gannCorrect ? '✓' : '✗') + ', ' +
+            'SQ9=' + (entry.sq9Pred || 'N/A') + (entry.sq9Correct === null ? '' : (entry.sq9Correct ? '✓' : '✗')) + ', ' +
             'Mkt=' + entry.mktPred + (entry.mktCorrect ? '✓' : '✗') + ', ' +
             'Move=' + entry.actualMove.toFixed(2) + '%');
 
@@ -18090,6 +18171,7 @@ function updatePredictionLogDisplay() {
     // Calculate summary stats (only verified entries from filtered log)
     var totalVerified = 0;
     var gannWins = 0, gannTotal = 0;
+    var sq9Wins = 0, sq9Total = 0;
     var mktWins = 0, mktTotal = 0;
     var alignedWins = 0, alignedTotal = 0;
 
@@ -18105,6 +18187,12 @@ function updatePredictionLogDisplay() {
             if (entry.gannCorrect) gannWins++;
         }
 
+        // SQ9 stats (skip HOLD and null)
+        if (entry.sq9Pred && entry.sq9Pred !== 'HOLD') {
+            sq9Total++;
+            if (entry.sq9Correct) sq9Wins++;
+        }
+
         // Market stats
         mktTotal++;
         if (entry.mktCorrect) mktWins++;
@@ -18118,6 +18206,7 @@ function updatePredictionLogDisplay() {
 
     console.log('Prediction stats - Verified: ' + totalVerified +
         ', Gann: ' + gannWins + '/' + gannTotal +
+        ', SQ9: ' + sq9Wins + '/' + sq9Total +
         ', Mkt: ' + mktWins + '/' + mktTotal +
         ', Aligned: ' + alignedWins + '/' + alignedTotal);
 
@@ -18128,6 +18217,9 @@ function updatePredictionLogDisplay() {
 
     el = document.getElementById('logGannAccuracy');
     if (el) el.textContent = gannTotal > 0 ? Math.round(gannWins / gannTotal * 100) + '%' : '--%';
+
+    el = document.getElementById('logSq9Accuracy');
+    if (el) el.textContent = sq9Total > 0 ? Math.round(sq9Wins / sq9Total * 100) + '%' : '--%';
 
     el = document.getElementById('logMktAccuracy');
     if (el) el.textContent = mktTotal > 0 ? Math.round(mktWins / mktTotal * 100) + '%' : '--%';
@@ -18142,7 +18234,7 @@ function updatePredictionLogDisplay() {
         var msg = selectedFilterSymbols !== null && selectedFilterSymbols.length === 0
             ? 'No symbols selected. Use the filter above to select symbols.'
             : (log.length === 0 ? 'No predictions logged yet. Click "Save Today\'s Predictions" to start tracking.' : 'No predictions match the selected symbols.');
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 30px; color: #666;">' + msg + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align: center; padding: 30px; color: #666;">' + msg + '</td></tr>';
         return;
     }
 
@@ -18159,12 +18251,14 @@ function updatePredictionLogDisplay() {
 
     var rows = displayLog.map(function(entry) {
         var gannColor = entry.gannPred === 'CALL' ? '#22c55e' : (entry.gannPred === 'PUT' ? '#ef4444' : '#eab308');
+        var sq9Color = entry.sq9Pred === 'CALL' ? '#22c55e' : (entry.sq9Pred === 'PUT' ? '#ef4444' : '#eab308');
         var mktColor = entry.mktPred === 'CALL' ? '#22c55e' : '#ef4444';
         var alignedIcon = entry.aligned ? '✅' : '⚠️';
         var actualColor = entry.actualMove >= 0 ? '#22c55e' : '#ef4444';
         var actualSign = entry.actualMove >= 0 ? '+' : '';
 
         var gannCheckIcon = entry.verified ? (entry.gannCorrect ? '✅' : '❌') : '⏳';
+        var sq9CheckIcon = entry.sq9Pred ? (entry.verified ? (entry.sq9Correct ? '✅' : '❌') : '⏳') : '--';
         var mktCheckIcon = entry.verified ? (entry.mktCorrect ? '✅' : '❌') : '⏳';
 
         return '<tr>' +
@@ -18172,11 +18266,13 @@ function updatePredictionLogDisplay() {
             '<td style="padding: 8px; font-weight: 600;">' + entry.symbol + '</td>' +
             '<td style="padding: 8px;">$' + entry.price.toFixed(2) + '</td>' +
             '<td style="padding: 8px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 600;">' + entry.gannPred + '</span></td>' +
+            '<td style="padding: 8px; background: rgba(59,130,246,0.05);"><span style="color: ' + sq9Color + '; font-weight: 600;">' + (entry.sq9Pred || 'N/A') + '</span></td>' +
             '<td style="padding: 8px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 600;">' + entry.mktPred + '</span></td>' +
             '<td style="padding: 8px;">' + alignedIcon + '</td>' +
             '<td style="padding: 8px;">' + (entry.nextDayPrice ? '$' + entry.nextDayPrice.toFixed(2) : '--') + '</td>' +
             '<td style="padding: 8px; color: ' + actualColor + '; font-weight: 600;">' + (entry.actualMove !== null ? actualSign + entry.actualMove + '%' : '--') + '</td>' +
             '<td style="padding: 8px; background: rgba(139,92,246,0.05); font-size: 14px;">' + gannCheckIcon + '</td>' +
+            '<td style="padding: 8px; background: rgba(59,130,246,0.05); font-size: 14px;">' + sq9CheckIcon + '</td>' +
             '<td style="padding: 8px; background: rgba(239,68,68,0.05); font-size: 14px;">' + mktCheckIcon + '</td>' +
             '</tr>';
     });
@@ -18204,12 +18300,18 @@ function renderAccuracyChart() {
         if (!entry.verified) continue;
 
         if (!byDate[entry.date]) {
-            byDate[entry.date] = { gannCorrect: 0, gannTotal: 0, mktCorrect: 0, mktTotal: 0, bothCorrect: 0 };
+            byDate[entry.date] = { gannCorrect: 0, gannTotal: 0, sq9Correct: 0, sq9Total: 0, mktCorrect: 0, mktTotal: 0, bothCorrect: 0 };
         }
 
         if (entry.gannPred !== 'HOLD') {
             byDate[entry.date].gannTotal++;
             if (entry.gannCorrect) byDate[entry.date].gannCorrect++;
+        }
+
+        // SQ9 stats
+        if (entry.sq9Pred && entry.sq9Pred !== 'HOLD') {
+            byDate[entry.date].sq9Total++;
+            if (entry.sq9Correct) byDate[entry.date].sq9Correct++;
         }
 
         byDate[entry.date].mktTotal++;
@@ -18238,21 +18340,24 @@ function renderAccuracyChart() {
         var data = byDate[date];
 
         var gannPct = data.gannTotal > 0 ? Math.round(data.gannCorrect / data.gannTotal * 100) : 0;
+        var sq9Pct = data.sq9Total > 0 ? Math.round(data.sq9Correct / data.sq9Total * 100) : 0;
         var mktPct = data.mktTotal > 0 ? Math.round(data.mktCorrect / data.mktTotal * 100) : 0;
         var bothPct = data.mktTotal > 0 ? Math.round(data.bothCorrect / data.mktTotal * 100) : 0;
 
         // Bar heights (max 150px)
         var gannHeight = Math.max(5, gannPct * 1.5);
+        var sq9Height = Math.max(5, sq9Pct * 1.5);
         var mktHeight = Math.max(5, mktPct * 1.5);
         var bothHeight = Math.max(5, bothPct * 1.5);
 
         var dateLabel = date.slice(5); // MM-DD format
 
         barsHTML += '<div style="display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1;">' +
-            '<div style="display: flex; gap: 2px; align-items: flex-end; height: 150px;">' +
-                '<div style="width: 12px; height: ' + gannHeight + 'px; background: #8b5cf6; border-radius: 2px 2px 0 0;" title="Gann: ' + gannPct + '%"></div>' +
-                '<div style="width: 12px; height: ' + mktHeight + 'px; background: #ef4444; border-radius: 2px 2px 0 0;" title="Market: ' + mktPct + '%"></div>' +
-                '<div style="width: 12px; height: ' + bothHeight + 'px; background: #22c55e; border-radius: 2px 2px 0 0;" title="Both: ' + bothPct + '%"></div>' +
+            '<div style="display: flex; gap: 1px; align-items: flex-end; height: 150px;">' +
+                '<div style="width: 9px; height: ' + gannHeight + 'px; background: #8b5cf6; border-radius: 2px 2px 0 0;" title="Gann: ' + gannPct + '%"></div>' +
+                '<div style="width: 9px; height: ' + sq9Height + 'px; background: #3b82f6; border-radius: 2px 2px 0 0;" title="SQ9: ' + sq9Pct + '%"></div>' +
+                '<div style="width: 9px; height: ' + mktHeight + 'px; background: #ef4444; border-radius: 2px 2px 0 0;" title="Market: ' + mktPct + '%"></div>' +
+                '<div style="width: 9px; height: ' + bothHeight + 'px; background: #22c55e; border-radius: 2px 2px 0 0;" title="Both: ' + bothPct + '%"></div>' +
             '</div>' +
             '<div style="font-size: 8px; color: #666; transform: rotate(-45deg); white-space: nowrap;">' + dateLabel + '</div>' +
         '</div>';
@@ -18262,22 +18367,27 @@ function renderAccuracyChart() {
 
     // Calculate cumulative stats
     var totalGannCorrect = 0, totalGannTotal = 0;
+    var totalSq9Correct = 0, totalSq9Total = 0;
     var totalMktCorrect = 0, totalMktTotal = 0;
 
     for (var d = 0; d < dates.length; d++) {
         var data = byDate[dates[d]];
         totalGannCorrect += data.gannCorrect;
         totalGannTotal += data.gannTotal;
+        totalSq9Correct += data.sq9Correct;
+        totalSq9Total += data.sq9Total;
         totalMktCorrect += data.mktCorrect;
         totalMktTotal += data.mktTotal;
     }
 
     var cumGannPct = totalGannTotal > 0 ? Math.round(totalGannCorrect / totalGannTotal * 100) : 0;
+    var cumSq9Pct = totalSq9Total > 0 ? Math.round(totalSq9Correct / totalSq9Total * 100) : 0;
     var cumMktPct = totalMktTotal > 0 ? Math.round(totalMktCorrect / totalMktTotal * 100) : 0;
 
-    labelsContainer.innerHTML = '<div style="width: 100%; display: flex; justify-content: center; gap: 30px; padding-top: 10px;">' +
-        '<span>Cumulative Gann: <strong style="color: #8b5cf6;">' + cumGannPct + '%</strong> (' + totalGannCorrect + '/' + totalGannTotal + ')</span>' +
-        '<span>Cumulative Market: <strong style="color: #ef4444;">' + cumMktPct + '%</strong> (' + totalMktCorrect + '/' + totalMktTotal + ')</span>' +
+    labelsContainer.innerHTML = '<div style="width: 100%; display: flex; justify-content: center; gap: 20px; padding-top: 10px; flex-wrap: wrap;">' +
+        '<span>Gann: <strong style="color: #8b5cf6;">' + cumGannPct + '%</strong> (' + totalGannCorrect + '/' + totalGannTotal + ')</span>' +
+        '<span>SQ9: <strong style="color: #3b82f6;">' + cumSq9Pct + '%</strong> (' + totalSq9Correct + '/' + totalSq9Total + ')</span>' +
+        '<span>Market: <strong style="color: #ef4444;">' + cumMktPct + '%</strong> (' + totalMktCorrect + '/' + totalMktTotal + ')</span>' +
         '</div>';
 
     // Update running totals display
@@ -18287,6 +18397,12 @@ function renderAccuracyChart() {
 
     el = document.getElementById('runningGannRecord');
     if (el) el.textContent = totalGannCorrect + '/' + totalGannTotal + ' correct';
+
+    el = document.getElementById('runningSq9Accuracy');
+    if (el) el.textContent = cumSq9Pct + '%';
+
+    el = document.getElementById('runningSq9Record');
+    if (el) el.textContent = totalSq9Correct + '/' + totalSq9Total + ' correct';
 
     el = document.getElementById('runningMktAccuracy');
     if (el) el.textContent = cumMktPct + '%';
