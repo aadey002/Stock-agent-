@@ -3535,6 +3535,36 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
 .opp-sq9-cell.partial .opp-sq9-status { color: #6b7280; }
 .opp-sq9-cell.closed .opp-sq9-status { color: #dc2626; }
 
+/* SQ9 Alignment Badge Styles */
+.sq9-align-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sq9-align-badge.aligned {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.sq9-align-badge.partial {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.sq9-align-badge.near {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.sq9-align-badge.far {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
     </style>
 </head>
 <body>
@@ -5586,6 +5616,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RESIST</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(102,126,234,0.15);">🎯 SQ9</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">SQ9 ALIGN</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(239,68,68,0.1);">📊 MKT</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TURN</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">NEXT</th>
@@ -5600,7 +5631,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                             </tr>
                         </thead>
                         <tbody id="oppTableBody">
-                            <tr><td colspan="19" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
+                            <tr><td colspan="20" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -12059,25 +12090,24 @@ function filterOppTable(filter) {
     var rows = tbody.querySelectorAll('tr');
     rows.forEach(function(row) {
         var show = true;
-        var cells = row.querySelectorAll('td');
-        if (cells.length < 10) return;
 
-        var alignCell = cells[0].textContent.trim();
-        var gannCell = cells[7].textContent.trim();
-        var daysCell = cells[11] ? cells[11].textContent.trim() : "";
-        var riskCell = cells[16] ? cells[11].textContent.trim() : '';
+        // Use data attributes for efficient filtering
+        var sq9Alignment = row.dataset.sq9Alignment || '';
+        var direction = row.dataset.direction || '';
+        var days = parseInt(row.dataset.days) || 99;
+        var risk = row.dataset.risk || '';
 
         if (filter === 'aligned') {
-            show = alignCell.includes('✅');
+            // Show ALIGNED or PARTIAL SQ9 alignment
+            show = sq9Alignment === 'aligned' || sq9Alignment === 'partial';
         } else if (filter === 'ready') {
-            var days = parseInt(daysCell) || 99;
             show = days <= 3;
         } else if (filter === 'calls') {
-            show = gannCell === 'CALL';
+            show = direction === 'CALL';
         } else if (filter === 'puts') {
-            show = gannCell === 'PUT';
+            show = direction === 'PUT';
         } else if (filter === 'lowrisk') {
-            show = riskCell === 'LOW';
+            show = risk === 'LOW';
         }
 
         row.style.display = show ? '' : 'none';
@@ -13282,7 +13312,43 @@ function generateDynamicOpportunities() {
         var changeSign = changePct >= 0 ? '+' : '';
         var maColor = price >= sym20MA ? '#22c55e' : '#ef4444';
 
-        var row = '<tr style="border-left: 3px solid ' + alignColor + ';" data-days="' + daysToTurn + '">' +
+        // Get SQ9 status for alignment calculation
+        var sq9Status = typeof getSq9StatusForOpp === 'function' ? getSq9StatusForOpp(sym) : { status: 'none', direction: null, checkCount: 0 };
+        var sq9Signal = sq9Status.direction ? sq9Status.direction.toUpperCase() : 'HOLD';
+        var sq9Distance = 0;
+
+        // Calculate SQ9 distance from pivot data
+        var pivot = (typeof sq9PivotData !== 'undefined' && sq9PivotData[sym]) || (typeof sq9ExtendedPivots !== 'undefined' && sq9ExtendedPivots[sym]);
+        if (pivot && pivot.price && price) {
+            var levels = typeof calcSq9LevelsFromPivot === 'function' ? calcSq9LevelsFromPivot(pivot.price, price) : null;
+            if (levels) {
+                var nearest = typeof findNearestSq9Level === 'function' ? findNearestSq9Level(levels, price) : null;
+                if (nearest) {
+                    sq9Distance = nearest.distance;
+                }
+            }
+        }
+
+        // Calculate SQ9 Alignment
+        var signals = [gannSignal, sq9Signal, mktSignal];
+        var callVotes = signals.filter(function(s) { return s === 'CALL'; }).length;
+        var putVotes = signals.filter(function(s) { return s === 'PUT'; }).length;
+        var agreements = Math.max(callVotes, putVotes);
+        var distanceOK = Math.abs(sq9Distance) <= 1.5;
+        var approaching = Math.abs(sq9Distance) <= 3.0;
+
+        var sq9AlignStatus, sq9AlignIcon, sq9AlignClass;
+        if (agreements === 3 && distanceOK) {
+            sq9AlignStatus = 'ALIGNED'; sq9AlignIcon = '✅'; sq9AlignClass = 'aligned';
+        } else if (agreements >= 2 && approaching) {
+            sq9AlignStatus = 'PARTIAL'; sq9AlignIcon = '⚠️'; sq9AlignClass = 'partial';
+        } else if (approaching) {
+            sq9AlignStatus = 'NEAR'; sq9AlignIcon = '🎯'; sq9AlignClass = 'near';
+        } else {
+            sq9AlignStatus = 'FAR'; sq9AlignIcon = '❌'; sq9AlignClass = 'far';
+        }
+
+        var row = '<tr style="border-left: 3px solid ' + alignColor + ';" data-days="' + daysToTurn + '" data-sq9-alignment="' + sq9AlignClass + '" data-direction="' + gannSignal + '" data-risk="' + risk + '">' +
             '<td style="padding: 6px; font-size: 14px;">' + alignIcon + '</td>' +
             '<td style="padding: 6px;"><strong>' + sym + '</strong><br><span style="font-size: 8px; color: #666;">' + sector + '</span></td>' +
             '<td style="padding: 6px; font-weight: 600; font-size: 10px;">$' + price.toFixed(2) + '</td>' +
@@ -13292,6 +13358,7 @@ function generateDynamicOpportunities() {
             '<td style="padding: 6px; font-size: 9px; color: #ef4444;">$' + resist.toFixed(2) + '</td>' +
             '<td style="padding: 6px; background: rgba(139,92,246,0.05);"><span style="color: ' + gannColor + '; font-weight: 700; font-size: 10px;">' + gannSignal + '</span></td>' +
             '<td style="padding: 6px; background: rgba(102,126,234,0.05);">' + (typeof renderSq9OppCell === 'function' ? renderSq9OppCell(sym) : '<span style="color: #666;">--</span>') + '</td>' +
+            '<td style="padding: 6px; text-align: center; background: rgba(34,197,94,0.03);"><span class="sq9-align-badge ' + sq9AlignClass + '">' + sq9AlignIcon + ' ' + sq9AlignStatus + '</span></td>' +
             '<td style="padding: 6px; background: rgba(239,68,68,0.05);"><span style="color: ' + mktColor + '; font-weight: 700; font-size: 10px;">' + mktSignal + '</span></td>' +
             '<td style="padding: 6px;"><span style="color: ' + turnColor + '; font-weight: 600; font-size: 9px;">' + turnDir + '</span></td>' +
             '<td style="padding: 6px; font-size: 9px;">' + nextTurnStr + '</td>' +
@@ -30586,10 +30653,16 @@ function renderSq9OppCell(symbol) {
     const dirIcon = sq9.direction === 'call' ? '📈' : '📉';
     const dirText = sq9.direction.toUpperCase();
 
+    // Determine SQ9 type (support or resistance) based on direction
+    const sq9Type = sq9.direction === 'call' ? 'SUP' : 'RES';
+    const sq9TypeColor = sq9.direction === 'call' ? '#22c55e' : '#ef4444';
+    const sq9TypeDot = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${sq9TypeColor};margin-right:3px;vertical-align:middle;"></span>`;
+
     if (sq9.status === 'ready') {
         return `<div class="opp-sq9-cell ready" onclick="viewSq9Detail('${symbol}')">
-            <span class="opp-sq9-status">🟢 ${dirText} 5/5 ✅</span>
+            <span class="opp-sq9-status">${dirIcon} ${dirText} 5/5</span>
             <span class="opp-sq9-level">$${sq9.level.toFixed(2)} READY!</span>
+            <span class="opp-sq9-type" style="font-size:9px;">${sq9TypeDot}${sq9Type}</span>
         </div>`;
     }
 
@@ -30598,20 +30671,23 @@ function renderSq9OppCell(symbol) {
         return `<div class="opp-sq9-cell closed" onclick="viewSq9Detail('${symbol}')">
             <span class="opp-sq9-status">🔒 ${dirText} CLOSED</span>
             <span class="opp-sq9-level">@ ${timeStr}</span>
+            <span class="opp-sq9-type" style="font-size:9px;">${sq9TypeDot}${sq9Type}</span>
         </div>`;
     }
 
     if (sq9.status === 'watching') {
         return `<div class="opp-sq9-cell watching" onclick="viewSq9Detail('${symbol}')">
-            <span class="opp-sq9-status">🎯 ${dirText} ${sq9.checkCount}/5</span>
+            <span class="opp-sq9-status">${dirIcon} ${dirText} ${sq9.checkCount}/5</span>
             <span class="opp-sq9-level">Near $${sq9.level.toFixed(2)}</span>
+            <span class="opp-sq9-type" style="font-size:9px;">${sq9TypeDot}${sq9Type}</span>
         </div>`;
     }
 
     // Partial
     return `<div class="opp-sq9-cell partial" onclick="viewSq9Detail('${symbol}')">
-        <span class="opp-sq9-status">⏳ ${dirText} ${sq9.checkCount}/5</span>
+        <span class="opp-sq9-status">${dirIcon} ${dirText} ${sq9.checkCount}/5</span>
         <span class="opp-sq9-level">Near $${sq9.level.toFixed(2)}</span>
+        <span class="opp-sq9-type" style="font-size:9px;">${sq9TypeDot}${sq9Type}</span>
     </div>`;
 }
 
