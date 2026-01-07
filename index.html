@@ -5425,7 +5425,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                     <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center;">
                         <div style="font-size: 11px; color: #666;">Total Opportunities</div>
-                        <div style="font-size: 24px; font-weight: 700;" id="opp-total">12</div>
+                        <div style="font-size: 24px; font-weight: 700;" id="opp-total">27</div>
                     </div>
                     <div style="background: rgba(34,197,94,0.1); border-radius: 8px; padding: 15px; text-align: center;">
                         <div style="font-size: 11px; color: #666;">✅ Aligned</div>
@@ -11010,7 +11010,7 @@ var invertGannSignal = false; // Set to true to invert Gann signals
 
 // Symbol filter for performance table (null = show all, array = selected symbols)
 var selectedFilterSymbols = null; // null means all selected
-var allSymbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+var allSymbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
 // Initialize symbol filter checkboxes
 function initSymbolFilter() {
@@ -11708,7 +11708,7 @@ function filterOppTable(filter) {
 
 // Load live prices from CSV data files
 async function loadOpportunitiesPrices() {
-    const symbols = ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    const symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
     for (const symbol of symbols) {
         try {
@@ -12499,7 +12499,7 @@ async function fetchLatestPrice(symbol) {
 
 // Update ALL symbolGannData prices from CSV data (not just current symbol)
 function updateAllSymbolGannDataFromCSV() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'XLE', 'XLF', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
 
     symbols.forEach(function(symbol) {
         var data = allSymbolsData[symbol];
