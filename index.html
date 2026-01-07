@@ -3049,6 +3049,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
 
 .sq9-etf-tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -31838,6 +31839,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize option cost calculator
     initOptionCostCalc();
+// Auto-scan historical patterns after 4 seconds
+    setTimeout(function() {
+        if (typeof scanHistoricalPatterns === "function") {
+            console.log("🔍 Auto-scanning historical patterns...");
+            scanHistoricalPatterns();
+        }
+    }, 4000);
 });
 
 // ============================================
