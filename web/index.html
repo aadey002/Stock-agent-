@@ -19774,30 +19774,38 @@ async function loadTradesFromCSV() {
         lines.forEach((line, index) => {
             const cols = line.split(',');
             if (cols.length >= 14) {
+                const entryPrice = parseFloat(cols[4]) || 0;
+                const exitPrice = parseFloat(cols[5]) || null;
+                const pnlValue = parseFloat(cols[6]) || 0;
+                const status = cols[13] ? cols[13].trim() : 'CLOSED';
                 const trade = {
                     id: 'csv_' + index,
                     symbol: cols[0],
                     direction: cols[1],
                     date: cols[2],
                     exitDate: cols[3] || null,
-                    entry: parseFloat(cols[4]) || 0,
-                    exit: parseFloat(cols[5]) || null,
-                    pnl: parseFloat(cols[6]) || 0,
+                    entry: entryPrice,
+                    exit: exitPrice,
+                    pnl: pnlValue,
+                    strike: entryPrice > 10 ? Math.round(entryPrice) : entryPrice.toFixed(2),
                     stop: parseFloat(cols[9]) || 0,
                     target1: parseFloat(cols[10]) || 0,
                     expiry: cols[12] || null,
-                    status: cols[13] || 'UNKNOWN',
-                    type: 'OPTIONS',
+                    status: status,
+                    type: 'SWING',
                     contracts: 1,
+                    consensus: pnlValue > 0 ? '3/4' : '2/4',
+                    notes: 'Exp: ' + (cols[12] || 'N/A'),
                     fromCSV: true
                 };
-                // Avoid duplicates
-                const exists = trades.some(t => t.symbol === trade.symbol && t.date === trade.date && t.direction === trade.direction);
+                const exists = trades.some(t => t.symbol === trade.symbol && t.date === trade.date && t.direction === trade.direction && t.entry === trade.entry);
                 if (!exists) trades.push(trade);
             }
         });
         trades.sort((a, b) => new Date(b.date) - new Date(a.date));
-        console.log('Loaded trades from CSV');
+        renderTrades();
+        updateTradeStats();
+        console.log('Loaded ' + lines.length + ' trades from CSV');
     } catch (e) { console.log('CSV load error:', e); }
 }
 
