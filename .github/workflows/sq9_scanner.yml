@@ -36,4 +36,5 @@ jobs:
           git config --local user.name "GitHub Actions Bot"
           git add sq9_scanner.csv sq9_scanner.json
           git diff --staged --quiet || git commit -m "🎯 SQ9 Scan $(date +'%Y-%m-%d %H:%M') UTC"
+          git pull --rebase origin main
           git push

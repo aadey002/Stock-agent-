@@ -25009,7 +25009,7 @@ let realAgentVotes = null;
 
 async function loadRealAgentSignals() {
     try {
-        const response = await fetch('voting_log.json');
+        const response = await fetch('data/voting_log.json');
         if (response.ok) {
             const data = await response.json();
             realAgentVotes = data;
