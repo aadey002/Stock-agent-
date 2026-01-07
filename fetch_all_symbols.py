@@ -8,12 +8,17 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 
-# Main ETFs + All Sector ETFs + Individual Stocks (must match web/index.html SYMBOLS array)
+# Full 43-symbol watchlist (must match index.html sq9ExtendedPivots)
 SYMBOLS = [
-    'SPY', 'QQQ', 'IWM', 'DIA',  # Main ETFs
-    'XLK', 'XLF', 'XLE', 'XLV', 'XLI', 'XLP', 'XLU', 'XLB', 'XLC', 'XLRE', 'XLY',  # Sector ETFs
-    'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'META', 'TSLA', 'NVDA', 'AMD',  # Tech Giants
-    'JPM', 'MA', 'LLY', 'WMT', 'ORCL', 'CVX', 'CSCO'  # Other Major Stocks
+    # Index ETFs (4)
+    'SPY', 'QQQ', 'IWM', 'DIA',
+    # Sector ETFs (9)
+    'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY',
+    # Mega Caps (10)
+    'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX',
+    # Additional Liquid Stocks (20)
+    'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST', 'CRM',
+    'INTC', 'CSCO', 'ADBE', 'ORCL', 'PFE', 'MRK', 'ABBV', 'LLY', 'CVX', 'XOM'
 ]
 DATA_DIR = 'data'
 LOOKBACK_DAYS = 1095  # 3 years
