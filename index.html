@@ -10299,31 +10299,57 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <select id="histPatternSymbol" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="DIA">DIA</option>
-                            <option value="XLF">XLF</option>
-                            <option value="XLE">XLE</option>
-                            <option value="XLK">XLK</option>
-                            <option value="XLV">XLV</option>
-                            <option value="XLRE">XLRE</option>
-                            <option value="XLC">XLC</option>
-                            <option value="AAPL">AAPL</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="META">META</option>
-                            <option value="AMD">AMD</option>
-                            <option value="MSFT">MSFT</option>
-                            <option value="AMZN">AMZN</option>
-                            <option value="GOOGL">GOOGL</option>
-                            <option value="JPM">JPM</option>
-                            <option value="MA">MA</option>
-                            <option value="LLY">LLY</option>
-                            <option value="WMT">WMT</option>
-                            <option value="ORCL">ORCL</option>
-                            <option value="CVX">CVX</option>
-                            <option value="CSCO">CSCO</option>
+                            <optgroup label="Index ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sector ETFs">
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                            </optgroup>
+                            <optgroup label="Mega Caps">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="NVDA">NVDA</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="JPM">JPM</option>
+                                <option value="AMD">AMD</option>
+                                <option value="NFLX">NFLX</option>
+                            </optgroup>
+                            <optgroup label="Additional Stocks">
+                                <option value="V">V</option>
+                                <option value="MA">MA</option>
+                                <option value="UNH">UNH</option>
+                                <option value="HD">HD</option>
+                                <option value="PG">PG</option>
+                                <option value="BAC">BAC</option>
+                                <option value="WMT">WMT</option>
+                                <option value="DIS">DIS</option>
+                                <option value="COST">COST</option>
+                                <option value="CRM">CRM</option>
+                                <option value="INTC">INTC</option>
+                                <option value="CSCO">CSCO</option>
+                                <option value="ADBE">ADBE</option>
+                                <option value="ORCL">ORCL</option>
+                                <option value="PFE">PFE</option>
+                                <option value="MRK">MRK</option>
+                                <option value="ABBV">ABBV</option>
+                                <option value="LLY">LLY</option>
+                                <option value="CVX">CVX</option>
+                                <option value="XOM">XOM</option>
+                            </optgroup>
                         </select>
                         <select id="histPatternPeriod" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
                             <option value="365">1 Year</option>
@@ -10627,31 +10653,57 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <select id="sq9MtfSymbol" onchange="updateSq9Mtf()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; font-weight: 600;">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="DIA">DIA</option>
-                            <option value="XLF">XLF</option>
-                            <option value="XLE">XLE</option>
-                            <option value="XLK">XLK</option>
-                            <option value="XLV">XLV</option>
-                            <option value="XLRE">XLRE</option>
-                            <option value="XLC">XLC</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="AAPL">AAPL</option>
-                            <option value="AMD">AMD</option>
-                            <option value="META">META</option>
-                            <option value="MSFT">MSFT</option>
-                            <option value="AMZN">AMZN</option>
-                            <option value="GOOGL">GOOGL</option>
-                            <option value="JPM">JPM</option>
-                            <option value="MA">MA</option>
-                            <option value="LLY">LLY</option>
-                            <option value="WMT">WMT</option>
-                            <option value="ORCL">ORCL</option>
-                            <option value="CVX">CVX</option>
-                            <option value="CSCO">CSCO</option>
+                            <optgroup label="Index ETFs">
+                                <option value="SPY">SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sector ETFs">
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                            </optgroup>
+                            <optgroup label="Mega Caps">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="NVDA">NVDA</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="JPM">JPM</option>
+                                <option value="AMD">AMD</option>
+                                <option value="NFLX">NFLX</option>
+                            </optgroup>
+                            <optgroup label="Additional Stocks">
+                                <option value="V">V</option>
+                                <option value="MA">MA</option>
+                                <option value="UNH">UNH</option>
+                                <option value="HD">HD</option>
+                                <option value="PG">PG</option>
+                                <option value="BAC">BAC</option>
+                                <option value="WMT">WMT</option>
+                                <option value="DIS">DIS</option>
+                                <option value="COST">COST</option>
+                                <option value="CRM">CRM</option>
+                                <option value="INTC">INTC</option>
+                                <option value="CSCO">CSCO</option>
+                                <option value="ADBE">ADBE</option>
+                                <option value="ORCL">ORCL</option>
+                                <option value="PFE">PFE</option>
+                                <option value="MRK">MRK</option>
+                                <option value="ABBV">ABBV</option>
+                                <option value="LLY">LLY</option>
+                                <option value="CVX">CVX</option>
+                                <option value="XOM">XOM</option>
+                            </optgroup>
                         </select>
                         <div style="font-size: 14px; font-weight: 600;">
                             <span id="sq9MtfSymbolDisplay">SPY</span>:
@@ -11124,31 +11176,57 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 5px;">Symbol</label>
                             <select id="sq9TradeSymbol" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
                                 <option value="">Select...</option>
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLRE">XLRE</option>
-                                <option value="XLC">XLC</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AAPL">AAPL</option>
-                                <option value="AMD">AMD</option>
-                                <option value="META">META</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="JPM">JPM</option>
-                                <option value="MA">MA</option>
-                                <option value="LLY">LLY</option>
-                                <option value="WMT">WMT</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="CVX">CVX</option>
-                                <option value="CSCO">CSCO</option>
+                                <optgroup label="Index ETFs">
+                                    <option value="SPY">SPY</option>
+                                    <option value="QQQ">QQQ</option>
+                                    <option value="IWM">IWM</option>
+                                    <option value="DIA">DIA</option>
+                                </optgroup>
+                                <optgroup label="Sector ETFs">
+                                    <option value="XLF">XLF</option>
+                                    <option value="XLE">XLE</option>
+                                    <option value="XLK">XLK</option>
+                                    <option value="XLV">XLV</option>
+                                    <option value="XLI">XLI</option>
+                                    <option value="XLB">XLB</option>
+                                    <option value="XLU">XLU</option>
+                                    <option value="XLP">XLP</option>
+                                    <option value="XLY">XLY</option>
+                                </optgroup>
+                                <optgroup label="Mega Caps">
+                                    <option value="AAPL">AAPL</option>
+                                    <option value="MSFT">MSFT</option>
+                                    <option value="NVDA">NVDA</option>
+                                    <option value="TSLA">TSLA</option>
+                                    <option value="AMZN">AMZN</option>
+                                    <option value="GOOGL">GOOGL</option>
+                                    <option value="META">META</option>
+                                    <option value="JPM">JPM</option>
+                                    <option value="AMD">AMD</option>
+                                    <option value="NFLX">NFLX</option>
+                                </optgroup>
+                                <optgroup label="Additional Stocks">
+                                    <option value="V">V</option>
+                                    <option value="MA">MA</option>
+                                    <option value="UNH">UNH</option>
+                                    <option value="HD">HD</option>
+                                    <option value="PG">PG</option>
+                                    <option value="BAC">BAC</option>
+                                    <option value="WMT">WMT</option>
+                                    <option value="DIS">DIS</option>
+                                    <option value="COST">COST</option>
+                                    <option value="CRM">CRM</option>
+                                    <option value="INTC">INTC</option>
+                                    <option value="CSCO">CSCO</option>
+                                    <option value="ADBE">ADBE</option>
+                                    <option value="ORCL">ORCL</option>
+                                    <option value="PFE">PFE</option>
+                                    <option value="MRK">MRK</option>
+                                    <option value="ABBV">ABBV</option>
+                                    <option value="LLY">LLY</option>
+                                    <option value="CVX">CVX</option>
+                                    <option value="XOM">XOM</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div>
