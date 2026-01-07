@@ -31588,7 +31588,7 @@ var sq9LastReadyCount = 0;
 var sq9AlertSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQcFUsro6tqPKwYs0fz19dBgAACO4////+iEAABN9////+2YAABZ7v///+6bAABU8v///+2WAABZ7v///+6bAAA=');
 
 function loadSq9ScannerResults() {
-    fetch('sq9_scanner.json?t=' + Date.now())
+    fetch('../sq9_scanner.json?t=' + Date.now())
         .then(function(response) {
             if (!response.ok) {
                 throw new Error('Scanner results not found');
