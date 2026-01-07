@@ -13156,30 +13156,12 @@ function generateDynamicOpportunities() {
     if (!tbody) return;
 
     var symbols = [
-        // Major Indexes
+        // Index ETFs (4)
         { sym: 'SPY', sector: 'Index' },
         { sym: 'QQQ', sector: 'Tech Index' },
         { sym: 'IWM', sector: 'Small Cap' },
         { sym: 'DIA', sector: 'Dow Index' },
-        // Tech Stocks
-        { sym: 'AAPL', sector: 'Tech' },
-        { sym: 'MSFT', sector: 'Tech' },
-        { sym: 'GOOGL', sector: 'Tech' },
-        { sym: 'AMZN', sector: 'Tech' },
-        { sym: 'META', sector: 'Tech' },
-        { sym: 'NVDA', sector: 'Tech' },
-        { sym: 'TSLA', sector: 'Tech' },
-        { sym: 'AMD', sector: 'Tech' },
-        { sym: 'ORCL', sector: 'Tech' },
-        { sym: 'CSCO', sector: 'Tech' },
-        // Financials
-        { sym: 'JPM', sector: 'Financial' },
-        { sym: 'MA', sector: 'Financial' },
-        // Healthcare
-        { sym: 'LLY', sector: 'Healthcare' },
-        // Energy
-        { sym: 'CVX', sector: 'Energy' },
-        // Sector ETFs
+        // Sector ETFs (9)
         { sym: 'XLF', sector: 'Financial ETF' },
         { sym: 'XLE', sector: 'Energy ETF' },
         { sym: 'XLK', sector: 'Technology ETF' },
@@ -13188,7 +13170,39 @@ function generateDynamicOpportunities() {
         { sym: 'XLB', sector: 'Materials ETF' },
         { sym: 'XLU', sector: 'Utilities ETF' },
         { sym: 'XLP', sector: 'Staples ETF' },
-        { sym: 'XLY', sector: 'Discretionary ETF' }
+        { sym: 'XLY', sector: 'Discretionary ETF' },
+        // Mega Caps (10)
+        { sym: 'AAPL', sector: 'Tech' },
+        { sym: 'MSFT', sector: 'Tech' },
+        { sym: 'NVDA', sector: 'Tech' },
+        { sym: 'TSLA', sector: 'Tech' },
+        { sym: 'AMZN', sector: 'Tech' },
+        { sym: 'GOOGL', sector: 'Tech' },
+        { sym: 'META', sector: 'Tech' },
+        { sym: 'JPM', sector: 'Financial' },
+        { sym: 'AMD', sector: 'Tech' },
+        { sym: 'NFLX', sector: 'Tech' },
+        // Additional Liquid Stocks (20)
+        { sym: 'V', sector: 'Financial' },
+        { sym: 'MA', sector: 'Financial' },
+        { sym: 'UNH', sector: 'Healthcare' },
+        { sym: 'HD', sector: 'Consumer' },
+        { sym: 'PG', sector: 'Consumer' },
+        { sym: 'BAC', sector: 'Financial' },
+        { sym: 'WMT', sector: 'Consumer' },
+        { sym: 'DIS', sector: 'Consumer' },
+        { sym: 'COST', sector: 'Consumer' },
+        { sym: 'CRM', sector: 'Tech' },
+        { sym: 'INTC', sector: 'Tech' },
+        { sym: 'CSCO', sector: 'Tech' },
+        { sym: 'ADBE', sector: 'Tech' },
+        { sym: 'ORCL', sector: 'Tech' },
+        { sym: 'PFE', sector: 'Healthcare' },
+        { sym: 'MRK', sector: 'Healthcare' },
+        { sym: 'ABBV', sector: 'Healthcare' },
+        { sym: 'LLY', sector: 'Healthcare' },
+        { sym: 'CVX', sector: 'Energy' },
+        { sym: 'XOM', sector: 'Energy' }
     ];
 
     var rows = [];
