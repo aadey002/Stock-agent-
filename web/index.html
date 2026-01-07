@@ -34996,6 +34996,7 @@ function calculateContextStats() {
 }
 
 function updateHistoricalPatternsUI(symbol) {
+    console.log("📊 updateHistoricalPatternsUI called for:", symbol);
     var major = historicalPatterns.major;
     var minor = historicalPatterns.minor;
     var atSQ9 = historicalPatterns.atSQ9;
@@ -35121,6 +35122,7 @@ function updateHistoricalPatternsUI(symbol) {
 }
 
 function updateTopSetups() {
+    console.log("🏆 updateTopSetups called, historicalPatterns.major:", historicalPatterns.major.length);
     var setups = [
         { name: 'Hammer + Volume Spike', icon: '🔨', conditions: function(p) { return p.pattern === 'Hammer' && p.hasVolumeSpike; } },
         { name: 'Hammer at SQ9 Support', icon: '🔨📐', conditions: function(p) { return p.pattern === 'Hammer' && p.nearSQ9Level; } },
