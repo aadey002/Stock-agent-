@@ -30640,6 +30640,8 @@ function filterSq9Results(filter) {
 }
 
 function showSq9Detail(symbol) {
+    console.log("📋 showSq9Detail called for:", symbol);
+    try {
     var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
     if (!result) return;
 
@@ -30896,6 +30898,12 @@ function showSq9Detail(symbol) {
     html += '</div>';
 
     document.getElementById('sq9DetailContent').innerHTML = html;
+    // Scroll to detail panel
+    var detailPanel = document.getElementById('sq9DetailPanel');
+    if (detailPanel) {
+        detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    } catch(e) { console.error('Error in showSq9Detail:', e); }
 }
 
 // Analyze check details with dates, patterns, and values
