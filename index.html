@@ -28089,6 +28089,41 @@ function detectPatternsFromCSV(data) {
 }
 
 
+// Wrapper function to update Top Trade with current symbol
+function updateTopTradeDisplay() {
+    var symbol = currentSymbol || 'SPY';
+    console.log('updateTopTradeDisplay called for: ' + symbol);
+
+    // Make sure we have data
+    var data = symbolGannData[symbol];
+    if (!data || !data.price) {
+        console.log('Waiting for data to load for Top Trade...');
+        // Retry after a short delay
+        setTimeout(function() {
+            if (typeof updateTopTrade === 'function') {
+                updateTopTrade(symbol);
+            }
+        }, 1000);
+        return;
+    }
+
+    // Call the main update function
+    if (typeof updateTopTrade === 'function') {
+        updateTopTrade(symbol);
+    }
+
+    // Also call the recommendation update
+    if (typeof updateTopTradeRecommendation === 'function') {
+        updateTopTradeRecommendation(symbol);
+    }
+
+    // Update timestamp
+    var timeEl = document.getElementById('topTradeTime');
+    if (timeEl) {
+        timeEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    }
+}
+
 // Update Today's Top Trade section
 function updateTopTrade(symbol) {
     var data = symbolGannData[symbol];
