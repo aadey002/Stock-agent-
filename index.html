@@ -5736,6 +5736,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">DAYS</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STAGE</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ENTRY</th>
+                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">EXP MOVE</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TARGET</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STOP</th>
                                 <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RISK</th>
@@ -5744,7 +5745,7 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                             </tr>
                         </thead>
                         <tbody id="oppTableBody">
-                            <tr><td colspan="20" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
+                            <tr><td colspan="22" style="text-align: center; padding: 30px; color: #666;">Loading opportunities from market data...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -13602,6 +13603,28 @@ function generateDynamicOpportunities() {
         var target = isBullish ? (price + atr * 2).toFixed(2) : (price - atr * 2).toFixed(2);
         var stop = isBullish ? (price - atr * 1.5).toFixed(2) : (price + atr * 1.5).toFixed(2);
 
+        // Expected Move calculation
+        var entryVal = parseFloat(entry);
+        var targetVal = parseFloat(target);
+        var expMoveDollars, expMovePct, expMoveColor;
+        if (isBullish) {
+            // For CALLS: target is above entry
+            expMoveDollars = targetVal - entryVal;
+            expMovePct = ((targetVal - entryVal) / entryVal) * 100;
+        } else {
+            // For PUTS: target is below entry
+            expMoveDollars = entryVal - targetVal;
+            expMovePct = ((entryVal - targetVal) / entryVal) * 100;
+        }
+        // Color based on move size
+        if (expMovePct >= 3) {
+            expMoveColor = '#22c55e';  // Green - good move
+        } else if (expMovePct >= 1.5) {
+            expMoveColor = '#f59e0b';  // Yellow - moderate
+        } else {
+            expMoveColor = '#888';     // Gray - small
+        }
+
         // Risk
         var risk = 'MED';
         var riskColor = '#eab308';
@@ -13684,6 +13707,7 @@ function generateDynamicOpportunities() {
             '<td style="padding: 6px; font-size: 10px; font-weight: 600; color: ' + (daysToTurn <= 3 ? '#ef4444' : '#666') + ';">' + daysToTurn + '</td>' +
             '<td style="padding: 6px;"><span style="color: ' + stageColor + '; font-size: 9px; font-weight: 600;">' + stage + '</span></td>' +
             '<td style="padding: 6px; font-size: 9px;">$' + entry + '</td>' +
+            '<td style="padding: 6px; text-align: center;"><div style="font-weight: 600; color: ' + expMoveColor + '; font-size: 9px;">+$' + expMoveDollars.toFixed(2) + '</div><div style="font-size: 8px; color: ' + expMoveColor + ';">+' + expMovePct.toFixed(1) + '%</div></td>' +
             '<td style="padding: 6px; font-size: 9px; color: #22c55e;">$' + target + '</td>' +
             '<td style="padding: 6px; font-size: 9px; color: #ef4444;">$' + stop + '</td>' +
             '<td style="padding: 6px;"><span style="background: rgba(' + (risk === 'LOW' ? '34,197,94' : risk === 'HIGH' ? '239,68,68' : '234,179,8') + ',0.2); color: ' + riskColor + '; padding: 2px 4px; border-radius: 3px; font-size: 9px;">' + risk + '</span></td>' +
