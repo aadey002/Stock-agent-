@@ -34260,6 +34260,7 @@ function generateAiAnalysis() {
 
 // Different pivots for different timeframes
 var sq9MtfPivots = {
+    // Index ETFs (4)
     SPY: {
         '15min': { price: 679.82, date: '2026-01-02', label: 'Session Low' },
         '1hour': { price: 665.50, date: '2025-12-20', label: 'Weekly Low' },
@@ -34275,6 +34276,68 @@ var sq9MtfPivots = {
         '1hour': { price: 238.50, date: '2025-12-20', label: 'Weekly Low' },
         'daily': { price: 171.73, date: '2025-04-07', label: '52-Week Low' }
     },
+    DIA: {
+        '15min': { price: 430.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 420.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 364.42, date: '2025-04-07', label: '52-Week Low' }
+    },
+    // Sector ETFs (9)
+    XLF: {
+        '15min': { price: 51.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 49.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 42.35, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLE: {
+        '15min': { price: 88.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 85.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 78.12, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLK: {
+        '15min': { price: 238.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 228.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 186.50, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLV: {
+        '15min': { price: 148.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 144.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 131.25, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLI: {
+        '15min': { price: 138.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 134.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 112.80, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLB: {
+        '15min': { price: 92.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 89.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 79.45, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLU: {
+        '15min': { price: 78.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 75.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 68.90, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLP: {
+        '15min': { price: 84.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 81.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 75.20, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XLY: {
+        '15min': { price: 218.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 208.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 175.30, date: '2025-04-07', label: '52-Week Low' }
+    },
+    // Mega Caps (10)
+    AAPL: {
+        '15min': { price: 245.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 238.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 169.50, date: '2025-04-07', label: '52-Week Low' }
+    },
+    MSFT: {
+        '15min': { price: 425.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 415.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 360.92, date: '2025-04-07', label: '52-Week Low' }
+    },
     NVDA: {
         '15min': { price: 138.20, date: '2026-01-02', label: 'Session Low' },
         '1hour': { price: 128.50, date: '2025-12-20', label: 'Weekly Low' },
@@ -34285,20 +34348,136 @@ var sq9MtfPivots = {
         '1hour': { price: 385.20, date: '2025-12-20', label: 'Weekly Low' },
         'daily': { price: 138.80, date: '2025-04-07', label: '52-Week Low' }
     },
-    AAPL: {
-        '15min': { price: 245.50, date: '2026-01-02', label: 'Session Low' },
-        '1hour': { price: 238.80, date: '2025-12-20', label: 'Weekly Low' },
-        'daily': { price: 169.50, date: '2025-04-07', label: '52-Week Low' }
+    AMZN: {
+        '15min': { price: 225.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 218.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 167.55, date: '2025-04-07', label: '52-Week Low' }
+    },
+    GOOGL: {
+        '15min': { price: 198.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 192.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 147.22, date: '2025-04-07', label: '52-Week Low' }
+    },
+    META: {
+        '15min': { price: 605.20, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 580.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 480.50, date: '2025-04-07', label: '52-Week Low' }
+    },
+    JPM: {
+        '15min': { price: 265.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 255.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 215.36, date: '2025-04-07', label: '52-Week Low' }
     },
     AMD: {
         '15min': { price: 115.80, date: '2026-01-02', label: 'Session Low' },
         '1hour': { price: 108.50, date: '2025-12-20', label: 'Weekly Low' },
         'daily': { price: 95.80, date: '2025-04-07', label: '52-Week Low' }
     },
-    META: {
-        '15min': { price: 605.20, date: '2026-01-02', label: 'Session Low' },
-        '1hour': { price: 580.50, date: '2025-12-20', label: 'Weekly Low' },
-        'daily': { price: 480.50, date: '2025-04-07', label: '52-Week Low' }
+    NFLX: {
+        '15min': { price: 925.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 895.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 829.72, date: '2025-04-07', label: '52-Week Low' }
+    },
+    // Additional Liquid Stocks (20)
+    V: {
+        '15min': { price: 325.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 315.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 293.48, date: '2025-04-07', label: '52-Week Low' }
+    },
+    MA: {
+        '15min': { price: 535.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 518.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 473.19, date: '2025-04-07', label: '52-Week Low' }
+    },
+    UNH: {
+        '15min': { price: 525.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 505.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 439.48, date: '2025-04-07', label: '52-Week Low' }
+    },
+    HD: {
+        '15min': { price: 415.80, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 398.50, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 323.77, date: '2025-04-07', label: '52-Week Low' }
+    },
+    PG: {
+        '15min': { price: 175.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 168.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 158.42, date: '2025-04-07', label: '52-Week Low' }
+    },
+    BAC: {
+        '15min': { price: 48.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 45.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 35.53, date: '2025-04-07', label: '52-Week Low' }
+    },
+    WMT: {
+        '15min': { price: 95.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 92.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 81.12, date: '2025-04-07', label: '52-Week Low' }
+    },
+    DIS: {
+        '15min': { price: 115.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 108.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 83.91, date: '2025-04-07', label: '52-Week Low' }
+    },
+    COST: {
+        '15min': { price: 985.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 955.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 855.67, date: '2025-04-07', label: '52-Week Low' }
+    },
+    CRM: {
+        '15min': { price: 355.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 338.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 244.48, date: '2025-04-07', label: '52-Week Low' }
+    },
+    INTC: {
+        '15min': { price: 22.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 21.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 19.43, date: '2025-04-07', label: '52-Week Low' }
+    },
+    CSCO: {
+        '15min': { price: 62.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 59.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 52.28, date: '2025-04-07', label: '52-Week Low' }
+    },
+    ADBE: {
+        '15min': { price: 485.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 465.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 374.21, date: '2025-04-07', label: '52-Week Low' }
+    },
+    ORCL: {
+        '15min': { price: 175.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 168.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 123.68, date: '2025-04-07', label: '52-Week Low' }
+    },
+    PFE: {
+        '15min': { price: 28.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 27.20, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 23.49, date: '2025-04-07', label: '52-Week Low' }
+    },
+    MRK: {
+        '15min': { price: 105.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 98.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 80.72, date: '2025-04-07', label: '52-Week Low' }
+    },
+    ABBV: {
+        '15min': { price: 185.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 178.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 163.83, date: '2025-04-07', label: '52-Week Low' }
+    },
+    LLY: {
+        '15min': { price: 795.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 775.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 721.37, date: '2025-04-07', label: '52-Week Low' }
+    },
+    CVX: {
+        '15min': { price: 155.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 148.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 132.04, date: '2025-04-07', label: '52-Week Low' }
+    },
+    XOM: {
+        '15min': { price: 118.50, date: '2026-01-02', label: 'Session Low' },
+        '1hour': { price: 112.80, date: '2025-12-20', label: 'Weekly Low' },
+        'daily': { price: 101.54, date: '2025-04-07', label: '52-Week Low' }
     }
 };
 
