@@ -3644,6 +3644,45 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
 #patternAccuracyTable tr:hover { background: #f8fafc; }
 #patternAccuracyTable td { padding: 12px; border-bottom: 1px solid var(--border); }
 
+/* Sortable Table Styles */
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 16px !important;
+    transition: background-color 0.15s ease;
+}
+.sortable-header:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}
+.sortable-header::after {
+    content: '⇅';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    opacity: 0.4;
+    color: #666;
+}
+.sortable-header.sort-asc::after {
+    content: '▲';
+    opacity: 1;
+    color: #3b82f6;
+}
+.sortable-header.sort-desc::after {
+    content: '▼';
+    opacity: 1;
+    color: #3b82f6;
+}
+.sortable-header.sort-asc,
+.sortable-header.sort-desc {
+    background-color: rgba(59, 130, 246, 0.08) !important;
+}
+#oppTableBody tr:hover {
+    background-color: #f8fafc;
+}
+
     </style>
 </head>
 <body>
@@ -5902,28 +5941,28 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f0f0f0;">
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ALIGN</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SYMBOL</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">PRICE</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">CHG</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">20MA</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SUPPORT</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RESIST</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(102,126,234,0.15);">🎯 SQ9</th>
-                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">SQ9 ALIGN</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(239,68,68,0.1);">📊 MKT</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TURN</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">NEXT</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">DAYS</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STAGE</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ENTRY</th>
-                                <th style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">EXP MOVE</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TARGET</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STOP</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RISK</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SCORE</th>
-                                <th style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ACTION</th>
+                                <th class="sortable-header" data-sort="align" data-type="align" onclick="sortOppTable('align')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ALIGN</th>
+                                <th class="sortable-header" data-sort="symbol" data-type="text" onclick="sortOppTable('symbol')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SYMBOL</th>
+                                <th class="sortable-header" data-sort="price" data-type="currency" onclick="sortOppTable('price')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">PRICE</th>
+                                <th class="sortable-header" data-sort="chg" data-type="percent" onclick="sortOppTable('chg')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">CHG</th>
+                                <th class="sortable-header" data-sort="ma20" data-type="position" onclick="sortOppTable('ma20')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">20MA</th>
+                                <th class="sortable-header" data-sort="support" data-type="currency" onclick="sortOppTable('support')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SUPPORT</th>
+                                <th class="sortable-header" data-sort="resist" data-type="currency" onclick="sortOppTable('resist')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RESIST</th>
+                                <th class="sortable-header" data-sort="gann" data-type="direction" onclick="sortOppTable('gann')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(139,92,246,0.1);">🔮 GANN</th>
+                                <th class="sortable-header" data-sort="sq9" data-type="direction" onclick="sortOppTable('sq9')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(102,126,234,0.15);">🎯 SQ9</th>
+                                <th class="sortable-header" data-sort="sq9align" data-type="percent" onclick="sortOppTable('sq9align')" style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">SQ9 ALIGN</th>
+                                <th class="sortable-header" data-sort="mkt" data-type="direction" onclick="sortOppTable('mkt')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(239,68,68,0.1);">📊 MKT</th>
+                                <th class="sortable-header" data-sort="turn" data-type="text" onclick="sortOppTable('turn')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TURN</th>
+                                <th class="sortable-header" data-sort="next" data-type="date" onclick="sortOppTable('next')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">NEXT</th>
+                                <th class="sortable-header" data-sort="days" data-type="number" onclick="sortOppTable('days')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">DAYS</th>
+                                <th class="sortable-header" data-sort="stage" data-type="text" onclick="sortOppTable('stage')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STAGE</th>
+                                <th class="sortable-header" data-sort="entry" data-type="currency" onclick="sortOppTable('entry')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ENTRY</th>
+                                <th class="sortable-header" data-sort="expmove" data-type="percent" onclick="sortOppTable('expmove')" style="padding: 6px; text-align: center; border-bottom: 1px solid #ddd; font-size: 9px; background: rgba(34,197,94,0.1);">EXP MOVE</th>
+                                <th class="sortable-header" data-sort="target" data-type="currency" onclick="sortOppTable('target')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">TARGET</th>
+                                <th class="sortable-header" data-sort="stop" data-type="currency" onclick="sortOppTable('stop')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">STOP</th>
+                                <th class="sortable-header" data-sort="risk" data-type="risk" onclick="sortOppTable('risk')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">RISK</th>
+                                <th class="sortable-header sort-desc" data-sort="score" data-type="number" onclick="sortOppTable('score')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">SCORE</th>
+                                <th class="sortable-header" data-sort="action" data-type="action" onclick="sortOppTable('action')" style="padding: 6px; text-align: left; border-bottom: 1px solid #ddd; font-size: 9px;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody id="oppTableBody">
@@ -12624,6 +12663,157 @@ function filterOppTable(filter) {
                 btn.style.color = '#333';
             }
         });
+    }
+}
+
+// =====================================================
+// OPPORTUNITIES TABLE SORTING
+// =====================================================
+
+// Current sort state
+var oppTableSortState = {
+    column: 'score',
+    direction: 'desc'
+};
+
+// Column index mapping (0-based)
+var oppColumnIndex = {
+    align: 0, symbol: 1, price: 2, chg: 3, ma20: 4, support: 5, resist: 6,
+    gann: 7, sq9: 8, sq9align: 9, mkt: 10, turn: 11, next: 12, days: 13,
+    stage: 14, entry: 15, expmove: 16, target: 17, stop: 18, risk: 19, score: 20, action: 21
+};
+
+// Get sortable value from cell based on column type
+function getOppSortValue(cell, colType) {
+    if (!cell) return 0;
+    var text = cell.textContent.trim();
+
+    switch (colType) {
+        case 'currency':
+            // Extract number from $123.45 format
+            var num = parseFloat(text.replace(/[$,]/g, ''));
+            return isNaN(num) ? 0 : num;
+
+        case 'percent':
+            // Extract number from +1.5% or -2.3% format, also handles "0.85%" in SQ9 ALIGN
+            var pct = parseFloat(text.replace(/[%+]/g, ''));
+            return isNaN(pct) ? 0 : pct;
+
+        case 'number':
+            var n = parseFloat(text);
+            return isNaN(n) ? 0 : n;
+
+        case 'date':
+            // Parse dates like "Jan 15" or "Dec 23"
+            var months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+            var parts = text.split(' ');
+            if (parts.length >= 2 && months[parts[0]] !== undefined) {
+                var d = new Date(2026, months[parts[0]], parseInt(parts[1]) || 1);
+                return d.getTime();
+            }
+            return 0;
+
+        case 'direction':
+            // CALL > PUT > - (for bullish-first sorting)
+            if (text.includes('CALL') || text.includes('📈') || text === 'UP') return 2;
+            if (text.includes('PUT') || text.includes('📉') || text === 'DN') return 1;
+            return 0;
+
+        case 'align':
+            // ✅ > ⚠️ > ❌
+            if (text.includes('✅') || text.includes('ALIGNED')) return 3;
+            if (text.includes('⚠️') || text.includes('PARTIAL')) return 2;
+            if (text.includes('❌') || text.includes('CONFLICT')) return 1;
+            return 0;
+
+        case 'position':
+            // ABOVE > AT > BELOW
+            if (text.includes('ABOVE') || text.includes('↑')) return 3;
+            if (text.includes('AT') || text.includes('=')) return 2;
+            if (text.includes('BELOW') || text.includes('↓')) return 1;
+            return 0;
+
+        case 'risk':
+            // LOW > MED > HIGH
+            if (text.includes('LOW')) return 3;
+            if (text.includes('MED')) return 2;
+            if (text.includes('HIGH')) return 1;
+            return 0;
+
+        case 'action':
+            // ENTER > WATCH > WAIT > AVOID
+            if (text.includes('ENTER') || text.includes('BUY')) return 4;
+            if (text.includes('WATCH')) return 3;
+            if (text.includes('WAIT')) return 2;
+            if (text.includes('AVOID')) return 1;
+            return 0;
+
+        case 'text':
+        default:
+            return text.toLowerCase();
+    }
+}
+
+// Main sort function
+function sortOppTable(column) {
+    var tbody = document.getElementById('oppTableBody');
+    if (!tbody) return;
+
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    if (rows.length === 0) return;
+
+    // Skip if only placeholder row
+    if (rows.length === 1 && rows[0].cells.length === 1) return;
+
+    // Get column type from header
+    var header = document.querySelector('th[data-sort="' + column + '"]');
+    var colType = header ? header.dataset.type : 'text';
+    var colIndex = oppColumnIndex[column];
+
+    if (colIndex === undefined) return;
+
+    // Toggle direction if same column, else default to desc for numbers, asc for text
+    if (oppTableSortState.column === column) {
+        oppTableSortState.direction = oppTableSortState.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        oppTableSortState.column = column;
+        // Default: desc for numeric/value columns, asc for text
+        if (['currency', 'percent', 'number', 'direction', 'align', 'position', 'risk', 'action'].indexOf(colType) !== -1) {
+            oppTableSortState.direction = 'desc';
+        } else {
+            oppTableSortState.direction = 'asc';
+        }
+    }
+
+    // Sort rows
+    rows.sort(function(a, b) {
+        var aCell = a.cells[colIndex];
+        var bCell = b.cells[colIndex];
+        var aVal = getOppSortValue(aCell, colType);
+        var bVal = getOppSortValue(bCell, colType);
+
+        var result;
+        if (typeof aVal === 'string' && typeof bVal === 'string') {
+            result = aVal.localeCompare(bVal);
+        } else {
+            result = aVal - bVal;
+        }
+
+        return oppTableSortState.direction === 'asc' ? result : -result;
+    });
+
+    // Re-append sorted rows
+    rows.forEach(function(row) {
+        tbody.appendChild(row);
+    });
+
+    // Update header visual indicators
+    document.querySelectorAll('.sortable-header').forEach(function(th) {
+        th.classList.remove('sort-asc', 'sort-desc');
+    });
+
+    if (header) {
+        header.classList.add('sort-' + oppTableSortState.direction);
     }
 }
 
