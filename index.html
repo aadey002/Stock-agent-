@@ -12696,6 +12696,12 @@ function getOppSortValue(cell, colType) {
 
         case 'percent':
             // Extract number from +1.5% or -2.3% format, also handles "0.85%" in SQ9 ALIGN
+            // For EXP MOVE column, extract the percentage from the second line
+            var pctMatch = text.match(/([\d.]+)%/);
+            if (pctMatch) {
+                var pct = parseFloat(pctMatch[1]);
+                return isNaN(pct) ? 0 : pct;
+            }
             var pct = parseFloat(text.replace(/[%+]/g, ''));
             return isNaN(pct) ? 0 : pct;
 
