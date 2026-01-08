@@ -4109,6 +4109,19 @@ body {
 
         <div id="overview" class="tab-content">
 
+            <!-- Overview Tab Header with Last Updated -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 20px; color: var(--text);">📊 Market Overview</h2>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="overviewLastUpdated" style="font-size: 11px; color: #888; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        Updated: --
+                    </span>
+                    <button onclick="refreshOverviewTab()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px;">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+
             <!-- CRITICAL GANN ALERT BANNER -->
             <div id="gannCriticalBanner" style="display: none; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border-radius: 10px; padding: 15px 20px; margin-bottom: 20px; animation: gannPulse 2s infinite;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -5182,6 +5195,22 @@ body {
 
         <!-- SIGNALS TAB -->
         <div id="signals" class="tab-content">
+            <!-- Signals Tab Header with Last Updated -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 20px; color: var(--text);">🎯 Signals & Agents</h2>
+                    <p style="margin: 4px 0 0; font-size: 12px; color: #888;">Multi-Agent Consensus + Trade Direction</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="signalsTabLastUpdated" style="font-size: 11px; color: #888; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        Updated: --
+                    </span>
+                    <button onclick="refreshSignalsTab()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px;">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+
             <!-- Parameters Table -->
             <div class="card">
                 <div class="card-title">⚡ Intraday vs 🌊 Swing vs 📈 Position Parameters</div>
@@ -5437,13 +5466,18 @@ body {
 
         <!-- PATTERNS TAB - ENHANCED PATTERN SCANNER -->
         <div id="patterns" class="tab-content">
-            <!-- Header -->
+            <!-- Header with Last Updated -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
                 <div>
                     <h2 style="font-size: 22px; color: var(--text); margin: 0;">🕯️ PATTERN SCANNER - All Symbols</h2>
                     <span style="color: var(--muted); font-size: 12px;">Scanning 43 symbols for high-probability reversal patterns | Daily, 15 Min, 5 Min</span>
                 </div>
-                <button onclick="scanAllPatterns()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: white; color: var(--text); cursor: pointer; font-size: 12px; font-weight: 500;">🔄 Refresh Scan</button>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="patternsLastUpdated" style="font-size: 11px; color: #888; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        Updated: --
+                    </span>
+                    <button onclick="refreshPatternsTab()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: white; color: var(--text); cursor: pointer; font-size: 12px; font-weight: 500;">🔄 Refresh Scan</button>
+                </div>
             </div>
 
             <!-- Summary Cards -->
@@ -6015,8 +6049,22 @@ body {
 
         <!-- OPPORTUNITIES TAB -->
         <div id="opportunities" class="tab-content">
+            <!-- Opportunities Tab Header with Last Updated -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 20px; color: var(--text);">📈 Trading Opportunities - All Symbols</h2>
+                    <p style="margin: 4px 0 0; font-size: 12px; color: #888;">SQ9 Alignment + Trade Direction Context</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="oppLastUpdated" style="font-size: 11px; color: #888; padding: 4px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        Updated: --
+                    </span>
+                    <button onclick="refreshOpportunitiesTab()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #22c55e; background: transparent; color: #22c55e; cursor: pointer; font-size: 11px;">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
             <div class="card">
-                <h3 style="margin-bottom: 15px;">Trading Opportunities - All Symbols</h3>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
                     <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center;">
                         <div style="font-size: 11px; color: #666;">Total Opportunities</div>
@@ -7702,10 +7750,20 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
         <!-- PERFORMANCE TRACKER TAB -->
         <div id="performance-tracker" class="tab-content">
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15)); border-radius: 12px; border: 2px solid #8b5cf6;">
-                <h2 style="margin: 0; color: #7c3aed; font-size: 24px;">📈 Prediction Performance Tracker</h2>
-                <p style="margin: 5px 0 0 0; color: #6d28d9; font-size: 12px;">Compare Gann Analysis vs Market Conditions Accuracy</p>
+            <!-- Header with Last Updated -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.15)); border-radius: 12px; border: 2px solid #8b5cf6;">
+                <div>
+                    <h2 style="margin: 0; color: #7c3aed; font-size: 24px;">📈 Prediction Performance Tracker</h2>
+                    <p style="margin: 5px 0 0 0; color: #6d28d9; font-size: 12px;">Compare Gann Analysis vs Market Conditions Accuracy</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="predictionsLastUpdated" style="font-size: 11px; color: #7c3aed; padding: 4px 10px; background: rgba(139,92,246,0.1); border-radius: 6px;">
+                        Updated: --
+                    </span>
+                    <button onclick="refreshPredictionsTab()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: transparent; color: #8b5cf6; cursor: pointer; font-size: 11px;">
+                        🔄 Refresh
+                    </button>
+                </div>
             </div>
 
             <!-- Backtest Summary Cards -->
@@ -10219,12 +10277,13 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                     <div>
                         <h2 style="font-size: 20px; margin-bottom: 5px;">🎯 SQ9 Scanner</h2>
-                        <p style="font-size: 12px; opacity: 0.8;">Square of 9 Level Detection Across Multiple Symbols</p>
+                        <p style="font-size: 12px; opacity: 0.8;">Gann Square of 9 + Trade Direction Context</p>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <span style="font-size: 11px; opacity: 0.7;">Last Scan:</span>
-                        <span id="sq9ScanTime" style="font-size: 12px; font-weight: 600;">--</span>
-                        <button onclick="runSq9Scan()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">🔄 Scan Now</button>
+                        <span id="sq9LastUpdated" style="font-size: 11px; opacity: 0.7; padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 6px;">
+                            Updated: <span id="sq9ScanTime">--</span>
+                        </span>
+                        <button onclick="refreshSQ9ScannerTab()" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">🔄 Refresh</button>
                     </div>
                 </div>
             </div>
@@ -13645,56 +13704,163 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Format date string for display (Jan 16)
 function formatContextDate(dateStr) {
-    if (!dateStr) return '';
+    if (!dateStr) return 'TBD';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-// Generate trade context HTML based on symbol data
-function generateTradeContext(data) {
-    if (!data || !data.nextTurnDate || !data.currentPrice) {
-        return '';
+// GLOBAL: Generate Trade Context HTML with full 4-scenario support
+function getTradeContextHTML(data) {
+    const direction = data.direction || 'CALL';
+    const turnType = data.turn_type || data.expected_turn || data.turnType || 'LOW';
+    const turnDate = data.next_turn_date || data.turn_date || data.nextTurnDate;
+    const turnDateStr = formatContextDate(turnDate);
+    const daysAway = turnDate ? Math.ceil((new Date(turnDate) - new Date()) / (1000*60*60*24)) : '?';
+    const sq9Level = data.sq9_level || data.sq9Level || data.sq9 || data.price || 0;
+    const entry = data.entry || data.fib_entry || data.entryPrice || sq9Level;
+    const symbol = data.symbol || 'SPY';
+    const target = data.target || data.targetPrice || sq9Level;
+
+    let html = '';
+    const turnTypeLower = (turnType + '').toLowerCase();
+
+    if (direction === 'CALL' && turnTypeLower === 'low') {
+        // CALL + expecting LOW = pullback then bounce
+        html = `
+            <div style="background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); border-radius: 10px; padding: 14px;">
+                <div style="color: #f59e0b; font-weight: 700; margin-bottom: 4px;">
+                    📉 NOW → ${turnDateStr}: Expect PULLBACK to $${typeof sq9Level === 'number' ? sq9Level.toFixed(2) : sq9Level}
+                </div>
+                <div style="color: #888; font-size: 11px; margin-bottom: 10px; padding-left: 18px;">
+                    Wait ${daysAway} days for price to reach support
+                </div>
+                <div style="color: #22c55e; font-weight: 700; margin-bottom: 4px;">
+                    📈 ${turnDateStr}: BOUNCE UP - Buy ${symbol} CALL
+                </div>
+                <div style="background: rgba(34,197,94,0.15); border-left: 3px solid #22c55e; padding: 8px 10px; border-radius: 0 6px 6px 0; margin-top: 8px;">
+                    <span style="color: #22c55e; font-size: 11px; font-weight: 600;">
+                        💡 Enter at $${typeof entry === 'number' ? entry.toFixed(2) : entry} (5m/15m chart for minor LOW)
+                    </span>
+                </div>
+            </div>
+        `;
+    } else if (direction === 'CALL' && turnTypeLower === 'high') {
+        // CALL + expecting HIGH = rally continues then top
+        html = `
+            <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 14px;">
+                <div style="color: #22c55e; font-weight: 700; margin-bottom: 4px;">
+                    📈 NOW → ${turnDateStr}: RALLY continues to $${typeof target === 'number' ? target.toFixed(2) : target}
+                </div>
+                <div style="color: #888; font-size: 11px; margin-bottom: 10px; padding-left: 18px;">
+                    Price pushing to resistance (${daysAway} days)
+                </div>
+                <div style="color: #f59e0b; font-weight: 700; margin-bottom: 4px;">
+                    🔄 ${turnDateStr}: Potential TOP - Take profits
+                </div>
+                <div style="background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; border-radius: 0 6px 6px 0; margin-top: 8px;">
+                    <span style="color: #f59e0b; font-size: 11px; font-weight: 600;">
+                        ⚠️ Wait for next pullback to enter new CALL
+                    </span>
+                </div>
+            </div>
+        `;
+    } else if (direction === 'PUT' && turnTypeLower === 'high') {
+        // PUT + expecting HIGH = rally then drop
+        html = `
+            <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 14px;">
+                <div style="color: #22c55e; font-weight: 700; margin-bottom: 4px;">
+                    📈 NOW → ${turnDateStr}: Expect RALLY to $${typeof sq9Level === 'number' ? sq9Level.toFixed(2) : sq9Level}
+                </div>
+                <div style="color: #888; font-size: 11px; margin-bottom: 10px; padding-left: 18px;">
+                    Wait ${daysAway} days for price to reach resistance
+                </div>
+                <div style="color: #ef4444; font-weight: 700; margin-bottom: 4px;">
+                    📉 ${turnDateStr}: DROP - Buy ${symbol} PUT
+                </div>
+                <div style="background: rgba(239,68,68,0.15); border-left: 3px solid #ef4444; padding: 8px 10px; border-radius: 0 6px 6px 0; margin-top: 8px;">
+                    <span style="color: #ef4444; font-size: 11px; font-weight: 600;">
+                        💡 Enter at $${typeof entry === 'number' ? entry.toFixed(2) : entry} (5m/15m chart for minor HIGH)
+                    </span>
+                </div>
+            </div>
+        `;
+    } else {
+        // PUT + expecting LOW = drop continues then bottom
+        html = `
+            <div style="background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 10px; padding: 14px;">
+                <div style="color: #ef4444; font-weight: 700; margin-bottom: 4px;">
+                    📉 NOW → ${turnDateStr}: DROP continues to $${typeof sq9Level === 'number' ? sq9Level.toFixed(2) : sq9Level}
+                </div>
+                <div style="color: #888; font-size: 11px; margin-bottom: 10px; padding-left: 18px;">
+                    Price falling to support (${daysAway} days)
+                </div>
+                <div style="color: #f59e0b; font-weight: 700; margin-bottom: 4px;">
+                    🔄 ${turnDateStr}: Potential BOTTOM - Take profits
+                </div>
+                <div style="background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; border-radius: 0 6px 6px 0; margin-top: 8px;">
+                    <span style="color: #f59e0b; font-size: 11px; font-weight: 600;">
+                        ⚠️ Wait for next rally to enter new PUT
+                    </span>
+                </div>
+            </div>
+        `;
     }
 
-    const isBullish = data.direction === 'CALL' || data.bias === 'BULLISH';
-    const contextClass = isBullish ? '' : 'bearish';
-    const arrow = isBullish ? '↗' : '↘';
-    const phaseIcon = isBullish ? '📈' : '📉';
-    const turnIcon = isBullish ? '🎯' : '⚠️';
+    return html;
+}
 
-    // Calculate days until turn
-    const today = new Date();
-    const turnDate = new Date(data.nextTurnDate);
-    const daysUntilTurn = Math.ceil((turnDate - today) / (1000 * 60 * 60 * 24));
+// Compact version for table rows
+function getTradeContextCompact(data) {
+    const direction = data.direction || 'CALL';
+    const turnType = data.turn_type || data.expected_turn || data.turnType || 'LOW';
+    const turnDate = data.next_turn_date || data.turn_date || data.nextTurnDate;
+    const turnDateStr = formatContextDate(turnDate);
+    const sq9Level = data.sq9_level || data.sq9Level || data.sq9 || data.price || 0;
+    const entry = data.entry || data.fib_entry || data.entryPrice || sq9Level;
+    const symbol = data.symbol || 'SPY';
 
-    // Current phase description
-    const phaseAction = isBullish
-        ? `Expect rally continuation toward $${data.targetPrice || data.sq9Level || 'N/A'}`
-        : `Expect pullback to $${data.targetPrice || data.sq9Level || 'N/A'}`;
+    const turnTypeLower = (turnType + '').toLowerCase();
+    const sq9Str = typeof sq9Level === 'number' ? sq9Level.toFixed(0) : sq9Level;
+    const entryStr = typeof entry === 'number' ? entry.toFixed(2) : entry;
 
-    // Turn phase action
-    const turnAction = isBullish
-        ? `Wait for pullback to load CALLS near $${data.supportLevel || data.stopLoss || 'support'}`
-        : `Watch for reversal signal to exit PUTs / load CALLS`;
+    if (direction === 'CALL' && turnTypeLower === 'low') {
+        return `
+            <div style="color: #f59e0b; font-weight: 600;">📉 Now → ${turnDateStr}: Pullback to $${sq9Str}</div>
+            <div style="color: #22c55e; font-size: 10px;">📈 Then: Bounce up - Buy CALL at $${entryStr}</div>
+            <div style="color: #888; font-size: 9px;">Use 5m/15m for entry confirmation</div>
+        `;
+    } else if (direction === 'CALL' && turnTypeLower === 'high') {
+        return `
+            <div style="color: #22c55e; font-weight: 600;">📈 Now → ${turnDateStr}: Rally continues</div>
+            <div style="color: #f59e0b; font-size: 10px;">🔄 Then: Take profits at top</div>
+            <div style="color: #888; font-size: 9px;">Wait for next pullback to enter</div>
+        `;
+    } else if (direction === 'PUT' && turnTypeLower === 'high') {
+        return `
+            <div style="color: #22c55e; font-weight: 600;">📈 Now → ${turnDateStr}: Rally to $${sq9Str}</div>
+            <div style="color: #ef4444; font-size: 10px;">📉 Then: Drop - Buy PUT at $${entryStr}</div>
+            <div style="color: #888; font-size: 9px;">Use 5m/15m for entry confirmation</div>
+        `;
+    } else {
+        return `
+            <div style="color: #ef4444; font-weight: 600;">📉 Now → ${turnDateStr}: Drop continues</div>
+            <div style="color: #f59e0b; font-size: 10px;">🔄 Then: Take profits at bottom</div>
+            <div style="color: #888; font-size: 9px;">Wait for next rally to enter</div>
+        `;
+    }
+}
 
-    // Entry strategy
-    const entryStrategy = isBullish
-        ? `Buy ${data.symbol} CALLS on pullbacks to $${data.entryPrice || data.supportLevel || 'support'}`
-        : `Buy ${data.symbol} PUTS on rallies to $${data.resistLevel || data.sq9Level || 'resistance'}`;
+// Update any element with trade context
+function updateTradeContext(elementId, data) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerHTML = getTradeContextHTML(data);
+    }
+}
 
-    return `
-        <div class="trade-context-box ${contextClass}">
-            <div class="phase-current">${phaseIcon} Now → ${formatContextDate(data.nextTurnDate)}: ${phaseAction}</div>
-            <div class="phase-detail">${arrow} ${daysUntilTurn} days until next turn date</div>
-
-            <div class="phase-turn">${turnIcon} At ${formatContextDate(data.nextTurnDate)}: ${turnAction}</div>
-            <div class="phase-action">Key level: $${data.sq9Level || data.targetPrice || 'N/A'}</div>
-
-            <div class="entry-strategy">
-                <strong>📋 Strategy:</strong> ${entryStrategy}
-            </div>
-        </div>
-    `;
+// Legacy wrapper for backward compatibility
+function generateTradeContext(data) {
+    return getTradeContextHTML(data);
 }
 
 // Update trade context display for a symbol
@@ -13703,7 +13869,7 @@ function updateTradeContextDisplay(symbol, containerId) {
     if (!container) return;
 
     // Get symbol data from gannData or current analysis
-    const symbolData = window.gannData && window.gannData[symbol];
+    const symbolData = window.symbolGannData && window.symbolGannData[symbol];
     if (!symbolData) {
         container.innerHTML = '';
         return;
@@ -13712,19 +13878,89 @@ function updateTradeContextDisplay(symbol, containerId) {
     // Build context data object
     const contextData = {
         symbol: symbol,
-        currentPrice: symbolData.price || symbolData.currentPrice,
+        price: symbolData.price || symbolData.currentPrice,
         direction: symbolData.direction || symbolData.bias,
-        bias: symbolData.bias,
-        nextTurnDate: symbolData.nextTurnDate || symbolData.turnDate,
-        targetPrice: symbolData.target || symbolData.targetPrice,
-        sq9Level: symbolData.sq9Level,
-        supportLevel: symbolData.support || symbolData.stopLoss,
-        resistLevel: symbolData.resistance || symbolData.sq9Level,
-        entryPrice: symbolData.entryPrice || symbolData.support,
-        stopLoss: symbolData.stopLoss
+        turn_type: symbolData.turnType || 'LOW',
+        next_turn_date: symbolData.nextTurnDate || symbolData.turnDate,
+        target: symbolData.target || symbolData.targetPrice,
+        sq9_level: symbolData.sq9Level,
+        entry: symbolData.entryPrice || symbolData.support
     };
 
-    container.innerHTML = generateTradeContext(contextData);
+    container.innerHTML = getTradeContextHTML(contextData);
+}
+
+// ============================================
+// TAB-SPECIFIC REFRESH FUNCTIONS
+// ============================================
+
+// Refresh Overview Tab
+function refreshOverviewTab() {
+    console.log('🔄 Refreshing Overview Tab');
+    const symbol = currentSymbol || 'SPY';
+
+    // Update prices
+    if (typeof updateAllSymbolGannDataFromCSV === 'function') updateAllSymbolGannDataFromCSV();
+    if (typeof updateOverviewForSymbol === 'function') updateOverviewForSymbol(symbol);
+    if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+    if (typeof updateMarketConditionsFromData === 'function') updateMarketConditionsFromData();
+
+    // Update timestamp
+    const el = document.getElementById('overviewLastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// Refresh Opportunities Tab
+function refreshOpportunitiesTab() {
+    console.log('🔄 Refreshing Opportunities Tab');
+
+    if (typeof updateAllSymbolGannDataFromCSV === 'function') updateAllSymbolGannDataFromCSV();
+    if (typeof generateDynamicOpportunities === 'function') generateDynamicOpportunities();
+
+    const el = document.getElementById('oppLastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// Refresh SQ9 Scanner Tab
+function refreshSQ9ScannerTab() {
+    console.log('🔄 Refreshing SQ9 Scanner Tab');
+
+    if (typeof updateSq9Monitor === 'function') updateSq9Monitor();
+    if (typeof loadSq9ScannerData === 'function') loadSq9ScannerData();
+
+    const el = document.getElementById('sq9LastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// Refresh Signals Tab
+function refreshSignalsTab() {
+    console.log('🔄 Refreshing Signals Tab');
+
+    if (typeof scanMTFPatterns === 'function') scanMTFPatterns(true);
+    if (typeof updateMTFBiasSummary === 'function') updateMTFBiasSummary(currentSymbol || 'SPY');
+
+    const el = document.getElementById('signalsTabLastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// Refresh Patterns Tab
+function refreshPatternsTab() {
+    console.log('🔄 Refreshing Patterns Tab');
+
+    if (typeof scanAllPatterns === 'function') scanAllPatterns();
+
+    const el = document.getElementById('patternsLastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// Refresh Predictions Tab
+function refreshPredictionsTab() {
+    console.log('🔄 Refreshing Predictions Tab');
+
+    if (typeof updatePredictionTracker === 'function') updatePredictionTracker();
+
+    const el = document.getElementById('predictionsLastUpdated');
+    if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
 }
 
 // ============================================
