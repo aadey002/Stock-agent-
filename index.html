@@ -10180,7 +10180,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 11px; color: var(--muted);">Daily → 15min → 5min Candle Alignment</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
-                        <select id="mtfSymbolSelect" onchange="scanMTFPatterns()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
+                        <select id="mtfSymbolSelect" onchange="debouncedMTFScan()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
                             <optgroup label="Index ETFs">
                                 <option value="SPY">SPY</option>
                                 <option value="QQQ">QQQ</option>
@@ -10233,7 +10233,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="XOM">XOM</option>
                             </optgroup>
                         </select>
-                        <button onclick="scanMTFPatterns()" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
+                        <button onclick="scanMTFPatterns(true)" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
                     </div>
                 </div>
 
@@ -35311,6 +35311,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // MULTI-TIMEFRAME SIGNAL SYSTEM
 // ============================================
 
+// MTF Cache and Loading State
+var mtfCache = {};
+var mtfIsLoading = false;
+var mtfLastScanTime = 0;
+var mtfDebounceTimer = null;
+var MTF_CACHE_DURATION = 60000; // 1 minute cache
+
 function updateMTFDisplay(signal, message, timeframes) {
     // Update all timeframe panels with neutral/error state
     ['Daily', '15min', '5min'].forEach(function(tf) {
@@ -35326,26 +35333,57 @@ function updateMTFDisplay(signal, message, timeframes) {
     hideTradeSetup();
 }
 
-function scanMTFPatterns() {
+function scanMTFPatterns(forceRefresh) {
     var symbol = document.getElementById('mtfSymbolSelect').value || 'SPY';
+
+    // Prevent duplicate calls while loading
+    if (mtfIsLoading) {
+        console.log('MTF scan already in progress, skipping');
+        return;
+    }
+
+    var now = Date.now();
+    var cacheKey = symbol;
+
+    // Check cache (unless force refresh)
+    if (!forceRefresh && mtfCache[cacheKey] && (now - mtfCache[cacheKey].timestamp < MTF_CACHE_DURATION)) {
+        console.log('Using cached MTF data for ' + symbol + ' (age: ' + Math.round((now - mtfCache[cacheKey].timestamp) / 1000) + 's)');
+        displayCachedMTFResults(mtfCache[cacheKey]);
+        return;
+    }
+
     var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
 
-    console.log('Scanning MTF patterns for ' + symbol);
+    console.log('Scanning MTF patterns for ' + symbol + (forceRefresh ? ' (forced refresh)' : ''));
 
     if (!priceData || priceData.length < 5) {
         updateMTFDisplay('neutral', 'Insufficient data for ' + symbol, { daily: null, min15: null, min5: null });
         return;
     }
 
+    mtfIsLoading = true;
+    mtfLastScanTime = now;
+
     // Analyze Daily (Major Trend) - using actual daily data
     var dailyAnalysis = analyzeDailyTimeframe(priceData);
 
     // Simulate 15min and 5min analysis (based on daily trend and recent price action)
-    var min15Analysis = analyzeIntradayTimeframe(priceData, '15min');
-    var min5Analysis = analyzeIntradayTimeframe(priceData, '5min');
+    var min15Analysis = analyzeIntradayTimeframe(priceData, '15min', symbol);
+    var min5Analysis = analyzeIntradayTimeframe(priceData, '5min', symbol);
 
     // Calculate alignment
     var alignment = calculateMTFAlignment(dailyAnalysis, min15Analysis, min5Analysis);
+
+    // Cache the results
+    mtfCache[cacheKey] = {
+        timestamp: now,
+        symbol: symbol,
+        dailyAnalysis: dailyAnalysis,
+        min15Analysis: min15Analysis,
+        min5Analysis: min5Analysis,
+        alignment: alignment,
+        priceData: priceData
+    };
 
     // Update UI
     updateTimeframePanel('Daily', dailyAnalysis);
@@ -35359,6 +35397,32 @@ function scanMTFPatterns() {
     } else {
         hideTradeSetup();
     }
+
+    mtfIsLoading = false;
+}
+
+// Display cached MTF results
+function displayCachedMTFResults(cached) {
+    updateTimeframePanel('Daily', cached.dailyAnalysis);
+    updateTimeframePanel('15min', cached.min15Analysis);
+    updateTimeframePanel('5min', cached.min5Analysis);
+    updateAlignmentBanner(cached.alignment);
+
+    if (cached.alignment.scenario === 'FULL_BULL' || cached.alignment.scenario === 'FULL_BEAR') {
+        showTradeSetup(cached.symbol, cached.alignment, cached.priceData);
+    } else {
+        hideTradeSetup();
+    }
+}
+
+// Debounced MTF scan for click handlers
+function debouncedMTFScan(forceRefresh) {
+    if (mtfDebounceTimer) {
+        clearTimeout(mtfDebounceTimer);
+    }
+    mtfDebounceTimer = setTimeout(function() {
+        scanMTFPatterns(forceRefresh);
+    }, 150);
 }
 
 function analyzeDailyTimeframe(priceData) {
@@ -35433,8 +35497,9 @@ function analyzeDailyTimeframe(priceData) {
     return { signal: signal, pattern: pattern, candle: candle, strength: strength, price: close };
 }
 
-function analyzeIntradayTimeframe(priceData, timeframe) {
-    // Simulate intraday analysis based on daily data + time of day
+function analyzeIntradayTimeframe(priceData, timeframe, symbol) {
+    // Analyze intraday timeframe based on daily data + time of day
+    // Uses deterministic calculation (no random) for consistent results
     if (!priceData || priceData.length < 2) {
         return { signal: 'neutral', pattern: 'No Data', candle: 'flat', strength: 0 };
     }
@@ -35446,6 +35511,7 @@ function analyzeIntradayTimeframe(priceData, timeframe) {
     var close = parseFloat(latest.Close);
     var high = parseFloat(latest.High);
     var low = parseFloat(latest.Low);
+    var prevClose = parseFloat(prev.Close);
 
     // Use current time to simulate intraday movement
     var now = new Date();
@@ -35456,13 +35522,20 @@ function analyzeIntradayTimeframe(priceData, timeframe) {
     // Estimate intraday position (0-1 scale)
     var intradayProgress = Math.max(0, Math.min(1, marketMinutes / 390));
 
-    // Estimate current intraday price
+    // Estimate current intraday price - deterministic calculation
     var estimatedCurrent = open + (close - open) * intradayProgress;
 
-    // Add some randomness for different timeframes
-    var variance = (timeframe === '5min') ? 0.002 : 0.001;
-    var randomFactor = 1 + (Math.random() - 0.5) * variance;
-    estimatedCurrent = estimatedCurrent * randomFactor;
+    // Use deterministic variance based on symbol and timeframe (no random)
+    // Create a seed from symbol characters for consistent per-symbol variation
+    var symbolSeed = 0;
+    if (symbol) {
+        for (var i = 0; i < symbol.length; i++) {
+            symbolSeed += symbol.charCodeAt(i);
+        }
+    }
+    var timeframeSeed = (timeframe === '5min') ? 0.0005 : 0.0002;
+    var deterministicVariance = ((symbolSeed % 100) / 100 - 0.5) * timeframeSeed;
+    estimatedCurrent = estimatedCurrent * (1 + deterministicVariance);
 
     var signal = 'neutral';
     var pattern = 'Neutral';
@@ -35638,7 +35711,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sq9TabBtn.addEventListener('click', function() {
             setTimeout(function() {
                 if (allSymbolsData && Object.keys(allSymbolsData).length > 0) {
-                    scanMTFPatterns();
+                    debouncedMTFScan(); // Use debounced scan
                 }
             }, 500);
         });
