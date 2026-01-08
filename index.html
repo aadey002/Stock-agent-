@@ -7160,6 +7160,62 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.15)); border-radius: 12px; border: 2px solid #ef4444;">
                 <h2 style="margin: 0; color: #dc2626; font-size: 24px;">📊 Market Conditions Analysis</h2>
                 <p style="margin: 5px 0 0 0; color: #991b1b; font-size: 12px;">Trend-Following Approach Based on Moving Averages, Breadth and Volatility</p>
+                <div style="margin-top: 12px;">
+                    <label style="font-size: 12px; color: #666; margin-right: 8px;">Select Symbol:</label>
+                    <select id="mktConditionsSymbol" onchange="changeMktConditionsSymbol()" style="padding: 6px 12px; border: 1px solid #ef4444; border-radius: 6px; font-size: 12px; background: white; color: #333; min-width: 120px;">
+                        <optgroup label="Index ETFs">
+                            <option value="SPY">SPY</option>
+                            <option value="QQQ">QQQ</option>
+                            <option value="IWM">IWM</option>
+                            <option value="DIA">DIA</option>
+                        </optgroup>
+                        <optgroup label="Sector ETFs">
+                            <option value="XLF">XLF</option>
+                            <option value="XLE">XLE</option>
+                            <option value="XLK">XLK</option>
+                            <option value="XLV">XLV</option>
+                            <option value="XLI">XLI</option>
+                            <option value="XLB">XLB</option>
+                            <option value="XLU">XLU</option>
+                            <option value="XLP">XLP</option>
+                            <option value="XLY">XLY</option>
+                        </optgroup>
+                        <optgroup label="Mega Caps">
+                            <option value="AAPL">AAPL</option>
+                            <option value="MSFT">MSFT</option>
+                            <option value="NVDA">NVDA</option>
+                            <option value="TSLA">TSLA</option>
+                            <option value="AMZN">AMZN</option>
+                            <option value="GOOGL">GOOGL</option>
+                            <option value="META">META</option>
+                            <option value="JPM">JPM</option>
+                            <option value="AMD">AMD</option>
+                            <option value="NFLX">NFLX</option>
+                        </optgroup>
+                        <optgroup label="Additional Stocks">
+                            <option value="V">V</option>
+                            <option value="MA">MA</option>
+                            <option value="UNH">UNH</option>
+                            <option value="HD">HD</option>
+                            <option value="PG">PG</option>
+                            <option value="BAC">BAC</option>
+                            <option value="WMT">WMT</option>
+                            <option value="DIS">DIS</option>
+                            <option value="COST">COST</option>
+                            <option value="CRM">CRM</option>
+                            <option value="INTC">INTC</option>
+                            <option value="CSCO">CSCO</option>
+                            <option value="ADBE">ADBE</option>
+                            <option value="ORCL">ORCL</option>
+                            <option value="PFE">PFE</option>
+                            <option value="MRK">MRK</option>
+                            <option value="ABBV">ABBV</option>
+                            <option value="LLY">LLY</option>
+                            <option value="CVX">CVX</option>
+                            <option value="XOM">XOM</option>
+                        </optgroup>
+                    </select>
+                </div>
             </div>
 
             <!-- Market Conditions Dashboard -->
@@ -7285,7 +7341,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
             <!-- Moving Average Levels -->
             <div class="card">
-                <div class="card-title">📉 SPY Moving Average Levels</div>
+                <div class="card-title" id="mktMATitle">📉 SPY Moving Average Levels</div>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 15px;">
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
                         <div style="font-size: 10px; color: #666;">Current Price</div>
@@ -7308,8 +7364,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
                 <div style="padding: 12px; background: rgba(59,130,246,0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
-                    <div style="font-size: 12px; color: #1e40af;">
-                        <strong>20MA Rule:</strong> When SPY is ABOVE 20MA = favor CALLS. When SPY is BELOW 20MA = favor PUTS. The 20MA acts as dynamic support/resistance.
+                    <div id="mkt20MARule" style="font-size: 12px; color: #1e40af;">
+                        <strong>20MA Rule:</strong> When <span id="mkt20MASymbol">SPY</span> is ABOVE 20MA = favor CALLS. When <span id="mkt20MASymbol2">SPY</span> is BELOW 20MA = favor PUTS. The 20MA acts as dynamic support/resistance.
                     </div>
                 </div>
             </div>
@@ -14940,6 +14996,10 @@ async function changeSymbol() {
     const multiChartSymbol = document.getElementById('multiChartSymbol');
     if (multiChartSymbol) multiChartSymbol.value = currentSymbol;
 
+    // Update Market Conditions symbol selector to match
+    const mktConditionsSymbol = document.getElementById('mktConditionsSymbol');
+    if (mktConditionsSymbol) mktConditionsSymbol.value = currentSymbol;
+
     // Update Daily Analysis symbol display
     const confluenceSymbol = document.getElementById('confluenceSymbol');
     if (confluenceSymbol) confluenceSymbol.textContent = currentSymbol + ' Analysis';
@@ -15238,7 +15298,15 @@ function updateMarketAnalysisTab() {
     if (el) el.innerHTML = '<strong>Interpretation:</strong> ' + vixInterp;
 
     // === Selected Symbol Analysis ===
-    var selectedSymbol = currentSymbol || 'SPY';
+    // Check dropdown first, then fall back to currentSymbol
+    var mktDropdown = document.getElementById('mktConditionsSymbol');
+    var selectedSymbol = (mktDropdown && mktDropdown.value) ? mktDropdown.value : (currentSymbol || 'SPY');
+
+    // Sync dropdown with selected symbol
+    if (mktDropdown && mktDropdown.value !== selectedSymbol) {
+        mktDropdown.value = selectedSymbol;
+    }
+
     var spyPrice = 0;
     var spy20MA = 0;
     var spy50MA = 0;
@@ -15300,6 +15368,12 @@ function updateMarketAnalysisTab() {
     if (el) el.textContent = selectedSymbol + ' vs 20MA';
     el = document.getElementById('mktMATitle');
     if (el) el.textContent = '📉 ' + selectedSymbol + ' Moving Average Levels';
+
+    // Update 20MA rule symbol references
+    el = document.getElementById('mkt20MASymbol');
+    if (el) el.textContent = selectedSymbol;
+    el = document.getElementById('mkt20MASymbol2');
+    if (el) el.textContent = selectedSymbol;
 
     var dist20 = spy20MA > 0 ? ((spyPrice - spy20MA) / spy20MA * 100).toFixed(1) : 0;
     var dist50 = spy50MA > 0 ? ((spyPrice - spy50MA) / spy50MA * 100).toFixed(1) : 0;
@@ -15454,6 +15528,20 @@ function updateMarketAnalysisTab() {
     }
 
     console.log('Market Analysis Tab updated - Score: ' + score + '/3, Bias: ' + biasText);
+}
+
+// Change symbol in Market Conditions tab via dropdown
+function changeMktConditionsSymbol() {
+    var dropdown = document.getElementById('mktConditionsSymbol');
+    if (!dropdown) return;
+
+    var selectedSymbol = dropdown.value;
+    console.log('🔄 Changing Market Conditions to: ' + selectedSymbol);
+
+    // Update the Market Analysis Tab with new symbol
+    if (typeof updateMarketAnalysisTab === 'function') {
+        updateMarketAnalysisTab();
+    }
 }
 
 // ==========================================
