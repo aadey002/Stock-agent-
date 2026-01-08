@@ -3683,9 +3683,114 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
     background-color: #f8fafc;
 }
 
+/* Body padding for fixed Last Updated bar */
+body {
+    padding-top: 45px !important;
+}
+
+/* Trade Direction Context Styles */
+.trade-context-box {
+    background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(139,92,246,0.1));
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0;
+}
+.phase-current {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f59e0b;
+    margin-bottom: 4px;
+}
+.phase-detail {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+    padding-left: 20px;
+}
+.phase-turn {
+    font-size: 15px;
+    font-weight: 700;
+    color: #22c55e;
+    margin-bottom: 4px;
+}
+.phase-action {
+    font-size: 13px;
+    color: #22c55e;
+    margin-bottom: 12px;
+    padding-left: 20px;
+}
+.entry-strategy {
+    background: rgba(34,197,94,0.15);
+    border-left: 4px solid #22c55e;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #22c55e;
+    border-radius: 0 8px 8px 0;
+}
+/* Bearish variant */
+.trade-context-box.bearish .phase-turn {
+    color: #ef4444;
+}
+.trade-context-box.bearish .phase-action {
+    color: #ef4444;
+}
+.trade-context-box.bearish .entry-strategy {
+    background: rgba(239,68,68,0.15);
+    border-left-color: #ef4444;
+    color: #ef4444;
+}
+
     </style>
 </head>
 <body>
+    <!-- GLOBAL LAST UPDATED MONITOR -->
+    <div id="lastUpdatedBar" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(90deg, #1e293b, #0f172a);
+        padding: 8px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    ">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <span style="color: #888;">📊 Stock Agent 4</span>
+            <span id="marketStatusBar" style="padding: 3px 10px; border-radius: 10px; font-weight: 600; background: rgba(34,197,94,0.2); color: #22c55e;">
+                🟢 MARKET OPEN
+            </span>
+        </div>
+        <div style="display: flex; gap: 24px; align-items: center;">
+            <div>
+                <span style="color: #888;">Scanner:</span>
+                <span id="scannerLastUpdate" style="color: #22c55e; font-weight: 500;">--</span>
+            </div>
+            <div>
+                <span style="color: #888;">Prices:</span>
+                <span id="pricesLastUpdate" style="color: #22c55e; font-weight: 500;">--</span>
+            </div>
+            <div>
+                <span style="color: #888;">Signals:</span>
+                <span id="signalsLastUpdate" style="color: #22c55e; font-weight: 500;">--</span>
+            </div>
+            <button onclick="refreshAllData()" style="
+                padding: 4px 12px;
+                border-radius: 6px;
+                border: 1px solid #22c55e;
+                background: transparent;
+                color: #22c55e;
+                cursor: pointer;
+                font-size: 10px;
+            ">🔄 Refresh</button>
+        </div>
+    </div>
+
     <!-- LOGIN SCREEN (BYPASSED) -->
     <div class="login-screen" id="loginScreen" style="display: none;">
         <div class="login-container">
@@ -4266,6 +4371,8 @@ header, .main-header { position: sticky !important; top: 0 !important; z-index: 
                             <div><span style="color: #64748b;">Max Risk:</span> <span id="topTradeMaxRisk" style="font-weight: bold; color: #ef4444;">$60/contract</span></div>
                             <div><span style="color: #64748b;">Max Gain:</span> <span id="topTradeMaxGain" style="font-weight: bold; color: #4ade80;">$75/contract</span></div>
                         </div>
+                        <!-- Trade Direction Context Container -->
+                        <div id="topTradeContext" style="margin-top: 15px;"></div>
                         <div style="margin-top: 15px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                             <div style="font-weight: bold; color: #1e293b; margin-bottom: 10px;">💵 PROFIT CALCULATOR</div>
                             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
@@ -13440,6 +13547,187 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
+// LAST UPDATED MONITOR SYSTEM
+// ============================================
+
+// Track last updated timestamps globally
+const lastUpdated = {
+    scanner: null,
+    prices: null,
+    signals: null
+};
+
+// Update the Last Updated display bar
+function updateLastUpdatedDisplay() {
+    const scannerEl = document.getElementById('scannerLastUpdate');
+    const pricesEl = document.getElementById('pricesLastUpdate');
+    const signalsEl = document.getElementById('signalsLastUpdate');
+
+    const formatTime = (date) => {
+        if (!date) return '--';
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
+    if (scannerEl) scannerEl.textContent = formatTime(lastUpdated.scanner);
+    if (pricesEl) pricesEl.textContent = formatTime(lastUpdated.prices);
+    if (signalsEl) signalsEl.textContent = formatTime(lastUpdated.signals);
+}
+
+// Update market status (open/closed) based on current time
+function updateMarketStatus() {
+    const statusEl = document.getElementById('marketStatusBar');
+    if (!statusEl) return;
+
+    const now = new Date();
+    const day = now.getDay();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const timeInMinutes = hour * 60 + minute;
+
+    // Market hours: Mon-Fri 9:30 AM - 4:00 PM ET
+    const marketOpen = 9 * 60 + 30;  // 9:30 AM
+    const marketClose = 16 * 60;      // 4:00 PM
+
+    const isWeekday = day >= 1 && day <= 5;
+    const isDuringHours = timeInMinutes >= marketOpen && timeInMinutes < marketClose;
+    const isOpen = isWeekday && isDuringHours;
+
+    if (isOpen) {
+        statusEl.innerHTML = '🟢 MARKET OPEN';
+        statusEl.style.background = 'rgba(34,197,94,0.2)';
+        statusEl.style.color = '#22c55e';
+    } else {
+        statusEl.innerHTML = '🔴 MARKET CLOSED';
+        statusEl.style.background = 'rgba(239,68,68,0.2)';
+        statusEl.style.color = '#ef4444';
+    }
+}
+
+// Call these when data loads
+function onScannerDataLoaded() {
+    lastUpdated.scanner = new Date();
+    updateLastUpdatedDisplay();
+}
+
+function onPricesLoaded() {
+    lastUpdated.prices = new Date();
+    updateLastUpdatedDisplay();
+}
+
+function onSignalsLoaded() {
+    lastUpdated.signals = new Date();
+    updateLastUpdatedDisplay();
+}
+
+// Update market status every minute
+setInterval(updateMarketStatus, 60000);
+
+// Initial market status check
+document.addEventListener('DOMContentLoaded', function() {
+    updateMarketStatus();
+    updateLastUpdatedDisplay();
+});
+
+// ============================================
+// TRADE DIRECTION CONTEXT GENERATOR
+// ============================================
+
+// Format date string for display (Jan 16)
+function formatContextDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Generate trade context HTML based on symbol data
+function generateTradeContext(data) {
+    if (!data || !data.nextTurnDate || !data.currentPrice) {
+        return '';
+    }
+
+    const isBullish = data.direction === 'CALL' || data.bias === 'BULLISH';
+    const contextClass = isBullish ? '' : 'bearish';
+    const arrow = isBullish ? '↗' : '↘';
+    const phaseIcon = isBullish ? '📈' : '📉';
+    const turnIcon = isBullish ? '🎯' : '⚠️';
+
+    // Calculate days until turn
+    const today = new Date();
+    const turnDate = new Date(data.nextTurnDate);
+    const daysUntilTurn = Math.ceil((turnDate - today) / (1000 * 60 * 60 * 24));
+
+    // Current phase description
+    const phaseAction = isBullish
+        ? `Expect rally continuation toward $${data.targetPrice || data.sq9Level || 'N/A'}`
+        : `Expect pullback to $${data.targetPrice || data.sq9Level || 'N/A'}`;
+
+    // Turn phase action
+    const turnAction = isBullish
+        ? `Wait for pullback to load CALLS near $${data.supportLevel || data.stopLoss || 'support'}`
+        : `Watch for reversal signal to exit PUTs / load CALLS`;
+
+    // Entry strategy
+    const entryStrategy = isBullish
+        ? `Buy ${data.symbol} CALLS on pullbacks to $${data.entryPrice || data.supportLevel || 'support'}`
+        : `Buy ${data.symbol} PUTS on rallies to $${data.resistLevel || data.sq9Level || 'resistance'}`;
+
+    return `
+        <div class="trade-context-box ${contextClass}">
+            <div class="phase-current">${phaseIcon} Now → ${formatContextDate(data.nextTurnDate)}: ${phaseAction}</div>
+            <div class="phase-detail">${arrow} ${daysUntilTurn} days until next turn date</div>
+
+            <div class="phase-turn">${turnIcon} At ${formatContextDate(data.nextTurnDate)}: ${turnAction}</div>
+            <div class="phase-action">Key level: $${data.sq9Level || data.targetPrice || 'N/A'}</div>
+
+            <div class="entry-strategy">
+                <strong>📋 Strategy:</strong> ${entryStrategy}
+            </div>
+        </div>
+    `;
+}
+
+// Update trade context display for a symbol
+function updateTradeContextDisplay(symbol, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Get symbol data from gannData or current analysis
+    const symbolData = window.gannData && window.gannData[symbol];
+    if (!symbolData) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // Build context data object
+    const contextData = {
+        symbol: symbol,
+        currentPrice: symbolData.price || symbolData.currentPrice,
+        direction: symbolData.direction || symbolData.bias,
+        bias: symbolData.bias,
+        nextTurnDate: symbolData.nextTurnDate || symbolData.turnDate,
+        targetPrice: symbolData.target || symbolData.targetPrice,
+        sq9Level: symbolData.sq9Level,
+        supportLevel: symbolData.support || symbolData.stopLoss,
+        resistLevel: symbolData.resistance || symbolData.sq9Level,
+        entryPrice: symbolData.entryPrice || symbolData.support,
+        stopLoss: symbolData.stopLoss
+    };
+
+    container.innerHTML = generateTradeContext(contextData);
+}
+
+// ============================================
 // MASTER REFRESH FUNCTION
 // ============================================
 
@@ -13709,6 +13997,11 @@ function updateAllSymbolGannDataFromCSV() {
     if (typeof generateDynamicOpportunities === 'function') {
         generateDynamicOpportunities();
         console.log('Trading Opportunities table updated with fresh prices');
+    }
+
+    // Update Last Updated timestamp
+    if (typeof onPricesLoaded === 'function') {
+        onPricesLoaded();
     }
 }
 
@@ -28334,6 +28627,30 @@ function updateTopTrade(symbol) {
 
     // Check for analysis conflict
     if (typeof checkAnalysisConflict === 'function') checkAnalysisConflict();
+
+    // Update Trade Direction Context
+    var contextContainer = document.getElementById('topTradeContext');
+    if (contextContainer && typeof generateTradeContext === 'function') {
+        // Build context data from current trade info
+        var nextTurnDate = new Date();
+        nextTurnDate.setDate(nextTurnDate.getDate() + Math.round(7 + Math.random() * 7)); // 7-14 days out
+
+        var contextData = {
+            symbol: symbol,
+            currentPrice: price,
+            direction: direction,
+            bias: isBullish ? 'BULLISH' : 'BEARISH',
+            nextTurnDate: nextTurnDate.toISOString().split('T')[0],
+            targetPrice: parseFloat(priceTarget),
+            sq9Level: strike,
+            supportLevel: parseFloat(stopPriceETF),
+            resistLevel: parseFloat(exit100Price),
+            entryPrice: parseFloat(bestEntryPrice),
+            stopLoss: parseFloat(stopPriceETF)
+        };
+
+        contextContainer.innerHTML = generateTradeContext(contextData);
+    }
 }
 
 // Check for analysis conflict and update Market Trade section
@@ -35903,6 +36220,11 @@ function scanMTFPatterns(forceRefresh) {
     }
 
     mtfIsLoading = false;
+
+    // Update Last Updated timestamp
+    if (typeof onSignalsLoaded === 'function') {
+        onSignalsLoaded();
+    }
 }
 
 // Display cached MTF results
@@ -37152,6 +37474,11 @@ async function scanAllPatterns() {
 
     // Render the table
     renderPatternScannerTable();
+
+    // Update Last Updated timestamp
+    if (typeof onScannerDataLoaded === 'function') {
+        onScannerDataLoaded();
+    }
 }
 
 // Helper: Detect patterns for scanner
