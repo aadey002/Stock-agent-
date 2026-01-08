@@ -13522,6 +13522,28 @@ async function refreshAllData() {
         if (typeof loadAllData === 'function') loadAllData();
         if (typeof loadSymbolData === 'function') loadSymbolData(symbol);
 
+        // Update prices from CSV data for all symbols
+        if (typeof updateAllSymbolGannDataFromCSV === 'function') updateAllSymbolGannDataFromCSV();
+
+        // Trading Opportunities with live prices
+        if (typeof generateDynamicOpportunities === 'function') generateDynamicOpportunities();
+
+        // Today's Top Trade with live prices
+        if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+        if (typeof updateTopTrade === 'function') updateTopTrade(symbol);
+
+        // Market Conditions with live prices
+        if (typeof updateMarketAnalysisTab === 'function') updateMarketAnalysisTab();
+
+        // Pattern Scanner with live prices
+        if (typeof scanAllPatterns === 'function') scanAllPatterns();
+
+        // SQ9 Monitor with live prices
+        if (typeof updateSq9Monitor === 'function') updateSq9Monitor();
+
+        // Dynamic pivots
+        if (typeof updateDynamicPivots === 'function') updateDynamicPivots();
+
         // Update timestamp
         if (typeof updateLastRefreshTime === 'function') updateLastRefreshTime();
 
