@@ -13619,8 +13619,20 @@ async function fetchLatestPrice(symbol) {
 
 // Update ALL symbolGannData prices from CSV data (not just current symbol)
 function updateAllSymbolGannDataFromCSV() {
-    var symbols = ['SPY', 'QQQ', 'IWM', 'DIA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'AMD', 'ORCL', 'CSCO', 'JPM', 'MA', 'LLY', 'CVX', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY'];
+    // All 43 symbols
+    var symbols = [
+        // Index ETFs (4)
+        'SPY', 'QQQ', 'IWM', 'DIA',
+        // Sector ETFs (9)
+        'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB', 'XLU', 'XLP', 'XLY',
+        // Mega Caps (10)
+        'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD', 'NFLX',
+        // Additional Liquid Stocks (20)
+        'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST', 'CRM',
+        'INTC', 'CSCO', 'ADBE', 'ORCL', 'PFE', 'MRK', 'ABBV', 'LLY', 'CVX', 'XOM'
+    ];
 
+    var updatedCount = 0;
     symbols.forEach(function(symbol) {
         var data = allSymbolsData[symbol];
         if (data && data.length > 0) {
@@ -13629,19 +13641,52 @@ function updateAllSymbolGannDataFromCSV() {
             var high = parseFloat(latestRow.High);
             var low = parseFloat(latestRow.Low);
 
-            if (!isNaN(price) && symbolGannData[symbol]) {
+            // Calculate change from previous day
+            var changePct = 0;
+            if (data.length >= 2) {
+                var prevClose = parseFloat(data[data.length - 2].Close);
+                if (prevClose > 0) {
+                    changePct = ((price - prevClose) / prevClose) * 100;
+                }
+            }
+
+            // Calculate ATR from recent data
+            var atr = 0;
+            if (data.length >= 14) {
+                var atrSum = 0;
+                for (var j = data.length - 14; j < data.length; j++) {
+                    var h = parseFloat(data[j].High);
+                    var l = parseFloat(data[j].Low);
+                    atrSum += (h - l);
+                }
+                atr = atrSum / 14;
+            }
+
+            if (!isNaN(price)) {
+                // Initialize if doesn't exist
+                if (!symbolGannData[symbol]) {
+                    symbolGannData[symbol] = {};
+                }
                 symbolGannData[symbol].price = price;
+                symbolGannData[symbol].changePct = changePct;
                 if (!isNaN(high)) symbolGannData[symbol].high = high;
                 if (!isNaN(low)) symbolGannData[symbol].low = low;
-                console.log('Updated symbolGannData for ' + symbol + ': $' + price.toFixed(2));
+                if (atr > 0) symbolGannData[symbol].atr = atr;
+                updatedCount++;
             }
         }
     });
-    console.log('All symbolGannData updated from CSV');
+    console.log('Updated ' + updatedCount + '/' + symbols.length + ' symbols from CSV data');
 
     // Recalculate Gann predictions with fresh CSV data
     if (currentSymbol) {
         autoCalculateGannPredictions(currentSymbol);
+    }
+
+    // Regenerate the Opportunities table with fresh prices
+    if (typeof generateDynamicOpportunities === 'function') {
+        generateDynamicOpportunities();
+        console.log('Trading Opportunities table updated with fresh prices');
     }
 }
 
