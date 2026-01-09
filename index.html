@@ -38836,8 +38836,9 @@ async function loadDualTradeSetup(symbol) {
 
     try {
         var response = await fetch('data/sq9_scanner.json?t=' + Date.now());
-        var allData = await response.json();
-        var data = allData.find(function(d) { return d.symbol === symbol; });
+        var jsonData = await response.json();
+        var allData = jsonData.results || jsonData;
+        var data = Array.isArray(allData) ? allData.find(function(d) { return d.symbol === symbol; }) : null;
 
         if (!data) {
             container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ No data for ' + symbol + '</div>';
