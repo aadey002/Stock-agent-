@@ -11600,6 +11600,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
+                <!-- OTM STRIKE SELECTOR -->
+                <div id="otmStrikeSelector" style="background: var(--card); border-radius: 12px; padding: 16px; margin-top: 16px;">
+                    <!-- Filled by renderOTMStrikeSelector() -->
+                </div>
+
             </div>
         </div>
 
@@ -12997,6 +13002,346 @@ var actionCenterData = {
     tier3Ready: [],       // Ready to trade (1-2)
     lastUpdate: null
 };
+
+// =============================================================================
+// BUDGET-BASED OTM STRIKE SELECTOR
+// =============================================================================
+
+var BUDGET_CONFIG = {
+    maxBudget: 75,           // Max $ per trade
+    minBudget: 30,           // Min to consider
+    idealBudget: 50,         // Sweet spot
+    minDTE: 21,              // Minimum days to expiry
+    idealDTE: 28,            // Ideal days to expiry
+    maxDTE: 45,              // Maximum DTE
+    maxThetaPerDay: 0.03,    // Max 3% decay per day
+    idealThetaPerDay: 0.015, // Ideal 1.5% decay per day
+    minDelta: 0.08,          // Minimum delta (too far = won't move)
+    maxDelta: 0.30,          // Maximum delta (too expensive)
+    idealDelta: 0.15         // Sweet spot for OTM
+};
+
+// Estimate affordable strikes when no option chain available
+function estimateAffordableStrikesOTM(symbol, direction, currentPrice) {
+    var results = [];
+    var baseIV = 0.25;  // Assume 25% IV
+    var dteOptions = [21, 28, 35];
+
+    dteOptions.forEach(function(dte) {
+        var distances = [3, 5, 7, 10, 12, 15];  // % OTM
+
+        distances.forEach(function(distPct) {
+            var strike = direction === 'CALL' ?
+                Math.round(currentPrice * (1 + distPct / 100)) :
+                Math.round(currentPrice * (1 - distPct / 100));
+
+            // Estimate price using simplified model
+            var timeValue = Math.sqrt(dte / 365);
+            var moneyness = distPct / 100;
+            var estimatedPrice = currentPrice * baseIV * timeValue * Math.exp(-moneyness * 3);
+            var estimatedDelta = Math.max(0.05, 0.50 - (moneyness * 2.5));
+            var contractCost = estimatedPrice * 100;
+
+            if (contractCost >= 20 && contractCost <= BUDGET_CONFIG.maxBudget) {
+                var breakeven = direction === 'CALL' ?
+                    strike + estimatedPrice :
+                    strike - estimatedPrice;
+                var requiredMove = Math.abs(breakeven - currentPrice);
+                var requiredMovePct = (requiredMove / currentPrice * 100);
+
+                var score = calculateOTMScore(estimatedPrice, estimatedDelta, dte, requiredMovePct, distPct);
+
+                results.push({
+                    strike: strike,
+                    price: parseFloat(estimatedPrice.toFixed(2)),
+                    contractCost: parseFloat(contractCost.toFixed(0)),
+                    delta: parseFloat(estimatedDelta.toFixed(2)),
+                    dte: dte,
+                    distancePct: distPct.toFixed(1),
+                    breakeven: parseFloat(breakeven.toFixed(2)),
+                    requiredMove: parseFloat(requiredMove.toFixed(2)),
+                    requiredMovePct: requiredMovePct.toFixed(1),
+                    thetaPctPerDay: (100 / dte / 3).toFixed(2),
+                    score: score,
+                    recommendation: getStrikeRecommendation(score, estimatedDelta, requiredMovePct),
+                    isEstimate: true
+                });
+            }
+        });
+    });
+
+    results.sort(function(a, b) { return b.score - a.score; });
+    return results.slice(0, 5);
+}
+
+// Score OTM options
+function calculateOTMScore(price, delta, dte, requiredMovePct, distancePct) {
+    var score = 50;  // Base score
+
+    // Delta score (want 0.10-0.20 range)
+    if (delta >= 0.10 && delta <= 0.20) score += 20;
+    else if (delta >= 0.08 && delta <= 0.25) score += 10;
+    else if (delta < 0.08) score -= 20;
+
+    // DTE score (want 21-35 range)
+    if (dte >= 21 && dte <= 35) score += 15;
+    else if (dte >= 14 && dte <= 45) score += 5;
+    else if (dte < 14) score -= 25;
+
+    // Required move score (want < 5%)
+    if (requiredMovePct <= 3) score += 20;
+    else if (requiredMovePct <= 5) score += 10;
+    else if (requiredMovePct <= 7) score += 0;
+    else if (requiredMovePct <= 10) score -= 10;
+    else score -= 20;
+
+    // Price efficiency (want max delta per dollar)
+    var deltaPerDollar = delta / price;
+    if (deltaPerDollar > 0.20) score += 15;
+    else if (deltaPerDollar > 0.10) score += 5;
+
+    return Math.max(0, Math.min(100, score));
+}
+
+function getStrikeRecommendation(score, delta, requiredMovePct) {
+    if (score >= 80) return { text: 'BEST', color: '#22c55e', icon: '🎯' };
+    if (score >= 65) return { text: 'GOOD', color: '#22c55e', icon: '✅' };
+    if (score >= 50) return { text: 'OK', color: '#f59e0b', icon: '👍' };
+    if (score >= 35) return { text: 'RISKY', color: '#f59e0b', icon: '⚠️' };
+    return { text: 'AVOID', color: '#ef4444', icon: '❌' };
+}
+
+// Calculate profit scenarios for OTM options
+function calculateProfitScenarios(strike, price, delta, direction, currentPrice, sq9Target) {
+    var scenarios = [];
+
+    // Scenario 1: Price moves to SQ9 target
+    if (sq9Target) {
+        var move = sq9Target - currentPrice;
+        var movePct = (move / currentPrice * 100);
+        var optionGain = Math.abs(move) * delta;
+        var newPrice = price + (direction === 'CALL' ? optionGain : optionGain);
+        var pnl = (newPrice - price) * 100;
+        var pnlPct = (pnl / (price * 100) * 100);
+
+        scenarios.push({
+            name: 'SQ9 Target',
+            targetPrice: sq9Target.toFixed(2),
+            movePct: movePct.toFixed(1),
+            optionPrice: newPrice.toFixed(2),
+            pnl: pnl.toFixed(0),
+            pnlPct: pnlPct.toFixed(0),
+            icon: pnl > 0 ? '🎯' : '❌'
+        });
+    }
+
+    // Scenario 2: 2% move in your direction
+    var move2pct = currentPrice * 0.02;
+    var target2pct = direction === 'CALL' ? currentPrice + move2pct : currentPrice - move2pct;
+    var gain2pct = move2pct * delta;
+    var newPrice2pct = price + gain2pct;
+    var pnl2pct = (newPrice2pct - price) * 100;
+
+    scenarios.push({
+        name: '2% Move',
+        targetPrice: target2pct.toFixed(2),
+        movePct: '2.0',
+        optionPrice: newPrice2pct.toFixed(2),
+        pnl: pnl2pct.toFixed(0),
+        pnlPct: ((pnl2pct / (price * 100)) * 100).toFixed(0),
+        icon: '📈'
+    });
+
+    // Scenario 3: 5% move in your direction
+    var move5pct = currentPrice * 0.05;
+    var target5pct = direction === 'CALL' ? currentPrice + move5pct : currentPrice - move5pct;
+    var gain5pct = move5pct * delta * 1.3;  // Delta increases
+    var newPrice5pct = price + gain5pct;
+    var pnl5pct = (newPrice5pct - price) * 100;
+
+    scenarios.push({
+        name: '5% Move',
+        targetPrice: target5pct.toFixed(2),
+        movePct: '5.0',
+        optionPrice: newPrice5pct.toFixed(2),
+        pnl: pnl5pct.toFixed(0),
+        pnlPct: ((pnl5pct / (price * 100)) * 100).toFixed(0),
+        icon: '🚀'
+    });
+
+    // Scenario 4: Time decay only (no move, 7 days pass)
+    var thetaDecay = price * 0.02 * 7;
+    var priceAfterDecay = Math.max(0.05, price - thetaDecay);
+    var pnlDecay = (priceAfterDecay - price) * 100;
+
+    scenarios.push({
+        name: '7 Days No Move',
+        targetPrice: currentPrice.toFixed(2),
+        movePct: '0',
+        optionPrice: priceAfterDecay.toFixed(2),
+        pnl: pnlDecay.toFixed(0),
+        pnlPct: ((pnlDecay / (price * 100)) * 100).toFixed(0),
+        icon: '⏳'
+    });
+
+    return scenarios;
+}
+
+// Get Tier 3 OTM Trade Setup
+function getTier3OTMSetup(symbol, direction) {
+    var data = null;
+    if (typeof sq9ScanResults !== 'undefined' && sq9ScanResults.length > 0) {
+        data = sq9ScanResults.find(function(d) { return d.symbol === symbol; });
+    }
+    if (!data) return null;
+
+    var currentPrice = data.price || 0;
+    if (currentPrice <= 0) return null;
+
+    var sq9Target = direction === 'CALL' ?
+        (data.target || currentPrice * 1.03) :
+        (data.stop || currentPrice * 0.97);
+
+    // Get affordable strikes
+    var affordableStrikes = estimateAffordableStrikesOTM(symbol, direction, currentPrice);
+    var bestStrike = affordableStrikes[0];
+
+    if (!bestStrike) {
+        return { valid: false, reason: 'No affordable strikes found' };
+    }
+
+    // Calculate profit scenarios
+    var scenarios = calculateProfitScenarios(
+        bestStrike.strike,
+        bestStrike.price,
+        bestStrike.delta,
+        direction,
+        currentPrice,
+        sq9Target
+    );
+
+    // Calculate if SQ9 target makes this trade worthwhile
+    var targetMove = Math.abs(sq9Target - currentPrice);
+    var targetMovePct = (targetMove / currentPrice * 100);
+    var isTargetRealistic = targetMovePct >= parseFloat(bestStrike.requiredMovePct);
+
+    return {
+        valid: true,
+        symbol: symbol,
+        direction: direction,
+        currentPrice: currentPrice,
+        strike: bestStrike.strike,
+        premium: bestStrike.price,
+        contractCost: bestStrike.contractCost,
+        delta: bestStrike.delta,
+        dte: bestStrike.dte,
+        distancePct: bestStrike.distancePct,
+        breakeven: bestStrike.breakeven,
+        requiredMovePct: bestStrike.requiredMovePct,
+        sq9Target: sq9Target,
+        targetMovePct: targetMovePct.toFixed(1),
+        isTargetRealistic: isTargetRealistic,
+        alternatives: affordableStrikes,
+        scenarios: scenarios,
+        recommendation: bestStrike.recommendation,
+        score: bestStrike.score
+    };
+}
+
+// Render OTM Strike Selector UI
+function renderOTMStrikeSelector(symbol, direction, containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var setup = getTier3OTMSetup(symbol, direction);
+
+    if (!setup || !setup.valid) {
+        container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No affordable strikes found for ' + symbol + '</div>';
+        return;
+    }
+
+    var dirBg = setup.direction === 'CALL' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+    var dirColor = setup.direction === 'CALL' ? '#22c55e' : '#ef4444';
+    var dirIcon = setup.direction === 'CALL' ? '📈' : '📉';
+
+    var html = '';
+
+    // Header
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">';
+    html += '<div><span style="font-size: 18px; font-weight: 700;">' + symbol + '</span>';
+    html += '<span style="font-size: 12px; color: #888; margin-left: 8px;">$' + setup.currentPrice.toFixed(2) + '</span></div>';
+    html += '<span style="padding: 6px 14px; border-radius: 12px; font-size: 12px; font-weight: 700; background: ' + dirBg + '; color: ' + dirColor + ';">' + dirIcon + ' ' + setup.direction + '</span>';
+    html += '</div>';
+
+    // Recommended Strike
+    html += '<div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px;">';
+    html += '<div style="font-size: 10px; color: #888; margin-bottom: 8px;">RECOMMENDED STRIKE</div>';
+    html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center;">';
+    html += '<div><div style="font-size: 24px; font-weight: 700; color: #3b82f6;">' + setup.strike + '</div><div style="font-size: 10px; color: #888;">Strike</div></div>';
+    html += '<div><div style="font-size: 24px; font-weight: 700; color: #22c55e;">$' + setup.contractCost + '</div><div style="font-size: 10px; color: #888;">Cost</div></div>';
+    html += '<div><div style="font-size: 24px; font-weight: 700;">' + setup.dte + 'd</div><div style="font-size: 10px; color: #888;">DTE</div></div>';
+    html += '<div><div style="font-size: 24px; font-weight: 700;">' + (setup.delta * 100).toFixed(0) + 'Δ</div><div style="font-size: 10px; color: #888;">Delta</div></div>';
+    html += '</div>';
+    html += '<div style="text-align: center; margin-top: 12px;"><span style="padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; background: ' + setup.recommendation.color + '20; color: ' + setup.recommendation.color + ';">' + setup.recommendation.icon + ' ' + setup.recommendation.text + '</span></div>';
+    html += '</div>';
+
+    // Key Metrics
+    html += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">';
+    html += '<div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">';
+    html += '<div style="font-size: 16px; font-weight: 700; color: #f59e0b;">' + setup.distancePct + '%</div><div style="font-size: 10px; color: #888;">OTM Distance</div></div>';
+    var moveColor = parseFloat(setup.requiredMovePct) <= 5 ? '#22c55e' : '#f59e0b';
+    html += '<div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">';
+    html += '<div style="font-size: 16px; font-weight: 700; color: ' + moveColor + ';">' + setup.requiredMovePct + '%</div><div style="font-size: 10px; color: #888;">Move to Profit</div></div>';
+    html += '<div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">';
+    html += '<div style="font-size: 16px; font-weight: 700; color: #3b82f6;">$' + setup.breakeven.toFixed(0) + '</div><div style="font-size: 10px; color: #888;">Breakeven</div></div>';
+    html += '</div>';
+
+    // SQ9 Target Analysis
+    var targetBg = setup.isTargetRealistic ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+    var targetColor = setup.isTargetRealistic ? '#22c55e' : '#ef4444';
+    html += '<div style="background: ' + targetBg + '; border-radius: 8px; padding: 12px; margin-bottom: 16px;">';
+    html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+    html += '<div><span style="font-size: 12px; color: #888;">SQ9 Target:</span>';
+    html += '<span style="font-size: 14px; font-weight: 700; margin-left: 8px;">$' + setup.sq9Target.toFixed(2) + '</span>';
+    html += '<span style="font-size: 11px; color: #888; margin-left: 8px;">(' + setup.targetMovePct + '% move)</span></div>';
+    html += '<span style="font-size: 12px; font-weight: 600; color: ' + targetColor + ';">' + (setup.isTargetRealistic ? '✅ Realistic' : '⚠️ Need bigger move') + '</span>';
+    html += '</div></div>';
+
+    // Profit Scenarios
+    html += '<div style="margin-bottom: 16px;">';
+    html += '<div style="font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 600;">PROFIT SCENARIOS</div>';
+    html += '<div style="display: grid; gap: 6px;">';
+    setup.scenarios.forEach(function(s) {
+        var pnlColor = parseFloat(s.pnl) >= 0 ? '#22c55e' : '#ef4444';
+        var pnlSign = parseFloat(s.pnl) >= 0 ? '+' : '';
+        html += '<div style="display: grid; grid-template-columns: 24px 90px 55px 55px 55px; gap: 8px; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.02); border-radius: 6px;">';
+        html += '<span style="font-size: 14px;">' + s.icon + '</span>';
+        html += '<span style="font-size: 11px;">' + s.name + '</span>';
+        html += '<span style="font-size: 10px; color: #888;">$' + s.targetPrice + '</span>';
+        html += '<span style="font-size: 11px; font-weight: 600; color: ' + pnlColor + ';">' + pnlSign + '$' + s.pnl + '</span>';
+        html += '<span style="font-size: 11px; font-weight: 600; color: ' + pnlColor + ';">' + pnlSign + s.pnlPct + '%</span>';
+        html += '</div>';
+    });
+    html += '</div></div>';
+
+    // Alternative Strikes
+    if (setup.alternatives.length > 1) {
+        html += '<div><div style="font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 600;">OTHER AFFORDABLE STRIKES</div>';
+        html += '<div style="display: grid; gap: 4px;">';
+        setup.alternatives.slice(1, 4).forEach(function(alt) {
+            html += '<div style="display: grid; grid-template-columns: 50px 45px 35px 60px 70px; gap: 8px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.01); border-radius: 4px; font-size: 10px;">';
+            html += '<span style="font-weight: 600;">' + alt.strike + '</span>';
+            html += '<span style="color: #888;">$' + alt.contractCost + '</span>';
+            html += '<span style="color: #888;">' + alt.dte + 'd</span>';
+            html += '<span style="color: #888;">' + alt.distancePct + '% OTM</span>';
+            html += '<span style="color: ' + alt.recommendation.color + ';">' + alt.recommendation.icon + ' ' + alt.recommendation.text + '</span>';
+            html += '</div>';
+        });
+        html += '</div></div>';
+    }
+
+    container.innerHTML = html;
+}
 
 // =====================================================
 // =====================================================
@@ -39701,6 +40046,9 @@ async function loadDualTradeAnalysis(symbol) {
         // Update timestamp
         var tsEl = document.getElementById('dualTradeUpdated');
         if (tsEl) tsEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+
+        // Render OTM Strike Selector for budget trading
+        renderOTMStrikeSelector(symbol, direction, 'otmStrikeSelector');
 
     } catch (error) {
         console.error('Analysis error:', error);
