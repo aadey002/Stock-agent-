@@ -11870,7 +11870,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">Based on Full Market Analysis: Agents + SQ9 + MTF + Patterns</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <select id="dualTradeSymbolSelect" onchange="loadDualTradeAnalysis(this.value)" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
+                        <select id="dualTradeSymbolSelect" onchange="SymbolManager.set(this.value, 'dualTrade')" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
                             <optgroup label="ETFs">
                                 <option value="SPY" selected>SPY</option>
                                 <option value="QQQ">QQQ</option>
@@ -12131,6 +12131,137 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
     <!-- END MAIN APP -->
 
 <script>
+// =============================================================================
+// GLOBAL SYMBOL MANAGER - SINGLE SOURCE OF TRUTH FOR SYMBOL SELECTION
+// =============================================================================
+
+var SymbolManager = {
+    current: 'SPY',
+
+    dropdownSelectors: [
+        '#symbolSelect',
+        '#dualTradeSymbolSelect',
+        '#mtfSymbolSelect',
+        '#sq9SymbolSelect',
+        '#patternSymbol',
+        '#gannSymbol',
+        '.symbol-select'
+    ],
+
+    updateCallbacks: [],
+
+    onSymbolChange: function(callback) {
+        this.updateCallbacks.push(callback);
+    },
+
+    get: function() {
+        return this.current;
+    },
+
+    set: function(symbol, source) {
+        source = source || 'unknown';
+        if (!symbol || symbol === this.current) return;
+
+        console.log('🔄 Symbol changed to ' + symbol + ' (from ' + source + ')');
+        this.current = symbol;
+
+        // Sync all dropdowns
+        this.syncAllDropdowns(symbol);
+
+        // Trigger all updates
+        this.triggerUpdates(symbol);
+
+        // Save to localStorage
+        localStorage.setItem('selectedSymbol', symbol);
+
+        // Show sync indicator
+        this.showSyncIndicator(symbol);
+    },
+
+    syncAllDropdowns: function(symbol) {
+        var self = this;
+        this.dropdownSelectors.forEach(function(selector) {
+            document.querySelectorAll(selector).forEach(function(dropdown) {
+                if (dropdown.value !== symbol) {
+                    var option = dropdown.querySelector('option[value="' + symbol + '"]');
+                    if (option) {
+                        dropdown.value = symbol;
+                    }
+                }
+            });
+        });
+    },
+
+    triggerUpdates: function(symbol) {
+        console.log('📊 Updating all components for ' + symbol);
+        this.updateCallbacks.forEach(function(callback) {
+            try { callback(symbol); } catch (e) { console.error(e); }
+        });
+    },
+
+    showSyncIndicator: function(symbol) {
+        var indicator = document.getElementById('globalSyncIndicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'globalSyncIndicator';
+            indicator.style.cssText = 'position:fixed;bottom:20px;left:20px;background:rgba(34,197,94,0.95);color:white;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+            document.body.appendChild(indicator);
+        }
+        indicator.innerHTML = '✓ All synced to: <strong>' + symbol + '</strong>';
+        indicator.style.display = 'block';
+        setTimeout(function() { indicator.style.display = 'none'; }, 2000);
+    },
+
+    init: function() {
+        var saved = localStorage.getItem('selectedSymbol');
+        if (saved) this.current = saved;
+        this.attachListeners();
+        this.syncAllDropdowns(this.current);
+        console.log('✅ SymbolManager initialized: ' + this.current);
+    },
+
+    attachListeners: function() {
+        var self = this;
+        this.dropdownSelectors.forEach(function(selector) {
+            document.querySelectorAll(selector).forEach(function(dropdown) {
+                dropdown.addEventListener('change', function(e) {
+                    self.set(e.target.value, selector);
+                });
+            });
+        });
+    }
+};
+
+// =============================================================================
+// GLOBAL PRICE MANAGER - ALL PRICES FROM SINGLE SOURCE
+// =============================================================================
+
+var PriceManager = {
+    prices: {},
+
+    set: function(symbol, price, change, changePct) {
+        this.prices[symbol] = {
+            price: parseFloat(price) || 0,
+            change: parseFloat(change) || 0,
+            changePct: parseFloat(changePct) || 0,
+            timestamp: new Date()
+        };
+    },
+
+    get: function(symbol) {
+        return this.prices[symbol] ? this.prices[symbol].price : null;
+    },
+
+    getFormatted: function(symbol) {
+        var p = this.get(symbol);
+        return p ? '$' + p.toFixed(2) : '--';
+    },
+
+    getData: function(symbol) {
+        return this.prices[symbol] || { price: 0, change: 0, changePct: 0 };
+    }
+};
+
 // =====================================================
 // TRADE ACTION TAB - LOADS ALL 50 SYMBOLS FROM SQ9 SCANNER
 // =====================================================
@@ -38842,22 +38973,29 @@ async function loadDualTradeAnalysis(symbol) {
     }
 
     try {
-        // 1. GET LIVE PRICE FROM BANNER
-        var livePrice = 0;
-        var bannerEl = document.getElementById('currentPrice');
-        if (bannerEl) {
-            var txt = bannerEl.textContent || '';
-            livePrice = parseFloat(txt.replace(/[$,\s]/g, '')) || 0;
+        // 1. GET PRICE FROM PRICE MANAGER (Single source of truth)
+        var livePrice = PriceManager.get(symbol);
+
+        // 2. If not in PriceManager, try banner
+        if (!livePrice || livePrice <= 0) {
+            var bannerEl = document.getElementById('currentPrice');
+            if (bannerEl) {
+                var txt = bannerEl.textContent || '';
+                livePrice = parseFloat(txt.replace(/[$,\s]/g, '')) || 0;
+                if (livePrice > 0) {
+                    PriceManager.set(symbol, livePrice, 0, 0);
+                }
+            }
         }
 
-        // 2. LOAD SCANNER DATA
+        // 3. LOAD SCANNER DATA
         var scannerResponse = await fetch('data/sq9_scanner.json?t=' + Date.now());
         var scannerJson = await scannerResponse.json();
         var scannerResults = scannerJson.results || scannerJson;
         var scanner = Array.isArray(scannerResults) ? scannerResults.find(function(d) { return d.symbol === symbol; }) : {};
         scanner = scanner || {};
 
-        // 3. TRY TO LOAD MTF DATA
+        // 4. TRY TO LOAD MTF DATA
         var mtfData = {};
         try {
             if (typeof symbolGannData !== 'undefined' && symbolGannData[symbol]) {
@@ -38865,8 +39003,13 @@ async function loadDualTradeAnalysis(symbol) {
             }
         } catch(e) {}
 
-        // Use live price or fall back to scanner
+        // Use PriceManager price, fall back to scanner
         var price = livePrice > 0 ? livePrice : (scanner.price || 100);
+
+        // Store in PriceManager if from scanner
+        if (!livePrice && scanner.price) {
+            PriceManager.set(symbol, scanner.price, scanner.change || 0, scanner.change_pct || 0);
+        }
 
         // Extract data
         var sq9Level = scanner.sq9_level || price * 0.98;
@@ -39100,15 +39243,88 @@ async function loadDualTradeAnalysis(symbol) {
     }
 }
 
-// Auto-load SPY when Action Center tab opens
+// =============================================================================
+// INITIALIZE GLOBAL SYMBOL MANAGER AND REGISTER CALLBACKS
+// =============================================================================
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Initialize SymbolManager
+    SymbolManager.init();
+
+    // Register callback: Update banner price (source of truth)
+    SymbolManager.onSymbolChange(function(symbol) {
+        // Update banner display
+        var symbolDisplay = document.getElementById('currentSymbolDisplay');
+        if (symbolDisplay) symbolDisplay.textContent = symbol;
+
+        // Store price in PriceManager when banner updates
+        var bannerPriceEl = document.getElementById('currentPrice');
+        if (bannerPriceEl) {
+            var priceText = bannerPriceEl.textContent || '';
+            var price = parseFloat(priceText.replace(/[$,\s]/g, '')) || 0;
+            if (price > 0) {
+                PriceManager.set(symbol, price, 0, 0);
+            }
+        }
+
+        // Trigger existing selectSymbol function if available
+        if (typeof selectSymbol === 'function') {
+            selectSymbol(symbol);
+        }
+    });
+
+    // Register callback: Update Dual Trade Analysis
+    SymbolManager.onSymbolChange(function(symbol) {
+        if (typeof loadDualTradeAnalysis === 'function') {
+            loadDualTradeAnalysis(symbol);
+        }
+    });
+
+    // Register callback: Highlight in opportunities table
+    SymbolManager.onSymbolChange(function(symbol) {
+        document.querySelectorAll('#opportunitiesTable tbody tr').forEach(function(row) {
+            var rowSymbol = row.querySelector('td:first-child');
+            if (rowSymbol) {
+                var sym = rowSymbol.textContent.trim();
+                row.style.background = (sym === symbol) ? 'rgba(59,130,246,0.15)' : '';
+                row.style.borderLeft = (sym === symbol) ? '4px solid #3b82f6' : '';
+            }
+        });
+    });
+
+    // Register callback: Update Gann Analysis
+    SymbolManager.onSymbolChange(function(symbol) {
+        if (typeof updateGannAnalysis === 'function') {
+            updateGannAnalysis();
+        }
+        if (typeof updateGannAnalysisForSymbol === 'function') {
+            updateGannAnalysisForSymbol(symbol);
+        }
+    });
+
+    // Register callback: Update MTF Bias
+    SymbolManager.onSymbolChange(function(symbol) {
+        if (typeof updateMTFBiasHistory === 'function') {
+            updateMTFBiasHistory(symbol);
+        }
+    });
+
+    // Auto-load after short delay
+    setTimeout(function() {
+        var initialSymbol = SymbolManager.get();
+        SymbolManager.triggerUpdates(initialSymbol);
+    }, 1000);
+
+    // Tab click handler for Action Center
     var actionCenterTab = document.querySelector('[data-tab="action-center"]');
     if (actionCenterTab) {
         actionCenterTab.addEventListener('click', function() {
-            setTimeout(function() { loadDualTradeAnalysis('SPY'); }, 100);
+            setTimeout(function() {
+                loadDualTradeAnalysis(SymbolManager.get());
+            }, 100);
         });
     }
-    setTimeout(function() { loadDualTradeAnalysis('SPY'); }, 1000);
 });
 
 </script>
