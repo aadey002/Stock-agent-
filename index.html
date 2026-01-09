@@ -347,6 +347,18 @@
         .legend-item-mtf { display: flex; align-items: center; gap: 4px; color: var(--muted); }
         .legend-color-mtf { width: 12px; height: 3px; border-radius: 2px; }
 
+        /* Chart Level Overlay Labels */
+        .chart-level-label { position: absolute; right: 5px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; z-index: 100; min-width: 60px; text-align: right; pointer-events: none; }
+        .chart-level-label .level-name { font-size: 9px; opacity: 0.9; }
+        .chart-level-label .level-price { font-size: 11px; font-weight: 700; }
+        .chart-level-label.fib-resistance { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .chart-level-label.fib-support { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+        .chart-level-label.sq9-support { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .chart-level-label.sq9-resistance { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+        .chart-level-line { position: absolute; left: 0; right: 70px; height: 1px; z-index: 50; pointer-events: none; }
+        .chart-level-line.resistance { border-top: 1px dashed rgba(239, 68, 68, 0.6); }
+        .chart-level-line.support { border-top: 1px dashed rgba(34, 197, 94, 0.6); }
+        .chart-level-line.sq9 { border-top: 1px dashed rgba(59, 130, 246, 0.6); }
 
         /* Daily Analysis Styles */
         .daily-report { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
@@ -23897,6 +23909,11 @@ async function updateChart(panelType) {
             if (sq9El) sq9El.innerHTML = '';
         }
 
+        // Add visual level overlays to chart
+        if (chartType !== 'pf') {
+            addOverlaysToMTFChart(panelType, data);
+        }
+
         if (loading) loading.style.display = 'none';
         
     } catch (error) {
@@ -24028,6 +24045,133 @@ function displayMTFSQ9(panelType, data) {
 
         sq9El.innerHTML = html;
     }
+}
+
+// =============================================================================
+// CHART LEVEL OVERLAYS - Fibonacci and SQ9 visual overlays on charts
+// =============================================================================
+
+// Calculate Fibonacci retracement levels from high and low
+function calculateChartFibLevels(high, low) {
+    var diff = high - low;
+    return [
+        { level: '100%', price: high, cssClass: 'fib-resistance', lineType: 'resistance' },
+        { level: '78.6%', price: low + (diff * 0.786), cssClass: 'fib-support', lineType: 'support' },
+        { level: '61.8%', price: low + (diff * 0.618), cssClass: 'fib-support', lineType: 'support' },
+        { level: '50%', price: low + (diff * 0.500), cssClass: 'fib-support', lineType: 'support' },
+        { level: '38.2%', price: low + (diff * 0.382), cssClass: 'fib-support', lineType: 'support' },
+        { level: '23.6%', price: low + (diff * 0.236), cssClass: 'fib-support', lineType: 'support' },
+        { level: '0%', price: low, cssClass: 'fib-support', lineType: 'support' }
+    ];
+}
+
+// Get SQ9 levels for chart overlay
+function getChartSQ9Levels(currentPrice) {
+    var sqrtPrice = Math.sqrt(currentPrice);
+    var levels = [];
+
+    // Calculate 2 support and 2 resistance levels
+    for (var i = 1; i <= 2; i++) {
+        var increment = (i * 45) / 180.0;
+
+        // Resistance
+        var resPrice = Math.pow(sqrtPrice + increment, 2);
+        levels.push({
+            level: 'SQ9 R' + i,
+            price: resPrice,
+            cssClass: 'sq9-resistance',
+            lineType: 'sq9'
+        });
+
+        // Support
+        if (sqrtPrice > increment) {
+            var supPrice = Math.pow(sqrtPrice - increment, 2);
+            levels.push({
+                level: 'SQ9 S' + i,
+                price: supPrice,
+                cssClass: 'sq9-support',
+                lineType: 'sq9'
+            });
+        }
+    }
+
+    return levels;
+}
+
+// Render level overlays on chart container
+function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib, showSQ9) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Remove existing overlays
+    container.querySelectorAll('.chart-level-label, .chart-level-line').forEach(function(el) {
+        el.remove();
+    });
+
+    // Ensure container has relative positioning
+    container.style.position = 'relative';
+
+    var allLevels = [];
+
+    // Add Fibonacci levels
+    if (showFib !== false) {
+        var fibLevels = calculateChartFibLevels(high, low);
+        allLevels = allLevels.concat(fibLevels);
+    }
+
+    // Add SQ9 levels
+    if (showSQ9 !== false) {
+        var sq9Levels = getChartSQ9Levels(currentPrice);
+        allLevels = allLevels.concat(sq9Levels);
+    }
+
+    // Calculate chart range with padding
+    var priceRange = high - low;
+    var padding = priceRange * 0.1;
+    var chartHigh = high + padding;
+    var chartLow = low - padding;
+    var chartRange = chartHigh - chartLow;
+
+    // Render each level
+    allLevels.forEach(function(levelData) {
+        if (!levelData.price || levelData.price <= 0) return;
+
+        // Calculate Y position (percentage from top)
+        var yPercent = ((chartHigh - levelData.price) / chartRange) * 100;
+
+        // Skip if outside visible range
+        if (yPercent < 5 || yPercent > 95) return;
+
+        // Create dashed line
+        var line = document.createElement('div');
+        line.className = 'chart-level-line ' + levelData.lineType;
+        line.style.top = yPercent + '%';
+        container.appendChild(line);
+
+        // Create label
+        var label = document.createElement('div');
+        label.className = 'chart-level-label ' + levelData.cssClass;
+        label.style.top = 'calc(' + yPercent + '% - 12px)';
+        label.innerHTML = '<div class="level-name">' + levelData.level + '</div>' +
+                          '<div class="level-price">$' + levelData.price.toFixed(2) + '</div>';
+        container.appendChild(label);
+    });
+}
+
+// Add overlays to MTF chart panels
+function addOverlaysToMTFChart(panelType, data) {
+    if (!data || data.length === 0) return;
+
+    var containerId = panelType + 'ChartContainer';
+    var high = Math.max.apply(null, data.map(function(d) { return d.high; }));
+    var low = Math.min.apply(null, data.map(function(d) { return d.low; }));
+    var currentPrice = data[data.length - 1].close;
+
+    // Check settings
+    var showFib = document.getElementById(panelType + 'ShowFib')?.checked !== false;
+    var showSQ9 = document.getElementById(panelType + 'ShowSQ9')?.checked !== false;
+
+    renderChartLevelOverlays(containerId, high, low, currentPrice, showFib, showSQ9);
 }
 
 function renderLWChart(panelType, data, chartType, container, settings) {
