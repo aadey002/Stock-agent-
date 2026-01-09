@@ -24156,6 +24156,7 @@ function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib,
         label.style.top = 'calc(' + yPercent + '% - 8px)';
         label.textContent = levelData.level + ' $' + levelData.price.toFixed(2);
         container.appendChild(label);
+        console.log('📍 Added:', levelData.level, '$' + levelData.price.toFixed(2), 'y=' + yPercent.toFixed(1) + '%', levelData.cssClass);
     });
 }
 
