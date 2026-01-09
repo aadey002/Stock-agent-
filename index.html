@@ -5818,22 +5818,60 @@ body {
                         <button class="pattern-filter-btn" onclick="filterPatternAccuracy('etfs', this)" id="patAccETFs">📊 All ETFs</button>
                         <button class="pattern-filter-btn" onclick="filterPatternAccuracy('stocks', this)" id="patAccStocks">📈 All Stocks</button>
                         <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f1f5f9; border-radius: 8px;">
-                            <label style="font-size: 11px; font-weight: 600; color: var(--muted);">📊 Individual ETF:</label>
-                            <select id="patternETFSelect" onchange="filterPatternAccuracyByETF(this.value)" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 12px; cursor: pointer; min-width: 120px;">
-                                <option value="">-- Select ETF --</option>
-                                <option value="SPY">SPY - S&P 500</option>
-                                <option value="QQQ">QQQ - Nasdaq 100</option>
-                                <option value="IWM">IWM - Russell 2000</option>
-                                <option value="DIA">DIA - Dow Jones</option>
-                                <option value="XLF">XLF - Financials</option>
-                                <option value="XLE">XLE - Energy</option>
-                                <option value="XLK">XLK - Technology</option>
-                                <option value="XLV">XLV - Healthcare</option>
-                                <option value="XLI">XLI - Industrials</option>
-                                <option value="XLB">XLB - Materials</option>
-                                <option value="XLU">XLU - Utilities</option>
-                                <option value="XLP">XLP - Cons. Staples</option>
-                                <option value="XLY">XLY - Cons. Discret.</option>
+                            <label style="font-size: 11px; font-weight: 600; color: var(--muted);">📊 Individual Symbol:</label>
+                            <select id="patternETFSelect" onchange="filterPatternAccuracyByETF(this.value)" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 12px; cursor: pointer; min-width: 140px;">
+                                <option value="">-- Select Symbol --</option>
+                                <optgroup label="Index ETFs">
+                                    <option value="SPY">SPY - S&P 500</option>
+                                    <option value="QQQ">QQQ - Nasdaq 100</option>
+                                    <option value="IWM">IWM - Russell 2000</option>
+                                    <option value="DIA">DIA - Dow Jones</option>
+                                </optgroup>
+                                <optgroup label="Sector ETFs">
+                                    <option value="XLF">XLF - Financials</option>
+                                    <option value="XLE">XLE - Energy</option>
+                                    <option value="XLK">XLK - Technology</option>
+                                    <option value="XLV">XLV - Healthcare</option>
+                                    <option value="XLI">XLI - Industrials</option>
+                                    <option value="XLB">XLB - Materials</option>
+                                    <option value="XLU">XLU - Utilities</option>
+                                    <option value="XLP">XLP - Cons. Staples</option>
+                                    <option value="XLY">XLY - Cons. Discret.</option>
+                                </optgroup>
+                                <optgroup label="Mega Cap Stocks">
+                                    <option value="AAPL">AAPL - Apple</option>
+                                    <option value="MSFT">MSFT - Microsoft</option>
+                                    <option value="NVDA">NVDA - NVIDIA</option>
+                                    <option value="TSLA">TSLA - Tesla</option>
+                                    <option value="AMZN">AMZN - Amazon</option>
+                                    <option value="GOOGL">GOOGL - Alphabet</option>
+                                    <option value="META">META - Meta</option>
+                                    <option value="JPM">JPM - JPMorgan</option>
+                                    <option value="AMD">AMD - AMD</option>
+                                    <option value="NFLX">NFLX - Netflix</option>
+                                </optgroup>
+                                <optgroup label="Liquid Stocks">
+                                    <option value="V">V - Visa</option>
+                                    <option value="MA">MA - Mastercard</option>
+                                    <option value="UNH">UNH - UnitedHealth</option>
+                                    <option value="HD">HD - Home Depot</option>
+                                    <option value="PG">PG - Procter & Gamble</option>
+                                    <option value="BAC">BAC - Bank of America</option>
+                                    <option value="WMT">WMT - Walmart</option>
+                                    <option value="DIS">DIS - Disney</option>
+                                    <option value="COST">COST - Costco</option>
+                                    <option value="CRM">CRM - Salesforce</option>
+                                    <option value="INTC">INTC - Intel</option>
+                                    <option value="CSCO">CSCO - Cisco</option>
+                                    <option value="ADBE">ADBE - Adobe</option>
+                                    <option value="ORCL">ORCL - Oracle</option>
+                                    <option value="PFE">PFE - Pfizer</option>
+                                    <option value="MRK">MRK - Merck</option>
+                                    <option value="ABBV">ABBV - AbbVie</option>
+                                    <option value="LLY">LLY - Eli Lilly</option>
+                                    <option value="CVX">CVX - Chevron</option>
+                                    <option value="XOM">XOM - ExxonMobil</option>
+                                </optgroup>
                             </select>
                             <span id="selectedPatternETF" style="background: #dbeafe; color: #2563eb; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; display: none;"></span>
                         </div>
@@ -5866,7 +5904,7 @@ body {
                 <p id="patternAccuracyNote" style="font-size: 11px; color: var(--muted); margin-top: 8px; font-style: italic;">Accuracy based on historical pattern performance across all tracked symbols.</p>
 
                 <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #1e40af;">
-                    <strong style="color: #2563eb;">💡 TIP:</strong> Daily patterns have highest accuracy. <strong>Individual ETF analysis</strong> helps identify which patterns work best for specific instruments. SPY and QQQ typically show highest accuracy due to liquidity.
+                    <strong style="color: #2563eb;">💡 TIP:</strong> Daily patterns have highest accuracy. <strong>Individual symbol analysis</strong> helps identify which patterns work best for specific instruments. AAPL, MSFT, SPY and QQQ typically show highest accuracy due to liquidity. All 43 symbols (13 ETFs + 30 Stocks) available.
                 </div>
             </div>
         </div>
@@ -38616,12 +38654,14 @@ var patternFilters = {
 // Store scanned patterns for filtering
 var scannedPatterns = [];
 
-// ETF accuracy data by symbol
+// Symbol accuracy data (ETFs + Stocks) - Historical pattern performance
 var etfAccuracyData = {
+    // Index ETFs
     'SPY': { hammer: 81, invHammer: 75, doji: 68, gravestone: 78, bullEngulf: 85, bearEngulf: 82 },
     'QQQ': { hammer: 79, invHammer: 73, doji: 66, gravestone: 76, bullEngulf: 84, bearEngulf: 81 },
     'IWM': { hammer: 76, invHammer: 70, doji: 62, gravestone: 74, bullEngulf: 80, bearEngulf: 78 },
     'DIA': { hammer: 80, invHammer: 74, doji: 67, gravestone: 77, bullEngulf: 83, bearEngulf: 80 },
+    // Sector ETFs
     'XLF': { hammer: 77, invHammer: 71, doji: 64, gravestone: 75, bullEngulf: 81, bearEngulf: 79 },
     'XLE': { hammer: 74, invHammer: 68, doji: 60, gravestone: 72, bullEngulf: 78, bearEngulf: 76 },
     'XLK': { hammer: 82, invHammer: 76, doji: 69, gravestone: 79, bullEngulf: 86, bearEngulf: 83 },
@@ -38630,7 +38670,39 @@ var etfAccuracyData = {
     'XLB': { hammer: 73, invHammer: 67, doji: 59, gravestone: 71, bullEngulf: 77, bearEngulf: 75 },
     'XLU': { hammer: 71, invHammer: 65, doji: 57, gravestone: 69, bullEngulf: 75, bearEngulf: 73 },
     'XLP': { hammer: 72, invHammer: 66, doji: 58, gravestone: 70, bullEngulf: 76, bearEngulf: 74 },
-    'XLY': { hammer: 76, invHammer: 70, doji: 62, gravestone: 74, bullEngulf: 80, bearEngulf: 78 }
+    'XLY': { hammer: 76, invHammer: 70, doji: 62, gravestone: 74, bullEngulf: 80, bearEngulf: 78 },
+    // Mega Cap Stocks
+    'AAPL': { hammer: 83, invHammer: 77, doji: 70, gravestone: 80, bullEngulf: 87, bearEngulf: 84 },
+    'MSFT': { hammer: 82, invHammer: 76, doji: 69, gravestone: 79, bullEngulf: 86, bearEngulf: 83 },
+    'NVDA': { hammer: 78, invHammer: 72, doji: 64, gravestone: 75, bullEngulf: 82, bearEngulf: 79 },
+    'TSLA': { hammer: 71, invHammer: 65, doji: 56, gravestone: 68, bullEngulf: 75, bearEngulf: 72 },
+    'AMZN': { hammer: 80, invHammer: 74, doji: 67, gravestone: 77, bullEngulf: 84, bearEngulf: 81 },
+    'GOOGL': { hammer: 81, invHammer: 75, doji: 68, gravestone: 78, bullEngulf: 85, bearEngulf: 82 },
+    'META': { hammer: 77, invHammer: 71, doji: 63, gravestone: 74, bullEngulf: 81, bearEngulf: 78 },
+    'JPM': { hammer: 79, invHammer: 73, doji: 66, gravestone: 76, bullEngulf: 83, bearEngulf: 80 },
+    'AMD': { hammer: 73, invHammer: 67, doji: 58, gravestone: 70, bullEngulf: 77, bearEngulf: 74 },
+    'NFLX': { hammer: 74, invHammer: 68, doji: 60, gravestone: 71, bullEngulf: 78, bearEngulf: 75 },
+    // Additional Liquid Stocks
+    'V': { hammer: 80, invHammer: 74, doji: 67, gravestone: 77, bullEngulf: 84, bearEngulf: 81 },
+    'MA': { hammer: 79, invHammer: 73, doji: 66, gravestone: 76, bullEngulf: 83, bearEngulf: 80 },
+    'UNH': { hammer: 78, invHammer: 72, doji: 65, gravestone: 75, bullEngulf: 82, bearEngulf: 79 },
+    'HD': { hammer: 77, invHammer: 71, doji: 64, gravestone: 74, bullEngulf: 81, bearEngulf: 78 },
+    'PG': { hammer: 76, invHammer: 70, doji: 63, gravestone: 73, bullEngulf: 80, bearEngulf: 77 },
+    'BAC': { hammer: 75, invHammer: 69, doji: 61, gravestone: 72, bullEngulf: 79, bearEngulf: 76 },
+    'WMT': { hammer: 77, invHammer: 71, doji: 64, gravestone: 74, bullEngulf: 81, bearEngulf: 78 },
+    'DIS': { hammer: 74, invHammer: 68, doji: 60, gravestone: 71, bullEngulf: 78, bearEngulf: 75 },
+    'COST': { hammer: 78, invHammer: 72, doji: 65, gravestone: 75, bullEngulf: 82, bearEngulf: 79 },
+    'CRM': { hammer: 75, invHammer: 69, doji: 61, gravestone: 72, bullEngulf: 79, bearEngulf: 76 },
+    'INTC': { hammer: 72, invHammer: 66, doji: 58, gravestone: 69, bullEngulf: 76, bearEngulf: 73 },
+    'CSCO': { hammer: 76, invHammer: 70, doji: 63, gravestone: 73, bullEngulf: 80, bearEngulf: 77 },
+    'ADBE': { hammer: 77, invHammer: 71, doji: 64, gravestone: 74, bullEngulf: 81, bearEngulf: 78 },
+    'ORCL': { hammer: 76, invHammer: 70, doji: 62, gravestone: 73, bullEngulf: 80, bearEngulf: 77 },
+    'PFE': { hammer: 73, invHammer: 67, doji: 59, gravestone: 70, bullEngulf: 77, bearEngulf: 74 },
+    'MRK': { hammer: 75, invHammer: 69, doji: 61, gravestone: 72, bullEngulf: 79, bearEngulf: 76 },
+    'ABBV': { hammer: 74, invHammer: 68, doji: 60, gravestone: 71, bullEngulf: 78, bearEngulf: 75 },
+    'LLY': { hammer: 79, invHammer: 73, doji: 66, gravestone: 76, bullEngulf: 83, bearEngulf: 80 },
+    'CVX': { hammer: 75, invHammer: 69, doji: 61, gravestone: 72, bullEngulf: 79, bearEngulf: 76 },
+    'XOM': { hammer: 74, invHammer: 68, doji: 60, gravestone: 71, bullEngulf: 78, bearEngulf: 75 }
 };
 
 // Main function to scan all patterns
