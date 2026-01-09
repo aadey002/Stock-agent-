@@ -39400,6 +39400,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof debouncedMTFScan === 'function') debouncedMTFScan();
     });
 
+    // Register callback: Auto-show SQ9 Setup Detail for selected symbol
+    SymbolManager.onSymbolChange(function(symbol) {
+        // Wait for scanner data to load, then show detail
+        setTimeout(function() {
+            if (typeof showSq9Detail === 'function' && typeof sq9ScanResults !== 'undefined' && sq9ScanResults.length > 0) {
+                console.log('🎯 Auto-loading SQ9 Setup Detail for:', symbol);
+                showSq9Detail(symbol);
+            }
+        }, 600);
+    });
+
     // Auto-load after short delay
     setTimeout(function() {
         var initialSymbol = SymbolManager.get();
