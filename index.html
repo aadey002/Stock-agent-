@@ -12520,6 +12520,11 @@ let allSymbolsData = {};
 let priceChart;
 let conversationHistory = [];
 
+// Refresh debounce state
+let isRefreshing = false;
+let lastRefreshTime = 0;
+const REFRESH_COOLDOWN = 2000; // 2 seconds minimum between refreshes
+
 // VIX data - updated from CSV
 var currentVIX = 14.9;
 
@@ -14593,6 +14598,18 @@ function refreshPredictionsTab() {
 
 // Master refresh function with comprehensive error handling
 async function refreshAllData() {
+    const now = Date.now();
+
+    // Debounce: prevent rapid clicks causing race conditions
+    if (isRefreshing || (now - lastRefreshTime) < REFRESH_COOLDOWN) {
+        console.log('⏳ Refresh cooldown - please wait');
+        showRefreshToast('Please wait...', 'warning');
+        return;
+    }
+
+    isRefreshing = true;
+    lastRefreshTime = now;
+
     const refreshBtn = document.getElementById('refreshBtn');
     const refreshIcon = document.getElementById('refreshIcon');
 
@@ -14702,6 +14719,9 @@ async function refreshAllData() {
         console.error('Refresh error:', error);
         showNotification('❌ Error: ' + error.message, 'error');
     } finally {
+        // Reset debounce flag
+        isRefreshing = false;
+
         // Reset button
         if (refreshBtn) {
             refreshBtn.disabled = false;
@@ -14711,6 +14731,23 @@ async function refreshAllData() {
             refreshIcon.innerHTML = '🔄';
         }
     }
+}
+
+// Simple toast for refresh cooldown messages
+function showRefreshToast(message, type) {
+    let toast = document.getElementById('refreshToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'refreshToast';
+        toast.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:10px 20px;border-radius:8px;color:white;font-weight:600;z-index:10000;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+    }
+    toast.style.background = type === 'success' ? '#22c55e' : type === 'warning' ? '#f59e0b' : '#ef4444';
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    toast.style.display = 'block';
+    setTimeout(function() { toast.style.opacity = '0'; }, 1500);
+    setTimeout(function() { toast.style.display = 'none'; }, 1800);
 }
 
 // Generic notification function (consolidates showRefreshNotification)
