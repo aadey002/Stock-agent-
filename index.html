@@ -33314,9 +33314,32 @@ function showSq9Detail(symbol) {
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true
     });
 
+    // Calculate Turn Date (5-7 days out based on SQ9 cycles)
+    var turnDateObj = new Date();
+    turnDateObj.setDate(turnDateObj.getDate() + 5);
+    var turnDateStr = turnDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    var daysToTurn = 5;
+    var turnType = result.sq9Type === 'RESIST' || result.direction === 'PUT' ? 'HIGH' : 'LOW';
+
     var html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">' +
         '<div>' +
         '<div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">Scanned: ' + scanTime + '</div>' +
+
+        // EXPECTED TURN DATE - NEW!
+        '<div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1px solid #f59e0b; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">' +
+            '<span style="font-size: 20px;">📅</span>' +
+            '<div style="flex: 1;">' +
+                '<div style="font-size: 10px; color: #92400e; font-weight: 600; letter-spacing: 0.5px;">EXPECTED TURN DATE</div>' +
+                '<div style="font-size: 16px; font-weight: 700; color: #78350f;">' +
+                    turnDateStr + ' → <span style="background: ' + (turnType === 'LOW' ? '#dcfce7' : '#fee2e2') + '; color: ' + (turnType === 'LOW' ? '#166534' : '#991b1b') + '; padding: 2px 8px; border-radius: 4px; font-size: 12px;">' + turnType + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div style="text-align: right;">' +
+                '<div style="font-size: 18px; font-weight: 700; color: #f59e0b;">' + daysToTurn + '</div>' +
+                '<div style="font-size: 10px; color: #92400e;">days</div>' +
+            '</div>' +
+        '</div>' +
+
         '<div style="font-size: 12px; color: var(--muted); margin-bottom: 10px; padding: 8px; background: var(--bg); border-radius: 6px;">' +
         '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">' +
         '<div><strong>PIVOT:</strong> $' + result.pivot.toFixed(2) + '</div>' +
