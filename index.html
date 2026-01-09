@@ -38950,6 +38950,26 @@ function renderQualifiedCard(setup) {
 }
 
 // =============================================================================
+// GET BANNER PRICE - Direct read from banner element
+// =============================================================================
+function getBannerPrice() {
+    var selectors = ['#currentPrice', '.header-price', '#bannerPrice', '[data-price]'];
+    for (var i = 0; i < selectors.length; i++) {
+        var el = document.querySelector(selectors[i]);
+        if (el) {
+            var text = el.textContent || el.innerText || '';
+            var price = parseFloat(text.replace(/[$,\s]/g, ''));
+            if (!isNaN(price) && price > 0) {
+                console.log('💰 getBannerPrice() found:', price, 'from', selectors[i]);
+                return price;
+            }
+        }
+    }
+    console.warn('⚠️ getBannerPrice() - no price found in banner');
+    return null;
+}
+
+// =============================================================================
 // DUAL TRADE SETUP - FULL MARKET ANALYSIS
 // Uses: Live Price + Multi-Agent Signals + SQ9 + MTF + Patterns + Turn Dates
 // =============================================================================
@@ -38960,91 +38980,36 @@ async function loadDualTradeAnalysis(symbol) {
 
     container.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 32px;">⏳</div><div style="margin-top: 12px;">Running full market analysis for ' + symbol + '...</div></div>';
 
-    // Sync main symbol to get live price
-    if (typeof currentSymbol !== 'undefined' && currentSymbol !== symbol) {
-        var mainSelector = document.getElementById('symbolSelect');
-        if (mainSelector) {
-            mainSelector.value = symbol;
-            if (typeof selectSymbol === 'function') {
-                selectSymbol(symbol);
-                await new Promise(function(r) { setTimeout(r, 600); });
-            }
+    // STEP 1: Sync main symbol FIRST - this updates the banner with correct price
+    var mainSelector = document.getElementById('symbolSelect');
+    if (mainSelector && mainSelector.value !== symbol) {
+        mainSelector.value = symbol;
+        if (typeof selectSymbol === 'function') {
+            selectSymbol(symbol);
+            // Wait for banner to update
+            await new Promise(function(r) { setTimeout(r, 800); });
         }
     }
 
     try {
-        // 1. LOAD SCANNER DATA FIRST (reliable source of symbol-specific price)
+        // STEP 2: GET PRICE FROM BANNER (after sync, banner has correct price)
+        var livePrice = getBannerPrice();
+        console.log('⚡ Banner price for ' + symbol + ':', livePrice);
+
+        // STEP 3: Load scanner data for other fields (target, stop, direction, etc)
         var scannerResponse = await fetch('data/sq9_scanner.json?t=' + Date.now());
         var scannerJson = await scannerResponse.json();
         var scannerResults = scannerJson.results || scannerJson;
         var scanner = Array.isArray(scannerResults) ? scannerResults.find(function(d) { return d.symbol === symbol; }) : {};
         scanner = scanner || {};
 
-        console.log('⚡ Scanner data for ' + symbol + ':', scanner);
-
-        // 2. GET PRICE - Priority: Scanner > Banner (only if same symbol) > PriceManager
-        var livePrice = 0;
-
-        // First: Get from scanner (most reliable for the specific symbol)
-        if (scanner.price && scanner.price > 0) {
-            livePrice = scanner.price;
-            console.log('✅ Got price from scanner:', symbol, livePrice);
-        }
-
-        // Second: Check banner ONLY if it matches the selected symbol
+        // STEP 4: Fallback to scanner price ONLY if banner failed
         if (!livePrice || livePrice <= 0) {
-            var bannerSymbolEl = document.getElementById('bannerSymbol') || document.querySelector('.banner-symbol');
-            var bannerSymbol = bannerSymbolEl ? bannerSymbolEl.textContent.trim() : '';
-
-            if (bannerSymbol === symbol) {
-                var bannerEl = document.getElementById('currentPrice');
-                if (bannerEl) {
-                    var txt = bannerEl.textContent || '';
-                    var bannerPrice = parseFloat(txt.replace(/[$,\s]/g, '')) || 0;
-                    if (bannerPrice > 0) {
-                        livePrice = bannerPrice;
-                        console.log('✅ Got price from banner (symbol matches):', symbol, livePrice);
-                    }
-                }
-            } else {
-                console.log('⚠️ Banner shows ' + bannerSymbol + ', not ' + symbol + ' - using scanner price');
-            }
+            livePrice = scanner.price || 100;
+            console.log('📊 Using scanner price as fallback:', livePrice);
         }
 
-        // Third: Check PriceManager
-        if (!livePrice || livePrice <= 0) {
-            livePrice = PriceManager.get(symbol);
-            if (livePrice > 0) {
-                console.log('✅ Got price from PriceManager:', symbol, livePrice);
-            }
-        }
-
-        // PRICE VALIDATION - catch wrong symbol price bug
-        var expectedRanges = {
-            'SPY': { min: 400, max: 800 },
-            'QQQ': { min: 300, max: 700 },
-            'IWM': { min: 150, max: 350 },
-            'DIA': { min: 300, max: 550 },
-            'AAPL': { min: 100, max: 350 },
-            'NVDA': { min: 80, max: 250 },
-            'TSLA': { min: 100, max: 600 },
-            'AMZN': { min: 100, max: 300 },
-            'META': { min: 300, max: 800 },
-            'GOOGL': { min: 100, max: 250 },
-            'MSFT': { min: 300, max: 550 }
-        };
-
-        var range = expectedRanges[symbol];
-        if (range && (livePrice < range.min || livePrice > range.max)) {
-            console.error('⚠️ PRICE MISMATCH! ' + symbol + ' showing $' + livePrice + ' - expected $' + range.min + '-$' + range.max);
-            // Force use scanner price
-            if (scanner.price && scanner.price > 0) {
-                livePrice = scanner.price;
-                console.log('🔧 Corrected to scanner price:', livePrice);
-            }
-        }
-
-        // Store correct price in PriceManager
+        // Store in PriceManager
         if (livePrice > 0) {
             PriceManager.set(symbol, livePrice, scanner.change || 0, scanner.change_pct || 0);
         }
