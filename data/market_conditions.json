@@ -1,43 +1,49 @@
 {
-  "timestamp": "2026-01-08T21:54:46.779856",
+  "timestamp": "2026-01-09T14:32:33.744167",
   "trade_allowed": true,
   "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 28.08,
-      "uvxy_price": 35.1,
+      "vix_estimate": 28.05,
+      "uvxy_price": 35.06,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "CPI Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": 1.12,
-      "momentum_20d": 0.96,
+      "momentum_5d": 0.93,
+      "momentum_20d": 0.28,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 1.24,
-      "cyclical_avg": 0.59,
-      "defensive_avg": -0.65,
-      "strongest": "Healthcare (+2.47%)",
-      "weakest": "Utilities (-2.31%)",
+      "rotation_strength": 1.36,
+      "cyclical_avg": 1.26,
+      "defensive_avg": -0.11,
+      "strongest": "Energy (+3.54%)",
+      "weakest": "Utilities (-2.26%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: HIGH VOLATILITY - Reduce position size"
+    "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
   ],
-  "overall_score": 45
+  "overall_score": 35
 }
