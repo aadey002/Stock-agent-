@@ -3742,6 +3742,267 @@ body {
     color: #ef4444;
 }
 
+/* ============================================
+   TRADE SEQUENCE DISPLAY STYLES
+   ============================================ */
+.trade-sequence-container {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.sequence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.symbol-info .symbol {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.symbol-info .price {
+    font-size: 18px;
+    color: #888;
+    margin-left: 12px;
+}
+
+.confluence-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    background: rgba(34,197,94,0.15);
+    color: #22c55e;
+}
+
+.confluence-badge.put-bias {
+    background: rgba(239,68,68,0.15);
+    color: #ef4444;
+}
+
+.trade-box {
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0;
+}
+
+.trade-box.pullback {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03));
+    border: 1px solid rgba(239,68,68,0.3);
+}
+
+.trade-box.bounce {
+    background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
+    border: 1px solid rgba(34,197,94,0.3);
+}
+
+.trade-box.rally {
+    background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
+    border: 1px solid rgba(34,197,94,0.3);
+}
+
+.trade-box.drop {
+    background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03));
+    border: 1px solid rgba(239,68,68,0.3);
+}
+
+.trade-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.trade-number {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.trade-phase {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pullback .trade-phase, .drop .trade-phase {
+    background: rgba(239,68,68,0.15);
+    color: #ef4444;
+}
+
+.bounce .trade-phase, .rally .trade-phase {
+    background: rgba(34,197,94,0.15);
+    color: #22c55e;
+}
+
+.trade-timing {
+    font-size: 12px;
+    color: #888;
+    margin-left: auto;
+}
+
+.trade-direction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.trade-direction.put {
+    background: rgba(239,68,68,0.15);
+}
+
+.trade-direction.call {
+    background: rgba(34,197,94,0.15);
+}
+
+.direction-icon {
+    font-size: 24px;
+}
+
+.direction-text {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.trade-direction.put .direction-text {
+    color: #ef4444;
+}
+
+.trade-direction.call .direction-text {
+    color: #22c55e;
+}
+
+.trade-levels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.trade-levels .level {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+}
+
+.trade-levels .label {
+    display: block;
+    font-size: 10px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.trade-levels .value {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.trade-levels .sublabel {
+    display: block;
+    font-size: 9px;
+    color: #888;
+}
+
+.level.entry .value { color: #3b82f6; }
+.level.target .value { color: #22c55e; }
+.level.stop .value { color: #ef4444; }
+.level.rr .value { color: #f59e0b; }
+
+.trade-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.exit-note {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+.entry-note {
+    color: #22c55e;
+    font-weight: 500;
+}
+
+/* Timeline between trades */
+.trade-timeline {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.timeline-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(239,68,68,0.5), rgba(34,197,94,0.5));
+}
+
+.timeline-turn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(245,158,11,0.15);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    margin: 0 12px;
+}
+
+.timeline-turn span:first-child {
+    font-weight: 700;
+    color: #f59e0b;
+}
+
+.timeline-turn span:last-child {
+    font-size: 10px;
+    color: #888;
+}
+
+/* Trade Sequence in Table */
+.trade-seq-cell {
+    font-size: 10px;
+    min-width: 180px;
+}
+
+.trade-seq-cell .seq-trade {
+    padding: 3px 6px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+}
+
+.trade-seq-cell .seq-trade.put {
+    background: rgba(239,68,68,0.1);
+    color: #ef4444;
+}
+
+.trade-seq-cell .seq-trade.call {
+    background: rgba(34,197,94,0.1);
+    color: #22c55e;
+}
+
+.trade-seq-cell .seq-divider {
+    color: #888;
+    font-size: 9px;
+    text-align: center;
+    padding: 2px 0;
+}
+
     </style>
 </head>
 <body>
@@ -3978,10 +4239,9 @@ body {
             <button class="tab-btn" data-tab="gann-rules" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">📜 Gann Rules</button>
             <button class="tab-btn" data-tab="options-calc-advanced" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">🧮 Options Pro</button>
             <button class="tab-btn" data-tab="gann-cycles" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🔮 Gann Cycles</button>
-            <a href="ActionCenter.html" class="tab-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; text-decoration: none;">🎯 Action Center</a>
+            <button class="tab-btn" data-tab="action-center" style="background: linear-gradient(135deg, #f97316, #ea580c); color: white;">⚡ Dual Trade Setup</button>
             <button class="tab-btn" data-tab="sq9-scanner" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🎯 SQ9 Scanner</button>
             <button class="tab-btn" data-tab="sq9-performance" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">📊 SQ9 Performance</button>
-            <button class="tab-btn" onclick="window.open('ActionCenter.html', '_blank')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">⚡ Action Center</button>
         </div>
 
         <!-- OVERVIEW TAB -->
@@ -6084,6 +6344,7 @@ body {
                     </div>
                 </div>
                 </div>
+
                 <div style="margin-bottom: 15px;">
                     <button onclick="filterOppTable('all')" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">All</button>
                     <button onclick="filterOppTable('aligned')" style="padding: 8px 16px; background: #e5e7eb; color: #333; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px;">✅ Aligned Only</button>
@@ -11598,6 +11859,66 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+        <!-- ACTION CENTER / DUAL TRADE SETUP TAB -->
+        <div id="action-center" class="tab-content">
+            <div style="padding: 20px;">
+
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 24px; color: #1e293b;">⚡ Dual Trade Setup</h2>
+                        <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">See BOTH trades: Pullback + Bounce for any symbol</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <select id="dualTradeSymbolSelect" onchange="loadDualTradeSetup(this.value)" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
+                            <optgroup label="ETFs">
+                                <option value="SPY" selected>SPY</option>
+                                <option value="QQQ">QQQ</option>
+                                <option value="IWM">IWM</option>
+                                <option value="DIA">DIA</option>
+                                <option value="XLF">XLF</option>
+                                <option value="XLE">XLE</option>
+                                <option value="XLK">XLK</option>
+                                <option value="XLV">XLV</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLB">XLB</option>
+                                <option value="XLU">XLU</option>
+                                <option value="XLP">XLP</option>
+                                <option value="XLY">XLY</option>
+                                <option value="GLD">GLD</option>
+                                <option value="TLT">TLT</option>
+                                <option value="ARKK">ARKK</option>
+                            </optgroup>
+                            <optgroup label="Stocks">
+                                <option value="AAPL">AAPL</option>
+                                <option value="MSFT">MSFT</option>
+                                <option value="NVDA">NVDA</option>
+                                <option value="TSLA">TSLA</option>
+                                <option value="AMZN">AMZN</option>
+                                <option value="GOOGL">GOOGL</option>
+                                <option value="META">META</option>
+                                <option value="AMD">AMD</option>
+                                <option value="NFLX">NFLX</option>
+                                <option value="JPM">JPM</option>
+                                <option value="ORCL">ORCL</option>
+                            </optgroup>
+                        </select>
+                        <button onclick="loadDualTradeSetup(document.getElementById('dualTradeSymbolSelect').value)" style="padding: 10px 20px; border-radius: 8px; border: none; background: #f97316; color: white; font-weight: 600; cursor: pointer;">🔄 Load</button>
+                    </div>
+                </div>
+
+                <!-- Dual Trade Container -->
+                <div id="dualTradeDisplayArea">
+                    <div style="text-align: center; padding: 60px; color: #64748b;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                        <div style="font-size: 18px; margin-bottom: 8px;">Select a symbol to see dual trade setup</div>
+                        <div style="font-size: 13px;">Shows PULLBACK trade + BOUNCE trade with entry/target/stop</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <!-- SQ9 TRADE LOG MODAL -->
         <div id="sq9TradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
             <div style="background: white; border-radius: 12px; padding: 25px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
@@ -13919,6 +14240,216 @@ function refreshOpportunitiesTab() {
 
     const el = document.getElementById('oppLastUpdated');
     if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+// ============================================
+// TRADE SEQUENCE FUNCTIONS
+// Generate both PULLBACK and BOUNCE trades
+// ============================================
+
+function calculateExpiry(turnDate, daysAfter) {
+    var date = new Date(turnDate);
+    date.setDate(date.getDate() + daysAfter);
+    var dte = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
+    return {
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        dte: Math.max(0, dte)
+    };
+}
+
+function generateTradeSequence(data) {
+    /*
+    Generate both PULLBACK and BOUNCE trades based on:
+    - Current price
+    - Turn date
+    - Turn type (HIGH or LOW)
+    - SQ9 levels
+    */
+
+    var symbol = data.symbol || 'SPY';
+    var currentPrice = parseFloat(data.price) || 0;
+    var turnDate = data.next_turn_date || data.turn_date || data.nextTurn;
+    var turnType = (data.turn_type || data.turnType || 'LOW').toUpperCase();
+    var sq9Level = parseFloat(data.sq9_level) || parseFloat(data.sq9Level) || currentPrice * 0.98;
+    var targetPrice = parseFloat(data.target) || parseFloat(data.fib_target);
+    var stopPrice = parseFloat(data.stop) || parseFloat(data.fib_stop);
+
+    // Calculate days to turn
+    var today = new Date();
+    var turn = turnDate ? new Date(turnDate) : new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    var daysToTurn = Math.max(0, Math.ceil((turn - today) / (1000 * 60 * 60 * 24)));
+
+    // Format date
+    var turnDateStr = turn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    var trade1, trade2;
+
+    if (turnType === 'LOW') {
+        // Expecting LOW = Pullback first (PUT), then Bounce (CALL)
+        var pullbackTarget = sq9Level || currentPrice * 0.985;
+        var bounceTarget = targetPrice || currentPrice * 1.03;
+
+        // TRADE 1: PUT (Ride the pullback to LOW)
+        trade1 = {
+            direction: 'PUT',
+            phase: 'PULLBACK',
+            timing: 'Now → ' + turnDateStr,
+            entry: currentPrice,
+            target: pullbackTarget,
+            stop: currentPrice * 1.01,
+            rr: Math.abs((currentPrice - pullbackTarget) / (currentPrice * 0.01)).toFixed(1),
+            expiry: calculateExpiry(turn, 1),
+            exitNote: 'Exit before ' + turnDateStr + ' LOW'
+        };
+
+        // TRADE 2: CALL (Ride the bounce from LOW)
+        trade2 = {
+            direction: 'CALL',
+            phase: 'BOUNCE',
+            timing: turnDateStr + ' →',
+            entryDate: turnDateStr,
+            entry: pullbackTarget,
+            target: bounceTarget,
+            stop: pullbackTarget * 0.99,
+            rr: Math.abs((bounceTarget - pullbackTarget) / (pullbackTarget * 0.01)).toFixed(1),
+            expiry: calculateExpiry(turn, 30),
+            entryNote: 'Use 5m/15m chart for minor LOW confirmation'
+        };
+
+    } else {
+        // Expecting HIGH = Rally first (CALL), then Drop (PUT)
+        var rallyTarget = sq9Level || currentPrice * 1.015;
+        var dropTarget = targetPrice || currentPrice * 0.97;
+
+        // TRADE 1: CALL (Ride the rally to HIGH)
+        trade1 = {
+            direction: 'CALL',
+            phase: 'RALLY',
+            timing: 'Now → ' + turnDateStr,
+            entry: currentPrice,
+            target: rallyTarget,
+            stop: currentPrice * 0.99,
+            rr: Math.abs((rallyTarget - currentPrice) / (currentPrice * 0.01)).toFixed(1),
+            expiry: calculateExpiry(turn, 1),
+            exitNote: 'Exit before ' + turnDateStr + ' HIGH'
+        };
+
+        // TRADE 2: PUT (Ride the drop from HIGH)
+        trade2 = {
+            direction: 'PUT',
+            phase: 'DROP',
+            timing: turnDateStr + ' →',
+            entryDate: turnDateStr,
+            entry: rallyTarget,
+            target: dropTarget,
+            stop: rallyTarget * 1.01,
+            rr: Math.abs((rallyTarget - dropTarget) / (rallyTarget * 0.01)).toFixed(1),
+            expiry: calculateExpiry(turn, 30),
+            entryNote: 'Use 5m/15m chart for minor HIGH confirmation'
+        };
+    }
+
+    return { trade1: trade1, trade2: trade2, turnDate: turnDateStr, turnType: turnType, daysToTurn: daysToTurn };
+}
+
+function renderTradeSequence(data) {
+    var container = document.getElementById('tradeSequenceContainer');
+    if (!container) return;
+
+    var seq = generateTradeSequence(data);
+
+    // Show container
+    container.style.display = 'block';
+
+    // Update header
+    document.getElementById('seqSymbol').textContent = data.symbol || 'SPY';
+    document.getElementById('seqPrice').textContent = '$' + (parseFloat(data.price) || 0).toFixed(2);
+
+    var confBadge = document.getElementById('seqConfluence');
+    confBadge.textContent = (data.confluence || '3/3') + ' ' + seq.trade2.direction;
+    confBadge.className = 'confluence-badge' + (seq.trade2.direction === 'PUT' ? ' put-bias' : '');
+
+    // Trade 1
+    var t1Container = document.getElementById('trade1Container');
+    t1Container.className = 'trade-box ' + (seq.trade1.direction === 'PUT' ? 'pullback' : 'rally');
+
+    document.getElementById('trade1Phase').textContent = seq.trade1.phase;
+    document.getElementById('trade1Timing').textContent = seq.trade1.timing;
+
+    var t1Dir = document.getElementById('trade1Direction');
+    var t1Icon = seq.trade1.direction === 'PUT' ? '📉' : '📈';
+    t1Dir.className = 'trade-direction ' + seq.trade1.direction.toLowerCase();
+    t1Dir.innerHTML = '<span class="direction-icon">' + t1Icon + '</span><span class="direction-text">BUY ' + seq.trade1.direction + ' NOW</span>';
+
+    document.getElementById('trade1Entry').textContent = '$' + seq.trade1.entry.toFixed(2);
+    document.getElementById('trade1Target').textContent = '$' + seq.trade1.target.toFixed(2);
+    document.getElementById('trade1Stop').textContent = '$' + seq.trade1.stop.toFixed(2);
+    document.getElementById('trade1RR').textContent = '1:' + seq.trade1.rr;
+    document.getElementById('trade1Expiry').textContent = 'Expiry: ' + seq.trade1.expiry.date + ' (' + seq.trade1.expiry.dte + ' DTE)';
+    document.getElementById('trade1ExitNote').textContent = seq.trade1.exitNote;
+
+    // Timeline
+    document.getElementById('turnDateBadge').textContent = seq.turnDate;
+    document.getElementById('turnTypeBadge').textContent = 'Expected ' + seq.turnType;
+
+    // Trade 2
+    var t2Container = document.getElementById('trade2Container');
+    t2Container.className = 'trade-box ' + (seq.trade2.direction === 'CALL' ? 'bounce' : 'drop');
+
+    document.getElementById('trade2Phase').textContent = seq.trade2.phase;
+    document.getElementById('trade2Timing').textContent = seq.trade2.timing;
+
+    var t2Dir = document.getElementById('trade2Direction');
+    var t2Icon = seq.trade2.direction === 'CALL' ? '📈' : '📉';
+    t2Dir.className = 'trade-direction ' + seq.trade2.direction.toLowerCase();
+    document.getElementById('trade2DirectionText').textContent = 'BUY ' + seq.trade2.direction + ' ON ' + seq.trade2.entryDate;
+    t2Dir.innerHTML = '<span class="direction-icon">' + t2Icon + '</span><span class="direction-text">BUY ' + seq.trade2.direction + ' ON ' + seq.trade2.entryDate + '</span>';
+
+    document.getElementById('trade2Entry').textContent = '$' + seq.trade2.entry.toFixed(2);
+    document.getElementById('trade2EntrySublabel').textContent = '(at ' + seq.turnType + ')';
+    document.getElementById('trade2Target').textContent = '$' + seq.trade2.target.toFixed(2);
+    document.getElementById('trade2Stop').textContent = '$' + seq.trade2.stop.toFixed(2);
+    document.getElementById('trade2RR').textContent = '1:' + seq.trade2.rr;
+    document.getElementById('trade2Expiry').textContent = 'Expiry: ' + seq.trade2.expiry.date + ' (' + seq.trade2.expiry.dte + ' DTE)';
+    document.getElementById('trade2EntryNote').textContent = seq.trade2.entryNote;
+}
+
+function getTradeSequenceCellHTML(data) {
+    var seq = generateTradeSequence(data);
+    var symbol = data.symbol || 'SPY';
+    var price = parseFloat(data.price) || 0;
+    var turnDate = data.turn_date || '';
+    var turnType = data.turn_type || 'LOW';
+    var sq9Level = parseFloat(data.sq9_level) || 0;
+    var target = parseFloat(data.target) || 0;
+    var confluence = data.confluence || '';
+
+    var t1Icon = seq.trade1.direction === 'PUT' ? '📉' : '📈';
+    var t2Icon = seq.trade2.direction === 'CALL' ? '📈' : '📉';
+
+    return '<div class="trade-seq-cell" onclick="showTradeSequenceForSymbol(\'' + symbol + '\', ' + price + ', \'' + turnDate + '\', \'' + turnType + '\', ' + sq9Level + ', ' + target + ', \'' + confluence + '\')" style="cursor: pointer;" title="Click to view full trade sequence">' +
+        '<div class="seq-trade ' + seq.trade1.direction.toLowerCase() + '" style="font-weight: 600;">' + t1Icon + ' ' + seq.trade1.direction + ' Now</div>' +
+        '<div class="seq-divider">── ' + seq.turnDate + ' ' + seq.turnType + ' ──</div>' +
+        '<div class="seq-trade ' + seq.trade2.direction.toLowerCase() + '" style="font-weight: 600;">' + t2Icon + ' ' + seq.trade2.direction + ' ' + seq.turnDate + '</div>' +
+        '</div>';
+}
+
+function showTradeSequenceForSymbol(symbol, price, turnDate, turnType, sq9Level, target, confluence) {
+    renderTradeSequence({
+        symbol: symbol,
+        price: price,
+        turn_date: turnDate,
+        turn_type: turnType,
+        sq9_level: sq9Level,
+        target: target,
+        confluence: confluence
+    });
+
+    // Scroll to the trade sequence container
+    const container = document.getElementById('tradeSequenceContainer');
+    if (container) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Refresh SQ9 Scanner Tab
@@ -38292,6 +38823,167 @@ function renderQualifiedCard(setup) {
         '<div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 9px; color: #888;">R:R ' + setup.riskReward + ' | SQ9 $' + setup.nearestLevel.toFixed(2) + '</div>' +
     '</div>';
 }
+
+// =============================================================================
+// DUAL TRADE SETUP - LOADS BOTH PULLBACK AND BOUNCE TRADES
+// =============================================================================
+
+async function loadDualTradeSetup(symbol) {
+    var container = document.getElementById('dualTradeDisplayArea');
+    if (!container) { console.error('Container not found'); return; }
+
+    container.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 24px;">⏳</div><div>Loading ' + symbol + '...</div></div>';
+
+    try {
+        var response = await fetch('data/sq9_scanner.json?t=' + Date.now());
+        var allData = await response.json();
+        var data = allData.find(function(d) { return d.symbol === symbol; });
+
+        if (!data) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ No data for ' + symbol + '</div>';
+            return;
+        }
+
+        var price = data.price || 0;
+        var turnDate = data.next_turn_date || data.turn_date || '2026-01-16';
+        var turnType = data.turn_type || 'LOW';
+        var sq9Level = data.sq9_level || price * 0.99;
+        var checkCount = data.check_count || 0;
+
+        var turnDateObj = new Date(turnDate);
+        var turnDateStr = turnDateObj.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+        var daysToTurn = Math.max(1, Math.ceil((turnDateObj - new Date()) / 86400000));
+
+        var t1Dir, t1Phase, t1Color, t2Dir, t2Phase, t2Color;
+        if (turnType === 'LOW' || turnType === 'low') {
+            t1Dir = 'PUT'; t1Phase = 'PULLBACK'; t1Color = '#ef4444';
+            t2Dir = 'CALL'; t2Phase = 'BOUNCE'; t2Color = '#22c55e';
+        } else {
+            t1Dir = 'CALL'; t1Phase = 'RALLY'; t1Color = '#22c55e';
+            t2Dir = 'PUT'; t2Phase = 'DROP'; t2Color = '#ef4444';
+        }
+
+        var t1Entry = price;
+        var t1Target = sq9Level;
+        var t1Stop = t1Dir === 'PUT' ? price * 1.015 : price * 0.985;
+        var t1RR = Math.abs((t1Target - t1Entry) / (t1Stop - t1Entry)).toFixed(1);
+
+        var t2Entry = sq9Level;
+        var t2Target = t2Dir === 'CALL' ? price * 1.03 : price * 0.97;
+        var t2Stop = t2Dir === 'CALL' ? sq9Level * 0.985 : sq9Level * 1.015;
+        var t2RR = Math.abs((t2Target - t2Entry) / (t2Stop - t2Entry)).toFixed(1);
+
+        container.innerHTML =
+            '<div style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white;">' +
+                '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div>' +
+                        '<div style="font-size: 36px; font-weight: 700;">' + symbol + '</div>' +
+                        '<div style="font-size: 24px; color: #94a3b8;">$' + price.toFixed(2) + '</div>' +
+                    '</div>' +
+                    '<div style="text-align: right;">' +
+                        '<div style="font-size: 13px; color: #94a3b8;">Score: ' + checkCount + '/5</div>' +
+                        '<div style="font-size: 13px; color: #f59e0b; margin-top: 4px;">Turn: ' + turnDateStr + ' (' + daysToTurn + 'd)</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<div style="display: grid; grid-template-columns: 1fr 100px 1fr; gap: 20px;">' +
+
+                '<div style="background: ' + t1Color + '10; border: 2px solid ' + t1Color + '40; border-radius: 16px; padding: 20px;">' +
+                    '<div style="font-size: 12px; color: #888; font-weight: 600;">TRADE 1</div>' +
+                    '<div style="font-size: 20px; font-weight: 700; color: ' + t1Color + '; margin: 8px 0;">' + t1Phase + '</div>' +
+                    '<div style="background: ' + t1Color + '20; padding: 16px; border-radius: 10px; margin: 16px 0;">' +
+                        '<div style="font-size: 24px; font-weight: 700; color: ' + t1Color + ';">' + (t1Dir === 'PUT' ? '📉' : '📈') + ' BUY ' + t1Dir + ' NOW</div>' +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">ENTRY</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #3b82f6;">$' + t1Entry.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">TARGET</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #22c55e;">$' + t1Target.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">STOP</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #ef4444;">$' + t1Stop.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">R:R</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #f59e0b;">1:' + t1RR + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="margin-top: 12px; padding: 10px; background: #fef3c7; border-radius: 8px; font-size: 11px; color: #92400e;">' +
+                        '⚠️ Exit before ' + turnDateStr + ' when ' + turnType + ' forms' +
+                    '</div>' +
+                '</div>' +
+
+                '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">' +
+                    '<div style="width: 3px; height: 60px; background: linear-gradient(to bottom, ' + t1Color + ', #f59e0b);"></div>' +
+                    '<div style="background: #f59e0b; color: white; padding: 12px 8px; border-radius: 10px; text-align: center; margin: 8px 0;">' +
+                        '<div style="font-size: 12px; font-weight: 700;">' + turnDateStr + '</div>' +
+                        '<div style="font-size: 9px;">' + turnType + '</div>' +
+                    '</div>' +
+                    '<div style="width: 3px; height: 60px; background: linear-gradient(to bottom, #f59e0b, ' + t2Color + ');"></div>' +
+                '</div>' +
+
+                '<div style="background: ' + t2Color + '10; border: 2px solid ' + t2Color + '40; border-radius: 16px; padding: 20px;">' +
+                    '<div style="font-size: 12px; color: #888; font-weight: 600;">TRADE 2</div>' +
+                    '<div style="font-size: 20px; font-weight: 700; color: ' + t2Color + '; margin: 8px 0;">' + t2Phase + '</div>' +
+                    '<div style="background: ' + t2Color + '20; padding: 16px; border-radius: 10px; margin: 16px 0;">' +
+                        '<div style="font-size: 24px; font-weight: 700; color: ' + t2Color + ';">' + (t2Dir === 'CALL' ? '📈' : '📉') + ' BUY ' + t2Dir + ' ON ' + turnDateStr + '</div>' +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">ENTRY</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #3b82f6;">$' + t2Entry.toFixed(2) + '</div>' +
+                            '<div style="font-size: 9px; color: #888;">(at ' + turnType + ')</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">TARGET</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #22c55e;">$' + t2Target.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">STOP</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #ef4444;">$' + t2Stop.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                            '<div style="font-size: 10px; color: #888;">R:R</div>' +
+                            '<div style="font-size: 16px; font-weight: 700; color: #f59e0b;">1:' + t2RR + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="margin-top: 12px; padding: 10px; background: #d1fae5; border-radius: 8px; font-size: 11px; color: #065f46;">' +
+                        '💡 Use 5min/15min chart to confirm ' + turnType + ' before entry' +
+                    '</div>' +
+                '</div>' +
+
+            '</div>' +
+
+            '<div style="margin-top: 24px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px;">' +
+                '<div style="font-weight: 600; color: #1e40af; margin-bottom: 8px;">💡 Trade Sequence</div>' +
+                '<div style="font-size: 13px; color: #3730a3;">' +
+                    '<strong>Now → ' + turnDateStr + ':</strong> Trade 1 (' + t1Dir + ') rides the ' + t1Phase.toLowerCase() + ' to $' + t1Target.toFixed(2) + '<br>' +
+                    '<strong>' + turnDateStr + ' →:</strong> Trade 2 (' + t2Dir + ') enters at ' + turnType + ' and rides the ' + t2Phase.toLowerCase() +
+                '</div>' +
+            '</div>';
+
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ Error loading data: ' + error.message + '</div>';
+    }
+}
+
+// Auto-load SPY when Action Center tab opens
+document.addEventListener('DOMContentLoaded', function() {
+    var actionCenterTab = document.querySelector('[data-tab="action-center"]');
+    if (actionCenterTab) {
+        actionCenterTab.addEventListener('click', function() {
+            setTimeout(function() { loadDualTradeSetup('SPY'); }, 100);
+        });
+    }
+    // Also auto-load after 1 second if on the page
+    setTimeout(function() { loadDualTradeSetup('SPY'); }, 1000);
+});
 
 </script>
 </body>
