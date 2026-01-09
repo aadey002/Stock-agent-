@@ -33252,9 +33252,15 @@ function filterSq9Results(filter) {
 
 function showSq9Detail(symbol) {
     console.log("📋 showSq9Detail called for:", symbol);
+    console.log("📋 sq9ScanResults count:", sq9ScanResults ? sq9ScanResults.length : 0);
     try {
     var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
-    if (!result) return;
+    if (!result) {
+        console.log("❌ Symbol not found in sq9ScanResults:", symbol);
+        console.log("📋 Available symbols:", sq9ScanResults.map(function(r) { return r.symbol; }).join(', '));
+        return;
+    }
+    console.log("✅ Found result for:", symbol, result);
 
     document.getElementById('sq9DetailSymbol').textContent = symbol + ' - ' + result.direction + ' SETUP';
 
@@ -34268,12 +34274,14 @@ function loadSq9ScannerResults() {
                     symbol: r.symbol,
                     price: r.price,
                     sq9Level: r.sq9_level,
+                    sq9Type: r.sq9_type,
                     distance: r.distance_pct,
                     direction: r.direction,
                     checks: r.checks,
                     checkCount: r.check_count,
                     status: r.status.toLowerCase(),
                     pivot: r.pivot_price,
+                    pivotDate: r.pivot_date,
                     target: r.target,
                     stop: r.stop,
                     rr: r.rr_ratio,
