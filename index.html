@@ -8926,6 +8926,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="settings-row-mtf">
                             <label><input type="checkbox" id="intradayShowEMA" checked onchange="updateChart('intraday')"> EMAs</label>
                             <label><input type="checkbox" id="intradayShowFib" checked onchange="updateChart('intraday')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="intradayShowSQ9" checked onchange="updateChart('intraday')"> 🎯 SQ9</label>
                             <label><input type="checkbox" id="intradayShowPatterns" checked onchange="updateChart('intraday')"> Patterns</label>
                             <label><input type="checkbox" id="intradayShowVolume" checked onchange="updateChart('intraday')"> Volume</label>
                         </div>
@@ -8943,6 +8944,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
                     </div>
                     <div class="fib-levels-mtf" id="intradayFib"></div>
                 </div>
@@ -8976,6 +8979,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="settings-row-mtf">
                             <label><input type="checkbox" id="swingShowEMA" checked onchange="updateChart('swing')"> EMAs</label>
                             <label><input type="checkbox" id="swingShowFib" checked onchange="updateChart('swing')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="swingShowSQ9" checked onchange="updateChart('swing')"> 🎯 SQ9</label>
                             <label><input type="checkbox" id="swingShowPatterns" checked onchange="updateChart('swing')"> Patterns</label>
                             <label><input type="checkbox" id="swingShowVolume" checked onchange="updateChart('swing')"> Volume</label>
                         </div>
@@ -8993,6 +8997,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
                     </div>
                     <div class="fib-levels-mtf" id="swingFib"></div>
                 </div>
@@ -9026,6 +9032,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="settings-row-mtf">
                             <label><input type="checkbox" id="positionShowEMA" checked onchange="updateChart('position')"> EMAs</label>
                             <label><input type="checkbox" id="positionShowFib" checked onchange="updateChart('position')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="positionShowSQ9" checked onchange="updateChart('position')"> 🎯 SQ9</label>
                             <label><input type="checkbox" id="positionShowPatterns" checked onchange="updateChart('position')"> Patterns</label>
                             <label><input type="checkbox" id="positionShowVolume" checked onchange="updateChart('position')"> Volume</label>
                         </div>
@@ -9043,6 +9050,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
                         <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
                     </div>
                     <div class="fib-levels-mtf" id="positionFib"></div>
                 </div>
@@ -23588,6 +23597,7 @@ function getMTFSettings(panel) {
     return {
         showEMA: document.getElementById(`${panel}ShowEMA`)?.checked ?? true,
         showFib: document.getElementById(`${panel}ShowFib`)?.checked ?? true,
+        showSQ9: document.getElementById(`${panel}ShowSQ9`)?.checked ?? true,
         showPatterns: document.getElementById(`${panel}ShowPatterns`)?.checked ?? true,
         showVolume: document.getElementById(`${panel}ShowVolume`)?.checked ?? true
     };
@@ -23929,7 +23939,15 @@ async function updateChart(panelType) {
         } else {
             document.getElementById(`${panelType}Fib`).innerHTML = '';
         }
-        
+
+        // Calculate and display SQ9 levels
+        if (settings.showSQ9 && chartType !== 'pf') {
+            displayMTFSQ9(panelType, data);
+        } else {
+            var sq9El = document.getElementById(panelType + 'SQ9');
+            if (sq9El) sq9El.innerHTML = '';
+        }
+
         if (loading) loading.style.display = 'none';
         
     } catch (error) {
@@ -23972,14 +23990,14 @@ function displayMTFFib(panelType, data) {
     const high = Math.max(...data.map(d => d.high));
     const low = Math.min(...data.map(d => d.low));
     const range = high - low;
-    
+
     const fib = {
         high: high,
         low: low,
         level382: high - range * 0.382,
         level618: high - range * 0.618
     };
-    
+
     const fibEl = document.getElementById(`${panelType}Fib`);
     if (fibEl) {
         fibEl.innerHTML = `
@@ -23988,6 +24006,78 @@ function displayMTFFib(panelType, data) {
             <div class="fib-level-mtf support">61.8%: $${fib.level618.toFixed(2)}</div>
             <div class="fib-level-mtf support">S: $${fib.low.toFixed(2)}</div>
         `;
+    }
+}
+
+// =============================================================================
+// SQ9 LEVELS DISPLAY FOR MTF CHARTS (Gann Square of 9)
+// =============================================================================
+
+function calculateSQ9LevelsMTF(price, numLevels) {
+    numLevels = numLevels || 3;
+    var sqrtPrice = Math.sqrt(price);
+    var levels = { support: [], resistance: [] };
+
+    for (var i = 1; i <= numLevels; i++) {
+        // 45-degree increments on Square of 9
+        var increment = (i * 45) / 180.0;
+
+        // Resistance levels (above current price)
+        var resLevel = Math.pow(sqrtPrice + increment, 2);
+        levels.resistance.push({
+            price: resLevel,
+            label: 'SQ9 R' + i,
+            degrees: i * 45
+        });
+
+        // Support levels (below current price)
+        if (sqrtPrice > increment) {
+            var supLevel = Math.pow(sqrtPrice - increment, 2);
+            levels.support.push({
+                price: supLevel,
+                label: 'SQ9 S' + i,
+                degrees: i * 45
+            });
+        }
+    }
+
+    return levels;
+}
+
+function displayMTFSQ9(panelType, data) {
+    var currentPrice = data[data.length - 1].close;
+    var sq9Levels = calculateSQ9LevelsMTF(currentPrice, 3);
+
+    // Get or create SQ9 display element
+    var sq9El = document.getElementById(panelType + 'SQ9');
+    if (!sq9El) {
+        // Create element if it doesn't exist
+        var fibEl = document.getElementById(panelType + 'Fib');
+        if (fibEl) {
+            sq9El = document.createElement('div');
+            sq9El.id = panelType + 'SQ9';
+            sq9El.className = 'sq9-levels-mtf';
+            sq9El.style.cssText = 'display: flex; gap: 8px; font-size: 10px; margin-top: 4px; flex-wrap: wrap;';
+            fibEl.parentNode.insertBefore(sq9El, fibEl.nextSibling);
+        }
+    }
+
+    if (sq9El) {
+        var html = '<div style="color: #f59e0b; font-weight: 600; margin-right: 8px;">🎯 SQ9:</div>';
+
+        // Show first 2 resistance levels
+        sq9Levels.resistance.slice(0, 2).forEach(function(level) {
+            var dist = ((level.price - currentPrice) / currentPrice * 100).toFixed(1);
+            html += '<div style="color: #ef4444;">R$' + level.price.toFixed(2) + ' <span style="opacity: 0.7;">(+' + dist + '%)</span></div>';
+        });
+
+        // Show first 2 support levels
+        sq9Levels.support.slice(0, 2).forEach(function(level) {
+            var dist = ((level.price - currentPrice) / currentPrice * 100).toFixed(1);
+            html += '<div style="color: #22c55e;">S$' + level.price.toFixed(2) + ' <span style="opacity: 0.7;">(' + dist + '%)</span></div>';
+        });
+
+        sq9El.innerHTML = html;
     }
 }
 
