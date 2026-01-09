@@ -7809,60 +7809,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <h2 style="margin: 0; color: #dc2626; font-size: 24px;">📊 Market Conditions Analysis</h2>
                 <p style="margin: 5px 0 0 0; color: #991b1b; font-size: 12px;">Trend-Following Approach Based on Moving Averages, Breadth and Volatility</p>
                 <div style="margin-top: 12px;">
-                    <label style="font-size: 12px; color: #666; margin-right: 8px;">Select Symbol:</label>
-                    <select id="mktConditionsSymbol" onchange="changeMktConditionsSymbol()" style="padding: 6px 12px; border: 1px solid #ef4444; border-radius: 6px; font-size: 12px; background: white; color: #333; min-width: 120px;">
-                        <optgroup label="Index ETFs">
-                            <option value="SPY">SPY</option>
-                            <option value="QQQ">QQQ</option>
-                            <option value="IWM">IWM</option>
-                            <option value="DIA">DIA</option>
-                        </optgroup>
-                        <optgroup label="Sector ETFs">
-                            <option value="XLF">XLF</option>
-                            <option value="XLE">XLE</option>
-                            <option value="XLK">XLK</option>
-                            <option value="XLV">XLV</option>
-                            <option value="XLI">XLI</option>
-                            <option value="XLB">XLB</option>
-                            <option value="XLU">XLU</option>
-                            <option value="XLP">XLP</option>
-                            <option value="XLY">XLY</option>
-                        </optgroup>
-                        <optgroup label="Mega Caps">
-                            <option value="AAPL">AAPL</option>
-                            <option value="MSFT">MSFT</option>
-                            <option value="NVDA">NVDA</option>
-                            <option value="TSLA">TSLA</option>
-                            <option value="AMZN">AMZN</option>
-                            <option value="GOOGL">GOOGL</option>
-                            <option value="META">META</option>
-                            <option value="JPM">JPM</option>
-                            <option value="AMD">AMD</option>
-                            <option value="NFLX">NFLX</option>
-                        </optgroup>
-                        <optgroup label="Additional Stocks">
-                            <option value="V">V</option>
-                            <option value="MA">MA</option>
-                            <option value="UNH">UNH</option>
-                            <option value="HD">HD</option>
-                            <option value="PG">PG</option>
-                            <option value="BAC">BAC</option>
-                            <option value="WMT">WMT</option>
-                            <option value="DIS">DIS</option>
-                            <option value="COST">COST</option>
-                            <option value="CRM">CRM</option>
-                            <option value="INTC">INTC</option>
-                            <option value="CSCO">CSCO</option>
-                            <option value="ADBE">ADBE</option>
-                            <option value="ORCL">ORCL</option>
-                            <option value="PFE">PFE</option>
-                            <option value="MRK">MRK</option>
-                            <option value="ABBV">ABBV</option>
-                            <option value="LLY">LLY</option>
-                            <option value="CVX">CVX</option>
-                            <option value="XOM">XOM</option>
-                        </optgroup>
-                    </select>
+                    <span style="font-size: 12px; color: #666; margin-right: 8px;">Analyzing:</span>
+                    <span id="mktConditionsCurrentSymbol" style="padding: 6px 14px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border-radius: 6px; font-size: 14px; font-weight: 700;">SPY</span>
+                    <span style="font-size: 10px; color: #999; margin-left: 8px;">(Uses global symbol)</span>
                 </div>
             </div>
 
@@ -9645,33 +9594,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px; background: #f8fafc; padding: 20px; border-radius: 12px;">
                     <div>
                         <label style="font-size: 10px; color: #666; display: block; margin-bottom: 5px;">UNDERLYING</label>
-                        <select id="optCalcSymbol" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;" onchange="updateOptionsCalc()">
-                            <option value="607.15">SPY - $607</option>
-                            <option value="525.80">QQQ - $526</option>
-                            <option value="234.50">IWM - $235</option>
-                            <option value="450.00">DIA - $450</option>
-                            <option value="89.45">XLE - $89</option>
-                            <option value="50.85">XLF - $51</option>
-                            <option value="235.00">XLK - $235</option>
-                            <option value="145.00">XLV - $145</option>
-                            <option value="45.00">XLRE - $45</option>
-                            <option value="85.00">XLC - $85</option>
-                            <option value="140.00">AMD - $140</option>
-                            <option value="140.00">NVDA - $140</option>
-                            <option value="410.00">TSLA - $410</option>
-                            <option value="250.00">AAPL - $250</option>
-                            <option value="610.00">META - $610</option>
-                            <option value="420.00">MSFT - $420</option>
-                            <option value="225.00">AMZN - $225</option>
-                            <option value="195.00">GOOGL - $195</option>
-                            <option value="245.00">JPM - $245</option>
-                            <option value="530.00">MA - $530</option>
-                            <option value="780.00">LLY - $780</option>
-                            <option value="92.00">WMT - $92</option>
-                            <option value="170.00">ORCL - $170</option>
-                            <option value="155.00">CVX - $155</option>
-                            <option value="58.00">CSCO - $58</option>
-                        </select>
+                        <div id="optCalcSymbolBadge" style="padding: 10px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center;">SPY - $607</div>
+                        <input type="hidden" id="optCalcSymbol" value="607.15">
                     </div>
                     <div>
                         <label style="font-size: 10px; color: #666; display: block; margin-bottom: 5px;">STRIKE PRICE</label>
@@ -10183,33 +10107,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
                         <div>
                             <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Symbol</label>
-                            <select id="gannOptSymbol" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; background: white; color: #1e293b;">
-                                <option value="SPY" id="gannOptSpyOption">SPY</option>
-                                <option value="QQQ" id="gannOptQqqOption">QQQ</option>
-                                <option value="IWM" id="gannOptIwmOption">IWM</option>
-                                <option value="DIA">DIA</option>
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLRE">XLRE</option>
-                                <option value="XLC">XLC</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AAPL">AAPL</option>
-                                <option value="META">META</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="JPM">JPM</option>
-                                <option value="MA">MA</option>
-                                <option value="LLY">LLY</option>
-                                <option value="WMT">WMT</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="CVX">CVX</option>
-                                <option value="CSCO">CSCO</option>
-                            </select>
+                            <div id="gannOptSymbolBadge" style="width: 100%; padding: 8px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; box-sizing: border-box;">SPY</div>
+                            <input type="hidden" id="gannOptSymbol" value="SPY">
                         </div>
                         <div>
                             <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Direction</label>
@@ -10275,33 +10174,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         </div>
                         <div>
                             <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Symbol</label>
-                            <select id="gannTradeSymbol" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; background: white; color: #1e293b;">
-                                <option>SPY</option>
-                                <option>QQQ</option>
-                                <option>IWM</option>
-                                <option>DIA</option>
-                                <option>XLF</option>
-                                <option>XLE</option>
-                                <option>XLK</option>
-                                <option>XLV</option>
-                                <option>XLRE</option>
-                                <option>XLC</option>
-                                <option>AMD</option>
-                                <option>NVDA</option>
-                                <option>TSLA</option>
-                                <option>AAPL</option>
-                                <option>META</option>
-                                <option>MSFT</option>
-                                <option>AMZN</option>
-                                <option>GOOGL</option>
-                                <option>JPM</option>
-                                <option>MA</option>
-                                <option>LLY</option>
-                                <option>WMT</option>
-                                <option>ORCL</option>
-                                <option>CVX</option>
-                                <option>CSCO</option>
-                            </select>
+                            <div id="gannTradeSymbolBadge" style="width: 100%; padding: 8px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; box-sizing: border-box;">SPY</div>
+                            <input type="hidden" id="gannTradeSymbol" value="SPY">
                         </div>
                         <div>
                             <label style="font-size: 10px; color: #64748b; display: block; margin-bottom: 4px;">Type</label>
@@ -10970,60 +10844,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 16px; font-weight: 700;">📜 Historical Pattern Scanner</div>
                         <div style="font-size: 11px; color: var(--muted);">Scan 1 year of data for Major (Daily) & Minor patterns with win rates</div>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <select id="histPatternSymbol" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <optgroup label="Index ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Sector ETFs">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                            </optgroup>
-                            <optgroup label="Mega Caps">
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="JPM">JPM</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
-                            </optgroup>
-                            <optgroup label="Additional Stocks">
-                                <option value="V">V</option>
-                                <option value="MA">MA</option>
-                                <option value="UNH">UNH</option>
-                                <option value="HD">HD</option>
-                                <option value="PG">PG</option>
-                                <option value="BAC">BAC</option>
-                                <option value="WMT">WMT</option>
-                                <option value="DIS">DIS</option>
-                                <option value="COST">COST</option>
-                                <option value="CRM">CRM</option>
-                                <option value="INTC">INTC</option>
-                                <option value="CSCO">CSCO</option>
-                                <option value="ADBE">ADBE</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="PFE">PFE</option>
-                                <option value="MRK">MRK</option>
-                                <option value="ABBV">ABBV</option>
-                                <option value="LLY">LLY</option>
-                                <option value="CVX">CVX</option>
-                                <option value="XOM">XOM</option>
-                            </optgroup>
-                        </select>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <span id="histPatternSymbolBadge" style="padding: 6px 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 6px; font-size: 12px; font-weight: 700;">SPY</span>
+                        <input type="hidden" id="histPatternSymbol" value="SPY">
                         <select id="histPatternPeriod" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
                             <option value="365">1 Year</option>
                             <option value="180">6 Months</option>
@@ -17191,10 +17014,15 @@ function updateMarketAnalysisTab() {
 
 // Change symbol in Market Conditions tab via dropdown
 function changeMktConditionsSymbol() {
-    var dropdown = document.getElementById('mktConditionsSymbol');
-    if (!dropdown) return;
+    // Use global symbol from SymbolManager
+    var selectedSymbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get()) ||
+                         (typeof currentSymbol !== 'undefined' && currentSymbol) ||
+                         document.getElementById('symbolSelect')?.value || 'SPY';
 
-    var selectedSymbol = dropdown.value;
+    // Update badge display
+    var badge = document.getElementById('mktConditionsCurrentSymbol');
+    if (badge) badge.textContent = selectedSymbol;
+
     console.log('🔄 Changing Market Conditions to: ' + selectedSymbol);
 
     // Update the Market Analysis Tab with new symbol
@@ -39600,6 +39428,50 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof calculateMinorTurn === 'function') {
             calculateMinorTurn();
         }
+    });
+
+    // Register callback: Update Market Conditions
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('mktConditionsCurrentSymbol');
+        if (badge) badge.textContent = symbol;
+        if (typeof changeMktConditionsSymbol === 'function') {
+            changeMktConditionsSymbol();
+        }
+    });
+
+    // Register callback: Update Options Calculator
+    SymbolManager.onSymbolChange(function(symbol) {
+        var price = (typeof PriceManager !== 'undefined' && PriceManager.get(symbol)?.price) ||
+                    (typeof getBannerPrice === 'function' && getBannerPrice()) || 100;
+        var badge = document.getElementById('optCalcSymbolBadge');
+        var hidden = document.getElementById('optCalcSymbol');
+        if (badge) badge.textContent = symbol + ' - $' + price.toFixed(0);
+        if (hidden) hidden.value = price;
+        if (typeof updateOptionsCalc === 'function') updateOptionsCalc();
+    });
+
+    // Register callback: Update Gann Options Calculator
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('gannOptSymbolBadge');
+        var hidden = document.getElementById('gannOptSymbol');
+        if (badge) badge.textContent = symbol;
+        if (hidden) hidden.value = symbol;
+    });
+
+    // Register callback: Update Gann Trade Logger
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('gannTradeSymbolBadge');
+        var hidden = document.getElementById('gannTradeSymbol');
+        if (badge) badge.textContent = symbol;
+        if (hidden) hidden.value = symbol;
+    });
+
+    // Register callback: Update Historical Pattern Scanner
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('histPatternSymbolBadge');
+        var hidden = document.getElementById('histPatternSymbol');
+        if (badge) badge.textContent = symbol;
+        if (hidden) hidden.value = symbol;
     });
 
     // Auto-load after short delay
