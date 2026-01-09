@@ -347,18 +347,16 @@
         .legend-item-mtf { display: flex; align-items: center; gap: 4px; color: var(--muted); }
         .legend-color-mtf { width: 12px; height: 3px; border-radius: 2px; }
 
-        /* Chart Level Overlay Labels */
-        .chart-level-label { position: absolute; right: 5px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; z-index: 100; min-width: 60px; text-align: right; pointer-events: none; }
-        .chart-level-label .level-name { font-size: 9px; opacity: 0.9; }
-        .chart-level-label .level-price { font-size: 11px; font-weight: 700; }
-        .chart-level-label.fib-resistance { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-        .chart-level-label.fib-support { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-        .chart-level-label.sq9-support { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .chart-level-label.sq9-resistance { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
-        .chart-level-line { position: absolute; left: 0; right: 70px; height: 1px; z-index: 50; pointer-events: none; }
-        .chart-level-line.resistance { border-top: 1px dashed rgba(239, 68, 68, 0.6); }
-        .chart-level-line.support { border-top: 1px dashed rgba(34, 197, 94, 0.6); }
-        .chart-level-line.sq9 { border-top: 1px dashed rgba(59, 130, 246, 0.6); }
+        /* Chart Level Overlay Labels - Compact Left Side */
+        .chart-level-label { position: absolute; left: 2px; padding: 1px 4px; border-radius: 3px; font-size: 8px; font-weight: 600; z-index: 100; white-space: nowrap; pointer-events: none; }
+        .chart-level-label.fib-resistance { background: rgba(239, 68, 68, 0.85); color: white; }
+        .chart-level-label.fib-support { background: rgba(34, 197, 94, 0.85); color: white; }
+        .chart-level-label.sq9-support { background: rgba(59, 130, 246, 0.85); color: white; }
+        .chart-level-label.sq9-resistance { background: rgba(249, 115, 22, 0.85); color: white; }
+        .chart-level-line { position: absolute; left: 60px; right: 0; height: 1px; z-index: 50; pointer-events: none; }
+        .chart-level-line.resistance { border-top: 1px dashed rgba(239, 68, 68, 0.5); }
+        .chart-level-line.support { border-top: 1px dashed rgba(34, 197, 94, 0.5); }
+        .chart-level-line.sq9 { border-top: 1px dashed rgba(59, 130, 246, 0.5); }
 
         /* Daily Analysis Styles */
         .daily-report { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
@@ -24122,6 +24120,7 @@ function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib,
     // Add SQ9 levels
     if (showSQ9 !== false) {
         var sq9Levels = getChartSQ9Levels(currentPrice);
+        console.log('📊 Chart Overlays:', containerId, 'SQ9 enabled:', showSQ9, 'Levels:', sq9Levels.length);
         allLevels = allLevels.concat(sq9Levels);
     }
 
@@ -24148,12 +24147,11 @@ function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib,
         line.style.top = yPercent + '%';
         container.appendChild(line);
 
-        // Create label
+        // Create compact label (single line: "78.6% $620.47")
         var label = document.createElement('div');
         label.className = 'chart-level-label ' + levelData.cssClass;
-        label.style.top = 'calc(' + yPercent + '% - 12px)';
-        label.innerHTML = '<div class="level-name">' + levelData.level + '</div>' +
-                          '<div class="level-price">$' + levelData.price.toFixed(2) + '</div>';
+        label.style.top = 'calc(' + yPercent + '% - 8px)';
+        label.textContent = levelData.level + ' $' + levelData.price.toFixed(2);
         container.appendChild(label);
     });
 }
