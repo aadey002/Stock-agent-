@@ -24138,8 +24138,11 @@ function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib,
         // Calculate Y position (percentage from top)
         var yPercent = ((chartHigh - levelData.price) / chartRange) * 100;
 
-        // Skip if outside visible range
-        if (yPercent < 5 || yPercent > 95) return;
+        // Skip if outside visible range (widened to 0-100 for SQ9 levels)
+        if (yPercent < 0 || yPercent > 100) {
+            console.log('📊 Filtered out:', levelData.level, 'price:', levelData.price.toFixed(2), 'yPercent:', yPercent.toFixed(1));
+            return;
+        }
 
         // Create dashed line
         var line = document.createElement('div');
@@ -24165,9 +24168,16 @@ function addOverlaysToMTFChart(panelType, data) {
     var low = Math.min.apply(null, data.map(function(d) { return d.low; }));
     var currentPrice = data[data.length - 1].close;
 
-    // Check settings
-    var showFib = document.getElementById(panelType + 'ShowFib')?.checked !== false;
-    var showSQ9 = document.getElementById(panelType + 'ShowSQ9')?.checked !== false;
+    // Check settings - read directly from checkboxes
+    var fibCheckbox = document.getElementById(panelType + 'ShowFib');
+    var sq9Checkbox = document.getElementById(panelType + 'ShowSQ9');
+    var showFib = fibCheckbox ? fibCheckbox.checked : true;
+    var showSQ9 = sq9Checkbox ? sq9Checkbox.checked : true;
+
+    console.log('📊 addOverlaysToMTFChart:', panelType,
+        'SQ9 checkbox found:', !!sq9Checkbox,
+        'SQ9 checked:', showSQ9,
+        'Price:', currentPrice.toFixed(2));
 
     renderChartLevelOverlays(containerId, high, low, currentPrice, showFib, showSQ9);
 }
