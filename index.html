@@ -10671,59 +10671,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 11px; color: var(--muted);">Daily → 15min → 5min Candle Alignment</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
-                        <select id="mtfSymbolSelect" onchange="debouncedMTFScan()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <optgroup label="Index ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Sector ETFs">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                            </optgroup>
-                            <optgroup label="Mega Caps">
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="JPM">JPM</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
-                            </optgroup>
-                            <optgroup label="Liquid Stocks">
-                                <option value="V">V</option>
-                                <option value="MA">MA</option>
-                                <option value="UNH">UNH</option>
-                                <option value="HD">HD</option>
-                                <option value="PG">PG</option>
-                                <option value="BAC">BAC</option>
-                                <option value="WMT">WMT</option>
-                                <option value="DIS">DIS</option>
-                                <option value="COST">COST</option>
-                                <option value="CRM">CRM</option>
-                                <option value="INTC">INTC</option>
-                                <option value="CSCO">CSCO</option>
-                                <option value="ADBE">ADBE</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="PFE">PFE</option>
-                                <option value="MRK">MRK</option>
-                                <option value="ABBV">ABBV</option>
-                                <option value="LLY">LLY</option>
-                                <option value="CVX">CVX</option>
-                                <option value="XOM">XOM</option>
-                            </optgroup>
-                        </select>
+                        <span id="mtfSymbolSelectBadge" style="padding: 6px 14px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-radius: 6px; font-size: 12px; font-weight: 700;">SPY</span>
+                        <input type="hidden" id="mtfSymbolSelect" value="SPY">
                         <button onclick="scanMTFPatterns(true)" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Scan MTF</button>
                     </div>
                 </div>
@@ -11148,59 +11097,8 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 11px; color: var(--muted);">Confluence across 15min, 1hour, and Daily pivots</div>
                     </div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <select id="sq9MtfSymbol" onchange="updateSq9Mtf()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-size: 13px; font-weight: 600;">
-                            <optgroup label="Index ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Sector ETFs">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                            </optgroup>
-                            <optgroup label="Mega Caps">
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="JPM">JPM</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
-                            </optgroup>
-                            <optgroup label="Additional Stocks">
-                                <option value="V">V</option>
-                                <option value="MA">MA</option>
-                                <option value="UNH">UNH</option>
-                                <option value="HD">HD</option>
-                                <option value="PG">PG</option>
-                                <option value="BAC">BAC</option>
-                                <option value="WMT">WMT</option>
-                                <option value="DIS">DIS</option>
-                                <option value="COST">COST</option>
-                                <option value="CRM">CRM</option>
-                                <option value="INTC">INTC</option>
-                                <option value="CSCO">CSCO</option>
-                                <option value="ADBE">ADBE</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="PFE">PFE</option>
-                                <option value="MRK">MRK</option>
-                                <option value="ABBV">ABBV</option>
-                                <option value="LLY">LLY</option>
-                                <option value="CVX">CVX</option>
-                                <option value="XOM">XOM</option>
-                            </optgroup>
-                        </select>
+                        <span id="sq9MtfSymbolBadge" style="padding: 8px 16px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 6px; font-size: 14px; font-weight: 700;">SPY</span>
+                        <input type="hidden" id="sq9MtfSymbol" value="SPY">
                         <div style="font-size: 14px; font-weight: 600;">
                             <span id="sq9MtfSymbolDisplay">SPY</span>:
                             <span id="sq9MtfPriceDisplay" style="color: #3b82f6;">$--</span>
@@ -39472,6 +39370,26 @@ document.addEventListener('DOMContentLoaded', function() {
         var hidden = document.getElementById('histPatternSymbol');
         if (badge) badge.textContent = symbol;
         if (hidden) hidden.value = symbol;
+    });
+
+    // Register callback: Update SQ9 MTF Analysis
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('sq9MtfSymbolBadge');
+        var hidden = document.getElementById('sq9MtfSymbol');
+        var display = document.getElementById('sq9MtfSymbolDisplay');
+        if (badge) badge.textContent = symbol;
+        if (hidden) hidden.value = symbol;
+        if (display) display.textContent = symbol;
+        if (typeof updateSq9Mtf === 'function') updateSq9Mtf();
+    });
+
+    // Register callback: Update MTF Signal Scanner
+    SymbolManager.onSymbolChange(function(symbol) {
+        var badge = document.getElementById('mtfSymbolSelectBadge');
+        var hidden = document.getElementById('mtfSymbolSelect');
+        if (badge) badge.textContent = symbol;
+        if (hidden) hidden.value = symbol;
+        if (typeof debouncedMTFScan === 'function') debouncedMTFScan();
     });
 
     // Auto-load after short delay
