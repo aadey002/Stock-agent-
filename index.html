@@ -11561,30 +11561,66 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <select id="dualTradeSymbolSelect" onchange="SymbolManager.set(this.value, 'dualTrade')" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
-                            <optgroup label="ETFs">
+                            <optgroup label="Index ETFs">
                                 <option value="SPY" selected>SPY</option>
                                 <option value="QQQ">QQQ</option>
                                 <option value="IWM">IWM</option>
                                 <option value="DIA">DIA</option>
+                            </optgroup>
+                            <optgroup label="Sector ETFs">
                                 <option value="XLF">XLF</option>
                                 <option value="XLE">XLE</option>
                                 <option value="XLK">XLK</option>
                                 <option value="XLV">XLV</option>
-                                <option value="GLD">GLD</option>
-                                <option value="TLT">TLT</option>
-                                <option value="ARKK">ARKK</option>
+                                <option value="XLI">XLI</option>
+                                <option value="XLP">XLP</option>
                             </optgroup>
-                            <optgroup label="Stocks">
+                            <optgroup label="Commodity ETFs">
+                                <option value="GLD">GLD</option>
+                                <option value="SLV">SLV</option>
+                                <option value="TLT">TLT</option>
+                            </optgroup>
+                            <optgroup label="Mega Cap Tech">
                                 <option value="AAPL">AAPL</option>
                                 <option value="MSFT">MSFT</option>
                                 <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
                                 <option value="GOOGL">GOOGL</option>
+                                <option value="AMZN">AMZN</option>
                                 <option value="META">META</option>
+                                <option value="TSLA">TSLA</option>
                                 <option value="AMD">AMD</option>
                                 <option value="NFLX">NFLX</option>
+                            </optgroup>
+                            <optgroup label="Financials">
+                                <option value="JPM">JPM</option>
+                                <option value="BAC">BAC</option>
+                                <option value="V">V</option>
+                                <option value="MA">MA</option>
+                            </optgroup>
+                            <optgroup label="Healthcare">
+                                <option value="UNH">UNH</option>
+                                <option value="PFE">PFE</option>
+                                <option value="MRK">MRK</option>
+                                <option value="ABBV">ABBV</option>
+                                <option value="LLY">LLY</option>
+                            </optgroup>
+                            <optgroup label="Consumer">
+                                <option value="WMT">WMT</option>
+                                <option value="HD">HD</option>
+                                <option value="COST">COST</option>
+                                <option value="PG">PG</option>
+                                <option value="DIS">DIS</option>
+                            </optgroup>
+                            <optgroup label="Enterprise Tech">
+                                <option value="CRM">CRM</option>
                                 <option value="ORCL">ORCL</option>
+                                <option value="ADBE">ADBE</option>
+                                <option value="CSCO">CSCO</option>
+                                <option value="INTC">INTC</option>
+                            </optgroup>
+                            <optgroup label="Energy">
+                                <option value="CVX">CVX</option>
+                                <option value="XOM">XOM</option>
                             </optgroup>
                         </select>
                         <span id="dualTradeUpdated" style="font-size: 11px; color: #888;">Updated: --</span>
