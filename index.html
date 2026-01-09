@@ -10732,60 +10732,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 16px; font-weight: 700;">🔮 Minor Turn Calculator</div>
                         <div style="font-size: 11px; color: var(--muted);">Predicting next reversal using Gann cycles, Fib time & swing analysis</div>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <select id="turnCalcSymbol" onchange="calculateMinorTurn()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px;">
-                            <optgroup label="Index ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Sector ETFs">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                            </optgroup>
-                            <optgroup label="Mega Caps">
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="JPM">JPM</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
-                            </optgroup>
-                            <optgroup label="Liquid Stocks">
-                                <option value="V">V</option>
-                                <option value="MA">MA</option>
-                                <option value="UNH">UNH</option>
-                                <option value="HD">HD</option>
-                                <option value="PG">PG</option>
-                                <option value="BAC">BAC</option>
-                                <option value="WMT">WMT</option>
-                                <option value="DIS">DIS</option>
-                                <option value="COST">COST</option>
-                                <option value="CRM">CRM</option>
-                                <option value="INTC">INTC</option>
-                                <option value="CSCO">CSCO</option>
-                                <option value="ADBE">ADBE</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="PFE">PFE</option>
-                                <option value="MRK">MRK</option>
-                                <option value="ABBV">ABBV</option>
-                                <option value="LLY">LLY</option>
-                                <option value="CVX">CVX</option>
-                                <option value="XOM">XOM</option>
-                            </optgroup>
-                        </select>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div id="turnCalcCurrentSymbol" style="padding: 6px 12px; background: rgba(245,158,11,0.2); border: 1px solid #f59e0b; border-radius: 6px; font-size: 12px; font-weight: 600; color: #f59e0b;">SPY</div>
+                        <div style="font-size: 10px; color: var(--muted);">Using global symbol</div>
                         <button onclick="calculateMinorTurn()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Calculate</button>
                     </div>
                 </div>
@@ -37554,7 +37503,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 
 function calculateMinorTurn() {
-    var symbol = document.getElementById('turnCalcSymbol').value || 'SPY';
+    // Use global symbol from SymbolManager or banner
+    var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get()) ||
+                 (typeof currentSymbol !== 'undefined' && currentSymbol) ||
+                 document.getElementById('symbolSelect')?.value ||
+                 'SPY';
+
+    // Update the display to show current symbol
+    var symbolDisplay = document.getElementById('turnCalcCurrentSymbol');
+    if (symbolDisplay) symbolDisplay.textContent = symbol;
+
+    console.log('Minor Turn Calculator loading:', symbol);
+
     var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
 
     if (!priceData || priceData.length < 50) {
@@ -39437,6 +39397,13 @@ document.addEventListener('DOMContentLoaded', function() {
     SymbolManager.onSymbolChange(function(symbol) {
         if (typeof updateMTFBiasHistory === 'function') {
             updateMTFBiasHistory(symbol);
+        }
+    });
+
+    // Register callback: Update Minor Turn Calculator
+    SymbolManager.onSymbolChange(function(symbol) {
+        if (typeof calculateMinorTurn === 'function') {
+            calculateMinorTurn();
         }
     });
 
