@@ -24063,14 +24063,19 @@ function calculateChartFibLevels(high, low) {
     ];
 }
 
-// Get SQ9 levels for chart overlay
-function getChartSQ9Levels(currentPrice) {
+// Get SQ9 levels for chart overlay - uses range-adaptive increments
+function getChartSQ9Levels(currentPrice, chartHigh, chartLow) {
     var sqrtPrice = Math.sqrt(currentPrice);
     var levels = [];
+    var chartRange = chartHigh - chartLow;
+
+    // Use smaller increments for tight ranges (intraday), larger for wide ranges
+    // 45 degrees = ~$13 gap at $700, 11.25 degrees = ~$3.25 gap
+    var baseAngle = chartRange < 20 ? 11.25 : (chartRange < 50 ? 22.5 : 45);
 
     // Calculate 2 support and 2 resistance levels
     for (var i = 1; i <= 2; i++) {
-        var increment = (i * 45) / 180.0;
+        var increment = (i * baseAngle) / 180.0;
 
         // Resistance
         var resPrice = Math.pow(sqrtPrice + increment, 2);
@@ -24117,10 +24122,10 @@ function renderChartLevelOverlays(containerId, high, low, currentPrice, showFib,
         allLevels = allLevels.concat(fibLevels);
     }
 
-    // Add SQ9 levels
+    // Add SQ9 levels (pass chart range for adaptive increments)
     if (showSQ9 !== false) {
-        var sq9Levels = getChartSQ9Levels(currentPrice);
-        console.log('📊 Chart Overlays:', containerId, 'SQ9 enabled:', showSQ9, 'Levels:', sq9Levels.length);
+        var sq9Levels = getChartSQ9Levels(currentPrice, high, low);
+        console.log('📊 Chart Overlays:', containerId, 'SQ9 enabled:', showSQ9, 'Levels:', sq9Levels.length, 'Range:', (high - low).toFixed(2));
         allLevels = allLevels.concat(sq9Levels);
     }
 
