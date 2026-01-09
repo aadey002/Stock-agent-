@@ -38845,7 +38845,10 @@ async function loadDualTradeSetup(symbol) {
             return;
         }
 
-        var price = data.price || 0;
+        // Get price from banner instead of scanner data
+        var bannerPriceEl = document.getElementById('currentPrice');
+        var bannerPrice = bannerPriceEl ? parseFloat(bannerPriceEl.textContent.replace(/[^0-9.-]/g, '')) : 0;
+        var price = bannerPrice > 0 ? bannerPrice : (data.price || 0);
         var sq9Level = data.sq9_level || price * 0.99;
         var checkCount = data.check_count || 0;
         var direction = data.direction || 'CALL';
