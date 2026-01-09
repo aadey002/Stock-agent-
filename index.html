@@ -4250,6 +4250,7 @@ body {
             <button class="tab-btn" data-tab="options-calc-advanced" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white;">🧮 Options Pro</button>
             <button class="tab-btn" data-tab="gann-cycles" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🔮 Gann Cycles</button>
             <button class="tab-btn" data-tab="action-center" style="background: linear-gradient(135deg, #f97316, #ea580c); color: white;">⚡ Dual Trade Setup</button>
+            <button class="tab-btn" data-tab="workflow-center" style="background: linear-gradient(135deg, #059669, #047857); color: white;">🎯 Action Center</button>
             <button class="tab-btn" data-tab="sq9-scanner" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">🎯 SQ9 Scanner</button>
             <button class="tab-btn" data-tab="sq9-performance" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">📊 SQ9 Performance</button>
         </div>
@@ -11602,6 +11603,103 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
         </div>
 
+        <!-- WORKFLOW CENTER / ACTION CENTER TAB -->
+        <div id="workflow-center" class="tab-content">
+            <div style="padding: 20px;">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 24px; color: #1e293b;">🎯 Action Center - Tiered Filter</h2>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">Multi-source consensus filtering: 50 symbols → Top candidates → Ready to trade</p>
+                    </div>
+                    <button onclick="renderActionCenter()" style="padding: 10px 20px; border-radius: 8px; border: none; background: linear-gradient(135deg, #059669, #047857); color: white; font-weight: 600; cursor: pointer;">🔄 Refresh Filter</button>
+                </div>
+
+                <!-- Workflow Funnel Summary -->
+                <div style="background: linear-gradient(135deg, rgba(5,150,105,0.1), rgba(4,120,87,0.05)); border-radius: 16px; padding: 20px; margin-bottom: 25px; border: 1px solid rgba(5,150,105,0.2);">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0 0 8px; font-size: 18px; color: #059669;">📊 Filtering Pipeline</h3>
+                        <p style="margin: 0; font-size: 12px; color: #666;">Narrowing 50 symbols to best trade setups</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <!-- All Symbols -->
+                        <div style="text-align: center; padding: 15px 20px; background: #374151; border-radius: 12px; min-width: 100px;">
+                            <div style="font-size: 28px; font-weight: 700; color: white;">50</div>
+                            <div style="font-size: 10px; color: #9ca3af; margin-top: 4px;">All Symbols</div>
+                        </div>
+
+                        <div style="font-size: 24px; color: #6b7280;">→</div>
+
+                        <!-- Tier 1: Consensus -->
+                        <div style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; min-width: 100px;">
+                            <div id="tier1Count" style="font-size: 28px; font-weight: 700; color: white;">-</div>
+                            <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 4px;">Consensus</div>
+                            <div style="font-size: 9px; color: rgba(255,255,255,0.6);">3/4 sources agree</div>
+                        </div>
+
+                        <div style="font-size: 24px; color: #6b7280;">→</div>
+
+                        <!-- Tier 2: Validated -->
+                        <div style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px; min-width: 100px;">
+                            <div id="tier2Count" style="font-size: 28px; font-weight: 700; color: white;">-</div>
+                            <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 4px;">Validated</div>
+                            <div style="font-size: 9px; color: rgba(255,255,255,0.6);">Technical confirmed</div>
+                        </div>
+
+                        <div style="font-size: 24px; color: #6b7280;">→</div>
+
+                        <!-- Tier 3: Ready -->
+                        <div style="text-align: center; padding: 15px 20px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 12px; min-width: 100px;">
+                            <div id="tier3Count" style="font-size: 28px; font-weight: 700; color: white;">-</div>
+                            <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 4px;">Ready</div>
+                            <div style="font-size: 9px; color: rgba(255,255,255,0.6);">Trade setup valid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Criteria Summary -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                    <div style="background: rgba(245,158,11,0.1); border-radius: 12px; padding: 15px; border-left: 4px solid #f59e0b;">
+                        <div style="font-size: 14px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">Tier 1: Consensus</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #666; line-height: 1.6;">
+                            <li>Agent AI direction</li>
+                            <li>SQ9 Scanner direction</li>
+                            <li>Gann Timing signal</li>
+                            <li>MTF Analysis bias</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 12px; padding: 15px; border-left: 4px solid #3b82f6;">
+                        <div style="font-size: 14px; font-weight: 700; color: #3b82f6; margin-bottom: 8px;">Tier 2: Technical</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #666; line-height: 1.6;">
+                            <li>SQ9 proximity &lt;2%</li>
+                            <li>RSI alignment</li>
+                            <li>EMA cross direction</li>
+                            <li>Pattern detection</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 12px; padding: 15px; border-left: 4px solid #22c55e;">
+                        <div style="font-size: 14px; font-weight: 700; color: #22c55e; margin-bottom: 8px;">Tier 3: Trade Setup</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #666; line-height: 1.6;">
+                            <li>Entry price defined</li>
+                            <li>Stop loss &lt;3%</li>
+                            <li>Target defined</li>
+                            <li>R:R ratio ≥2:1</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Results Container -->
+                <div id="actionCenterResults" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        <div style="font-size: 32px; margin-bottom: 12px;">🔄</div>
+                        <div>Click "Refresh Filter" to scan all symbols</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <!-- SQ9 TRADE LOG MODAL -->
         <div id="sq9TradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
             <div style="background: white; border-radius: 12px; padding: 25px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
@@ -12584,6 +12682,42 @@ const SYMBOL_NAMES = {
 const TRADING_PARAMS = {
     intraday: { fastSMA: 5, slowSMA: 20, atrPeriod: 10, stopATR: 0.75, target1ATR: 1.0, target2ATR: 1.5 },
     swing: { fastSMA: 10, slowSMA: 30, atrPeriod: 14, stopATR: 1.5, target1ATR: 2.0, target2ATR: 3.0 }
+};
+
+// =====================================================
+// ACTION CENTER - TIERED FILTERING SYSTEM
+// =====================================================
+// Workflow: 50 symbols → 5-10 consensus → 2-5 validated → 1-2 trades
+
+var CONSENSUS_SOURCES = {
+    AGENT: 'agent_consensus',
+    SQ9: 'sq9_scanner',
+    GANN: 'gann_timing',
+    MTF: 'mtf_consensus'
+};
+
+var ACTION_THRESHOLDS = {
+    // Tier 1: Consensus (need 3 of 4 sources agreeing)
+    CONSENSUS_MIN: 3,
+
+    // Tier 2: Technical validation thresholds
+    SQ9_DISTANCE_MAX: 2.0,      // Within 2% of SQ9 level
+    RSI_OVERSOLD: 35,           // RSI below this = oversold
+    RSI_OVERBOUGHT: 65,         // RSI above this = overbought
+    VOLUME_SURGE: 1.5,          // 1.5x average volume
+
+    // Tier 3: Trade setup requirements
+    MIN_RR_RATIO: 2.0,          // Minimum reward:risk
+    MAX_STOP_PERCENT: 3.0,      // Maximum stop loss %
+    MIN_CONFIDENCE: 70          // Minimum confidence score
+};
+
+// Action Center state
+var actionCenterData = {
+    tier1Candidates: [],  // Passed consensus (5-10)
+    tier2Validated: [],   // Passed technical (2-5)
+    tier3Ready: [],       // Ready to trade (1-2)
+    lastUpdate: null
 };
 
 // =====================================================
@@ -39263,6 +39397,511 @@ async function loadDualTradeAnalysis(symbol) {
 }
 
 // =============================================================================
+// ACTION CENTER - TIERED FILTERING FUNCTIONS
+// =============================================================================
+
+// TIER 1: Check if 3+ consensus sources agree on direction
+function getTier1Consensus(symbol) {
+    var votes = { CALL: 0, PUT: 0 };
+    var sources = [];
+
+    // Source 1: Agent Consensus (from AI analysis)
+    var agentVote = checkAgentConsensus(symbol);
+    if (agentVote) {
+        votes[agentVote]++;
+        sources.push({ name: 'Agent AI', direction: agentVote });
+    }
+
+    // Source 2: SQ9 Scanner direction
+    var sq9Vote = checkSQ9Scanner(symbol);
+    if (sq9Vote) {
+        votes[sq9Vote]++;
+        sources.push({ name: 'SQ9 Scanner', direction: sq9Vote });
+    }
+
+    // Source 3: Gann Timing direction
+    var gannVote = checkGannTiming(symbol);
+    if (gannVote) {
+        votes[gannVote]++;
+        sources.push({ name: 'Gann Timing', direction: gannVote });
+    }
+
+    // Source 4: MTF Consensus
+    var mtfVote = checkMTFConsensus(symbol);
+    if (mtfVote) {
+        votes[mtfVote]++;
+        sources.push({ name: 'MTF Analysis', direction: mtfVote });
+    }
+
+    var maxVotes = Math.max(votes.CALL, votes.PUT);
+    var direction = votes.CALL >= votes.PUT ? 'CALL' : 'PUT';
+    var passed = maxVotes >= ACTION_THRESHOLDS.CONSENSUS_MIN;
+
+    return {
+        passed: passed,
+        direction: direction,
+        votes: maxVotes,
+        total: sources.length,
+        sources: sources,
+        agreement: sources.length > 0 ? (maxVotes / sources.length * 100).toFixed(0) : 0
+    };
+}
+
+// Check Agent AI consensus for symbol
+function checkAgentConsensus(symbol) {
+    // Look for agent analysis results
+    if (typeof aiResults !== 'undefined' && aiResults[symbol]) {
+        var result = aiResults[symbol];
+        if (result.direction) return result.direction.toUpperCase();
+        if (result.recommendation) {
+            var rec = result.recommendation.toLowerCase();
+            if (rec.indexOf('call') !== -1 || rec.indexOf('bullish') !== -1 || rec.indexOf('buy') !== -1) return 'CALL';
+            if (rec.indexOf('put') !== -1 || rec.indexOf('bearish') !== -1 || rec.indexOf('sell') !== -1) return 'PUT';
+        }
+    }
+    // Fallback to opportunities table data
+    var row = document.querySelector('#opportunitiesTable tr[data-symbol="' + symbol + '"]');
+    if (row) {
+        var dirCell = row.querySelector('.signal-direction');
+        if (dirCell) {
+            var text = dirCell.textContent.toLowerCase();
+            if (text.indexOf('call') !== -1 || text.indexOf('bull') !== -1) return 'CALL';
+            if (text.indexOf('put') !== -1 || text.indexOf('bear') !== -1) return 'PUT';
+        }
+    }
+    return null;
+}
+
+// Check SQ9 Scanner for symbol direction
+function checkSQ9Scanner(symbol) {
+    if (typeof sq9ScanResults !== 'undefined' && sq9ScanResults.length > 0) {
+        var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+        if (result && result.direction) {
+            return result.direction.toUpperCase();
+        }
+    }
+    return null;
+}
+
+// Check Gann Timing for symbol
+function checkGannTiming(symbol) {
+    if (typeof gannPredictions !== 'undefined') {
+        // Use SWING timeframe as primary
+        if (gannPredictions.SWING && gannPredictions.SWING.direction) {
+            return gannPredictions.SWING.direction.toUpperCase();
+        }
+        if (gannPredictions.INTRADAY && gannPredictions.INTRADAY.direction) {
+            return gannPredictions.INTRADAY.direction.toUpperCase();
+        }
+    }
+    return null;
+}
+
+// Check MTF Consensus
+function checkMTFConsensus(symbol) {
+    // Check MTF Signal Scanner results
+    var mtfElement = document.getElementById('mtfSignalResults');
+    if (mtfElement) {
+        var text = mtfElement.textContent.toLowerCase();
+        var callCount = (text.match(/call|bullish|long/g) || []).length;
+        var putCount = (text.match(/put|bearish|short/g) || []).length;
+        if (callCount > putCount) return 'CALL';
+        if (putCount > callCount) return 'PUT';
+    }
+    // Fallback to MTF bias history
+    if (typeof mtfBiasHistory !== 'undefined' && mtfBiasHistory[symbol]) {
+        var history = mtfBiasHistory[symbol];
+        if (Array.isArray(history) && history.length > 0) {
+            var recent = history[history.length - 1];
+            if (recent && recent.bias) {
+                return recent.bias.toUpperCase().indexOf('BULL') !== -1 ? 'CALL' : 'PUT';
+            }
+        }
+    }
+    return null;
+}
+
+// TIER 2: Technical validation checks
+function getTier2Technical(symbol, direction) {
+    var checks = {
+        sq9Proximity: false,
+        rsiValid: false,
+        emaCross: false,
+        patternDetected: false
+    };
+    var details = [];
+
+    // Check 1: SQ9 Proximity (within threshold %)
+    var sq9Check = checkSQ9Proximity(symbol);
+    if (sq9Check.valid) {
+        checks.sq9Proximity = true;
+        details.push('SQ9: ' + sq9Check.distance.toFixed(2) + '% from ' + sq9Check.level);
+    }
+
+    // Check 2: RSI validation (oversold for CALL, overbought for PUT)
+    var rsiCheck = checkRSIValid(symbol, direction);
+    if (rsiCheck.valid) {
+        checks.rsiValid = true;
+        details.push('RSI: ' + rsiCheck.value.toFixed(0) + ' (' + rsiCheck.zone + ')');
+    }
+
+    // Check 3: EMA Cross alignment
+    var emaCheck = checkEMACross(symbol, direction);
+    if (emaCheck.valid) {
+        checks.emaCross = true;
+        details.push('EMA: ' + emaCheck.status);
+    }
+
+    // Check 4: Pattern detected
+    var patternCheck = checkPatternDetected(symbol);
+    if (patternCheck.valid) {
+        checks.patternDetected = true;
+        details.push('Pattern: ' + patternCheck.pattern);
+    }
+
+    var passedCount = Object.values(checks).filter(Boolean).length;
+    var passed = passedCount >= 2; // Need at least 2 of 4 technical confirmations
+
+    return {
+        passed: passed,
+        checks: checks,
+        passedCount: passedCount,
+        total: 4,
+        details: details
+    };
+}
+
+// Check SQ9 level proximity
+function checkSQ9Proximity(symbol) {
+    if (typeof sq9ScanResults !== 'undefined' && sq9ScanResults.length > 0) {
+        var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+        if (result && typeof result.distance !== 'undefined') {
+            var distance = Math.abs(parseFloat(result.distance));
+            return {
+                valid: distance <= ACTION_THRESHOLDS.SQ9_DISTANCE_MAX,
+                distance: distance,
+                level: result.sq9Level || 'N/A'
+            };
+        }
+    }
+    return { valid: false, distance: 999, level: 'N/A' };
+}
+
+// Check RSI validation
+function checkRSIValid(symbol, direction) {
+    // Try to get RSI from various sources
+    var rsi = null;
+
+    // Check market conditions panel
+    var rsiEl = document.querySelector('.rsi-value, [data-metric="rsi"]');
+    if (rsiEl) {
+        rsi = parseFloat(rsiEl.textContent);
+    }
+
+    // Check SQ9 results for RSI
+    if (rsi === null && typeof sq9ScanResults !== 'undefined') {
+        var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+        if (result && result.rsi) {
+            rsi = parseFloat(result.rsi);
+        }
+    }
+
+    if (rsi !== null && !isNaN(rsi)) {
+        var zone = rsi < ACTION_THRESHOLDS.RSI_OVERSOLD ? 'oversold' :
+                   rsi > ACTION_THRESHOLDS.RSI_OVERBOUGHT ? 'overbought' : 'neutral';
+        var valid = (direction === 'CALL' && rsi < ACTION_THRESHOLDS.RSI_OVERSOLD) ||
+                    (direction === 'PUT' && rsi > ACTION_THRESHOLDS.RSI_OVERBOUGHT) ||
+                    (rsi >= 40 && rsi <= 60); // Neutral zone acceptable
+        return { valid: valid, value: rsi, zone: zone };
+    }
+    return { valid: true, value: 50, zone: 'unknown' }; // Default to valid if unknown
+}
+
+// Check EMA cross alignment
+function checkEMACross(symbol, direction) {
+    // Check for EMA cross signals in the UI
+    var emaEl = document.querySelector('.ema-signal, [data-indicator="ema"]');
+    if (emaEl) {
+        var text = emaEl.textContent.toLowerCase();
+        var bullish = text.indexOf('bull') !== -1 || text.indexOf('golden') !== -1 || text.indexOf('above') !== -1;
+        var bearish = text.indexOf('bear') !== -1 || text.indexOf('death') !== -1 || text.indexOf('below') !== -1;
+        var valid = (direction === 'CALL' && bullish) || (direction === 'PUT' && bearish);
+        return { valid: valid, status: bullish ? 'Bullish' : bearish ? 'Bearish' : 'Neutral' };
+    }
+    return { valid: true, status: 'N/A' }; // Default valid if not available
+}
+
+// Check for detected patterns
+function checkPatternDetected(symbol) {
+    // Check historical pattern scanner results
+    if (typeof historicalPatterns !== 'undefined' && historicalPatterns[symbol]) {
+        var patterns = historicalPatterns[symbol];
+        if (patterns.length > 0) {
+            return { valid: true, pattern: patterns[0].name || 'Pattern Found' };
+        }
+    }
+    // Check SQ9 results for pattern info
+    if (typeof sq9ScanResults !== 'undefined') {
+        var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+        if (result && result.sq9Type) {
+            return { valid: true, pattern: result.sq9Type };
+        }
+    }
+    return { valid: false, pattern: 'None' };
+}
+
+// TIER 3: Trade setup validation
+function getTier3Setup(symbol, direction) {
+    var setup = {
+        hasEntry: false,
+        hasStop: false,
+        hasTarget: false,
+        rrRatio: 0,
+        confidence: 0
+    };
+    var details = [];
+
+    // Get price data
+    var currentPrice = 0;
+    if (typeof PriceManager !== 'undefined') {
+        var priceData = PriceManager.get(symbol);
+        if (priceData) currentPrice = priceData.price;
+    }
+    if (!currentPrice && typeof getBannerPrice === 'function') {
+        currentPrice = getBannerPrice();
+    }
+
+    // Get SQ9 setup data
+    if (typeof sq9ScanResults !== 'undefined') {
+        var result = sq9ScanResults.find(function(r) { return r.symbol === symbol; });
+        if (result) {
+            // Entry
+            setup.hasEntry = currentPrice > 0;
+            setup.entry = currentPrice;
+
+            // Stop loss
+            if (result.stop) {
+                setup.hasStop = true;
+                setup.stop = parseFloat(result.stop);
+                var stopPct = Math.abs((setup.stop - currentPrice) / currentPrice * 100);
+                details.push('Stop: $' + setup.stop.toFixed(2) + ' (' + stopPct.toFixed(1) + '%)');
+
+                // Check if stop is within acceptable range
+                if (stopPct > ACTION_THRESHOLDS.MAX_STOP_PERCENT) {
+                    setup.stopTooWide = true;
+                }
+            }
+
+            // Target
+            if (result.target) {
+                setup.hasTarget = true;
+                setup.target = parseFloat(result.target);
+                details.push('Target: $' + setup.target.toFixed(2));
+            }
+
+            // R:R Ratio
+            if (result.rr) {
+                setup.rrRatio = parseFloat(result.rr);
+                details.push('R:R: ' + setup.rrRatio.toFixed(1) + ':1');
+            } else if (setup.hasStop && setup.hasTarget) {
+                var risk = Math.abs(currentPrice - setup.stop);
+                var reward = Math.abs(setup.target - currentPrice);
+                setup.rrRatio = risk > 0 ? reward / risk : 0;
+                details.push('R:R: ' + setup.rrRatio.toFixed(1) + ':1');
+            }
+
+            // Check count for confidence
+            setup.confidence = result.checkCount ? (result.checkCount / 6 * 100) : 50;
+        }
+    }
+
+    // Calculate passed status
+    var passed = setup.hasEntry &&
+                 setup.hasStop &&
+                 setup.hasTarget &&
+                 setup.rrRatio >= ACTION_THRESHOLDS.MIN_RR_RATIO &&
+                 !setup.stopTooWide &&
+                 setup.confidence >= ACTION_THRESHOLDS.MIN_CONFIDENCE;
+
+    return {
+        passed: passed,
+        setup: setup,
+        details: details,
+        entry: setup.entry,
+        stop: setup.stop,
+        target: setup.target,
+        rrRatio: setup.rrRatio,
+        confidence: setup.confidence
+    };
+}
+
+// MASTER FILTER: Run all symbols through tiers
+function getActionCenterCandidates() {
+    console.log('🎯 Running Action Center filter on ' + SYMBOLS.length + ' symbols...');
+
+    actionCenterData.tier1Candidates = [];
+    actionCenterData.tier2Validated = [];
+    actionCenterData.tier3Ready = [];
+    actionCenterData.lastUpdate = new Date();
+
+    SYMBOLS.forEach(function(symbol) {
+        // Tier 1: Consensus check
+        var tier1 = getTier1Consensus(symbol);
+        if (tier1.passed) {
+            var candidate = {
+                symbol: symbol,
+                name: SYMBOL_NAMES[symbol] || symbol,
+                tier1: tier1
+            };
+            actionCenterData.tier1Candidates.push(candidate);
+
+            // Tier 2: Technical validation
+            var tier2 = getTier2Technical(symbol, tier1.direction);
+            candidate.tier2 = tier2;
+            if (tier2.passed) {
+                actionCenterData.tier2Validated.push(candidate);
+
+                // Tier 3: Trade setup
+                var tier3 = getTier3Setup(symbol, tier1.direction);
+                candidate.tier3 = tier3;
+                if (tier3.passed) {
+                    actionCenterData.tier3Ready.push(candidate);
+                }
+            }
+        }
+    });
+
+    console.log('📊 Action Center Results:');
+    console.log('  Tier 1 (Consensus): ' + actionCenterData.tier1Candidates.length + ' symbols');
+    console.log('  Tier 2 (Technical): ' + actionCenterData.tier2Validated.length + ' symbols');
+    console.log('  Tier 3 (Ready): ' + actionCenterData.tier3Ready.length + ' symbols');
+
+    return actionCenterData;
+}
+
+// Render Action Center results
+function renderActionCenter() {
+    var container = document.getElementById('actionCenterResults');
+    if (!container) {
+        console.log('❌ Action Center container not found');
+        return;
+    }
+
+    // Run the filter
+    var data = getActionCenterCandidates();
+
+    // Update counts in workflow display
+    updateActionCenterCounts(data);
+
+    var html = '';
+
+    // READY TO TRADE section (Tier 3)
+    html += '<div class="action-section ready-section">';
+    html += '<h3 style="color: #22c55e; margin-bottom: 15px;">🎯 READY TO TRADE (' + data.tier3Ready.length + ')</h3>';
+    if (data.tier3Ready.length === 0) {
+        html += '<p style="color: #666;">No symbols currently meet all criteria</p>';
+    } else {
+        data.tier3Ready.forEach(function(c) {
+            html += renderActionCard(c, 'ready');
+        });
+    }
+    html += '</div>';
+
+    // VALIDATED section (Tier 2)
+    html += '<div class="action-section validated-section">';
+    html += '<h3 style="color: #3b82f6; margin-bottom: 15px;">✓ VALIDATED (' + data.tier2Validated.length + ')</h3>';
+    if (data.tier2Validated.length === 0) {
+        html += '<p style="color: #666;">No symbols passed technical validation</p>';
+    } else {
+        data.tier2Validated.filter(function(c) {
+            return !c.tier3 || !c.tier3.passed;
+        }).forEach(function(c) {
+            html += renderActionCard(c, 'validated');
+        });
+    }
+    html += '</div>';
+
+    // CONSENSUS section (Tier 1)
+    html += '<div class="action-section consensus-section">';
+    html += '<h3 style="color: #f59e0b; margin-bottom: 15px;">📊 CONSENSUS (' + data.tier1Candidates.length + ')</h3>';
+    if (data.tier1Candidates.length === 0) {
+        html += '<p style="color: #666;">No symbols have consensus agreement</p>';
+    } else {
+        data.tier1Candidates.filter(function(c) {
+            return !c.tier2 || !c.tier2.passed;
+        }).slice(0, 10).forEach(function(c) {
+            html += renderActionCard(c, 'consensus');
+        });
+    }
+    html += '</div>';
+
+    container.innerHTML = html;
+}
+
+// Render individual action card
+function renderActionCard(candidate, tier) {
+    var c = candidate;
+    var dirClass = c.tier1.direction === 'CALL' ? 'call-badge' : 'put-badge';
+    var bgColor = tier === 'ready' ? 'rgba(34,197,94,0.1)' :
+                  tier === 'validated' ? 'rgba(59,130,246,0.1)' : 'rgba(245,158,11,0.1)';
+    var borderColor = tier === 'ready' ? '#22c55e' : tier === 'validated' ? '#3b82f6' : '#f59e0b';
+
+    var html = '<div class="action-card" style="background:' + bgColor + ';border-left:4px solid ' + borderColor + ';padding:12px;margin-bottom:10px;border-radius:8px;">';
+
+    // Header
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+    html += '<span style="font-weight:700;font-size:16px;cursor:pointer;" onclick="selectSymbolFromAction(\'' + c.symbol + '\')">' + c.symbol + '</span>';
+    html += '<span class="' + dirClass + '" style="padding:4px 12px;border-radius:4px;font-weight:600;color:white;background:' + (c.tier1.direction === 'CALL' ? '#22c55e' : '#ef4444') + ';">' + c.tier1.direction + '</span>';
+    html += '</div>';
+
+    // Consensus info
+    html += '<div style="font-size:12px;color:#999;margin-bottom:6px;">';
+    html += 'Consensus: ' + c.tier1.votes + '/' + c.tier1.total + ' (' + c.tier1.agreement + '% agreement)';
+    html += '</div>';
+
+    // Technical details if available
+    if (c.tier2 && c.tier2.details.length > 0) {
+        html += '<div style="font-size:11px;color:#888;">' + c.tier2.details.join(' | ') + '</div>';
+    }
+
+    // Trade setup if available
+    if (c.tier3) {
+        html += '<div style="font-size:11px;color:#22c55e;margin-top:4px;">';
+        html += 'R:R ' + c.tier3.rrRatio.toFixed(1) + ':1 | Confidence: ' + c.tier3.confidence.toFixed(0) + '%';
+        html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+}
+
+// Update workflow count badges
+function updateActionCenterCounts(data) {
+    var t1Count = document.getElementById('tier1Count');
+    var t2Count = document.getElementById('tier2Count');
+    var t3Count = document.getElementById('tier3Count');
+
+    if (t1Count) t1Count.textContent = data.tier1Candidates.length;
+    if (t2Count) t2Count.textContent = data.tier2Validated.length;
+    if (t3Count) t3Count.textContent = data.tier3Ready.length;
+}
+
+// Select symbol from Action Center
+function selectSymbolFromAction(symbol) {
+    if (typeof SymbolManager !== 'undefined') {
+        SymbolManager.set(symbol);
+    }
+    // Switch to main analysis tab
+    var mainTab = document.querySelector('[data-tab="main-analysis"]');
+    if (mainTab) mainTab.click();
+}
+
+// View full analysis for a symbol
+function viewFullAnalysis(symbol) {
+    selectSymbolFromAction(symbol);
+}
+
+// =============================================================================
 // INITIALIZE GLOBAL SYMBOL MANAGER AND REGISTER CALLBACKS
 // =============================================================================
 
@@ -39417,12 +40056,24 @@ document.addEventListener('DOMContentLoaded', function() {
         SymbolManager.triggerUpdates(initialSymbol);
     }, 1000);
 
-    // Tab click handler for Action Center
+    // Tab click handler for Action Center (Dual Trade)
     var actionCenterTab = document.querySelector('[data-tab="action-center"]');
     if (actionCenterTab) {
         actionCenterTab.addEventListener('click', function() {
             setTimeout(function() {
                 loadDualTradeAnalysis(SymbolManager.get());
+            }, 100);
+        });
+    }
+
+    // Tab click handler for Workflow Center (Tiered Filter)
+    var workflowCenterTab = document.querySelector('[data-tab="workflow-center"]');
+    if (workflowCenterTab) {
+        workflowCenterTab.addEventListener('click', function() {
+            setTimeout(function() {
+                if (typeof renderActionCenter === 'function') {
+                    renderActionCenter();
+                }
             }, 100);
         });
     }
