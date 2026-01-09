@@ -38834,6 +38834,19 @@ async function loadDualTradeSetup(symbol) {
 
     container.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 24px;">⏳</div><div>Loading ' + symbol + '...</div></div>';
 
+    // Sync main symbol selector to match - this updates the banner with live price
+    if (typeof currentSymbol !== 'undefined' && currentSymbol !== symbol) {
+        var mainSelector = document.getElementById('symbolSelect');
+        if (mainSelector) {
+            mainSelector.value = symbol;
+            if (typeof selectSymbol === 'function') {
+                selectSymbol(symbol);
+                // Wait for banner price to update
+                await new Promise(function(resolve) { setTimeout(resolve, 500); });
+            }
+        }
+    }
+
     try {
         var response = await fetch('data/sq9_scanner.json?t=' + Date.now());
         var jsonData = await response.json();
@@ -38845,10 +38858,22 @@ async function loadDualTradeSetup(symbol) {
             return;
         }
 
-        // Get price from banner instead of scanner data
-        var bannerPriceEl = document.getElementById('currentPrice');
-        var bannerPrice = bannerPriceEl ? parseFloat(bannerPriceEl.textContent.replace(/[^0-9.-]/g, '')) : 0;
-        var price = bannerPrice > 0 ? bannerPrice : (data.price || 0);
+        // Get price from banner if symbols match, otherwise use scanner
+        var price = data.price || 0;
+
+        // Check if banner symbol matches selected symbol
+        if (typeof currentSymbol !== 'undefined' && currentSymbol === symbol) {
+            var bannerPriceEl = document.getElementById('currentPrice');
+            if (bannerPriceEl) {
+                var bannerText = bannerPriceEl.textContent || bannerPriceEl.innerText || '';
+                var bannerPrice = parseFloat(bannerText.replace(/[$,\s]/g, ''));
+                if (!isNaN(bannerPrice) && bannerPrice > 0) {
+                    price = bannerPrice;
+                    console.log('Using banner price for ' + symbol + ': $' + price);
+                }
+            }
+        }
+
         var sq9Level = data.sq9_level || price * 0.99;
         var checkCount = data.check_count || 0;
         var direction = data.direction || 'CALL';
