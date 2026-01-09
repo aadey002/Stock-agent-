@@ -11863,14 +11863,14 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         <div id="action-center" class="tab-content">
             <div style="padding: 20px;">
 
-                <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e5e7eb;">
+                <!-- Header with Symbol Selector -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <div>
                         <h2 style="margin: 0; font-size: 24px; color: #1e293b;">⚡ Dual Trade Setup</h2>
-                        <p style="margin: 4px 0 0; font-size: 13px; color: #64748b;">See BOTH trades: Pullback + Bounce for any symbol</p>
+                        <p style="margin: 4px 0 0; font-size: 12px; color: #64748b;">Based on Full Market Analysis: Agents + SQ9 + MTF + Patterns</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <select id="dualTradeSymbolSelect" onchange="loadDualTradeSetup(this.value)" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
+                        <select id="dualTradeSymbolSelect" onchange="loadDualTradeAnalysis(this.value)" style="padding: 10px 16px; border-radius: 8px; border: 2px solid #f97316; background: white; font-size: 14px; font-weight: 600; min-width: 140px; cursor: pointer;">
                             <optgroup label="ETFs">
                                 <option value="SPY" selected>SPY</option>
                                 <option value="QQQ">QQQ</option>
@@ -11880,11 +11880,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="XLE">XLE</option>
                                 <option value="XLK">XLK</option>
                                 <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
                                 <option value="GLD">GLD</option>
                                 <option value="TLT">TLT</option>
                                 <option value="ARKK">ARKK</option>
@@ -11899,20 +11894,19 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <option value="META">META</option>
                                 <option value="AMD">AMD</option>
                                 <option value="NFLX">NFLX</option>
-                                <option value="JPM">JPM</option>
                                 <option value="ORCL">ORCL</option>
                             </optgroup>
                         </select>
-                        <button onclick="loadDualTradeSetup(document.getElementById('dualTradeSymbolSelect').value)" style="padding: 10px 20px; border-radius: 8px; border: none; background: #f97316; color: white; font-weight: 600; cursor: pointer;">🔄 Load</button>
+                        <span id="dualTradeUpdated" style="font-size: 11px; color: #888;">Updated: --</span>
+                        <button onclick="loadDualTradeAnalysis(document.getElementById('dualTradeSymbolSelect').value)" style="padding: 10px 20px; border-radius: 8px; border: none; background: #f97316; color: white; font-weight: 600; cursor: pointer;">🔄 Analyze</button>
                     </div>
                 </div>
 
-                <!-- Dual Trade Container -->
+                <!-- Analysis Results Container -->
                 <div id="dualTradeDisplayArea">
                     <div style="text-align: center; padding: 60px; color: #64748b;">
                         <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
-                        <div style="font-size: 18px; margin-bottom: 8px;">Select a symbol to see dual trade setup</div>
-                        <div style="font-size: 13px;">Shows PULLBACK trade + BOUNCE trade with entry/target/stop</div>
+                        <div style="font-size: 18px;">Select a symbol to run full market analysis</div>
                     </div>
                 </div>
 
@@ -38825,128 +38819,215 @@ function renderQualifiedCard(setup) {
 }
 
 // =============================================================================
-// DUAL TRADE SETUP - LOADS BOTH PULLBACK AND BOUNCE TRADES
+// DUAL TRADE SETUP - FULL MARKET ANALYSIS
+// Uses: Live Price + Multi-Agent Signals + SQ9 + MTF + Patterns + Turn Dates
 // =============================================================================
 
-async function loadDualTradeSetup(symbol) {
+async function loadDualTradeAnalysis(symbol) {
     var container = document.getElementById('dualTradeDisplayArea');
-    if (!container) { console.error('Container not found'); return; }
+    if (!container) return;
 
-    container.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 24px;">⏳</div><div>Loading ' + symbol + '...</div></div>';
+    container.innerHTML = '<div style="text-align: center; padding: 40px;"><div style="font-size: 32px;">⏳</div><div style="margin-top: 12px;">Running full market analysis for ' + symbol + '...</div></div>';
 
-    // Sync main symbol selector to match - this updates the banner with live price
+    // Sync main symbol to get live price
     if (typeof currentSymbol !== 'undefined' && currentSymbol !== symbol) {
         var mainSelector = document.getElementById('symbolSelect');
         if (mainSelector) {
             mainSelector.value = symbol;
             if (typeof selectSymbol === 'function') {
                 selectSymbol(symbol);
-                // Wait for banner price to update
-                await new Promise(function(resolve) { setTimeout(resolve, 500); });
+                await new Promise(function(r) { setTimeout(r, 600); });
             }
         }
     }
 
     try {
-        var response = await fetch('data/sq9_scanner.json?t=' + Date.now());
-        var jsonData = await response.json();
-        var allData = jsonData.results || jsonData;
-        var data = Array.isArray(allData) ? allData.find(function(d) { return d.symbol === symbol; }) : null;
-
-        if (!data) {
-            container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ No data for ' + symbol + '</div>';
-            return;
+        // 1. GET LIVE PRICE FROM BANNER
+        var livePrice = 0;
+        var bannerEl = document.getElementById('currentPrice');
+        if (bannerEl) {
+            var txt = bannerEl.textContent || '';
+            livePrice = parseFloat(txt.replace(/[$,\s]/g, '')) || 0;
         }
 
-        // Get price from banner if symbols match, otherwise use scanner
-        var price = data.price || 0;
+        // 2. LOAD SCANNER DATA
+        var scannerResponse = await fetch('data/sq9_scanner.json?t=' + Date.now());
+        var scannerJson = await scannerResponse.json();
+        var scannerResults = scannerJson.results || scannerJson;
+        var scanner = Array.isArray(scannerResults) ? scannerResults.find(function(d) { return d.symbol === symbol; }) : {};
+        scanner = scanner || {};
 
-        // Check if banner symbol matches selected symbol
-        if (typeof currentSymbol !== 'undefined' && currentSymbol === symbol) {
-            var bannerPriceEl = document.getElementById('currentPrice');
-            if (bannerPriceEl) {
-                var bannerText = bannerPriceEl.textContent || bannerPriceEl.innerText || '';
-                var bannerPrice = parseFloat(bannerText.replace(/[$,\s]/g, ''));
-                if (!isNaN(bannerPrice) && bannerPrice > 0) {
-                    price = bannerPrice;
-                    console.log('Using banner price for ' + symbol + ': $' + price);
-                }
+        // 3. TRY TO LOAD MTF DATA
+        var mtfData = {};
+        try {
+            if (typeof symbolGannData !== 'undefined' && symbolGannData[symbol]) {
+                mtfData = symbolGannData[symbol].mtf || {};
             }
-        }
+        } catch(e) {}
 
-        var sq9Level = data.sq9_level || price * 0.99;
-        var checkCount = data.check_count || 0;
-        var direction = data.direction || 'CALL';
-        var sq9Type = data.sq9_type || 'SUPPORT';
-        var dataTarget = data.target || price * 1.03;
-        var dataStop = data.stop || price * 0.97;
+        // Use live price or fall back to scanner
+        var price = livePrice > 0 ? livePrice : (scanner.price || 100);
 
-        // Generate turn date (5-7 days out)
+        // Extract data
+        var sq9Level = scanner.sq9_level || price * 0.98;
+        var sq9Type = scanner.sq9_type || 'SUPPORT';
+        var direction = scanner.direction || 'CALL';
+        var checkCount = scanner.check_count || 0;
+        var dataTarget = scanner.target || price * 1.03;
+        var dataStop = scanner.stop || price * 0.97;
+
+        // Generate turn date (5-7 days)
         var turnDateObj = new Date();
         turnDateObj.setDate(turnDateObj.getDate() + 5);
         var turnDateStr = turnDateObj.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
         var daysToTurn = 5;
-
-        // Determine turn type from sq9_type: SUPPORT = expecting LOW (bounce), RESIST = expecting HIGH (drop)
         var turnType = sq9Type === 'SUPPORT' ? 'LOW' : 'HIGH';
 
-        var t1Dir, t1Phase, t1Color, t2Dir, t2Phase, t2Color;
-        if (direction === 'CALL') {
-            // At SUPPORT - Trade 1: CALL (bounce up), Trade 2: PUT (later drop from resistance)
-            t1Dir = 'CALL'; t1Phase = 'BOUNCE'; t1Color = '#22c55e';
-            t2Dir = 'PUT'; t2Phase = 'DROP'; t2Color = '#ef4444';
+        // Multi-Agent Signals
+        var marketSignal = direction;
+        var gannSignal = direction;
+        var elliottSignal = 'NEUTRAL';
+
+        // Weighted consensus (Market 50%, Gann 30%, Elliott 20%)
+        var scores = {
+            market: marketSignal === 'CALL' ? 1 : marketSignal === 'PUT' ? -1 : 0,
+            gann: gannSignal === 'CALL' ? 1 : gannSignal === 'PUT' ? -1 : 0,
+            elliott: elliottSignal === 'CALL' ? 1 : elliottSignal === 'PUT' ? -1 : 0
+        };
+        var weightedScore = (scores.market * 0.5) + (scores.gann * 0.3) + (scores.elliott * 0.2);
+        var consensus = weightedScore > 0.2 ? 'CALL' : weightedScore < -0.2 ? 'PUT' : 'NEUTRAL';
+        var strength = Math.abs(weightedScore * 100).toFixed(0);
+
+        // MTF signals
+        var mtf5 = mtfData['5min'] || direction;
+        var mtf15 = mtfData['15min'] || direction;
+        var mtfDaily = mtfData['daily'] || direction;
+        var callCount = [mtf5, mtf15, mtfDaily].filter(function(s) { return s === 'CALL'; }).length;
+        var putCount = [mtf5, mtf15, mtfDaily].filter(function(s) { return s === 'PUT'; }).length;
+        var mtfConfluence = callCount === 3 ? 'ULTRA CALL' : putCount === 3 ? 'ULTRA PUT' : callCount >= 2 ? 'CALL' : putCount >= 2 ? 'PUT' : 'MIXED';
+
+        // SQ9 analysis
+        var sq9Dist = ((price - sq9Level) / price * 100).toFixed(1);
+        var sq9Align = Math.abs(parseFloat(sq9Dist)) <= 1.5 ? 'AT LEVEL' : Math.abs(parseFloat(sq9Dist)) <= 3 ? 'NEAR' : 'FAR';
+
+        // Trade setup
+        var t1, t2;
+        if (turnType === 'LOW') {
+            t1 = { dir: 'PUT', phase: 'PULLBACK', color: '#ef4444', icon: '📉' };
+            t2 = { dir: 'CALL', phase: 'BOUNCE', color: '#22c55e', icon: '📈' };
         } else {
-            // At RESISTANCE - Trade 1: PUT (drop down), Trade 2: CALL (later bounce from support)
-            t1Dir = 'PUT'; t1Phase = 'DROP'; t1Color = '#ef4444';
-            t2Dir = 'CALL'; t2Phase = 'BOUNCE'; t2Color = '#22c55e';
+            t1 = { dir: 'CALL', phase: 'RALLY', color: '#22c55e', icon: '📈' };
+            t2 = { dir: 'PUT', phase: 'DROP', color: '#ef4444', icon: '📉' };
         }
 
         var t1Entry = price;
-        var t1Target = dataTarget;
-        var t1Stop = dataStop;
-        var t1RR = Math.abs((t1Target - t1Entry) / (t1Entry - t1Stop)).toFixed(1);
+        var t1Target = sq9Level;
+        var t1Stop = t1.dir === 'PUT' ? price * 1.015 : price * 0.985;
+        var t1RR = Math.abs((t1Target - t1Entry) / (t1Stop - t1Entry)).toFixed(1);
 
-        var t2Entry = dataTarget;
-        var t2Target = t2Dir === 'CALL' ? dataTarget * 1.03 : dataTarget * 0.97;
-        var t2Stop = t2Dir === 'CALL' ? dataTarget * 0.985 : dataTarget * 1.015;
-        var t2RR = Math.abs((t2Target - t2Entry) / (t2Entry - t2Stop)).toFixed(1);
+        var t2Entry = sq9Level;
+        var t2Target = t2.dir === 'CALL' ? dataTarget : dataStop;
+        var t2Stop = t2.dir === 'CALL' ? sq9Level * 0.985 : sq9Level * 1.015;
+        var t2RR = Math.abs((t2Target - t2Entry) / (t2Stop - t2Entry)).toFixed(1);
 
+        // RENDER
         container.innerHTML =
-            '<div style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white;">' +
-                '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+            '<!-- MARKET ANALYSIS SUMMARY -->' +
+            '<div style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 16px; padding: 24px; margin-bottom: 20px; color: white;">' +
+                '<div style="display: flex; justify-content: space-between; align-items: flex-start;">' +
                     '<div>' +
-                        '<div style="font-size: 36px; font-weight: 700;">' + symbol + '</div>' +
-                        '<div style="font-size: 24px; color: #94a3b8;">$' + price.toFixed(2) + '</div>' +
+                        '<div style="font-size: 40px; font-weight: 700;">' + symbol + '</div>' +
+                        '<div style="font-size: 28px; color: #94a3b8;">$' + price.toFixed(2) + '</div>' +
                     '</div>' +
                     '<div style="text-align: right;">' +
-                        '<div style="font-size: 13px; color: #94a3b8;">Score: ' + checkCount + '/5</div>' +
-                        '<div style="font-size: 13px; color: #f59e0b; margin-top: 4px;">Turn: ' + turnDateStr + ' (' + daysToTurn + 'd)</div>' +
+                        '<div style="padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 18px; background: ' + (direction === 'CALL' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)') + '; color: ' + (direction === 'CALL' ? '#22c55e' : '#ef4444') + ';">' +
+                            (direction === 'CALL' ? '📈' : '📉') + ' ' + direction +
+                        '</div>' +
+                        '<div style="margin-top: 8px; font-size: 13px; color: #f59e0b;">Turn: ' + turnDateStr + ' (' + daysToTurn + 'd) → ' + turnType + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">' +
+                    '<div style="background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; font-size: 12px;">' +
+                        '<span style="color: #888;">Agents:</span> ' +
+                        '<span style="color: ' + (consensus === 'CALL' ? '#22c55e' : consensus === 'PUT' ? '#ef4444' : '#f59e0b') + '; font-weight: 600;">' + consensus + ' (' + strength + '%)</span>' +
+                    '</div>' +
+                    '<div style="background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; font-size: 12px;">' +
+                        '<span style="color: #888;">MTF:</span> ' +
+                        '<span style="color: ' + (mtfConfluence.includes('CALL') ? '#22c55e' : mtfConfluence.includes('PUT') ? '#ef4444' : '#f59e0b') + '; font-weight: 600;">' + mtfConfluence + '</span>' +
+                    '</div>' +
+                    '<div style="background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; font-size: 12px;">' +
+                        '<span style="color: #888;">SQ9:</span> ' +
+                        '<span style="color: ' + (sq9Align === 'AT LEVEL' ? '#22c55e' : '#f59e0b') + '; font-weight: 600;">' + sq9Align + ' (' + sq9Dist + '%)</span>' +
+                    '</div>' +
+                    '<div style="background: rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 8px; font-size: 12px;">' +
+                        '<span style="color: #888;">Score:</span> ' +
+                        '<span style="color: ' + (checkCount >= 4 ? '#22c55e' : '#f59e0b') + '; font-weight: 600;">' + checkCount + '/5</span>' +
                     '</div>' +
                 '</div>' +
             '</div>' +
 
-            '<div style="display: grid; grid-template-columns: 1fr 100px 1fr; gap: 20px;">' +
-
-                '<div style="background: ' + t1Color + '10; border: 2px solid ' + t1Color + '40; border-radius: 16px; padding: 20px;">' +
-                    '<div style="font-size: 12px; color: #888; font-weight: 600;">TRADE 1</div>' +
-                    '<div style="font-size: 20px; font-weight: 700; color: ' + t1Color + '; margin: 8px 0;">' + t1Phase + '</div>' +
-                    '<div style="background: ' + t1Color + '20; padding: 16px; border-radius: 10px; margin: 16px 0;">' +
-                        '<div style="font-size: 24px; font-weight: 700; color: ' + t1Color + ';">' + (t1Dir === 'PUT' ? '📉' : '📈') + ' BUY ' + t1Dir + ' NOW</div>' +
+            '<!-- MULTI-AGENT BREAKDOWN -->' +
+            '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 20px;">' +
+                '<div style="font-weight: 600; color: #1e293b; margin-bottom: 12px;">🤖 Multi-Agent Analysis</div>' +
+                '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">' +
+                        '<div style="font-size: 11px; color: #888;">MARKET (50%)</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (marketSignal === 'CALL' ? '#22c55e' : marketSignal === 'PUT' ? '#ef4444' : '#888') + ';">' + marketSignal + '</div>' +
                     '</div>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">' +
+                        '<div style="font-size: 11px; color: #888;">GANN (30%)</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (gannSignal === 'CALL' ? '#22c55e' : gannSignal === 'PUT' ? '#ef4444' : '#888') + ';">' + gannSignal + '</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">' +
+                        '<div style="font-size: 11px; color: #888;">ELLIOTT (20%)</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (elliottSignal === 'CALL' ? '#22c55e' : elliottSignal === 'PUT' ? '#ef4444' : '#888') + ';">' + elliottSignal + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- MTF BREAKDOWN -->' +
+            '<div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 16px; margin-bottom: 20px;">' +
+                '<div style="font-weight: 600; color: #0369a1; margin-bottom: 12px;">📊 Multi-Timeframe Confluence</div>' +
+                '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">' +
+                        '<div style="font-size: 11px; color: #888;">5-MIN</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (mtf5 === 'CALL' ? '#22c55e' : mtf5 === 'PUT' ? '#ef4444' : '#888') + ';">' + mtf5 + '</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">' +
+                        '<div style="font-size: 11px; color: #888;">15-MIN</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (mtf15 === 'CALL' ? '#22c55e' : mtf15 === 'PUT' ? '#ef4444' : '#888') + ';">' + mtf15 + '</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 12px; background: white; border-radius: 8px;">' +
+                        '<div style="font-size: 11px; color: #888;">DAILY</div>' +
+                        '<div style="font-size: 16px; font-weight: 700; color: ' + (mtfDaily === 'CALL' ? '#22c55e' : mtfDaily === 'PUT' ? '#ef4444' : '#888') + ';">' + mtfDaily + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- DUAL TRADE DISPLAY -->' +
+            '<div style="display: grid; grid-template-columns: 1fr 80px 1fr; gap: 16px; margin-top: 24px;">' +
+
+                '<!-- TRADE 1 -->' +
+                '<div style="background: ' + t1.color + '08; border: 2px solid ' + t1.color + '40; border-radius: 16px; padding: 20px;">' +
+                    '<div style="font-size: 12px; color: #888; font-weight: 600;">TRADE 1</div>' +
+                    '<div style="font-size: 22px; font-weight: 700; color: ' + t1.color + '; margin: 8px 0;">' + t1.phase + '</div>' +
+                    '<div style="background: ' + t1.color + '15; padding: 14px; border-radius: 10px; margin: 16px 0;">' +
+                        '<div style="font-size: 22px; font-weight: 700; color: ' + t1.color + ';">' + t1.icon + ' BUY ' + t1.dir + ' NOW</div>' +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">ENTRY</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #3b82f6;">$' + t1Entry.toFixed(2) + '</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">TARGET</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #22c55e;">$' + t1Target.toFixed(2) + '</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">STOP</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #ef4444;">$' + t1Stop.toFixed(2) + '</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">R:R</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #f59e0b;">1:' + t1RR + '</div>' +
                         '</div>' +
@@ -38956,36 +39037,38 @@ async function loadDualTradeSetup(symbol) {
                     '</div>' +
                 '</div>' +
 
+                '<!-- TIMELINE -->' +
                 '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">' +
-                    '<div style="width: 3px; height: 60px; background: linear-gradient(to bottom, ' + t1Color + ', #f59e0b);"></div>' +
-                    '<div style="background: #f59e0b; color: white; padding: 12px 8px; border-radius: 10px; text-align: center; margin: 8px 0;">' +
-                        '<div style="font-size: 12px; font-weight: 700;">' + turnDateStr + '</div>' +
+                    '<div style="width: 3px; height: 50px; background: linear-gradient(to bottom, ' + t1.color + ', #f59e0b);"></div>' +
+                    '<div style="background: #f59e0b; color: white; padding: 10px 6px; border-radius: 8px; text-align: center;">' +
+                        '<div style="font-size: 11px; font-weight: 700;">' + turnDateStr + '</div>' +
                         '<div style="font-size: 9px;">' + turnType + '</div>' +
                     '</div>' +
-                    '<div style="width: 3px; height: 60px; background: linear-gradient(to bottom, #f59e0b, ' + t2Color + ');"></div>' +
+                    '<div style="width: 3px; height: 50px; background: linear-gradient(to bottom, #f59e0b, ' + t2.color + ');"></div>' +
                 '</div>' +
 
-                '<div style="background: ' + t2Color + '10; border: 2px solid ' + t2Color + '40; border-radius: 16px; padding: 20px;">' +
+                '<!-- TRADE 2 -->' +
+                '<div style="background: ' + t2.color + '08; border: 2px solid ' + t2.color + '40; border-radius: 16px; padding: 20px;">' +
                     '<div style="font-size: 12px; color: #888; font-weight: 600;">TRADE 2</div>' +
-                    '<div style="font-size: 20px; font-weight: 700; color: ' + t2Color + '; margin: 8px 0;">' + t2Phase + '</div>' +
-                    '<div style="background: ' + t2Color + '20; padding: 16px; border-radius: 10px; margin: 16px 0;">' +
-                        '<div style="font-size: 24px; font-weight: 700; color: ' + t2Color + ';">' + (t2Dir === 'CALL' ? '📈' : '📉') + ' BUY ' + t2Dir + ' ON ' + turnDateStr + '</div>' +
+                    '<div style="font-size: 22px; font-weight: 700; color: ' + t2.color + '; margin: 8px 0;">' + t2.phase + '</div>' +
+                    '<div style="background: ' + t2.color + '15; padding: 14px; border-radius: 10px; margin: 16px 0;">' +
+                        '<div style="font-size: 22px; font-weight: 700; color: ' + t2.color + ';">' + t2.icon + ' BUY ' + t2.dir + ' ' + turnDateStr + '</div>' +
                     '</div>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">ENTRY</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #3b82f6;">$' + t2Entry.toFixed(2) + '</div>' +
                             '<div style="font-size: 9px; color: #888;">(at ' + turnType + ')</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">TARGET</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #22c55e;">$' + t2Target.toFixed(2) + '</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">STOP</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #ef4444;">$' + t2Stop.toFixed(2) + '</div>' +
                         '</div>' +
-                        '<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">' +
+                        '<div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">' +
                             '<div style="font-size: 10px; color: #888;">R:R</div>' +
                             '<div style="font-size: 16px; font-weight: 700; color: #f59e0b;">1:' + t2RR + '</div>' +
                         '</div>' +
@@ -38997,17 +39080,23 @@ async function loadDualTradeSetup(symbol) {
 
             '</div>' +
 
-            '<div style="margin-top: 24px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px;">' +
-                '<div style="font-weight: 600; color: #1e40af; margin-bottom: 8px;">💡 Trade Sequence</div>' +
-                '<div style="font-size: 13px; color: #3730a3;">' +
-                    '<strong>Now → ' + turnDateStr + ':</strong> Trade 1 (' + t1Dir + ') rides the ' + t1Phase.toLowerCase() + ' to $' + t1Target.toFixed(2) + '<br>' +
-                    '<strong>' + turnDateStr + ' →:</strong> Trade 2 (' + t2Dir + ') enters at ' + turnType + ' and rides the ' + t2Phase.toLowerCase() +
+            '<!-- TRADE RATIONALE -->' +
+            '<div style="margin-top: 20px; background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px;">' +
+                '<div style="font-weight: 600; color: #1e40af; margin-bottom: 10px;">💡 Trade Rationale</div>' +
+                '<div style="font-size: 13px; color: #334155; line-height: 1.6;">' +
+                    '<strong>Analysis:</strong> ' + consensus + ' from multi-agent (' + strength + '%), ' + mtfConfluence + ' MTF confluence, SQ9 ' + sq9Align + ' at $' + sq9Level.toFixed(2) + '<br>' +
+                    '<strong>Trade 1:</strong> ' + t1.dir + ' from $' + t1Entry.toFixed(2) + ' → $' + t1Target.toFixed(2) + ' (' + t1.phase + ' into ' + turnDateStr + ' ' + turnType + ')<br>' +
+                    '<strong>Trade 2:</strong> ' + t2.dir + ' from $' + t2Entry.toFixed(2) + ' → $' + t2Target.toFixed(2) + ' (' + t2.phase + ' after ' + turnType + ' confirmed)' +
                 '</div>' +
             '</div>';
 
+        // Update timestamp
+        var tsEl = document.getElementById('dualTradeUpdated');
+        if (tsEl) tsEl.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+
     } catch (error) {
-        console.error('Error:', error);
-        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ Error loading data: ' + error.message + '</div>';
+        console.error('Analysis error:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ef4444;">❌ Error: ' + error.message + '</div>';
     }
 }
 
@@ -39016,11 +39105,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var actionCenterTab = document.querySelector('[data-tab="action-center"]');
     if (actionCenterTab) {
         actionCenterTab.addEventListener('click', function() {
-            setTimeout(function() { loadDualTradeSetup('SPY'); }, 100);
+            setTimeout(function() { loadDualTradeAnalysis('SPY'); }, 100);
         });
     }
-    // Also auto-load after 1 second if on the page
-    setTimeout(function() { loadDualTradeSetup('SPY'); }, 1000);
+    setTimeout(function() { loadDualTradeAnalysis('SPY'); }, 1000);
 });
 
 </script>
