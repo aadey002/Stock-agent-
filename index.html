@@ -38846,33 +38846,42 @@ async function loadDualTradeSetup(symbol) {
         }
 
         var price = data.price || 0;
-        var turnDate = data.next_turn_date || data.turn_date || '2026-01-16';
-        var turnType = data.turn_type || 'LOW';
         var sq9Level = data.sq9_level || price * 0.99;
         var checkCount = data.check_count || 0;
+        var direction = data.direction || 'CALL';
+        var sq9Type = data.sq9_type || 'SUPPORT';
+        var dataTarget = data.target || price * 1.03;
+        var dataStop = data.stop || price * 0.97;
 
-        var turnDateObj = new Date(turnDate);
+        // Generate turn date (5-7 days out)
+        var turnDateObj = new Date();
+        turnDateObj.setDate(turnDateObj.getDate() + 5);
         var turnDateStr = turnDateObj.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-        var daysToTurn = Math.max(1, Math.ceil((turnDateObj - new Date()) / 86400000));
+        var daysToTurn = 5;
+
+        // Determine turn type from sq9_type: SUPPORT = expecting LOW (bounce), RESIST = expecting HIGH (drop)
+        var turnType = sq9Type === 'SUPPORT' ? 'LOW' : 'HIGH';
 
         var t1Dir, t1Phase, t1Color, t2Dir, t2Phase, t2Color;
-        if (turnType === 'LOW' || turnType === 'low') {
-            t1Dir = 'PUT'; t1Phase = 'PULLBACK'; t1Color = '#ef4444';
-            t2Dir = 'CALL'; t2Phase = 'BOUNCE'; t2Color = '#22c55e';
-        } else {
-            t1Dir = 'CALL'; t1Phase = 'RALLY'; t1Color = '#22c55e';
+        if (direction === 'CALL') {
+            // At SUPPORT - Trade 1: CALL (bounce up), Trade 2: PUT (later drop from resistance)
+            t1Dir = 'CALL'; t1Phase = 'BOUNCE'; t1Color = '#22c55e';
             t2Dir = 'PUT'; t2Phase = 'DROP'; t2Color = '#ef4444';
+        } else {
+            // At RESISTANCE - Trade 1: PUT (drop down), Trade 2: CALL (later bounce from support)
+            t1Dir = 'PUT'; t1Phase = 'DROP'; t1Color = '#ef4444';
+            t2Dir = 'CALL'; t2Phase = 'BOUNCE'; t2Color = '#22c55e';
         }
 
         var t1Entry = price;
-        var t1Target = sq9Level;
-        var t1Stop = t1Dir === 'PUT' ? price * 1.015 : price * 0.985;
-        var t1RR = Math.abs((t1Target - t1Entry) / (t1Stop - t1Entry)).toFixed(1);
+        var t1Target = dataTarget;
+        var t1Stop = dataStop;
+        var t1RR = Math.abs((t1Target - t1Entry) / (t1Entry - t1Stop)).toFixed(1);
 
-        var t2Entry = sq9Level;
-        var t2Target = t2Dir === 'CALL' ? price * 1.03 : price * 0.97;
-        var t2Stop = t2Dir === 'CALL' ? sq9Level * 0.985 : sq9Level * 1.015;
-        var t2RR = Math.abs((t2Target - t2Entry) / (t2Stop - t2Entry)).toFixed(1);
+        var t2Entry = dataTarget;
+        var t2Target = t2Dir === 'CALL' ? dataTarget * 1.03 : dataTarget * 0.97;
+        var t2Stop = t2Dir === 'CALL' ? dataTarget * 0.985 : dataTarget * 1.015;
+        var t2RR = Math.abs((t2Target - t2Entry) / (t2Entry - t2Stop)).toFixed(1);
 
         container.innerHTML =
             '<div style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white;">' +
