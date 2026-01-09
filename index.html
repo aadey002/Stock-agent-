@@ -11661,71 +11661,12 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                 </div>
 
-                <!-- TURN PREDICTION TRACKER -->
+                <!-- TURN PREDICTION TRACKER - AUTO MODE -->
                 <div id="turnPredictionTracker" style="background: var(--card); border-radius: 12px; padding: 16px; margin-top: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <h3 style="margin: 0; font-size: 16px;">📅 Turn Prediction Tracker</h3>
-                            <span id="turnSymbolBadge" style="padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.15); color: #3b82f6;">SPY</span>
-                        </div>
-                        <button onclick="markActualTurn()" style="padding: 6px 12px; border-radius: 6px; border: none; background: #8b5cf6; color: white; cursor: pointer; font-size: 11px;">
-                            ✅ Mark Actual Turn
-                        </button>
-                    </div>
-
-                    <!-- Prediction vs Actual Grid -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                        <!-- PREDICTED -->
-                        <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 16px;">
-                            <div style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 600;">🔮 PREDICTED</div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                <div>
-                                    <div style="font-size: 10px; color: #888;">Turn Date</div>
-                                    <div id="predictedTurnDate" style="font-size: 18px; font-weight: 700; color: #3b82f6;">--</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 10px; color: #888;">Turn Type</div>
-                                    <div id="predictedTurnType" style="font-size: 18px; font-weight: 700;">--</div>
-                                </div>
-                            </div>
-                            <div style="margin-top: 12px;">
-                                <div style="font-size: 10px; color: #888;">Days Until</div>
-                                <div id="daysUntilTurn" style="font-size: 14px; font-weight: 600;">--</div>
-                            </div>
-                        </div>
-
-                        <!-- ACTUAL -->
-                        <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; padding: 16px;">
-                            <div style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 600;">✅ ACTUAL</div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                <div>
-                                    <div style="font-size: 10px; color: #888;">Turn Date</div>
-                                    <div id="actualTurnDate" style="font-size: 18px; font-weight: 700; color: #22c55e;">--</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 10px; color: #888;">Turn Type</div>
-                                    <div id="actualTurnType" style="font-size: 18px; font-weight: 700;">--</div>
-                                </div>
-                            </div>
-                            <div style="margin-top: 12px;">
-                                <div style="font-size: 10px; color: #888;">Price at Turn</div>
-                                <div id="priceAtTurn" style="font-size: 14px; font-weight: 600;">--</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Accuracy Result -->
-                    <div id="turnAccuracyResult" style="display: none; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; text-align: center;">
-                        <div style="font-size: 10px; color: #888; margin-bottom: 8px;">PREDICTION ACCURACY</div>
-                        <div id="turnAccuracyText" style="font-size: 20px; font-weight: 700;">--</div>
-                    </div>
-
-                    <!-- Historical Accuracy -->
-                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
-                        <div style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 600;">HISTORICAL ACCURACY</div>
-                        <div id="turnHistoryList" style="max-height: 200px; overflow-y: auto;">
-                            <div style="text-align: center; color: #888; padding: 20px; font-size: 11px;">No history yet</div>
-                        </div>
+                    <!-- Dynamically populated by renderTurnPredictionTracker() -->
+                    <div style="text-align: center; padding: 30px; color: #888;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">📅</div>
+                        <div>Loading auto-detection system...</div>
                     </div>
                 </div>
 
@@ -13776,226 +13717,517 @@ function renderPatternResults(symbol, patterns, confluence, tfResults) {
 }
 
 // =============================================================================
-// TURN PREDICTION TRACKING
+// AUTOMATIC SWING HIGH/LOW DETECTION
 // =============================================================================
 
-var turnPredictions = {};
+var SWING_CONFIG = {
+    lookback: 3,        // Candles to check before pivot
+    lookforward: 3,     // Candles to check after pivot (for confirmation)
+    minSwingSize: 0.5,  // Minimum % move to qualify as swing
+    confirmationDays: 2 // Days to wait for confirmation
+};
 
-function loadTurnPredictions() {
-    try {
-        var saved = localStorage.getItem('turnPredictions');
-        if (saved) {
-            var parsed = JSON.parse(saved);
-            for (var key in parsed) {
-                turnPredictions[key] = parsed[key];
+/**
+ * Detect swing highs and lows from price data
+ */
+function detectSwingPoints(priceData, lookback, lookforward) {
+    lookback = lookback || 3;
+    lookforward = lookforward || 3;
+
+    if (!priceData || priceData.length < lookback + lookforward + 1) {
+        return [];
+    }
+
+    var swings = [];
+
+    for (var i = lookback; i < priceData.length - lookforward; i++) {
+        var current = priceData[i];
+
+        // Check for Swing LOW
+        var isSwingLow = true;
+        for (var j = i - lookback; j <= i + lookforward; j++) {
+            if (j !== i && priceData[j].low <= current.low) {
+                isSwingLow = false;
+                break;
             }
         }
-    } catch (e) { console.log('Error loading turn predictions:', e); }
+
+        // Check for Swing HIGH
+        var isSwingHigh = true;
+        for (var k = i - lookback; k <= i + lookforward; k++) {
+            if (k !== i && priceData[k].high >= current.high) {
+                isSwingHigh = false;
+                break;
+            }
+        }
+
+        if (isSwingLow) {
+            swings.push({
+                type: 'LOW',
+                date: current.date || current.time,
+                price: current.low,
+                index: i,
+                confirmed: i < priceData.length - lookforward
+            });
+        }
+
+        if (isSwingHigh) {
+            swings.push({
+                type: 'HIGH',
+                date: current.date || current.time,
+                price: current.high,
+                index: i,
+                confirmed: i < priceData.length - lookforward
+            });
+        }
+    }
+
+    return swings;
 }
 
-function saveTurnPredictions() {
+/**
+ * Find the nearest swing point to a predicted date
+ */
+function findMatchingSwing(swings, predictedDate, predictedType, toleranceDays) {
+    toleranceDays = toleranceDays || 5;
+    var predDate = new Date(predictedDate);
+
+    // Filter swings of the correct type within tolerance
+    var candidates = swings.filter(function(swing) {
+        var swingDate = new Date(swing.date);
+        var daysDiff = Math.abs((swingDate - predDate) / 86400000);
+        return swing.type === predictedType && daysDiff <= toleranceDays;
+    });
+
+    if (candidates.length === 0) {
+        // Check if there's a swing of WRONG type (direction was wrong)
+        var wrongType = swings.filter(function(swing) {
+            var swingDate = new Date(swing.date);
+            var daysDiff = Math.abs((swingDate - predDate) / 86400000);
+            return swing.type !== predictedType && daysDiff <= toleranceDays;
+        });
+
+        if (wrongType.length > 0) {
+            wrongType.sort(function(a, b) {
+                var aDiff = Math.abs(new Date(a.date) - predDate);
+                var bDiff = Math.abs(new Date(b.date) - predDate);
+                return aDiff - bDiff;
+            });
+            var result = {};
+            for (var key in wrongType[0]) result[key] = wrongType[0][key];
+            result.directionCorrect = false;
+            return result;
+        }
+
+        return null;
+    }
+
+    // Find the closest matching swing
+    candidates.sort(function(a, b) {
+        var aDiff = Math.abs(new Date(a.date) - predDate);
+        var bDiff = Math.abs(new Date(b.date) - predDate);
+        return aDiff - bDiff;
+    });
+
+    var match = {};
+    for (var k in candidates[0]) match[k] = candidates[0][k];
+    match.directionCorrect = true;
+    return match;
+}
+
+// =============================================================================
+// PREDICTION STORAGE & TRACKING
+// =============================================================================
+
+var predictionStore = {
+    predictions: {},  // { symbol: [predictions] }
+    accuracy: {}      // { symbol: { total, correct, avgDaysOff } }
+};
+
+function loadPredictionStore() {
     try {
-        localStorage.setItem('turnPredictions', JSON.stringify(turnPredictions));
-    } catch (e) { console.log('Error saving turn predictions:', e); }
+        var saved = localStorage.getItem('turnPredictionStore');
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed.predictions) predictionStore.predictions = parsed.predictions;
+            if (parsed.accuracy) predictionStore.accuracy = parsed.accuracy;
+        }
+    } catch (e) {
+        console.warn('Could not load prediction store:', e);
+    }
 }
 
-function updateTurnPredictionDisplay() {
-    var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get) ? SymbolManager.get() : 'SPY';
+function savePredictionStore() {
+    try {
+        localStorage.setItem('turnPredictionStore', JSON.stringify(predictionStore));
+    } catch (e) {
+        console.warn('Could not save prediction store:', e);
+    }
+}
 
-    var badgeEl = document.getElementById('turnSymbolBadge');
-    if (badgeEl) badgeEl.textContent = symbol;
+/**
+ * Auto-store a new prediction (called when data loads)
+ */
+function autoStorePrediction(symbol, predictedDate, predictedType, source) {
+    source = source || 'gann';
+    if (!symbol || !predictedDate || !predictedType) return null;
+
+    if (!predictionStore.predictions[symbol]) {
+        predictionStore.predictions[symbol] = [];
+    }
+
+    // Check if this prediction already exists
+    var existing = predictionStore.predictions[symbol].find(function(p) {
+        return p.predictedDate === predictedDate && p.predictedType === predictedType.toUpperCase();
+    });
+
+    if (existing) return existing;  // Don't duplicate
+
+    var prediction = {
+        id: 'pred_' + Date.now(),
+        symbol: symbol,
+        predictedDate: predictedDate,
+        predictedType: predictedType.toUpperCase(),
+        source: source,
+        createdAt: new Date().toISOString(),
+        status: 'PENDING',  // PENDING, VERIFIED, MISSED, WRONG_DIRECTION
+        actual: null
+    };
+
+    predictionStore.predictions[symbol].unshift(prediction);
+
+    // Keep last 50 predictions per symbol
+    if (predictionStore.predictions[symbol].length > 50) {
+        predictionStore.predictions[symbol] = predictionStore.predictions[symbol].slice(0, 50);
+    }
+
+    savePredictionStore();
+    console.log('📌 Auto-stored prediction: ' + symbol + ' ' + predictedType + ' on ' + predictedDate);
+
+    return prediction;
+}
+
+/**
+ * Get price data for swing detection
+ */
+function getPriceDataForSymbol(symbol) {
+    // Try loadedPriceData first
+    if (typeof window.loadedPriceData !== 'undefined' && window.loadedPriceData[symbol]) {
+        return window.loadedPriceData[symbol];
+    }
+
+    // Try window.priceHistory
+    if (typeof window.priceHistory !== 'undefined' && window.priceHistory[symbol]) {
+        return window.priceHistory[symbol];
+    }
+
+    return null;
+}
+
+/**
+ * Verify predictions against actual price data
+ */
+function verifyPredictions(symbol) {
+    if (!predictionStore.predictions[symbol]) return;
+
+    // Get price data
+    var priceData = getPriceDataForSymbol(symbol);
+    if (!priceData || priceData.length < 10) {
+        console.log('⚠️ No price data for ' + symbol + ' - skipping verification');
+        return;
+    }
+
+    // Detect all swing points
+    var swings = detectSwingPoints(priceData, 3, 3);
+
+    // Check each pending prediction
+    var predictions = predictionStore.predictions[symbol];
+    var today = new Date();
+
+    for (var i = 0; i < predictions.length; i++) {
+        var prediction = predictions[i];
+        if (prediction.status !== 'PENDING') continue;
+
+        var predDate = new Date(prediction.predictedDate);
+        var daysSincePrediction = (today - predDate) / 86400000;
+
+        // Only verify if prediction date has passed (with buffer for confirmation)
+        if (daysSincePrediction < SWING_CONFIG.confirmationDays) {
+            continue;  // Too early to verify
+        }
+
+        // Find matching swing
+        var match = findMatchingSwing(swings, prediction.predictedDate, prediction.predictedType, 5);
+
+        if (match) {
+            var actualDate = new Date(match.date);
+            var daysOff = Math.round((actualDate - predDate) / 86400000);
+
+            prediction.actual = {
+                date: match.date,
+                type: match.type,
+                price: match.price,
+                daysOff: daysOff,
+                directionCorrect: match.directionCorrect
+            };
+
+            if (match.directionCorrect) {
+                prediction.status = 'VERIFIED';
+            } else {
+                prediction.status = 'WRONG_DIRECTION';
+            }
+
+            console.log('✅ Verified: ' + symbol + ' ' + prediction.predictedType + ' - Actual: ' + match.type + ' on ' + match.date + ' (' + daysOff + ' days off)');
+        } else if (daysSincePrediction > 10) {
+            // If 10 days passed and no swing found, mark as missed
+            prediction.status = 'MISSED';
+            console.log('❌ Missed: ' + symbol + ' ' + prediction.predictedType + ' on ' + prediction.predictedDate);
+        }
+    }
+
+    // Update accuracy stats
+    updateAccuracyStats(symbol);
+    savePredictionStore();
+}
+
+/**
+ * Update accuracy statistics for a symbol
+ */
+function updateAccuracyStats(symbol) {
+    var predictions = predictionStore.predictions[symbol] || [];
+    var verified = predictions.filter(function(p) { return p.status !== 'PENDING'; });
+
+    if (verified.length === 0) {
+        predictionStore.accuracy[symbol] = null;
+        return;
+    }
+
+    var correct = verified.filter(function(p) { return p.status === 'VERIFIED'; });
+    var wrongDirection = verified.filter(function(p) { return p.status === 'WRONG_DIRECTION'; });
+    var missed = verified.filter(function(p) { return p.status === 'MISSED'; });
+
+    var totalDaysOff = correct.reduce(function(sum, p) {
+        return sum + Math.abs(p.actual ? p.actual.daysOff : 0);
+    }, 0);
+    var avgDaysOff = correct.length > 0 ? totalDaysOff / correct.length : 0;
+
+    // Perfect predictions (within 1 day)
+    var perfect = correct.filter(function(p) {
+        return Math.abs(p.actual ? p.actual.daysOff : 0) <= 1;
+    });
+
+    predictionStore.accuracy[symbol] = {
+        total: verified.length,
+        correct: correct.length,
+        wrongDirection: wrongDirection.length,
+        missed: missed.length,
+        winRate: ((correct.length / verified.length) * 100).toFixed(1),
+        avgDaysOff: avgDaysOff.toFixed(1),
+        perfectCount: perfect.length,
+        perfectRate: ((perfect.length / verified.length) * 100).toFixed(1)
+    };
+}
+
+/**
+ * Main function to run automatic prediction tracking
+ */
+function runAutoPredictionSystem() {
+    console.log('🔄 Running auto prediction system...');
 
     // Get scanner data
-    var data = null;
+    var scannerData = [];
     if (typeof sq9ScanResults !== 'undefined') {
-        data = sq9ScanResults.find(function(d) { return d.symbol === symbol; });
+        scannerData = sq9ScanResults;
+    } else if (typeof window.appData !== 'undefined' && window.appData.scanner) {
+        scannerData = window.appData.scanner;
     }
 
-    var predictions = turnPredictions[symbol] || { history: [] };
+    scannerData.forEach(function(symbolData) {
+        var symbol = symbolData.symbol;
 
-    // Predicted
-    var predictedDate = data ? (data.next_turn_date || data.turn_date || data.expected_turn) : null;
-    var predictedType = data ? (data.turn_type || 'LOW').toUpperCase() : 'LOW';
+        // 1. Auto-store current prediction
+        var turnDate = symbolData.next_turn_date || symbolData.turn_date || symbolData.expected_turn;
+        var turnType = symbolData.turn_type || 'LOW';
 
-    var predDateEl = document.getElementById('predictedTurnDate');
-    var predTypeEl = document.getElementById('predictedTurnType');
-    var daysUntilEl = document.getElementById('daysUntilTurn');
-
-    if (predictedDate && predDateEl) {
-        var pDate = new Date(predictedDate);
-        predDateEl.textContent = pDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        if (predTypeEl) {
-            predTypeEl.textContent = predictedType;
-            predTypeEl.style.color = predictedType === 'LOW' ? '#22c55e' : '#ef4444';
+        if (turnDate) {
+            autoStorePrediction(symbol, turnDate, turnType, 'gann');
         }
 
-        var daysUntil = Math.ceil((pDate - new Date()) / 86400000);
-        if (daysUntilEl) {
-            daysUntilEl.textContent = daysUntil === 0 ? 'TODAY!' : daysUntil > 0 ? daysUntil + ' days' : Math.abs(daysUntil) + ' days ago';
-            daysUntilEl.style.color = daysUntil <= 2 ? '#f59e0b' : '#888';
-        }
+        // 2. Verify past predictions
+        verifyPredictions(symbol);
+    });
 
-        // Store current prediction
-        predictions.current = {
-            date: predictedDate,
-            type: predictedType,
-            predictedAt: new Date().toISOString()
-        };
-    } else {
-        if (predDateEl) predDateEl.textContent = '--';
-        if (predTypeEl) predTypeEl.textContent = '--';
-        if (daysUntilEl) daysUntilEl.textContent = '--';
-    }
+    // 3. Update display
+    renderTurnPredictionTracker();
 
-    // Actual (if marked)
-    var actDateEl = document.getElementById('actualTurnDate');
-    var actTypeEl = document.getElementById('actualTurnType');
-    var priceAtEl = document.getElementById('priceAtTurn');
-    var accuracyResultEl = document.getElementById('turnAccuracyResult');
-    var accuracyTextEl = document.getElementById('turnAccuracyText');
-
-    if (predictions.current && predictions.current.actual) {
-        var actual = predictions.current.actual;
-        var aDate = new Date(actual.date);
-
-        if (actDateEl) actDateEl.textContent = aDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        if (actTypeEl) {
-            actTypeEl.textContent = actual.type;
-            actTypeEl.style.color = actual.type === 'LOW' ? '#22c55e' : '#ef4444';
-        }
-        if (priceAtEl) priceAtEl.textContent = '$' + (actual.price ? actual.price.toFixed(2) : '--');
-
-        // Calculate accuracy
-        var predictedDateObj = new Date(predictions.current.date);
-        var actualDateObj = new Date(actual.date);
-        var daysOff = Math.ceil((actualDateObj - predictedDateObj) / 86400000);
-        var typeMatch = predictions.current.type === actual.type;
-
-        if (accuracyResultEl) accuracyResultEl.style.display = 'block';
-
-        var accuracyText = '';
-        var accuracyColor = '#888';
-
-        if (Math.abs(daysOff) === 0 && typeMatch) {
-            accuracyText = '🎯 PERFECT!';
-            accuracyColor = '#22c55e';
-        } else if (Math.abs(daysOff) <= 1 && typeMatch) {
-            accuracyText = '✅ Excellent (' + (daysOff > 0 ? '+' : '') + daysOff + ' day' + (Math.abs(daysOff) !== 1 ? 's' : '') + ')';
-            accuracyColor = '#22c55e';
-        } else if (Math.abs(daysOff) <= 3 && typeMatch) {
-            accuracyText = '👍 Good (' + (daysOff > 0 ? '+' : '') + daysOff + ' days)';
-            accuracyColor = '#f59e0b';
-        } else if (!typeMatch) {
-            accuracyText = '❌ Wrong direction (predicted ' + predictions.current.type + ')';
-            accuracyColor = '#ef4444';
-        } else {
-            accuracyText = '⚠️ Off by ' + Math.abs(daysOff) + ' days';
-            accuracyColor = '#f59e0b';
-        }
-
-        if (accuracyTextEl) {
-            accuracyTextEl.textContent = accuracyText;
-            accuracyTextEl.style.color = accuracyColor;
-        }
-    } else {
-        if (actDateEl) actDateEl.textContent = '--';
-        if (actTypeEl) actTypeEl.textContent = '--';
-        if (priceAtEl) priceAtEl.textContent = '--';
-        if (accuracyResultEl) accuracyResultEl.style.display = 'none';
-    }
-
-    // Render history
-    renderTurnHistory(predictions.history);
-
-    turnPredictions[symbol] = predictions;
-    saveTurnPredictions();
+    console.log('✅ Auto prediction system complete');
 }
 
-function markActualTurn() {
+// =============================================================================
+// RENDER AUTOMATIC TURN TRACKER
+// =============================================================================
+
+function renderTurnPredictionTracker() {
     var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get) ? SymbolManager.get() : 'SPY';
-    var predictions = turnPredictions[symbol] || { history: [] };
-
-    if (!predictions.current) {
-        alert('No current prediction to mark');
-        return;
-    }
-
-    // Get scanner data for price
-    var data = null;
-    if (typeof sq9ScanResults !== 'undefined') {
-        data = sq9ScanResults.find(function(d) { return d.symbol === symbol; });
-    }
-
-    // Prompt for actual turn details
-    var today = new Date().toISOString().split('T')[0];
-    var actualDate = prompt('Enter actual turn date (YYYY-MM-DD):', today);
-    if (!actualDate) return;
-
-    var actualType = confirm('Was it a LOW? (Cancel for HIGH)') ? 'LOW' : 'HIGH';
-    var actualPrice = data ? data.price : parseFloat(prompt('Enter price at turn:', '0'));
-
-    predictions.current.actual = {
-        date: actualDate,
-        type: actualType,
-        price: actualPrice,
-        markedAt: new Date().toISOString()
-    };
-
-    // Add to history
-    var historyEntry = {
-        date: predictions.current.date,
-        type: predictions.current.type,
-        predictedAt: predictions.current.predictedAt,
-        actual: predictions.current.actual,
-        symbol: symbol
-    };
-    predictions.history.unshift(historyEntry);
-
-    // Keep last 20
-    if (predictions.history.length > 20) {
-        predictions.history = predictions.history.slice(0, 20);
-    }
-
-    turnPredictions[symbol] = predictions;
-    saveTurnPredictions();
-    updateTurnPredictionDisplay();
-}
-
-function renderTurnHistory(history) {
-    var container = document.getElementById('turnHistoryList');
+    var container = document.getElementById('turnPredictionTracker');
     if (!container) return;
 
-    if (!history || history.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px; font-size: 11px;">No history yet</div>';
-        return;
+    var predictions = predictionStore.predictions[symbol] || [];
+    var accuracy = predictionStore.accuracy[symbol];
+
+    // Get current prediction from live data
+    var liveData = null;
+    if (typeof sq9ScanResults !== 'undefined') {
+        liveData = sq9ScanResults.find(function(d) { return d.symbol === symbol; });
     }
+    var liveTurnDate = liveData ? (liveData.next_turn_date || liveData.turn_date) : null;
+    var liveTurnType = liveData ? (liveData.turn_type || 'LOW').toUpperCase() : 'LOW';
 
     var html = '';
-    history.slice(0, 10).forEach(function(h) {
-        var predictedDate = new Date(h.date);
-        var actualDate = h.actual ? new Date(h.actual.date) : null;
-        var daysOff = actualDate ? Math.ceil((actualDate - predictedDate) / 86400000) : null;
-        var typeMatch = h.actual ? h.type === h.actual.type : null;
 
-        var resultColor = (daysOff !== null && Math.abs(daysOff) <= 1 && typeMatch) ? '#22c55e' : '#f59e0b';
-        var resultText = daysOff !== null ? (daysOff === 0 ? '🎯' : (daysOff > 0 ? '+' : '') + daysOff + 'd') : '--';
+    // Header
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">';
+    html += '<div style="display: flex; align-items: center; gap: 12px;">';
+    html += '<h3 style="margin: 0; font-size: 16px;">📅 Turn Prediction Tracker</h3>';
+    html += '<span style="padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.15); color: #3b82f6;">' + symbol + '</span>';
+    html += '<span style="padding: 4px 10px; border-radius: 8px; font-size: 9px; font-weight: 600; background: rgba(34,197,94,0.15); color: #22c55e;">AUTO</span>';
+    html += '</div>';
+    html += '<button onclick="runAutoPredictionSystem()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px;">🔄 Verify Now</button>';
+    html += '</div>';
 
-        html += '<div style="display: grid; grid-template-columns: 80px 60px 80px 60px 60px; gap: 8px; align-items: center; padding: 8px; margin-bottom: 4px; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 10px;">';
-        html += '<div><div style="color: #888;">Predicted</div><div style="font-weight: 600;">' + predictedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div></div>';
-        html += '<div style="color: ' + (h.type === 'LOW' ? '#22c55e' : '#ef4444') + '; font-weight: 600;">' + h.type + '</div>';
-        html += '<div><div style="color: #888;">Actual</div><div style="font-weight: 600;">' + (actualDate ? actualDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--') + '</div></div>';
-        html += '<div style="color: ' + (h.actual && h.actual.type === 'LOW' ? '#22c55e' : h.actual && h.actual.type === 'HIGH' ? '#ef4444' : '#888') + '; font-weight: 600;">' + (h.actual ? h.actual.type : '--') + '</div>';
-        html += '<div style="text-align: right; color: ' + resultColor + ';">' + resultText + '</div>';
+    // Current Prediction
+    if (liveTurnDate) {
+        var predDate = new Date(liveTurnDate);
+        var daysUntil = Math.ceil((predDate - new Date()) / 86400000);
+        var daysText = daysUntil === 0 ? 'TODAY!' : daysUntil === 1 ? '1 day' : daysUntil > 0 ? daysUntil + ' days' : daysUntil === -1 ? '1 day ago' : Math.abs(daysUntil) + ' days ago';
+        var daysColor = daysUntil <= 0 ? '#ef4444' : daysUntil <= 2 ? '#f59e0b' : daysUntil <= 5 ? '#22c55e' : '#888';
+
+        html += '<div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 16px; margin-bottom: 16px;">';
+        html += '<div style="font-size: 10px; color: #888; margin-bottom: 8px; font-weight: 600;">🔮 CURRENT PREDICTION</div>';
+        html += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center;">';
+        html += '<div><div style="font-size: 10px; color: #888;">Turn Date</div>';
+        html += '<div style="font-size: 20px; font-weight: 700; color: #3b82f6;">' + predDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div></div>';
+        html += '<div><div style="font-size: 10px; color: #888;">Turn Type</div>';
+        html += '<div style="font-size: 20px; font-weight: 700; color: ' + (liveTurnType === 'LOW' ? '#22c55e' : '#ef4444') + ';">' + liveTurnType + '</div></div>';
+        html += '<div><div style="font-size: 10px; color: #888;">Days Until</div>';
+        html += '<div style="font-size: 20px; font-weight: 700; color: ' + daysColor + ';">' + daysText + '</div></div>';
+        html += '</div></div>';
+    } else {
+        html += '<div style="text-align: center; padding: 20px; color: #888;">No current prediction</div>';
+    }
+
+    // Accuracy Stats
+    if (accuracy) {
+        html += '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">';
+        html += '<div style="background: rgba(34,197,94,0.1); border-radius: 10px; padding: 12px; text-align: center;">';
+        html += '<div style="font-size: 24px; font-weight: 700; color: #22c55e;">' + accuracy.winRate + '%</div>';
+        html += '<div style="font-size: 10px; color: #888;">Win Rate</div></div>';
+        html += '<div style="background: rgba(59,130,246,0.1); border-radius: 10px; padding: 12px; text-align: center;">';
+        html += '<div style="font-size: 24px; font-weight: 700; color: #3b82f6;">' + accuracy.correct + '/' + accuracy.total + '</div>';
+        html += '<div style="font-size: 10px; color: #888;">Correct</div></div>';
+        html += '<div style="background: rgba(139,92,246,0.1); border-radius: 10px; padding: 12px; text-align: center;">';
+        html += '<div style="font-size: 24px; font-weight: 700; color: #8b5cf6;">' + accuracy.avgDaysOff + 'd</div>';
+        html += '<div style="font-size: 10px; color: #888;">Avg Days Off</div></div>';
+        html += '<div style="background: rgba(245,158,11,0.1); border-radius: 10px; padding: 12px; text-align: center;">';
+        html += '<div style="font-size: 24px; font-weight: 700; color: #f59e0b;">' + accuracy.perfectRate + '%</div>';
+        html += '<div style="font-size: 10px; color: #888;">Perfect (±1d)</div></div>';
         html += '</div>';
-    });
+    }
+
+    // Recent Predictions History
+    html += '<div style="margin-top: 16px;">';
+    html += '<div style="font-size: 11px; color: #888; margin-bottom: 8px; font-weight: 600;">RECENT PREDICTIONS (Auto-Verified)</div>';
+    html += '<div id="turnHistoryList" style="max-height: 300px; overflow-y: auto;">';
+
+    if (predictions.length === 0) {
+        html += '<div style="text-align: center; color: #888; padding: 20px;">No predictions yet - will auto-populate on data refresh</div>';
+    } else {
+        predictions.slice(0, 15).forEach(function(p) {
+            html += renderAutoPredictionRow(p);
+        });
+    }
+
+    html += '</div></div>';
 
     container.innerHTML = html;
 }
 
+function renderAutoPredictionRow(prediction) {
+    var predDate = new Date(prediction.predictedDate);
+    var statusColors = {
+        'PENDING': { bg: 'rgba(59,130,246,0.15)', color: '#3b82f6', icon: '⏳' },
+        'VERIFIED': { bg: 'rgba(34,197,94,0.15)', color: '#22c55e', icon: '✅' },
+        'WRONG_DIRECTION': { bg: 'rgba(239,68,68,0.15)', color: '#ef4444', icon: '❌' },
+        'MISSED': { bg: 'rgba(136,136,136,0.15)', color: '#888', icon: '⚪' }
+    };
+    var statusStyle = statusColors[prediction.status] || statusColors.PENDING;
+
+    var html = '<div style="display: grid; grid-template-columns: 90px 60px 90px 60px 70px 90px; gap: 8px; align-items: center; padding: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 3px solid ' + statusStyle.color + ';">';
+
+    // Predicted Date
+    html += '<div><div style="font-size: 9px; color: #888;">Predicted</div>';
+    html += '<div style="font-size: 12px; font-weight: 600;">' + predDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div></div>';
+
+    // Predicted Type
+    var predTypeBg = prediction.predictedType === 'LOW' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+    var predTypeColor = prediction.predictedType === 'LOW' ? '#22c55e' : '#ef4444';
+    html += '<div style="text-align: center;"><span style="padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: ' + predTypeBg + '; color: ' + predTypeColor + ';">' + prediction.predictedType + '</span></div>';
+
+    // Actual Date
+    html += '<div><div style="font-size: 9px; color: #888;">Actual</div>';
+    if (prediction.actual) {
+        html += '<div style="font-size: 12px; font-weight: 600;">' + new Date(prediction.actual.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</div>';
+    } else {
+        html += '<div style="font-size: 12px; font-weight: 600; color: #888;">--</div>';
+    }
+    html += '</div>';
+
+    // Actual Type
+    html += '<div style="text-align: center;">';
+    if (prediction.actual) {
+        var actTypeBg = prediction.actual.type === 'LOW' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+        var actTypeColor = prediction.actual.type === 'LOW' ? '#22c55e' : '#ef4444';
+        html += '<span style="padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: ' + actTypeBg + '; color: ' + actTypeColor + ';">' + prediction.actual.type + '</span>';
+    } else {
+        html += '<span style="color: #888;">--</span>';
+    }
+    html += '</div>';
+
+    // Days Off
+    html += '<div style="text-align: center;">';
+    if (prediction.actual) {
+        var daysOff = prediction.actual.daysOff;
+        var daysOffColor = Math.abs(daysOff) <= 1 ? '#22c55e' : Math.abs(daysOff) <= 3 ? '#f59e0b' : '#ef4444';
+        var daysOffText = daysOff === 0 ? '🎯 Perfect' : (daysOff > 0 ? '+' : '') + daysOff + 'd';
+        html += '<span style="font-size: 12px; font-weight: 600; color: ' + daysOffColor + ';">' + daysOffText + '</span>';
+    } else {
+        html += '<span style="color: #888;">--</span>';
+    }
+    html += '</div>';
+
+    // Status
+    html += '<div style="text-align: center;"><span style="padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; background: ' + statusStyle.bg + '; color: ' + statusStyle.color + ';">' + statusStyle.icon + ' ' + prediction.status + '</span></div>';
+
+    html += '</div>';
+    return html;
+}
+
+// Keep backward compatibility
+function updateTurnPredictionDisplay() {
+    renderTurnPredictionTracker();
+}
+
+function markActualTurn() {
+    alert('Auto-detection is now enabled! Turns are verified automatically from price data.');
+    runAutoPredictionSystem();
+}
+
 // Initialize turn predictions on load
 document.addEventListener('DOMContentLoaded', function() {
-    loadTurnPredictions();
-    setTimeout(updateTurnPredictionDisplay, 1000);
+    loadPredictionStore();
+    setTimeout(function() {
+        runAutoPredictionSystem();
+    }, 2000);
 });
 
 // =============================================================================
