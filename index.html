@@ -38984,10 +38984,12 @@ async function loadDualTradeAnalysis(symbol) {
     var mainSelector = document.getElementById('symbolSelect');
     if (mainSelector && mainSelector.value !== symbol) {
         mainSelector.value = symbol;
-        if (typeof selectSymbol === 'function') {
-            selectSymbol(symbol);
-            // Wait for banner to update
-            await new Promise(function(r) { setTimeout(r, 800); });
+        // CRITICAL: Call changeSymbol() not selectSymbol() - selectSymbol doesn't exist!
+        if (typeof changeSymbol === 'function') {
+            console.log('🔄 Triggering changeSymbol() for', symbol);
+            await changeSymbol();  // This loads CSV and updates banner
+            // Wait for banner to fully update
+            await new Promise(function(r) { setTimeout(r, 500); });
         }
     }
 
@@ -39283,9 +39285,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Trigger existing selectSymbol function if available
-        if (typeof selectSymbol === 'function') {
-            selectSymbol(symbol);
+        // Trigger changeSymbol to load new data (selectSymbol doesn't exist)
+        if (typeof changeSymbol === 'function') {
+            changeSymbol();
         }
     });
 
