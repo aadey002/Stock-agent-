@@ -15091,11 +15091,15 @@ function initTabs() {
 
             // Auto-scan EMA Signal Tracker when Multi-Charts tab is clicked
             if (btn.dataset.tab === 'multi-charts') {
-                if (typeof scanEMASignals === 'function') {
-                    setTimeout(scanEMASignals, 100);
-                }
+                // Load charts first, then scan EMA signals to sync MTF Bias
                 if (typeof updateAllMultiCharts === 'function') {
-                    setTimeout(updateAllMultiCharts, 200);
+                    setTimeout(function() {
+                        updateAllMultiCharts().then(function() {
+                            if (typeof scanEMASignals === 'function') {
+                                scanEMASignals();
+                            }
+                        });
+                    }, 100);
                 }
             }
         };
@@ -18711,7 +18715,7 @@ async function loadAllData() {
                 // Update Multi-Charts if that tab is active
                 const multiChartsTab = document.getElementById('multi-charts');
                 if (multiChartsTab && multiChartsTab.classList.contains('active')) {
-                    updateAllMultiCharts();
+                    await updateAllMultiCharts();
                 }
                 
                 // Update symbol displays
@@ -25590,12 +25594,13 @@ async function updateAllMultiCharts() {
 }
 
 function refreshAllCharts() {
-    // Scan EMA signals (also syncs MTF Bias Summary)
-    if (typeof scanEMASignals === 'function') {
-        scanEMASignals();
-    }
-    // Update all charts
-    updateAllMultiCharts();
+    // Update all charts first
+    updateAllMultiCharts().then(function() {
+        // Then scan EMA signals to sync MTF Bias Summary (overwrites chart-based bias)
+        if (typeof scanEMASignals === 'function') {
+            scanEMASignals();
+        }
+    });
 }
 
 // ============================================
