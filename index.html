@@ -25590,6 +25590,11 @@ async function updateAllMultiCharts() {
 }
 
 function refreshAllCharts() {
+    // Scan EMA signals (also syncs MTF Bias Summary)
+    if (typeof scanEMASignals === 'function') {
+        scanEMASignals();
+    }
+    // Update all charts
     updateAllMultiCharts();
 }
 
