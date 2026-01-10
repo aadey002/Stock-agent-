@@ -40233,12 +40233,22 @@ function scanEMASignals() {
             html += '</tr>';
         });
 
+        // Collect confirmed TFs for each signal type
+        var earlyConfirmedTFs = [];
+        var momentumConfirmedTFs = [];
+        var confirmConfirmedTFs = [];
+        results.forEach(function(r) {
+            if (r.early === 'bullish') earlyConfirmedTFs.push(r.tf.label);
+            if (r.momentum === 'bullish') momentumConfirmedTFs.push(r.tf.label);
+            if (r.confirm === 'bullish') confirmConfirmedTFs.push(r.tf.label);
+        });
+
         // Add confluence row
         html += '<tr style="background: rgba(139,92,246,0.1); border-top: 2px solid rgba(139,92,246,0.3);">';
         html += '<td style="padding: 14px 8px; text-align: center; font-weight: 600; color: #8b5cf6; font-size: 11px;">CONFLUENCE</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(earlyBullish) + '</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(momentumBullish) + '</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(confirmBullish) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(earlyBullish, earlyConfirmedTFs) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(momentumBullish, momentumConfirmedTFs) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(confirmBullish, confirmConfirmedTFs) + '</td>';
         html += '</tr>';
 
         tableBody.innerHTML = html;
@@ -40377,7 +40387,7 @@ function calculateEMA(data, period) {
     return ema;
 }
 
-function getConfluenceBadge(count) {
+function getConfluenceBadge(count, confirmedTFs) {
     var color, bg, label;
     if (count === 4) {
         color = '#22c55e';
@@ -40396,7 +40406,31 @@ function getConfluenceBadge(count) {
         bg = 'rgba(239,68,68,0.15)';
         label = count + '/4';
     }
-    return '<span style="background: ' + bg + '; color: ' + color + '; padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700;">' + label + '</span>';
+
+    // Generate detail text
+    var detailText = '';
+    if (confirmedTFs && confirmedTFs.length > 0) {
+        if (count === 4) {
+            detailText = 'All TFs confirmed';
+        } else if (count === 0) {
+            detailText = 'No TFs confirmed';
+        } else {
+            var notConfirmed = ['15m', '1H', '4H', 'D'].filter(function(tf) {
+                return confirmedTFs.indexOf(tf) === -1;
+            });
+            if (notConfirmed.length <= 2) {
+                detailText = 'Waiting: ' + notConfirmed.join(', ');
+            } else {
+                detailText = 'Only: ' + confirmedTFs.join(', ');
+            }
+        }
+    }
+
+    var html = '<span style="background: ' + bg + '; color: ' + color + '; padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700;">' + label + '</span>';
+    if (detailText) {
+        html += '<div style="font-size: 9px; color: var(--muted); margin-top: 4px;">' + detailText + '</div>';
+    }
+    return html;
 }
 
 function updateEMAScoreCardEnhanced(cardId, valId, barId, score, tfCount) {
