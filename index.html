@@ -17482,11 +17482,13 @@ function updateTopTradeRecommendation(symbol) {
         agentVotes.push({ name: 'Gann-Elliott', signal: 'HOLD', confidence: 55 });
     }
 
-    // DQN (ML) - momentum based
-    if (position > 0.5) {
+    // DQN (ML) - mean reversion based (high position = expect pullback)
+    if (position > 0.55) {
+        agentVotes.push({ name: 'DQN (ML)', signal: 'PUT', confidence: 60 });
+    } else if (position < 0.45) {
         agentVotes.push({ name: 'DQN (ML)', signal: 'CALL', confidence: 60 });
     } else {
-        agentVotes.push({ name: 'DQN (ML)', signal: 'PUT', confidence: 60 });
+        agentVotes.push({ name: 'DQN (ML)', signal: 'HOLD', confidence: 50 });
     }
 
     // 3-Wave - pattern based
