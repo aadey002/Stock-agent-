@@ -8855,6 +8855,319 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
+            <!-- EMA SIGNAL TRACKER (9/21) - ENHANCED -->
+            <div id="emaSignalTracker" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 18px;">📊</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700;">EMA Signal Tracker (9/21)</h3>
+                        <span id="emaTrackerSymbol" style="padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: rgba(59,130,246,0.15); color: #3b82f6;">SPY</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span id="emaBiasDirection" style="padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span>
+                        <button onclick="scanEMASignals()" style="padding: 6px 12px; border-radius: 6px; border: none; background: #3b82f6; color: white; cursor: pointer; font-size: 11px; font-weight: 600;">
+                            🔄 Scan EMA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main EMA Table with Timestamps -->
+                <div style="overflow-x: auto; margin-bottom: 16px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <thead>
+                            <tr style="background: rgba(59,130,246,0.1);">
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); width: 80px; background: rgba(139,92,246,0.1);">Timeframe</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
+                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">①</span>
+                                    <div style="font-size: 11px; font-weight: 700;">EARLY SIGNAL</div>
+                                    <div style="font-size: 9px; color: var(--muted);" id="emaEarlyDesc">Price crossed vs 9 EMA</div>
+                                </th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
+                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">②</span>
+                                    <div style="font-size: 11px; font-weight: 700;">MOMENTUM</div>
+                                    <div style="font-size: 9px; color: var(--muted);" id="emaMomentumDesc">Price crossed vs 21 EMA</div>
+                                </th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
+                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">③</span>
+                                    <div style="font-size: 11px; font-weight: 700;">CONFIRMATION</div>
+                                    <div style="font-size: 9px; color: var(--muted);" id="emaConfirmDesc">9 EMA crossed vs 21 EMA</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="emaSignalTableBody">
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">15 Min</td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">1 Hour</td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">4 Hour</td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">Daily</td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
+                            </tr>
+                            <!-- Confluence Row -->
+                            <tr style="background: rgba(139,92,246,0.1); border-top: 2px solid rgba(139,92,246,0.3);">
+                                <td style="padding: 14px 8px; text-align: center; font-weight: 600; color: #8b5cf6; font-size: 11px;">CONFLUENCE</td>
+                                <td style="padding: 14px 8px; text-align: center;" id="emaEarlyConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
+                                <td style="padding: 14px 8px; text-align: center;" id="emaMomentumConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
+                                <td style="padding: 14px 8px; text-align: center;" id="emaConfirmConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Legend -->
+                <div style="display: flex; gap: 20px; padding: 12px 16px; background: var(--bg); border-radius: 8px; font-size: 10px; color: var(--muted); margin-bottom: 16px; border: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(34,197,94,0.2); color: #22c55e;">✓ YES</span> Signal triggered
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(239,68,68,0.2); color: #ef4444;">✗ NO</span> Not yet triggered
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(34,197,94,0.2); color: #22c55e;">4/4</span> All timeframes agree
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(245,158,11,0.15); color: #f59e0b;">2/4</span> Partial agreement
+                    </div>
+                </div>
+
+                <!-- CONFIRMATION LOG (4/4 EMA Cross History) -->
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+                            <span>📋</span> Confirmation Log (4/4 EMA Cross History)
+                        </div>
+                        <span style="font-size: 10px; color: var(--muted);">Last 10 entries</span>
+                    </div>
+
+                    <div id="emaConfirmationLog" style="max-height: 180px; overflow-y: auto;">
+                        <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 11px;">
+                            Click "Scan EMA" to load confirmation history
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Stats -->
+                    <div id="emaConfirmStats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 700; color: #3b82f6;" id="emaTotal4of4">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Total 4/4</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 700; color: #22c55e;" id="emaBullishCount">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Bullish</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 700; color: #ef4444;" id="emaBearishCount">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Bearish</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 700; color: #8b5cf6;" id="emaAvgCycle">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Avg Cycle</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BACKTEST HISTORY (Last 12 Months) -->
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+                            <span>📊</span> Backtest History (Last 12 Months)
+                            <span id="emaBacktestSymbol" style="padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; background: rgba(139,92,246,0.15); color: #8b5cf6;">--</span>
+                        </div>
+                        <span style="font-size: 10px; color: var(--muted);" id="emaBacktestPeriod">--</span>
+                    </div>
+
+                    <!-- Backtest Summary Stats -->
+                    <div id="emaBacktestSummary" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; padding: 16px; background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08)); border-radius: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaWinRate">--%</div>
+                            <div style="font-size: 9px; color: var(--muted);">Win Rate</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #3b82f6;" id="emaTotalTrades">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Total Trades</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaWins">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Wins</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #ef4444;" id="emaLosses">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Losses</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaAvgWin">--%</div>
+                            <div style="font-size: 9px; color: var(--muted);">Avg Win</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; font-weight: 700; color: #ef4444;" id="emaAvgLoss">--%</div>
+                            <div style="font-size: 9px; color: var(--muted);">Avg Loss</div>
+                        </div>
+                    </div>
+
+                    <!-- Backtest Table -->
+                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                            <thead style="position: sticky; top: 0; z-index: 1;">
+                                <tr style="background: rgba(139,92,246,0.1);">
+                                    <th style="padding: 10px 6px; text-align: left; font-weight: 600; color: var(--text);">Date</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Signal</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Entry</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Exit</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Hold</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">P&L %</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Result</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emaBacktestTableBody">
+                                <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--muted);">Click "Scan EMA" to load backtest data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Profit Factor & Risk/Reward -->
+                    <div id="emaPerformanceMetrics" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--border);">
+                        <div style="text-align: center; padding: 12px; background: rgba(34,197,94,0.08); border-radius: 8px;">
+                            <div style="font-size: 20px; font-weight: 700; color: #22c55e;" id="emaProfitFactor">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Profit Factor</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(59,130,246,0.08); border-radius: 8px;">
+                            <div style="font-size: 20px; font-weight: 700; color: #3b82f6;" id="emaRiskReward">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Risk/Reward</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(139,92,246,0.08); border-radius: 8px;">
+                            <div style="font-size: 20px; font-weight: 700; color: #8b5cf6;" id="emaAvgHold">--</div>
+                            <div style="font-size: 9px; color: var(--muted);">Avg Hold</div>
+                        </div>
+                        <div style="text-align: center; padding: 12px; background: rgba(245,158,11,0.08); border-radius: 8px;">
+                            <div style="font-size: 20px; font-weight: 700; color: #f59e0b;" id="emaTotalReturn">--%</div>
+                            <div style="font-size: 9px; color: var(--muted);">Total Return</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall EMA Confluence Score -->
+                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-size: 12px; font-weight: 700; color: var(--text);">OVERALL EMA CONFLUENCE</div>
+                            <div style="font-size: 10px; color: var(--muted);">Each timeframe = 0.25 pts | 4/4 TFs = 1.0 pt per signal</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div id="emaOverallScore" style="font-size: 32px; font-weight: 700; color: #888;">--/3</div>
+                            <div style="font-size: 10px; color: var(--muted);">EMA SCORE</div>
+                        </div>
+                    </div>
+
+                    <!-- Scoring Legend -->
+                    <div style="display: flex; gap: 16px; margin-bottom: 14px; padding: 8px 12px; background: var(--card); border-radius: 6px; font-size: 9px;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></span>
+                            <span style="color: var(--muted);">0.25-0.50 (1-2 TFs)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span>
+                            <span style="color: var(--muted);">0.75 (3 TFs)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e;"></span>
+                            <span style="color: var(--muted);">1.0 (4/4 TFs)</span>
+                        </div>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div id="emaEarlyScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">① EARLY SIGNAL</div>
+                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaEarlyTfCount">--/4 TFs confirmed</div>
+                            <div id="emaEarlyScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
+                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                                <div id="emaEarlyScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        <div id="emaMomentumScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">② MOMENTUM</div>
+                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaMomentumTfCount">--/4 TFs confirmed</div>
+                            <div id="emaMomentumScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
+                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                                <div id="emaMomentumScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        <div id="emaConfirmScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">③ CONFIRMATION</div>
+                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaConfirmTfCount">--/4 TFs confirmed</div>
+                            <div id="emaConfirmScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
+                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                                <div id="emaConfirmScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculation Breakdown -->
+                    <div id="emaCalcBreakdown" style="margin-top: 14px; padding: 12px; background: var(--card); border-radius: 8px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="color: var(--muted);" id="emaCalcFormula">
+                                <span style="color: #888; font-weight: 600;">--</span> +
+                                <span style="color: #888; font-weight: 600;">--</span> +
+                                <span style="color: #888; font-weight: 600;">--</span> =
+                                <span style="color: #888; font-weight: 700; font-size: 14px;">--/3</span>
+                            </div>
+                            <div id="emaCalcStatus" style="padding: 4px 12px; background: rgba(136,136,136,0.15); color: #888; border-radius: 6px; font-weight: 600;">
+                                --
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How it feeds into Tier 2 -->
+                    <div id="emaTier2Feed" style="margin-top: 14px; padding: 12px; background: rgba(59,130,246,0.08); border-radius: 8px; border: 1px solid rgba(59,130,246,0.2);">
+                        <div style="font-size: 10px; color: #3b82f6; font-weight: 600; margin-bottom: 8px;">📊 TIER 2: TECHNICAL (2/4 Required)</div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #888;">○</span> Trend aligned
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #888;">○</span> SQ9 &lt;2%
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;" id="emaTier2EMAStatus">
+                                <span style="color: #888;">○</span> EMA: --/3
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #888;">○</span> R:R ≥2:1
+                            </div>
+                        </div>
+                        <div id="emaTier2Score" style="margin-top: 8px; font-size: 12px; font-weight: 600; color: #888;">
+                            Tier 2 Score: --
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trade Readiness -->
+                <div id="emaTradeReadiness" style="padding: 20px; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); border-radius: 10px; text-align: center;">
+                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 8px;">TRADE READINESS</div>
+                    <div id="emaReadinessStatus" style="font-size: 22px; font-weight: 700; color: #888; padding: 8px 20px; display: inline-block; border-radius: 8px;">Click Scan EMA to analyze</div>
+                    <div id="emaReadinessDesc" style="font-size: 11px; color: var(--muted); margin-top: 10px;">--</div>
+                    <div id="emaReadinessHint" style="margin-top: 10px; font-size: 12px; color: #3b82f6;">--</div>
+                </div>
+
+            </div>
+
             <div class="multi-charts-container">
                 <!-- INTRADAY PANEL -->
                 <div class="chart-panel">
@@ -10859,319 +11172,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- EMA SIGNAL TRACKER (9/21) - ENHANCED -->
-            <div id="emaSignalTracker" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-
-                <!-- Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 18px;">📊</span>
-                        <h3 style="margin: 0; font-size: 16px; font-weight: 700;">EMA Signal Tracker (9/21)</h3>
-                        <span id="emaTrackerSymbol" style="padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: rgba(59,130,246,0.15); color: #3b82f6;">SPY</span>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <span id="emaBiasDirection" style="padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span>
-                        <button onclick="scanEMASignals()" style="padding: 6px 12px; border-radius: 6px; border: none; background: #3b82f6; color: white; cursor: pointer; font-size: 11px; font-weight: 600;">
-                            🔄 Scan EMA
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Main EMA Table with Timestamps -->
-                <div style="overflow-x: auto; margin-bottom: 16px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border);">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                        <thead>
-                            <tr style="background: rgba(59,130,246,0.1);">
-                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); width: 80px; background: rgba(139,92,246,0.1);">Timeframe</th>
-                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
-                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">①</span>
-                                    <div style="font-size: 11px; font-weight: 700;">EARLY SIGNAL</div>
-                                    <div style="font-size: 9px; color: var(--muted);" id="emaEarlyDesc">Price crossed vs 9 EMA</div>
-                                </th>
-                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
-                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">②</span>
-                                    <div style="font-size: 11px; font-weight: 700;">MOMENTUM</div>
-                                    <div style="font-size: 9px; color: var(--muted);" id="emaMomentumDesc">Price crossed vs 21 EMA</div>
-                                </th>
-                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; border-bottom: 2px solid rgba(59,130,246,0.3); min-width: 160px;">
-                                    <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: rgba(59,130,246,0.3); color: #3b82f6; font-size: 10px; line-height: 18px; margin-right: 4px;">③</span>
-                                    <div style="font-size: 11px; font-weight: 700;">CONFIRMATION</div>
-                                    <div style="font-size: 9px; color: var(--muted);" id="emaConfirmDesc">9 EMA crossed vs 21 EMA</div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="emaSignalTableBody">
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">15 Min</td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">1 Hour</td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">4 Hour</td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">Daily</td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                                <td style="padding: 12px 8px; text-align: center;"><span style="color: var(--muted);">--</span></td>
-                            </tr>
-                            <!-- Confluence Row -->
-                            <tr style="background: rgba(139,92,246,0.1); border-top: 2px solid rgba(139,92,246,0.3);">
-                                <td style="padding: 14px 8px; text-align: center; font-weight: 600; color: #8b5cf6; font-size: 11px;">CONFLUENCE</td>
-                                <td style="padding: 14px 8px; text-align: center;" id="emaEarlyConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
-                                <td style="padding: 14px 8px; text-align: center;" id="emaMomentumConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
-                                <td style="padding: 14px 8px; text-align: center;" id="emaConfirmConf"><span style="padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Legend -->
-                <div style="display: flex; gap: 20px; padding: 12px 16px; background: var(--bg); border-radius: 8px; font-size: 10px; color: var(--muted); margin-bottom: 16px; border: 1px solid var(--border);">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(34,197,94,0.2); color: #22c55e;">✓ YES</span> Signal triggered
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(239,68,68,0.2); color: #ef4444;">✗ NO</span> Not yet triggered
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(34,197,94,0.2); color: #22c55e;">4/4</span> All timeframes agree
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: rgba(245,158,11,0.15); color: #f59e0b;">2/4</span> Partial agreement
-                    </div>
-                </div>
-
-                <!-- CONFIRMATION LOG (4/4 EMA Cross History) -->
-                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
-                        <div style="font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
-                            <span>📋</span> Confirmation Log (4/4 EMA Cross History)
-                        </div>
-                        <span style="font-size: 10px; color: var(--muted);">Last 10 entries</span>
-                    </div>
-
-                    <div id="emaConfirmationLog" style="max-height: 180px; overflow-y: auto;">
-                        <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 11px;">
-                            Click "Scan EMA" to load confirmation history
-                        </div>
-                    </div>
-
-                    <!-- Confirmation Stats -->
-                    <div id="emaConfirmStats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: #3b82f6;" id="emaTotal4of4">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Total 4/4</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: #22c55e;" id="emaBullishCount">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Bullish</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: #ef4444;" id="emaBearishCount">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Bearish</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: #8b5cf6;" id="emaAvgCycle">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Avg Cycle</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BACKTEST HISTORY (Last 12 Months) -->
-                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
-                        <div style="font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
-                            <span>📊</span> Backtest History (Last 12 Months)
-                            <span id="emaBacktestSymbol" style="padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; background: rgba(139,92,246,0.15); color: #8b5cf6;">--</span>
-                        </div>
-                        <span style="font-size: 10px; color: var(--muted);" id="emaBacktestPeriod">--</span>
-                    </div>
-
-                    <!-- Backtest Summary Stats -->
-                    <div id="emaBacktestSummary" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; padding: 16px; background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(59,130,246,0.08)); border-radius: 10px;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaWinRate">--%</div>
-                            <div style="font-size: 9px; color: var(--muted);">Win Rate</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #3b82f6;" id="emaTotalTrades">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Total Trades</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaWins">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Wins</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #ef4444;" id="emaLosses">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Losses</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #22c55e;" id="emaAvgWin">--%</div>
-                            <div style="font-size: 9px; color: var(--muted);">Avg Win</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 22px; font-weight: 700; color: #ef4444;" id="emaAvgLoss">--%</div>
-                            <div style="font-size: 9px; color: var(--muted);">Avg Loss</div>
-                        </div>
-                    </div>
-
-                    <!-- Backtest Table -->
-                    <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
-                            <thead style="position: sticky; top: 0; z-index: 1;">
-                                <tr style="background: rgba(139,92,246,0.1);">
-                                    <th style="padding: 10px 6px; text-align: left; font-weight: 600; color: var(--text);">Date</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Signal</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Entry</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Exit</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Hold</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">P&L %</th>
-                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Result</th>
-                                </tr>
-                            </thead>
-                            <tbody id="emaBacktestTableBody">
-                                <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--muted);">Click "Scan EMA" to load backtest data</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Profit Factor & Risk/Reward -->
-                    <div id="emaPerformanceMetrics" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--border);">
-                        <div style="text-align: center; padding: 12px; background: rgba(34,197,94,0.08); border-radius: 8px;">
-                            <div style="font-size: 20px; font-weight: 700; color: #22c55e;" id="emaProfitFactor">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Profit Factor</div>
-                        </div>
-                        <div style="text-align: center; padding: 12px; background: rgba(59,130,246,0.08); border-radius: 8px;">
-                            <div style="font-size: 20px; font-weight: 700; color: #3b82f6;" id="emaRiskReward">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Risk/Reward</div>
-                        </div>
-                        <div style="text-align: center; padding: 12px; background: rgba(139,92,246,0.08); border-radius: 8px;">
-                            <div style="font-size: 20px; font-weight: 700; color: #8b5cf6;" id="emaAvgHold">--</div>
-                            <div style="font-size: 9px; color: var(--muted);">Avg Hold</div>
-                        </div>
-                        <div style="text-align: center; padding: 12px; background: rgba(245,158,11,0.08); border-radius: 8px;">
-                            <div style="font-size: 20px; font-weight: 700; color: #f59e0b;" id="emaTotalReturn">--%</div>
-                            <div style="font-size: 9px; color: var(--muted);">Total Return</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Overall EMA Confluence Score -->
-                <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div>
-                            <div style="font-size: 12px; font-weight: 700; color: var(--text);">OVERALL EMA CONFLUENCE</div>
-                            <div style="font-size: 10px; color: var(--muted);">Each timeframe = 0.25 pts | 4/4 TFs = 1.0 pt per signal</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div id="emaOverallScore" style="font-size: 32px; font-weight: 700; color: #888;">--/3</div>
-                            <div style="font-size: 10px; color: var(--muted);">EMA SCORE</div>
-                        </div>
-                    </div>
-
-                    <!-- Scoring Legend -->
-                    <div style="display: flex; gap: 16px; margin-bottom: 14px; padding: 8px 12px; background: var(--card); border-radius: 6px; font-size: 9px;">
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></span>
-                            <span style="color: var(--muted);">0.25-0.50 (1-2 TFs)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span>
-                            <span style="color: var(--muted);">0.75 (3 TFs)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e;"></span>
-                            <span style="color: var(--muted);">1.0 (4/4 TFs)</span>
-                        </div>
-                    </div>
-
-                    <!-- Score Breakdown -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div id="emaEarlyScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
-                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">① EARLY SIGNAL</div>
-                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaEarlyTfCount">--/4 TFs confirmed</div>
-                            <div id="emaEarlyScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
-                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
-                                <div id="emaEarlyScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
-                            </div>
-                        </div>
-                        <div id="emaMomentumScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
-                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">② MOMENTUM</div>
-                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaMomentumTfCount">--/4 TFs confirmed</div>
-                            <div id="emaMomentumScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
-                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
-                                <div id="emaMomentumScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
-                            </div>
-                        </div>
-                        <div id="emaConfirmScoreCard" style="background: rgba(136,136,136,0.08); border: 2px solid rgba(136,136,136,0.2); border-radius: 8px; padding: 12px; text-align: center;">
-                            <div style="font-size: 9px; color: var(--muted); margin-bottom: 4px;">③ CONFIRMATION</div>
-                            <div style="font-size: 10px; color: var(--muted); margin-bottom: 6px;" id="emaConfirmTfCount">--/4 TFs confirmed</div>
-                            <div id="emaConfirmScoreVal" style="font-size: 22px; font-weight: 700; color: #888;">--</div>
-                            <div style="width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
-                                <div id="emaConfirmScoreBar" style="width: 0%; height: 100%; background: #888; border-radius: 3px; transition: width 0.3s ease;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Calculation Breakdown -->
-                    <div id="emaCalcBreakdown" style="margin-top: 14px; padding: 12px; background: var(--card); border-radius: 8px; font-size: 11px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="color: var(--muted);" id="emaCalcFormula">
-                                <span style="color: #888; font-weight: 600;">--</span> +
-                                <span style="color: #888; font-weight: 600;">--</span> +
-                                <span style="color: #888; font-weight: 600;">--</span> =
-                                <span style="color: #888; font-weight: 700; font-size: 14px;">--/3</span>
-                            </div>
-                            <div id="emaCalcStatus" style="padding: 4px 12px; background: rgba(136,136,136,0.15); color: #888; border-radius: 6px; font-weight: 600;">
-                                --
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- How it feeds into Tier 2 -->
-                    <div id="emaTier2Feed" style="margin-top: 14px; padding: 12px; background: rgba(59,130,246,0.08); border-radius: 8px; border: 1px solid rgba(59,130,246,0.2);">
-                        <div style="font-size: 10px; color: #3b82f6; font-weight: 600; margin-bottom: 8px;">📊 TIER 2: TECHNICAL (2/4 Required)</div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="color: #888;">○</span> Trend aligned
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="color: #888;">○</span> SQ9 &lt;2%
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;" id="emaTier2EMAStatus">
-                                <span style="color: #888;">○</span> EMA: --/3
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="color: #888;">○</span> R:R ≥2:1
-                            </div>
-                        </div>
-                        <div id="emaTier2Score" style="margin-top: 8px; font-size: 12px; font-weight: 600; color: #888;">
-                            Tier 2 Score: --
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trade Readiness -->
-                <div id="emaTradeReadiness" style="padding: 20px; background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); border-radius: 10px; text-align: center;">
-                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 8px;">TRADE READINESS</div>
-                    <div id="emaReadinessStatus" style="font-size: 22px; font-weight: 700; color: #888; padding: 8px 20px; display: inline-block; border-radius: 8px;">Click Scan EMA to analyze</div>
-                    <div id="emaReadinessDesc" style="font-size: 11px; color: var(--muted); margin-top: 10px;">--</div>
-                    <div id="emaReadinessHint" style="margin-top: 10px; font-size: 12px; color: #3b82f6;">--</div>
-                </div>
-
             </div>
 
             <!-- HISTORICAL PATTERN SCANNER -->
