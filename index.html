@@ -17830,9 +17830,9 @@ function updateMTFBiasSummary(symbol) {
 
     const confluenceEl = document.getElementById('mtfConfluence');
     if (confluenceEl) {
-        confluenceEl.textContent = bullishCount + '/3 BULLISH';
-        confluenceEl.style.color = bullishCount >= 2 ? '#22c55e' :
-                                   (bullishCount === 0 ? '#ef4444' : '#eab308');
+        var isBullish = bullishCount >= 2;
+        confluenceEl.textContent = bullishCount + '/3 ' + (isBullish ? 'BULLISH' : 'BEARISH');
+        confluenceEl.style.color = isBullish ? '#22c55e' : '#ef4444';
     }
 
     console.log('MTF Bias Summary updated for ' + symbol);
@@ -25822,16 +25822,24 @@ async function updateChart(panelType) {
             document.getElementById(`${panelType}Legend`).style.display = 'flex';
         }
         
-        // Update price display
+        // Update price display - use actual current price from daily data (not simulated)
         const lastBar = data[data.length - 1];
         const priceEl = document.getElementById(`${panelType}Price`);
-        if (priceEl && lastBar) {
+        if (priceEl && currentData && currentData.length > 0) {
+            // Get actual current price from raw daily data
+            const actualPrice = parseFloat(currentData[currentData.length - 1].Close) || lastBar.close;
+            const prevClose = parseFloat(currentData[currentData.length - 2]?.Close) || actualPrice;
+            priceEl.textContent = `$${actualPrice.toFixed(2)}`;
+            priceEl.className = actualPrice >= prevClose ? 'price' : 'price down';
+        } else if (priceEl && lastBar) {
             priceEl.textContent = `$${lastBar.close.toFixed(2)}`;
             priceEl.className = lastBar.close >= lastBar.open ? 'price' : 'price down';
         }
-        
-        // Update signal and bias
-        const signal = lastBar.close > (data[data.length - 2]?.close || lastBar.close) ? 'CALL' : 'PUT';
+
+        // Update signal and bias - use actual data for signal
+        const actualClose = (currentData && currentData.length > 0) ? parseFloat(currentData[currentData.length - 1].Close) : lastBar.close;
+        const actualPrevClose = (currentData && currentData.length > 1) ? parseFloat(currentData[currentData.length - 2].Close) : (lastBar.close);
+        const signal = actualClose > actualPrevClose ? 'CALL' : 'PUT';
         updateMTFSignal(panelType, signal);
         
         // Calculate and display Fibonacci levels
