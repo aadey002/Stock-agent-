@@ -40118,10 +40118,38 @@ function scanEMASignals() {
         { name: 'daily', label: 'Daily', multiplier: 1 }
     ];
 
-    // Determine trend direction from Daily EMA (9 EMA vs 21 EMA)
+    // STEP 1: Determine trend direction
+    // First check MTF Confluence if available, otherwise use Daily EMA comparison
     var dailyEMA9 = calculateEMA(priceData, 9);
     var dailyEMA21 = calculateEMA(priceData, 21);
-    var isBullish = dailyEMA9 > dailyEMA21;
+
+    // Check MTF Confluence for direction hint
+    var mtfConfluence = document.getElementById('overallBias');
+    var mtfText = mtfConfluence ? mtfConfluence.textContent : '';
+
+    // Also check individual biases
+    var intradayBiasEl = document.getElementById('intradayBias');
+    var swingBiasEl = document.getElementById('swingBias');
+    var positionBiasEl = document.getElementById('positionBias');
+
+    var intradayBias = intradayBiasEl ? intradayBiasEl.textContent : '';
+    var swingBias = swingBiasEl ? swingBiasEl.textContent : '';
+    var positionBias = positionBiasEl ? positionBiasEl.textContent : '';
+
+    // Determine if bearish based on MTF confluence or EMA comparison
+    var isBearish = mtfText.includes('BEARISH') ||
+                    (intradayBias.includes('BEARISH') && swingBias.includes('BEARISH')) ||
+                    (dailyEMA9 < dailyEMA21);
+    var isBullish = !isBearish;
+
+    // Debug logging
+    console.log('EMA Signal Tracker Direction Debug:');
+    console.log('  MTF Confluence:', mtfText);
+    console.log('  Intraday Bias:', intradayBias);
+    console.log('  Swing Bias:', swingBias);
+    console.log('  Position Bias:', positionBias);
+    console.log('  Daily EMA9:', dailyEMA9.toFixed(2), 'vs EMA21:', dailyEMA21.toFixed(2));
+    console.log('  Final Direction:', isBullish ? 'BULLISH' : 'BEARISH');
 
     var results = [];
     var earlyConfirmed = 0, momentumConfirmed = 0, confirmConfirmed = 0;
