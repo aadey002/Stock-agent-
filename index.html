@@ -8774,7 +8774,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis <span id="multiChartsLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); font-weight: normal; margin-left: 10px;" title="Last updated">⏱️ --</span></div>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
-                        <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
+                        <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts(); if(typeof scanEMASignals === 'function') scanEMASignals();" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
                             <optgroup label="Index ETFs">
                                 <option value="SPY">SPY</option>
                                 <option value="QQQ">QQQ</option>
@@ -15142,8 +15142,8 @@ function initTabs() {
                 }
             }
 
-            // Auto-scan EMA Signal Tracker when Daily Analysis tab is clicked
-            if (btn.dataset.tab === 'daily-analysis') {
+            // Auto-scan EMA Signal Tracker when Multi-Charts tab is clicked
+            if (btn.dataset.tab === 'multi-charts') {
                 if (typeof scanEMASignals === 'function') {
                     setTimeout(scanEMASignals, 100);
                 }
@@ -40154,7 +40154,9 @@ var emaBacktestData = {}; // Store backtest results per symbol
 
 function scanEMASignals() {
     var symbolEl = document.getElementById('emaTrackerSymbol');
-    var currentSymbol = document.getElementById('symbolSelect') ? document.getElementById('symbolSelect').value : 'SPY';
+    // Use multiChartSymbol dropdown as primary source
+    var multiChartSelect = document.getElementById('multiChartSymbol');
+    var currentSymbol = multiChartSelect ? multiChartSelect.value : (document.getElementById('symbolSelect') ? document.getElementById('symbolSelect').value : 'SPY');
 
     if (symbolEl) symbolEl.textContent = currentSymbol;
 
