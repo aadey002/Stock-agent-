@@ -40612,25 +40612,40 @@ function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confir
         }
     }
 
-    // Update Overall/Confluence Bias
+    // Update Overall/Confluence Bias - count actual displayed biases
     var overallEl = document.getElementById('overallBias');
     if (overallEl) {
-        // Count how many TFs have strong confirmations (>=2 signals)
-        var confirmedCount = 0;
-        if (earlyConfirmed >= 2) confirmedCount++;
-        if (momentumConfirmed >= 2) confirmedCount++;
-        if (confirmConfirmed >= 2) confirmedCount++;
+        // Read the actual displayed bias values
+        var intradayText = intradayEl ? intradayEl.textContent : '';
+        var swingText = swingEl ? swingEl.textContent : '';
+        var positionText = positionEl ? positionEl.textContent : '';
 
-        // The direction is determined by isBullish
-        // confirmedCount tells us how many TFs agree with that direction
-        if (isBullish) {
-            overallEl.textContent = confirmedCount + '/3 BULLISH';
+        // Count how many show BULLISH vs BEARISH
+        var bullishCount = 0;
+        var bearishCount = 0;
+
+        if (intradayText === 'BULLISH') bullishCount++;
+        else if (intradayText === 'BEARISH') bearishCount++;
+
+        if (swingText === 'BULLISH') bullishCount++;
+        else if (swingText === 'BEARISH') bearishCount++;
+
+        if (positionText === 'BULLISH') bullishCount++;
+        else if (positionText === 'BEARISH') bearishCount++;
+
+        // Show the majority direction
+        if (bullishCount >= bearishCount && bullishCount > 0) {
+            overallEl.textContent = bullishCount + '/3 BULLISH';
             overallEl.style.color = '#22c55e';
             overallEl.className = 'value bullish';
-        } else {
-            overallEl.textContent = confirmedCount + '/3 BEARISH';
+        } else if (bearishCount > 0) {
+            overallEl.textContent = bearishCount + '/3 BEARISH';
             overallEl.style.color = '#ef4444';
             overallEl.className = 'value bearish';
+        } else {
+            overallEl.textContent = '0/3 NEUTRAL';
+            overallEl.style.color = '#f59e0b';
+            overallEl.className = 'value neutral';
         }
     }
 }
