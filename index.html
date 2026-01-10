@@ -8959,7 +8959,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div class="mtf-summary-item">
                         <div class="title">🔥 Confluence</div>
-                        <div class="value bullish" id="overallBias">2/3 BULLISH</div>
+                        <div class="value bullish" id="mtfOverallBias">2/3 BULLISH</div>
                     </div>
                 </div>
             </div>
@@ -17779,85 +17779,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Update MTF Bias Summary when symbol changes
+// Update MTF Bias Summary when symbol changes - FIXED: Use EMA-based direction
 function updateMTFBiasSummary(symbol) {
-    const data = symbolGannData[symbol];
+    var data = symbolGannData[symbol];
     if (!data) return;
 
-    const range = data.high - data.low;
-    const position = (data.price - data.low) / range;
-
-    // Determine biases based on position
-    let intradayBias = 'NEUTRAL';
-    let swingBias = 'NEUTRAL';
-    let positionBias = 'NEUTRAL';
-
-    if (position > 0.7) {
-        intradayBias = 'BEARISH';
-        swingBias = 'BEARISH';
-        positionBias = 'BULLISH';
-    } else if (position > 0.5) {
-        intradayBias = 'BULLISH';
-        swingBias = 'BULLISH';
-        positionBias = 'BULLISH';
-    } else if (position > 0.3) {
-        intradayBias = 'BEARISH';
-        swingBias = 'BULLISH';
-        positionBias = 'BULLISH';
-    } else {
-        intradayBias = 'BULLISH';
-        swingBias = 'BULLISH';
-        positionBias = 'NEUTRAL';
+    // Get price data for EMA calculation
+    var priceData = null;
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 30) {
+        priceData = allSymbolsData[symbol];
     }
 
-    // Update displays
-    const updateBias = (id, bias) => {
-        const el = document.getElementById(id);
+    // Determine trend direction using EMA comparison (CORRECT WAY)
+    var isBullish = true; // Default
+    if (priceData && priceData.length >= 21) {
+        var ema9 = calculateEMA(priceData, 9);
+        var ema21 = calculateEMA(priceData, 21);
+        var currentPrice = parseFloat(priceData[priceData.length - 1].Close);
+
+        // BULLISH: EMA9 > EMA21 AND price > EMA21
+        // BEARISH: EMA9 < EMA21 OR price < EMA21
+        isBullish = (ema9 > ema21) && (currentPrice > ema21);
+
+        console.log('MTF Bias EMA check for ' + symbol + ': EMA9=' + ema9.toFixed(2) +
+                    ', EMA21=' + ema21.toFixed(2) + ', Price=' + currentPrice.toFixed(2) +
+                    ' -> ' + (isBullish ? 'BULLISH' : 'BEARISH'));
+    }
+
+    // ALL biases follow the trend direction consistently
+    var biasText = isBullish ? 'BULLISH' : 'BEARISH';
+    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+
+    // Update displays helper - also sets className for CSS styling
+    var biasClass = 'value ' + (isBullish ? 'bullish' : 'bearish');
+    var updateBias = function(id, bias, color) {
+        var el = document.getElementById(id);
         if (el) {
             el.textContent = bias;
-            el.style.color = bias === 'BULLISH' ? '#22c55e' :
-                             (bias === 'BEARISH' ? '#ef4444' : '#eab308');
+            el.style.color = color;
+            el.className = biasClass;
         }
     };
 
-    updateBias('mtfIntradayBias', intradayBias);
-    updateBias('mtfSwingBias', swingBias);
-    updateBias('mtfPositionBias', positionBias);
+    // Update MTF-prefixed elements
+    updateBias('mtfIntradayBias', biasText, biasColor);
+    updateBias('mtfSwingBias', biasText, biasColor);
+    updateBias('mtfPositionBias', biasText, biasColor);
 
-    // Update confluence
-    let bullishCount = 0;
-    if (intradayBias === 'BULLISH') bullishCount++;
-    if (swingBias === 'BULLISH') bullishCount++;
-    if (positionBias === 'BULLISH') bullishCount++;
+    // ALSO update non-prefixed elements for consistency
+    updateBias('intradayBias', biasText, biasColor);
+    updateBias('swingBias', biasText, biasColor);
+    updateBias('positionBias', biasText, biasColor);
 
-    const confluenceEl = document.getElementById('mtfConfluence');
-    var bearishCount = 3 - bullishCount;
-    var isBullish = bullishCount >= 2;
-    var isBearish = bearishCount >= 2;
-    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+    // Update confluence - all 3 are the same direction
+    var confluenceText = '3/3 ' + biasText;
 
+    var confluenceEl = document.getElementById('mtfConfluence');
     if (confluenceEl) {
-        if (isBullish) {
-            confluenceEl.textContent = bullishCount + '/3 BULLISH';
-        } else {
-            confluenceEl.textContent = bearishCount + '/3 BEARISH';
-        }
+        confluenceEl.textContent = confluenceText;
         confluenceEl.style.color = biasColor;
+    }
+
+    // Also update overallBias element (in Market Context section)
+    var overallEl = document.getElementById('overallBias');
+    if (overallEl) {
+        overallEl.textContent = confluenceText;
+        overallEl.style.color = biasColor;
+        overallEl.className = biasClass;
+    }
+
+    // Also update mtfOverallBias element (in MTF Summary section - was duplicate ID)
+    var mtfOverallEl = document.getElementById('mtfOverallBias');
+    if (mtfOverallEl) {
+        mtfOverallEl.textContent = confluenceText;
+        mtfOverallEl.style.color = biasColor;
+        mtfOverallEl.className = biasClass;
     }
 
     // Update alignment text
     var alignmentEl = document.getElementById('mtfAlignmentText');
     if (alignmentEl) {
-        if (bullishCount === 3) {
-            alignmentEl.textContent = 'ALIGNED BULLISH';
-            alignmentEl.style.color = '#22c55e';
-        } else if (bearishCount === 3) {
-            alignmentEl.textContent = 'ALIGNED BEARISH';
-            alignmentEl.style.color = '#ef4444';
-        } else {
-            alignmentEl.textContent = 'MIXED BIAS';
-            alignmentEl.style.color = '#f59e0b';
-        }
+        alignmentEl.textContent = isBullish ? 'ALIGNED BULLISH' : 'ALIGNED BEARISH';
+        alignmentEl.style.color = biasColor;
     }
 
     // Update confluence card styling
@@ -17872,7 +17875,7 @@ function updateMTFBiasSummary(symbol) {
         }
     }
 
-    console.log('MTF Bias Summary updated for ' + symbol + ': ' + bullishCount + ' bullish, ' + bearishCount + ' bearish');
+    console.log('MTF Bias Summary updated for ' + symbol + ': ' + biasText);
 }
 
 // Update chart for specific timeframe
@@ -40140,37 +40143,23 @@ function scanEMASignals() {
         { name: 'daily', label: 'Daily', multiplier: 1 }
     ];
 
-    // STEP 1: Determine trend direction
-    // First check MTF Confluence if available, otherwise use Daily EMA comparison
+    // STEP 1: Determine trend direction using EMA calculations ONLY (no DOM dependency)
     var dailyEMA9 = calculateEMA(priceData, 9);
     var dailyEMA21 = calculateEMA(priceData, 21);
+    var currentPrice = parseFloat(priceData[priceData.length - 1].Close);
 
-    // Check MTF Confluence for direction hint
-    var mtfConfluence = document.getElementById('overallBias');
-    var mtfText = mtfConfluence ? mtfConfluence.textContent : '';
-
-    // Also check individual biases
-    var intradayBiasEl = document.getElementById('intradayBias');
-    var swingBiasEl = document.getElementById('swingBias');
-    var positionBiasEl = document.getElementById('positionBias');
-
-    var intradayBias = intradayBiasEl ? intradayBiasEl.textContent : '';
-    var swingBias = swingBiasEl ? swingBiasEl.textContent : '';
-    var positionBias = positionBiasEl ? positionBiasEl.textContent : '';
-
-    // Determine if bearish based on MTF confluence or EMA comparison
-    var isBearish = mtfText.includes('BEARISH') ||
-                    (intradayBias.includes('BEARISH') && swingBias.includes('BEARISH')) ||
-                    (dailyEMA9 < dailyEMA21);
-    var isBullish = !isBearish;
+    // BULLISH: EMA9 > EMA21 AND price > EMA21
+    // BEARISH: EMA9 < EMA21 OR price < EMA21
+    var isBullish = (dailyEMA9 > dailyEMA21) && (currentPrice > dailyEMA21);
+    var isBearish = !isBullish;
 
     // Debug logging
-    console.log('EMA Signal Tracker Direction Debug:');
-    console.log('  MTF Confluence:', mtfText);
-    console.log('  Intraday Bias:', intradayBias);
-    console.log('  Swing Bias:', swingBias);
-    console.log('  Position Bias:', positionBias);
-    console.log('  Daily EMA9:', dailyEMA9.toFixed(2), 'vs EMA21:', dailyEMA21.toFixed(2));
+    console.log('EMA Signal Tracker Direction (from EMA only):');
+    console.log('  Daily EMA9:', dailyEMA9.toFixed(2));
+    console.log('  Daily EMA21:', dailyEMA21.toFixed(2));
+    console.log('  Current Price:', currentPrice.toFixed(2));
+    console.log('  EMA9 > EMA21:', dailyEMA9 > dailyEMA21);
+    console.log('  Price > EMA21:', currentPrice > dailyEMA21);
     console.log('  Final Direction:', isBullish ? 'BULLISH' : 'BEARISH');
 
     var results = [];
@@ -40556,6 +40545,14 @@ function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confir
         overallEl.textContent = '3/3 ' + biasText;
         overallEl.style.color = biasColor;
         overallEl.className = biasClass;
+    }
+
+    // Also update mtfOverallBias (the MTF Summary Confluence element)
+    var mtfOverallEl = document.getElementById('mtfOverallBias');
+    if (mtfOverallEl) {
+        mtfOverallEl.textContent = '3/3 ' + biasText;
+        mtfOverallEl.style.color = biasColor;
+        mtfOverallEl.className = biasClass;
     }
 
     console.log('MTF Bias Summary synced: ' + biasText + ' (isBullish=' + isBullish + ')');
