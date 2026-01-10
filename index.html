@@ -8779,32 +8779,59 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
             </div>
 
             <!-- Multi-Timeframe Charts - 3 panels -->
-            <div class="multi-charts-container" id="chartsContainer">
+            <div class="multi-charts-container">
                 <!-- INTRADAY PANEL -->
                 <div class="chart-panel">
                     <div class="chart-panel-header">
                         <div class="chart-panel-title">
                             <span class="icon intraday">⚡</span>
                             <span>Intraday</span>
-                            <span class="signal-badge-mtf call" id="intradaySignalTop">CALL</span>
+                            <span class="signal-badge-mtf call" id="intradaySignal">CALL</span>
+                            <div id="intradayTfIndicator" style="font-size: 10px; color: #f59e0b; margin-left: 10px;">Showing: 15 Minute data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="intradayTimeframeTop" class="chart-select" onchange="updateChartTimeframe('intraday', this.value); updateChart('intraday')">
+                            <select id="intradayTimeframe" class="chart-select" onchange="updateChartTimeframe('intraday', this.value); updateChart('intraday')">
                                 <option value="1m">1 Min</option>
                                 <option value="5m">5 Min</option>
                                 <option value="15m" selected>15 Min</option>
                                 <option value="30m">30 Min</option>
                                 <option value="1h">1 Hour</option>
                             </select>
+                            <select id="intradayChartType" class="chart-select" onchange="updateChart('intraday')">
+                                <option value="candlestick">Candlestick</option>
+                                <option value="heikinashi">Heikin Ashi</option>
+                                <option value="line">Line</option>
+                                <option value="pf">Point & Figure</option>
+                            </select>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('intraday')">⚙️</button>
                         </div>
                     </div>
-                    <div class="chart-body" id="intradayChartBodyTop">
+                    <div class="settings-panel-mtf" id="intradaySettings">
+                        <div class="settings-row-mtf">
+                            <label><input type="checkbox" id="intradayShowEMA" checked onchange="updateChart('intraday')"> EMAs</label>
+                            <label><input type="checkbox" id="intradayShowFib" checked onchange="updateChart('intraday')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="intradayShowSQ9" checked onchange="updateChart('intraday')"> 🎯 SQ9</label>
+                            <label><input type="checkbox" id="intradayShowPatterns" checked onchange="updateChart('intraday')"> Patterns</label>
+                            <label><input type="checkbox" id="intradayShowVolume" checked onchange="updateChart('intraday')"> Volume</label>
+                        </div>
+                    </div>
+                    <div id="intradayPattern" class="pattern-alert-mtf" style="display:none;"></div>
+                    <div class="chart-body" id="intradayChartBody">
                         <div class="chart-legend">
-                            <span class="symbol" id="intradaySymbolTop">SPY</span>
-                            <span class="price" id="intradayPriceTop">--</span>
+                            <span class="symbol" id="intradaySymbol">SPY</span>
+                            <span class="price" id="intradayPrice">--</span>
                         </div>
-                        <div class="chart-canvas-container" id="intradayChartContainerTop" style="height: 200px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted);">Chart loads with symbol</div>
+                        <div class="chart-canvas-container" id="intradayChartContainer"></div>
+                        <div class="chart-loading" id="intradayLoading">Loading chart...</div>
                     </div>
+                    <div class="mtf-legend" id="intradayLegend">
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
+                    </div>
+                    <div class="fib-levels-mtf" id="intradayFib"></div>
                 </div>
 
                 <!-- SWING PANEL -->
@@ -8813,24 +8840,51 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="chart-panel-title">
                             <span class="icon swing">📈</span>
                             <span>Swing</span>
-                            <span class="signal-badge-mtf call" id="swingSignalTop">CALL</span>
+                            <span class="signal-badge-mtf call" id="swingSignal">CALL</span>
+                            <div id="swingTfIndicator" style="font-size: 10px; color: #3b82f6; margin-left: 10px;">Showing: Daily data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="swingTimeframeTop" class="chart-select" onchange="updateChartTimeframe('swing', this.value); updateChart('swing')">
+                            <select id="swingTimeframe" class="chart-select" onchange="updateChartTimeframe('swing', this.value); updateChart('swing')">
                                 <option value="1h">1 Hour</option>
                                 <option value="4h">4 Hour</option>
                                 <option value="1d" selected>Daily</option>
                                 <option value="1w">Weekly</option>
                             </select>
+                            <select id="swingChartType" class="chart-select" onchange="updateChart('swing')">
+                                <option value="candlestick">Candlestick</option>
+                                <option value="heikinashi">Heikin Ashi</option>
+                                <option value="line">Line</option>
+                                <option value="pf">Point & Figure</option>
+                            </select>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('swing')">⚙️</button>
                         </div>
                     </div>
-                    <div class="chart-body" id="swingChartBodyTop">
+                    <div class="settings-panel-mtf" id="swingSettings">
+                        <div class="settings-row-mtf">
+                            <label><input type="checkbox" id="swingShowEMA" checked onchange="updateChart('swing')"> EMAs</label>
+                            <label><input type="checkbox" id="swingShowFib" checked onchange="updateChart('swing')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="swingShowSQ9" checked onchange="updateChart('swing')"> 🎯 SQ9</label>
+                            <label><input type="checkbox" id="swingShowPatterns" checked onchange="updateChart('swing')"> Patterns</label>
+                            <label><input type="checkbox" id="swingShowVolume" checked onchange="updateChart('swing')"> Volume</label>
+                        </div>
+                    </div>
+                    <div id="swingPattern" class="pattern-alert-mtf" style="display:none;"></div>
+                    <div class="chart-body" id="swingChartBody">
                         <div class="chart-legend">
-                            <span class="symbol" id="swingSymbolTop">SPY</span>
-                            <span class="price" id="swingPriceTop">--</span>
+                            <span class="symbol" id="swingSymbol">SPY</span>
+                            <span class="price" id="swingPrice">--</span>
                         </div>
-                        <div class="chart-canvas-container" id="swingChartContainerTop" style="height: 200px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted);">Chart loads with symbol</div>
+                        <div class="chart-canvas-container" id="swingChartContainer"></div>
+                        <div class="chart-loading" id="swingLoading">Loading chart...</div>
                     </div>
+                    <div class="mtf-legend" id="swingLegend">
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
+                    </div>
+                    <div class="fib-levels-mtf" id="swingFib"></div>
                 </div>
 
                 <!-- POSITION PANEL -->
@@ -8839,23 +8893,51 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div class="chart-panel-title">
                             <span class="icon position">🎯</span>
                             <span>Position</span>
-                            <span class="signal-badge-mtf put" id="positionSignalTop">PUT</span>
+                            <span class="signal-badge-mtf put" id="positionSignal">PUT</span>
+                            <div id="positionTfIndicator" style="font-size: 10px; color: #8b5cf6; margin-left: 10px;">Showing: Monthly data</div>
                         </div>
                         <div class="chart-controls">
-                            <select id="positionTimeframeTop" class="chart-select" onchange="updateChartTimeframe('position', this.value); updateChart('position')">
+                            <select id="positionTimeframe" class="chart-select" onchange="updateChartTimeframe('position', this.value); updateChart('position')">
                                 <option value="1d">Daily</option>
                                 <option value="1w">Weekly</option>
                                 <option value="1M" selected>Monthly</option>
+                                <option value="3M">Quarterly</option>
                             </select>
+                            <select id="positionChartType" class="chart-select" onchange="updateChart('position')">
+                                <option value="candlestick">Candlestick</option>
+                                <option value="heikinashi">Heikin Ashi</option>
+                                <option value="line">Line</option>
+                                <option value="pf">Point & Figure</option>
+                            </select>
+                            <button class="settings-btn-mtf" onclick="toggleMTFSettings('position')">⚙️</button>
                         </div>
                     </div>
-                    <div class="chart-body" id="positionChartBodyTop">
+                    <div class="settings-panel-mtf" id="positionSettings">
+                        <div class="settings-row-mtf">
+                            <label><input type="checkbox" id="positionShowEMA" checked onchange="updateChart('position')"> EMAs</label>
+                            <label><input type="checkbox" id="positionShowFib" checked onchange="updateChart('position')"> Fib Levels</label>
+                            <label style="color: #f59e0b;"><input type="checkbox" id="positionShowSQ9" checked onchange="updateChart('position')"> 🎯 SQ9</label>
+                            <label><input type="checkbox" id="positionShowPatterns" checked onchange="updateChart('position')"> Patterns</label>
+                            <label><input type="checkbox" id="positionShowVolume" checked onchange="updateChart('position')"> Volume</label>
+                        </div>
+                    </div>
+                    <div id="positionPattern" class="pattern-alert-mtf" style="display:none;"></div>
+                    <div class="chart-body" id="positionChartBody">
                         <div class="chart-legend">
-                            <span class="symbol" id="positionSymbolTop">SPY</span>
-                            <span class="price" id="positionPriceTop">--</span>
+                            <span class="symbol" id="positionSymbol">SPY</span>
+                            <span class="price" id="positionPrice">--</span>
                         </div>
-                        <div class="chart-canvas-container" id="positionChartContainerTop" style="height: 200px; background: var(--bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted);">Chart loads with symbol</div>
+                        <div class="chart-canvas-container" id="positionChartContainer"></div>
+                        <div class="chart-loading" id="positionLoading">Loading chart...</div>
                     </div>
+                    <div class="mtf-legend" id="positionLegend">
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#f59e0b;"></div> EMA 9</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#3b82f6;"></div> EMA 21</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#8b5cf6;"></div> EMA 50</div>
+                        <div class="legend-item-mtf" style="border-left: 1px solid var(--border); padding-left: 8px; margin-left: 8px;"><div class="legend-color-mtf" style="background:#22c55e; border-style: dashed;"></div> SQ9 Sup</div>
+                        <div class="legend-item-mtf"><div class="legend-color-mtf" style="background:#ef4444; border-style: dashed;"></div> SQ9 Res</div>
+                    </div>
+                    <div class="fib-levels-mtf" id="positionFib"></div>
                 </div>
             </div>
 
@@ -15012,6 +15094,9 @@ function initTabs() {
                 if (typeof scanEMASignals === 'function') {
                     setTimeout(scanEMASignals, 100);
                 }
+                if (typeof updateAllMultiCharts === 'function') {
+                    setTimeout(updateAllMultiCharts, 200);
+                }
             }
         };
     });
@@ -16873,11 +16958,9 @@ function updateMultiChartsForSymbol(symbol) {
         el.textContent = '$' + data.price.toFixed(2);
     });
 
-    // Sync multi-chart symbol dropdown
-    const multiChartSymbol = document.getElementById('multiChartSymbol');
-    if (multiChartSymbol) {
-        multiChartSymbol.value = symbol;
-    }
+    // Update header badge
+    const badge = document.getElementById('multiChartsSymbolBadge');
+    if (badge) badge.textContent = symbol;
 
     console.log('Multi-Charts updated for ' + symbol);
 }
@@ -18480,9 +18563,9 @@ async function changeSymbol() {
         if (el) el.textContent = SYMBOL_NAMES[currentSymbol] || currentSymbol;
     });
 
-    // Update Multi-Charts symbol selector to match
-    const multiChartSymbol = document.getElementById('multiChartSymbol');
-    if (multiChartSymbol) multiChartSymbol.value = currentSymbol;
+    // Update Multi-Charts header badge
+    const multiChartsBadge = document.getElementById('multiChartsSymbolBadge');
+    if (multiChartsBadge) multiChartsBadge.textContent = currentSymbol;
 
     // Update Market Conditions symbol selector to match
     const mktConditionsSymbol = document.getElementById('mktConditionsSymbol');
@@ -25480,11 +25563,7 @@ function initMultiCharts() {
 }
 
 async function syncSymbolFromMultiCharts() {
-    const newSymbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
-    const mainSelect = document.getElementById('symbolSelect');
-    if (mainSelect && mainSelect.value !== newSymbol) {
-        mainSelect.value = newSymbol;
-    }
+    // No longer needed - using main symbolSelect dropdown
     await changeSymbol();
 }
 
@@ -25495,11 +25574,16 @@ async function updateAllMultiCharts() {
     const badge = document.getElementById('multiChartsSymbolBadge');
     if (badge) badge.textContent = symbol;
 
-    // Update chart panel symbols (top charts)
+    // Update chart panel symbols
     ['intraday', 'swing', 'position'].forEach(panel => {
-        const symbolEl = document.getElementById(`${panel}SymbolTop`);
+        const symbolEl = document.getElementById(`${panel}Symbol`);
         if (symbolEl) symbolEl.textContent = symbol;
     });
+
+    // Update all three charts
+    await updateChart('intraday');
+    await updateChart('swing');
+    await updateChart('position');
 
     // Update multi-charts timestamp
     updateSectionTimestamp('multiCharts');
@@ -25692,51 +25776,13 @@ function updateMultiChartBias(symbol, data) {
 
 // Initialize Multi-Charts symbol change handlers
 function initMultiChartsSymbolChange() {
-    const multiChartSymbol = document.getElementById('multiChartSymbol');
-
-    if (multiChartSymbol) {
-        // Remove existing onchange to avoid duplicates
-        multiChartSymbol.removeAttribute('onchange');
-
-        multiChartSymbol.addEventListener('change', async function() {
-            const symbol = this.value;
-            console.log('Multi-Charts: Symbol changed to ' + symbol);
-
-            // Sync with header symbol dropdown
-            const mainSelect = document.getElementById('symbolSelect');
-            if (mainSelect && mainSelect.value !== symbol) {
-                mainSelect.value = symbol;
-            }
-
-            // Update global currentSymbol
-            currentSymbol = symbol;
-
-            // Update Multi-Charts with new symbol
-            await updateMultiCharts(symbol);
-
-            // Also trigger full symbol change to update other tabs
-            await changeSymbol();
-        });
-    }
-
-    // Also listen for header symbol changes to update Multi-Charts
-    const headerSymbol = document.getElementById('symbolSelect');
-    if (headerSymbol) {
-        headerSymbol.addEventListener('change', function() {
-            const symbol = this.value;
-            // Update Multi-Charts dropdown to match
-            if (multiChartSymbol && multiChartSymbol.value !== symbol) {
-                multiChartSymbol.value = symbol;
-            }
-            // updateMultiCharts will be called via changeSymbol()
-        });
-    }
-
+    // Charts now use main symbolSelect dropdown
+    // changeSymbol() calls updateAllMultiCharts() automatically
     console.log('Multi-Charts symbol change handlers initialized');
 }
 
 async function updateChart(panelType) {
-    const symbol = document.getElementById('multiChartSymbol')?.value || 'SPY';
+    const symbol = document.getElementById('symbolSelect')?.value || currentSymbol || 'SPY';
     const timeframe = document.getElementById(`${panelType}Timeframe`)?.value;
     const chartType = document.getElementById(`${panelType}ChartType`)?.value;
     const container = document.getElementById(`${panelType}ChartContainer`);
