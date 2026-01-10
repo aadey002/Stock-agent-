@@ -19091,7 +19091,7 @@ function updateMarketAnalysisTab() {
 
     el = document.getElementById('mktAnalysisSummary');
     if (el) {
-        var summaryHTML = '<div>• <strong>SPY ' + (spyOK ? 'above' : 'below') + ' 20MA</strong> - Primary trend is ' + (spyOK ? 'UP' : 'DOWN') + '</div>';
+        var summaryHTML = '<div>• <strong>' + selectedSymbol + ' ' + (spyOK ? 'above' : 'below') + ' 20MA</strong> - Primary trend is ' + (spyOK ? 'UP' : 'DOWN') + '</div>';
         summaryHTML += '<div>• <strong>' + (breadthOK ? 'Strong' : 'Weak') + ' breadth (' + breadthPct + '%)</strong> - ' + (breadthOK ? 'Broad participation' : 'Narrow participation') + '</div>';
         summaryHTML += '<div>• <strong>' + (vixCurrent < 16 ? 'Low' : vixCurrent < 20 ? 'Normal' : 'High') + ' VIX (' + vixCurrent.toFixed(1) + ')</strong> - ' + (vixCurrent < 16 ? 'Complacency risk' : vixCurrent < 20 ? 'Normal conditions' : 'Fear elevated') + '</div>';
 
@@ -40316,7 +40316,7 @@ function formatEMATimestamp(date) {
         minute: '2-digit',
         hour12: true
     };
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleString('en-US', options);
 }
 
 function calculateEMA(data, period) {
