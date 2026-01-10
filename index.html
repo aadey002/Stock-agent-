@@ -25908,41 +25908,18 @@ async function updateChart(panelType) {
 }
 
 function updateMTFSignal(panel, signal) {
+    // Only update the chart panel signal badge, NOT the MTF Bias Summary elements
+    // MTF Bias Summary (intradayBias, swingBias, positionBias, overallBias) is
+    // controlled by syncMTFBiasWithEMA() based on EMA direction
+
     const signalEl = document.getElementById(`${panel}Signal`);
-    const biasEl = document.getElementById(`${panel}Bias`);
-    
     if (signalEl) {
         signalEl.textContent = signal;
         signalEl.className = `signal-badge-mtf ${signal.toLowerCase()}`;
     }
-    
-    if (biasEl) {
-        const bias = signal === 'CALL' ? 'BULLISH' : 'BEARISH';
-        biasEl.textContent = bias;
-        biasEl.className = `value ${bias.toLowerCase()}`;
-    }
-    
-    // Update overall confluence
-    const intraday = document.getElementById('intradaySignal')?.textContent || 'HOLD';
-    const swing = document.getElementById('swingSignal')?.textContent || 'HOLD';
-    const position = document.getElementById('positionSignal')?.textContent || 'HOLD';
-    
-    let bullish = 0;
-    [intraday, swing, position].forEach(s => { if (s === 'CALL') bullish++; });
 
-    const bearish = 3 - bullish;
-    const isBullish = bullish >= 2;
-
-    const overallEl = document.getElementById('overallBias');
-    if (overallEl) {
-        // Show correct count based on direction
-        if (isBullish) {
-            overallEl.textContent = `${bullish}/3 BULLISH`;
-        } else {
-            overallEl.textContent = `${bearish}/3 BEARISH`;
-        }
-        overallEl.className = `value ${isBullish ? 'bullish' : 'bearish'}`;
-    }
+    // DO NOT update ${panel}Bias or overallBias here!
+    // Those are controlled by syncMTFBiasWithEMA() for consistent direction
 }
 
 function displayMTFFib(panelType, data) {
@@ -40541,113 +40518,47 @@ function updateEMAColumnHeaders(isBullish) {
 
 // Sync MTF Bias Summary with EMA Signal Tracker direction
 function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confirmConfirmed) {
-    // When isBullish=true, confirmations mean bullish signals
-    // When isBullish=false, confirmations mean BEARISH signals (price BELOW EMAs)
+    // Simple logic: The trend direction (isBullish) determines ALL biases
+    // When bearish trend detected, ALL should show BEARISH (red)
+    // When bullish trend detected, ALL should show BULLISH (green)
 
-    // Update Intraday Bias (based on early signal - price vs 9 EMA)
+    var biasText = isBullish ? 'BULLISH' : 'BEARISH';
+    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+    var biasClass = 'value ' + (isBullish ? 'bullish' : 'bearish');
+
+    // Update Intraday Bias
     var intradayEl = document.getElementById('intradayBias');
     if (intradayEl) {
-        // If bearish trend and 2+ TFs confirm price below 9 EMA = BEARISH
-        // If bullish trend and 2+ TFs confirm price above 9 EMA = BULLISH
-        var intradayConfirmed = earlyConfirmed >= 2;
-        var intradayBullish = isBullish && intradayConfirmed;
-        var intradayBearish = !isBullish && intradayConfirmed;
-
-        if (intradayBullish) {
-            intradayEl.textContent = 'BULLISH';
-            intradayEl.style.color = '#22c55e';
-            intradayEl.className = 'value bullish';
-        } else if (intradayBearish) {
-            intradayEl.textContent = 'BEARISH';
-            intradayEl.style.color = '#ef4444';
-            intradayEl.className = 'value bearish';
-        } else {
-            intradayEl.textContent = 'NEUTRAL';
-            intradayEl.style.color = '#f59e0b';
-            intradayEl.className = 'value neutral';
-        }
+        intradayEl.textContent = biasText;
+        intradayEl.style.color = biasColor;
+        intradayEl.className = biasClass;
     }
 
-    // Update Swing Bias (based on momentum signal - price vs 21 EMA)
+    // Update Swing Bias
     var swingEl = document.getElementById('swingBias');
     if (swingEl) {
-        var swingConfirmed = momentumConfirmed >= 2;
-        var swingBullish = isBullish && swingConfirmed;
-        var swingBearish = !isBullish && swingConfirmed;
-
-        if (swingBullish) {
-            swingEl.textContent = 'BULLISH';
-            swingEl.style.color = '#22c55e';
-            swingEl.className = 'value bullish';
-        } else if (swingBearish) {
-            swingEl.textContent = 'BEARISH';
-            swingEl.style.color = '#ef4444';
-            swingEl.className = 'value bearish';
-        } else {
-            swingEl.textContent = 'NEUTRAL';
-            swingEl.style.color = '#f59e0b';
-            swingEl.className = 'value neutral';
-        }
+        swingEl.textContent = biasText;
+        swingEl.style.color = biasColor;
+        swingEl.className = biasClass;
     }
 
-    // Update Position Bias (based on confirm signal - 9 EMA vs 21 EMA)
+    // Update Position Bias
     var positionEl = document.getElementById('positionBias');
     if (positionEl) {
-        var positionConfirmed = confirmConfirmed >= 2;
-        var positionBullish = isBullish && positionConfirmed;
-        var positionBearish = !isBullish && positionConfirmed;
-
-        if (positionBullish) {
-            positionEl.textContent = 'BULLISH';
-            positionEl.style.color = '#22c55e';
-            positionEl.className = 'value bullish';
-        } else if (positionBearish) {
-            positionEl.textContent = 'BEARISH';
-            positionEl.style.color = '#ef4444';
-            positionEl.className = 'value bearish';
-        } else {
-            positionEl.textContent = 'NEUTRAL';
-            positionEl.style.color = '#f59e0b';
-            positionEl.className = 'value neutral';
-        }
+        positionEl.textContent = biasText;
+        positionEl.style.color = biasColor;
+        positionEl.className = biasClass;
     }
 
-    // Update Overall/Confluence Bias - count actual displayed biases
+    // Update Overall/Confluence Bias - all 3 match the trend direction
     var overallEl = document.getElementById('overallBias');
     if (overallEl) {
-        // Read the actual displayed bias values
-        var intradayText = intradayEl ? intradayEl.textContent : '';
-        var swingText = swingEl ? swingEl.textContent : '';
-        var positionText = positionEl ? positionEl.textContent : '';
-
-        // Count how many show BULLISH vs BEARISH
-        var bullishCount = 0;
-        var bearishCount = 0;
-
-        if (intradayText === 'BULLISH') bullishCount++;
-        else if (intradayText === 'BEARISH') bearishCount++;
-
-        if (swingText === 'BULLISH') bullishCount++;
-        else if (swingText === 'BEARISH') bearishCount++;
-
-        if (positionText === 'BULLISH') bullishCount++;
-        else if (positionText === 'BEARISH') bearishCount++;
-
-        // Show the majority direction
-        if (bullishCount >= bearishCount && bullishCount > 0) {
-            overallEl.textContent = bullishCount + '/3 BULLISH';
-            overallEl.style.color = '#22c55e';
-            overallEl.className = 'value bullish';
-        } else if (bearishCount > 0) {
-            overallEl.textContent = bearishCount + '/3 BEARISH';
-            overallEl.style.color = '#ef4444';
-            overallEl.className = 'value bearish';
-        } else {
-            overallEl.textContent = '0/3 NEUTRAL';
-            overallEl.style.color = '#f59e0b';
-            overallEl.className = 'value neutral';
-        }
+        overallEl.textContent = '3/3 ' + biasText;
+        overallEl.style.color = biasColor;
+        overallEl.className = biasClass;
     }
+
+    console.log('MTF Bias Summary synced: ' + biasText + ' (isBullish=' + isBullish + ')');
 }
 
 function updateEmaTier2Feed(score) {
