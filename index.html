@@ -15141,6 +15141,13 @@ function initTabs() {
                     updateTechnicalPatterns(currentSymbol);
                 }
             }
+
+            // Auto-scan EMA Signal Tracker when Daily Analysis tab is clicked
+            if (btn.dataset.tab === 'daily-analysis') {
+                if (typeof scanEMASignals === 'function') {
+                    setTimeout(scanEMASignals, 100);
+                }
+            }
         };
     });
 }
@@ -40303,6 +40310,9 @@ function scanEMASignals() {
         biasEl.style.background = isBullish ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
     }
 
+    // Sync MTF Bias Summary with EMA direction
+    syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confirmConfirmed);
+
     // Update column headers based on bias
     updateEMAColumnHeaders(isBullish);
 
@@ -40516,6 +40526,53 @@ function updateEMAColumnHeaders(isBullish) {
         if (earlyDesc) earlyDesc.textContent = 'Price crossed BELOW 9 EMA';
         if (momDesc) momDesc.textContent = 'Price crossed BELOW 21 EMA';
         if (confDesc) confDesc.textContent = '9 EMA crossed BELOW 21 EMA';
+    }
+}
+
+// Sync MTF Bias Summary with EMA Signal Tracker direction
+function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confirmConfirmed) {
+    var biasText = isBullish ? 'BULLISH' : 'BEARISH';
+    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+
+    // Update Intraday Bias (based on early signal - price vs 9 EMA)
+    var intradayEl = document.getElementById('intradayBias');
+    if (intradayEl) {
+        var intradayBullish = earlyConfirmed >= 2;
+        intradayEl.textContent = intradayBullish ? 'BULLISH' : 'BEARISH';
+        intradayEl.style.color = intradayBullish ? '#22c55e' : '#ef4444';
+        intradayEl.className = 'value ' + (intradayBullish ? 'bullish' : 'bearish');
+    }
+
+    // Update Swing Bias (based on momentum signal - price vs 21 EMA)
+    var swingEl = document.getElementById('swingBias');
+    if (swingEl) {
+        var swingBullish = momentumConfirmed >= 2;
+        swingEl.textContent = swingBullish ? 'BULLISH' : 'BEARISH';
+        swingEl.style.color = swingBullish ? '#22c55e' : '#ef4444';
+        swingEl.className = 'value ' + (swingBullish ? 'bullish' : 'bearish');
+    }
+
+    // Update Position Bias (based on confirm signal - 9 EMA vs 21 EMA)
+    var positionEl = document.getElementById('positionBias');
+    if (positionEl) {
+        var positionBullish = confirmConfirmed >= 2;
+        positionEl.textContent = positionBullish ? 'BULLISH' : 'BEARISH';
+        positionEl.style.color = positionBullish ? '#22c55e' : '#ef4444';
+        positionEl.className = 'value ' + (positionBullish ? 'bullish' : 'bearish');
+    }
+
+    // Update Overall/Confluence Bias
+    var overallEl = document.getElementById('overallBias');
+    if (overallEl) {
+        var bullishCount = 0;
+        if (earlyConfirmed >= 2) bullishCount++;
+        if (momentumConfirmed >= 2) bullishCount++;
+        if (confirmConfirmed >= 2) bullishCount++;
+
+        var overallBullish = bullishCount >= 2;
+        overallEl.textContent = bullishCount + '/3 ' + (overallBullish ? 'BULLISH' : 'BEARISH');
+        overallEl.style.color = overallBullish ? '#22c55e' : '#ef4444';
+        overallEl.className = 'value ' + (overallBullish ? 'bullish' : 'bearish');
     }
 }
 
