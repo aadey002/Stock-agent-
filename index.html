@@ -24858,6 +24858,14 @@ async function initializeApp() {
                     updateAgentSignalDisplay();
                 }
 
+                // Render Trade Action tab (Tiered Action Center) after data is ready
+                if (typeof renderTieredActionCenter === 'function') {
+                    setTimeout(function() {
+                        renderTieredActionCenter();
+                        console.log('Trade Action tab rendered on page load');
+                    }, 500);
+                }
+
                 // Auto-save predictions after data loads
                 if (typeof autoSavePredictions === 'function') {
                     setTimeout(autoSavePredictions, 1000);
@@ -24872,6 +24880,7 @@ async function initializeApp() {
                 console.warn('Data load timeout - running calculations anyway');
                 if (typeof updateMarketConditions === 'function') updateMarketConditions();
                 if (typeof updateTopTradeDisplay === 'function') updateTopTradeDisplay();
+                if (typeof renderTieredActionCenter === 'function') renderTieredActionCenter();
             }
         }
     }
