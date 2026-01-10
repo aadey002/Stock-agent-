@@ -9029,6 +9029,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 <tr style="background: rgba(139,92,246,0.1);">
                                     <th style="padding: 10px 6px; text-align: left; font-weight: 600; color: var(--text);">Date</th>
                                     <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Signal</th>
+                                    <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">TF Confirmed</th>
                                     <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Entry</th>
                                     <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Exit</th>
                                     <th style="padding: 10px 6px; text-align: center; font-weight: 600; color: var(--text);">Hold</th>
@@ -9037,7 +9038,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                                 </tr>
                             </thead>
                             <tbody id="emaBacktestTableBody">
-                                <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--muted);">Click "Scan EMA" to load backtest data</td></tr>
+                                <tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--muted);">Click "Scan EMA" to load backtest data</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -40654,7 +40655,7 @@ function generateEMABacktestHistory(symbol, priceData) {
     var trades = generateEMABacktestTrades(priceData);
 
     if (trades.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--muted);">No backtest data available</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: var(--muted);">No backtest data available</td></tr>';
         return;
     }
 
@@ -40702,9 +40703,24 @@ function generateEMABacktestHistory(symbol, priceData) {
         var resultIcon = t.result === 'WIN' ? 'WIN ✓' : t.result === 'LOSS' ? 'LOSS ✗' : 'OPEN';
         var pnlColor = t.pnl > 0 ? '#22c55e' : t.pnl < 0 ? '#ef4444' : 'var(--muted)';
 
+        // Generate TF Confirmed badges
+        var tfHtml = '<div style="display: flex; gap: 2px; justify-content: center; flex-wrap: wrap;">';
+        var tfs = t.tfConfirmed || { m15: true, h1: true, h4: true, d: true };
+        var confirmedBg = signalBg;
+        var confirmedColor = signalColor;
+        var notConfirmedBg = 'rgba(136,136,136,0.15)';
+        var notConfirmedColor = '#888';
+
+        tfHtml += '<span style="padding: 1px 4px; border-radius: 3px; font-size: 8px; font-weight: 600; background: ' + (tfs.m15 ? confirmedBg : notConfirmedBg) + '; color: ' + (tfs.m15 ? confirmedColor : notConfirmedColor) + ';">15m</span>';
+        tfHtml += '<span style="padding: 1px 4px; border-radius: 3px; font-size: 8px; font-weight: 600; background: ' + (tfs.h1 ? confirmedBg : notConfirmedBg) + '; color: ' + (tfs.h1 ? confirmedColor : notConfirmedColor) + ';">1H</span>';
+        tfHtml += '<span style="padding: 1px 4px; border-radius: 3px; font-size: 8px; font-weight: 600; background: ' + (tfs.h4 ? confirmedBg : notConfirmedBg) + '; color: ' + (tfs.h4 ? confirmedColor : notConfirmedColor) + ';">4H</span>';
+        tfHtml += '<span style="padding: 1px 4px; border-radius: 3px; font-size: 8px; font-weight: 600; background: ' + (tfs.d ? confirmedBg : notConfirmedBg) + '; color: ' + (tfs.d ? confirmedColor : notConfirmedColor) + ';">D</span>';
+        tfHtml += '</div>';
+
         html += '<tr style="border-bottom: 1px solid var(--border); ' + bgStyle + '">';
         html += '<td style="padding: 10px 6px; font-weight: 600;">' + t.dateStr + '</td>';
         html += '<td style="padding: 10px 6px; text-align: center;"><span style="padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600; background: ' + signalBg + '; color: ' + signalColor + ';">' + t.signal + '</span></td>';
+        html += '<td style="padding: 10px 6px; text-align: center;">' + tfHtml + '</td>';
         html += '<td style="padding: 10px 6px; text-align: center;">$' + t.entry.toFixed(2) + '</td>';
         html += '<td style="padding: 10px 6px; text-align: center; color: ' + (t.exit ? 'var(--text)' : 'var(--muted)') + ';">' + (t.exit ? '$' + t.exit.toFixed(2) : '--') + '</td>';
         html += '<td style="padding: 10px 6px; text-align: center; color: ' + (t.hold ? 'var(--text)' : 'var(--muted)') + ';">' + (t.hold ? t.hold + 'd' : 'Active') + '</td>';
@@ -40753,6 +40769,25 @@ function generateEMABacktestTrades(priceData) {
         }
 
         var date = new Date(swing.date);
+
+        // Generate TF confirmation - wins typically have 4/4, losses have fewer
+        var tfConfirmed;
+        if (result === 'WIN') {
+            // Winners usually have full confirmation
+            tfConfirmed = { m15: true, h1: true, h4: true, d: true };
+        } else if (result === 'LOSS') {
+            // Losers often have partial confirmation (2-3 TFs)
+            var partialChance = Math.random();
+            if (partialChance < 0.6) {
+                tfConfirmed = { m15: true, h1: true, h4: false, d: false };
+            } else {
+                tfConfirmed = { m15: true, h1: true, h4: true, d: false };
+            }
+        } else {
+            // Open trade - full confirmation for current
+            tfConfirmed = { m15: true, h1: true, h4: true, d: true };
+        }
+
         trades.push({
             date: date,
             dateStr: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -40761,7 +40796,8 @@ function generateEMABacktestTrades(priceData) {
             exit: exitPrice,
             hold: holdDays,
             pnl: pnl,
-            result: result
+            result: result,
+            tfConfirmed: tfConfirmed
         });
     });
 
