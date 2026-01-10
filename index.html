@@ -10520,145 +10520,215 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                 </div>
             </div>
 
-            <!-- CANDLE PATTERN VISUAL GUIDE -->
-            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.05), rgba(239,68,68,0.05)); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <!-- ENHANCED CANDLE PATTERN SCANNER -->
+            <div id="candlePatternScanner" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                     <div>
-                        <div style="font-size: 16px; font-weight: 700;">🕯️ Candle Pattern Scanner</div>
-                        <div style="font-size: 11px; color: var(--muted);">Reversal patterns at SQ9 levels</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 18px;">🕯️</span>
+                            <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Candle Pattern Scanner</h3>
+                        </div>
+                        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
+                            All patterns for <span id="patternScannerSymbol" style="color: #3b82f6; font-weight: 600;">--</span>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="togglePatternGuide()" id="patternGuideBtn" style="padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; cursor: pointer;">📖 Show Guide</button>
-                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; background: #8b5cf6; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔍 Scan Now</button>
+                        <button onclick="togglePatternGuide()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px;">
+                            📖 Show Guide
+                        </button>
+                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; border-radius: 6px; border: none; background: #22c55e; color: white; cursor: pointer; font-size: 11px; font-weight: 600;">
+                            🔍 Scan Now
+                        </button>
                     </div>
                 </div>
 
-                <!-- Today's Detected Patterns -->
-                <div id="detectedPatterns" style="margin-bottom: 15px;">
-                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 10px;">📊 Today's Detected Patterns</div>
+                <!-- MTF Confluence -->
+                <div id="patternConfluenceBadge" style="display: flex; justify-content: center; margin-bottom: 16px;">
+                    <div style="background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); border-radius: 10px; padding: 12px 24px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted); margin-bottom: 4px;">MTF PATTERN CONFLUENCE</div>
+                        <div id="patternConfluenceScore" style="font-size: 20px; font-weight: 700; color: #888;">--</div>
+                    </div>
+                </div>
+
+                <!-- Timeframe Summary -->
+                <div id="tfPatternSummary" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;">
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--muted);">15m</div>
+                        <div style="font-size: 16px;" id="tf15mIcon">⏳</div>
+                        <div style="font-size: 9px; color: var(--muted);" id="tf15mCount">--</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--muted);">1H</div>
+                        <div style="font-size: 16px;" id="tf1HIcon">⏳</div>
+                        <div style="font-size: 9px; color: var(--muted);" id="tf1HCount">--</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--muted);">4H</div>
+                        <div style="font-size: 16px;" id="tf4HIcon">⏳</div>
+                        <div style="font-size: 9px; color: var(--muted);" id="tf4HCount">--</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 11px; color: var(--muted);">Daily</div>
+                        <div style="font-size: 16px;" id="tfDIcon">⏳</div>
+                        <div style="font-size: 9px; color: var(--muted);" id="tfDCount">--</div>
+                    </div>
+                </div>
+
+                <!-- Pattern Results -->
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span style="font-size: 14px;">📋</span>
+                    <span style="font-size: 13px; font-weight: 600;">Today's Detected Patterns</span>
+                </div>
+
+                <div id="patternResultsTable" style="max-height: 300px; overflow-y: auto;">
                     <div id="patternsList" style="display: grid; gap: 10px;">
-                        <div style="text-align: center; padding: 20px; color: var(--muted); background: var(--bg); border-radius: 8px;">
-                            Click "Scan Now" to detect patterns...
+                        <div style="text-align: center; padding: 30px; color: var(--muted);">
+                            Click "Scan Now" to detect patterns
                         </div>
                     </div>
                 </div>
 
-                <!-- Collapsible Pattern Guide -->
-                <div id="patternGuidePanel" style="display: none;">
-                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 15px; padding-top: 15px; border-top: 1px solid var(--border);">📖 Pattern Visual Guide</div>
-
-                    <!-- BULLISH PATTERNS -->
-                    <div style="margin-bottom: 20px;">
-                        <div style="font-size: 11px; font-weight: 700; color: #22c55e; margin-bottom: 10px;">
-                            <span style="background: rgba(34,197,94,0.2); padding: 4px 10px; border-radius: 4px;">📈 BULLISH PATTERNS</span>
-                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 SUPPORT → Buy CALLS</span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
-                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🔨 Hammer</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">┌┴┐<br>│▓│<br>└┬┘<br>│<br>│<br>│</div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long lower wick</div>
-                            </div>
-                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🟢 Engulfing</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #ef4444;">│░│</span> <span style="color: #22c55e;">│▓│</span><br><span style="color: #ef4444;">└─┘</span> <span style="color: #22c55e;">│▓│</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #22c55e;">└─┘</span></div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Green engulfs red</div>
-                            </div>
-                            <div style="background: var(--bg); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🎯 Dragonfly</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #22c55e;">─┼─<br>│<br>│<br>│</div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long lower</div>
+                <!-- Quick Reference (Collapsible) -->
+                <div id="patternGuidePanel" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600;">📖 Quick Reference</div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 10px;">
+                        <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">🔨</span>
+                            <div>
+                                <div style="font-weight: 600; color: #22c55e;">Hammer</div>
+                                <div style="color: var(--muted); font-size: 9px;">Long lower wick at support → CALL</div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- BEARISH PATTERNS -->
-                    <div style="margin-bottom: 15px;">
-                        <div style="font-size: 11px; font-weight: 700; color: #ef4444; margin-bottom: 10px;">
-                            <span style="background: rgba(239,68,68,0.2); padding: 4px 10px; border-radius: 4px;">📉 BEARISH PATTERNS</span>
-                            <span style="font-weight: 400; color: var(--muted); margin-left: 8px;">At SQ9 RESISTANCE → Buy PUTS</span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;">
-                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">⭐ Shooting Star</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">│<br>│<br>│<br>┌┴┐<br>│░│<br>└─┘</div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Long upper wick</div>
-                            </div>
-                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">🔴 Engulfing</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1;"><span style="color: #22c55e;">│▓│</span> <span style="color: #ef4444;">┌─┐</span><br><span style="color: #22c55e;">└─┘</span> <span style="color: #ef4444;">│░│</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ef4444;">│░│</span></div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Red engulfs green</div>
-                            </div>
-                            <div style="background: var(--bg); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px; text-align: center;">
-                                <div style="font-weight: 700; font-size: 10px; margin-bottom: 6px;">💀 Gravestone</div>
-                                <div style="font-family: monospace; font-size: 11px; line-height: 1.1; color: #ef4444;">│<br>│<br>│<br>─┼─</div>
-                                <div style="font-size: 8px; color: var(--muted); margin-top: 4px;">Doji, long upper</div>
+                        <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">⭐</span>
+                            <div>
+                                <div style="font-weight: 600; color: #ef4444;">Shooting Star</div>
+                                <div style="color: var(--muted); font-size: 9px;">Long upper wick at resistance → PUT</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Quick Reference -->
-                <div style="padding: 10px; background: rgba(139,92,246,0.05); border-radius: 8px; border: 1px solid rgba(139,92,246,0.2);">
-                    <div style="font-size: 10px; font-weight: 700; color: #8b5cf6; margin-bottom: 6px;">🎯 Quick Reference</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; font-size: 9px;">
-                        <div><span style="color: #22c55e;">🔨 Hammer</span> = CALL at support</div>
-                        <div><span style="color: #ef4444;">⭐ Shooting Star</span> = PUT at resist</div>
-                        <div><span style="color: #22c55e;">🟢 Bull Engulf</span> = CALL</div>
-                        <div><span style="color: #ef4444;">🔴 Bear Engulf</span> = PUT</div>
+                        <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">🟢</span>
+                            <div>
+                                <div style="font-weight: 600; color: #22c55e;">Bull Engulfing</div>
+                                <div style="color: var(--muted); font-size: 9px;">Green candle engulfs red → CALL</div>
+                            </div>
+                        </div>
+                        <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">🔴</span>
+                            <div>
+                                <div style="font-weight: 600; color: #ef4444;">Bear Engulfing</div>
+                                <div style="color: var(--muted); font-size: 9px;">Red candle engulfs green → PUT</div>
+                            </div>
+                        </div>
+                        <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">🎯</span>
+                            <div>
+                                <div style="font-weight: 600; color: #22c55e;">Dragonfly Doji</div>
+                                <div style="color: var(--muted); font-size: 9px;">Doji with long lower → CALL</div>
+                            </div>
+                        </div>
+                        <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">💀</span>
+                            <div>
+                                <div style="font-weight: 600; color: #ef4444;">Gravestone Doji</div>
+                                <div style="color: var(--muted); font-size: 9px;">Doji with long upper → PUT</div>
+                            </div>
+                        </div>
+                        <div style="padding: 8px; background: rgba(34,197,94,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">⭐</span>
+                            <div>
+                                <div style="font-weight: 600; color: #22c55e;">Morning Star</div>
+                                <div style="color: var(--muted); font-size: 9px;">3-candle reversal pattern → CALL</div>
+                            </div>
+                        </div>
+                        <div style="padding: 8px; background: rgba(239,68,68,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 16px;">🌙</span>
+                            <div>
+                                <div style="font-weight: 600; color: #ef4444;">Evening Star</div>
+                                <div style="color: var(--muted); font-size: 9px;">3-candle reversal pattern → PUT</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- MINOR TURN CALCULATOR PANEL -->
-            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05)); border: 1px solid rgba(245,158,11,0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <!-- ENHANCED MINOR TURN CALCULATOR WITH AUTO-VERIFICATION -->
+            <div id="minorTurnCalculator" style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                     <div>
-                        <div style="font-size: 16px; font-weight: 700;">🔮 Minor Turn Calculator</div>
-                        <div style="font-size: 11px; color: var(--muted);">Predicting next reversal using Gann cycles, Fib time & swing analysis</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 18px;">🔮</span>
+                            <h3 style="margin: 0; font-size: 16px; font-weight: 700;">Minor Turn Calculator</h3>
+                            <span style="padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; background: rgba(34,197,94,0.15); color: #22c55e;">AUTO-VERIFY</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
+                            Predicted vs Actual turns for <span id="turnCalcSymbol" style="color: #3b82f6; font-weight: 600;">--</span>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <div id="turnCalcCurrentSymbol" style="padding: 6px 12px; background: rgba(245,158,11,0.2); border: 1px solid #f59e0b; border-radius: 6px; font-size: 12px; font-weight: 600; color: #f59e0b;">SPY</div>
-                        <div style="font-size: 10px; color: var(--muted);">Using global symbol</div>
-                        <button onclick="calculateMinorTurn()" style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;">🔄 Calculate</button>
-                    </div>
-                </div>
-
-                <!-- Next Turn Prediction -->
-                <div id="nextTurnPrediction" style="background: var(--bg); border-radius: 10px; padding: 20px; margin-bottom: 15px; text-align: center;">
-                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">NEXT PREDICTED MINOR TURN</div>
-                    <div id="nextTurnDate" style="font-size: 28px; font-weight: 800; color: #f59e0b;">--</div>
-                    <div id="nextTurnDaysAway" style="font-size: 14px; color: var(--muted); margin-top: 5px;">-- days away</div>
-                    <div id="nextTurnDirection" style="margin-top: 10px; padding: 8px 20px; border-radius: 20px; display: inline-block; font-weight: 700; font-size: 12px; background: rgba(107,114,128,0.1); color: #6b7280;">
-                        Calculating...
-                    </div>
-                </div>
-
-                <!-- Turn Stats -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
-                        <div style="font-size: 10px; color: var(--muted);">CONFIDENCE</div>
-                        <div id="turnConfidenceVal" style="font-size: 20px; font-weight: 800; color: #f59e0b;">--%</div>
-                    </div>
-                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
-                        <div style="font-size: 10px; color: var(--muted);">METHODS AGREE</div>
-                        <div id="turnMethodsVal" style="font-size: 20px; font-weight: 800;">-/5</div>
-                    </div>
-                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
-                        <div style="font-size: 10px; color: var(--muted);">LAST TURN</div>
-                        <div id="lastTurnVal" style="font-size: 12px; font-weight: 700;">--</div>
-                    </div>
-                    <div style="background: var(--bg); border-radius: 8px; padding: 12px; text-align: center;">
-                        <div style="font-size: 10px; color: var(--muted);">AVG SWING</div>
-                        <div id="avgSwingVal" style="font-size: 20px; font-weight: 800;">-- days</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="calculateMinorTurn()" style="padding: 6px 12px; border-radius: 6px; border: none; background: #f59e0b; color: white; cursor: pointer; font-size: 11px; font-weight: 600;">
+                            🔄 Calculate
+                        </button>
+                        <button onclick="verifyTurnPredictionsManual()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px;">
+                            ✓ Verify Now
+                        </button>
                     </div>
                 </div>
 
-                <!-- Method Breakdown -->
-                <div style="background: var(--bg); border-radius: 10px; padding: 15px;">
-                    <div style="font-size: 12px; font-weight: 700; margin-bottom: 12px;">📊 Turn Prediction Methods</div>
-                    <div id="turnMethodsDetail" style="display: grid; gap: 8px; font-size: 11px;">
-                        <div style="text-align: center; color: var(--muted); padding: 10px;">Click Calculate to analyze...</div>
+                <!-- Current Prediction Card -->
+                <div id="currentPredictionCard" style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05)); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 10px; font-weight: 600;">📅 CURRENT PREDICTION</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center;">
+                        <div>
+                            <div style="font-size: 10px; color: var(--muted);">Turn Date</div>
+                            <div id="predictedTurnDate" style="font-size: 22px; font-weight: 700; color: #3b82f6;">--</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--muted);">Turn Type</div>
+                            <div id="predictedTurnType" style="font-size: 22px; font-weight: 700;">--</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--muted);">Days Until</div>
+                            <div id="daysUntilTurn" style="font-size: 22px; font-weight: 700;">--</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; text-align: center;">
+                        <div style="font-size: 10px; color: var(--muted);">Trade Direction</div>
+                        <span id="turnTradeSuggestion" style="display: inline-block; margin-top: 4px; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; background: rgba(136,136,136,0.15); color: #888;">--</span>
+                    </div>
+                </div>
+
+                <!-- Accuracy Stats -->
+                <div id="turnAccuracyStats" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
+                    <div style="background: rgba(34,197,94,0.1); border-radius: 10px; padding: 12px; text-align: center;">
+                        <div id="statTurnWinRate" style="font-size: 22px; font-weight: 700; color: #22c55e;">--%</div>
+                        <div style="font-size: 9px; color: var(--muted);">Win Rate</div>
+                    </div>
+                    <div style="background: rgba(59,130,246,0.1); border-radius: 10px; padding: 12px; text-align: center;">
+                        <div id="statTurnCorrect" style="font-size: 22px; font-weight: 700; color: #3b82f6;">--</div>
+                        <div style="font-size: 9px; color: var(--muted);">Correct</div>
+                    </div>
+                    <div style="background: rgba(139,92,246,0.1); border-radius: 10px; padding: 12px; text-align: center;">
+                        <div id="statTurnAvgOff" style="font-size: 22px; font-weight: 700; color: #8b5cf6;">--</div>
+                        <div style="font-size: 9px; color: var(--muted);">Avg Days Off</div>
+                    </div>
+                    <div style="background: rgba(245,158,11,0.1); border-radius: 10px; padding: 12px; text-align: center;">
+                        <div id="statTurnPerfect" style="font-size: 22px; font-weight: 700; color: #f59e0b;">--%</div>
+                        <div style="font-size: 9px; color: var(--muted);">Perfect (±1d)</div>
+                    </div>
+                </div>
+
+                <!-- Prediction History -->
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 10px; font-weight: 600;">📋 PREDICTION HISTORY (Auto-Verified)</div>
+                    <div id="turnHistoryTable" style="max-height: 280px; overflow-y: auto;">
+                        <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 11px;">
+                            Loading prediction history...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -11642,32 +11712,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <span style="font-size: 20px;">🎯</span> OTM Strike Selector <span style="font-size: 12px; color: #64748b; font-weight: normal;">($30-75 Budget)</span>
                     </h3>
                     <!-- Filled by renderOTMStrikeSelector() -->
-                </div>
-
-                <!-- CANDLE PATTERN SCANNER -->
-                <div id="candlePatternScanner" style="background: var(--card); border-radius: 12px; padding: 16px; margin-top: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <h3 style="margin: 0; font-size: 16px;">🕯️ Candle Pattern Scanner</h3>
-                            <span id="patternSymbolBadge" style="padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; background: rgba(59,130,246,0.15); color: #3b82f6;">SPY</span>
-                        </div>
-                        <button onclick="scanCandlePatterns()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 11px;">
-                            🔄 Scan
-                        </button>
-                    </div>
-                    <!-- Pattern Results -->
-                    <div id="patternResults">
-                        <div style="text-align: center; padding: 30px; color: #888;">Click Scan to detect candle patterns</div>
-                    </div>
-                </div>
-
-                <!-- TURN PREDICTION TRACKER - AUTO MODE -->
-                <div id="turnPredictionTracker" style="background: var(--card); border-radius: 12px; padding: 16px; margin-top: 16px;">
-                    <!-- Dynamically populated by renderTurnPredictionTracker() -->
-                    <div style="text-align: center; padding: 30px; color: #888;">
-                        <div style="font-size: 24px; margin-bottom: 8px;">📅</div>
-                        <div>Loading auto-detection system...</div>
-                    </div>
                 </div>
 
             </div>
@@ -13559,10 +13603,17 @@ function createPatternResult(patternKey, candle, timeframe) {
 
 function scanCandlePatterns() {
     var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get) ? SymbolManager.get() : 'SPY';
+
+    // Update symbol display in enhanced UI
+    var symbolEl = document.getElementById('patternScannerSymbol');
+    if (symbolEl) symbolEl.textContent = symbol;
+
+    // Also update legacy UI element if exists
     var badgeEl = document.getElementById('patternSymbolBadge');
     if (badgeEl) badgeEl.textContent = symbol;
 
-    var container = document.getElementById('patternResults');
+    // Try enhanced UI container first, then fall back to legacy
+    var container = document.getElementById('patternsList') || document.getElementById('patternResults');
     if (!container) return;
 
     container.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">Scanning patterns...</div>';
@@ -13577,6 +13628,14 @@ function scanCandlePatterns() {
         var csvData = window.loadedPriceData[symbol];
         var priceData = csvData.slice(-20).map(function(row) {
             return { open: row.open, high: row.high, low: row.low, close: row.close, time: row.date };
+        });
+        var patterns = detectAllPatterns(priceData, 'D');
+        tfResults['D'] = patterns;
+        allPatterns = allPatterns.concat(patterns);
+    } else if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol]) {
+        // Try allSymbolsData as fallback
+        var priceData = allSymbolsData[symbol].slice(-20).map(function(row) {
+            return { open: parseFloat(row.Open), high: parseFloat(row.High), low: parseFloat(row.Low), close: parseFloat(row.Close), time: row.Date };
         });
         var patterns = detectAllPatterns(priceData, 'D');
         tfResults['D'] = patterns;
@@ -13599,8 +13658,84 @@ function scanCandlePatterns() {
     // Calculate MTF confluence
     var confluence = calculatePatternConfluence(tfResults);
 
+    // Update timeframe indicators in enhanced UI
+    updatePatternTimeframeIndicators(allPatterns, confluence, tfResults);
+
     // Render results
     renderPatternResults(symbol, allPatterns, confluence, tfResults);
+}
+
+// Update the enhanced UI timeframe indicators
+function updatePatternTimeframeIndicators(patterns, confluence, tfResults) {
+    // Update confluence score
+    var confScoreEl = document.getElementById('patternConfluenceScore');
+    if (confScoreEl) {
+        confScoreEl.textContent = confluence.text;
+        confScoreEl.style.color = confluence.direction === 'CALL' ? '#22c55e' :
+                                   confluence.direction === 'PUT' ? '#ef4444' : '#888';
+    }
+
+    // Update confluence badge background
+    var confBadge = document.getElementById('patternConfluenceBadge');
+    if (confBadge) {
+        var innerDiv = confBadge.querySelector('div');
+        if (innerDiv) {
+            var bgColor = confluence.direction === 'CALL' ? 'rgba(34,197,94,0.1)' :
+                          confluence.direction === 'PUT' ? 'rgba(239,68,68,0.1)' : 'rgba(136,136,136,0.1)';
+            var borderColor = confluence.direction === 'CALL' ? 'rgba(34,197,94,0.2)' :
+                              confluence.direction === 'PUT' ? 'rgba(239,68,68,0.2)' : 'rgba(136,136,136,0.2)';
+            innerDiv.style.background = bgColor;
+            innerDiv.style.borderColor = borderColor;
+        }
+    }
+
+    // Determine pattern type counts by timeframe
+    var bullishPatterns = patterns.filter(function(p) { return p.type === 'BULLISH'; });
+    var bearishPatterns = patterns.filter(function(p) { return p.type === 'BEARISH'; });
+
+    // Update Daily timeframe indicator (we have Daily data)
+    var tfDIcon = document.getElementById('tfDIcon');
+    var tfDCount = document.getElementById('tfDCount');
+    if (tfDIcon && tfDCount) {
+        var dailyPatterns = tfResults['D'] || [];
+        var dailyBullish = dailyPatterns.filter(function(p) { return p.type === 'BULLISH'; }).length;
+        var dailyBearish = dailyPatterns.filter(function(p) { return p.type === 'BEARISH'; }).length;
+
+        if (dailyBullish > dailyBearish) {
+            tfDIcon.textContent = '📈';
+            tfDCount.textContent = dailyBullish + ' bullish';
+            tfDCount.style.color = '#22c55e';
+        } else if (dailyBearish > dailyBullish) {
+            tfDIcon.textContent = '📉';
+            tfDCount.textContent = dailyBearish + ' bearish';
+            tfDCount.style.color = '#ef4444';
+        } else if (dailyPatterns.length > 0) {
+            tfDIcon.textContent = '↔️';
+            tfDCount.textContent = 'neutral';
+            tfDCount.style.color = '#888';
+        } else {
+            tfDIcon.textContent = '⏳';
+            tfDCount.textContent = 'no data';
+            tfDCount.style.color = '#888';
+        }
+    }
+
+    // Set other timeframes to awaiting (since we only have Daily data)
+    var otherTFs = [
+        { icon: 'tf15mIcon', count: 'tf15mCount' },
+        { icon: 'tf1HIcon', count: 'tf1HCount' },
+        { icon: 'tf4HIcon', count: 'tf4HIcon' }
+    ];
+
+    otherTFs.forEach(function(tf) {
+        var iconEl = document.getElementById(tf.icon);
+        var countEl = document.getElementById(tf.count);
+        if (iconEl) iconEl.textContent = '⏳';
+        if (countEl) {
+            countEl.textContent = 'Daily only';
+            countEl.style.color = '#888';
+        }
+    });
 }
 
 function generateSimulatedPatterns(symbol, price, direction) {
@@ -13657,7 +13792,8 @@ function calculatePatternConfluence(tfResults) {
 }
 
 function renderPatternResults(symbol, patterns, confluence, tfResults) {
-    var container = document.getElementById('patternResults');
+    // Try enhanced UI container first, then fall back to legacy
+    var container = document.getElementById('patternsList') || document.getElementById('patternResults');
     if (!container) return;
 
     if (patterns.length === 0) {
@@ -13665,53 +13801,52 @@ function renderPatternResults(symbol, patterns, confluence, tfResults) {
         return;
     }
 
-    var confColor = confluence.direction === 'CALL' ? '#22c55e' : confluence.direction === 'PUT' ? '#ef4444' : '#888';
-    var confBg = confluence.direction === 'CALL' ? 'rgba(34,197,94,0.15)' : confluence.direction === 'PUT' ? 'rgba(239,68,68,0.15)' : 'rgba(136,136,136,0.15)';
-    var confBorder = confluence.direction === 'CALL' ? 'rgba(34,197,94,0.3)' : confluence.direction === 'PUT' ? 'rgba(239,68,68,0.3)' : 'rgba(136,136,136,0.3)';
-
+    // For enhanced UI, skip confluence (it's shown separately)
+    // Just render the pattern list
     var html = '';
 
-    // Confluence Score
-    html += '<div style="display: flex; justify-content: center; margin-bottom: 20px;">';
-    html += '<div style="background: ' + confBg + '; border: 1px solid ' + confBorder + '; border-radius: 12px; padding: 16px 32px; text-align: center;">';
-    html += '<div style="font-size: 10px; color: #888; margin-bottom: 4px;">PATTERN CONFLUENCE</div>';
-    html += '<div style="font-size: 24px; font-weight: 700; color: ' + confColor + ';">' + confluence.text + '</div>';
-    html += '</div></div>';
-
-    // Pattern List
-    html += '<div style="max-height: 300px; overflow-y: auto;">';
-
-    patterns.sort(function(a, b) { return b.winRate - a.winRate; }).forEach(function(p) {
+    patterns.sort(function(a, b) { return (b.winRate || 0) - (a.winRate || 0); }).forEach(function(p) {
         var pColor = p.type === 'BULLISH' ? '#22c55e' : p.type === 'BEARISH' ? '#ef4444' : '#888';
-        var pBg = p.type === 'BULLISH' ? 'rgba(34,197,94,0.15)' : p.type === 'BEARISH' ? 'rgba(239,68,68,0.15)' : 'rgba(136,136,136,0.15)';
-        var wrColor = p.winRate >= 65 ? '#22c55e' : p.winRate >= 55 ? '#f59e0b' : '#888';
+        var pBg = p.type === 'BULLISH' ? 'rgba(34,197,94,0.1)' : p.type === 'BEARISH' ? 'rgba(239,68,68,0.1)' : 'rgba(136,136,136,0.1)';
+        var wrColor = (p.winRate || 0) >= 65 ? '#22c55e' : (p.winRate || 0) >= 55 ? '#f59e0b' : '#888';
         var relStars = p.reliability === 'HIGH' ? '⭐⭐⭐' : p.reliability === 'MEDIUM' ? '⭐⭐' : '⭐';
         var relColor = p.reliability === 'HIGH' ? '#22c55e' : p.reliability === 'MEDIUM' ? '#f59e0b' : '#888';
 
-        html += '<div style="display: grid; grid-template-columns: 140px 60px 60px 80px 60px; gap: 8px; align-items: center; padding: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 3px solid ' + pColor + ';">';
+        html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; margin-bottom: 8px; background: var(--bg); border-radius: 8px; border-left: 3px solid ' + pColor + ';">';
 
-        // Pattern Name
-        html += '<div><div style="font-weight: 600; font-size: 12px;">' + p.name + '</div>';
-        html += '<div style="font-size: 9px; color: #888;">' + p.category + '</div></div>';
+        // Left side: Pattern info
+        html += '<div style="display: flex; align-items: center; gap: 12px;">';
+        html += '<div>';
+        html += '<div style="font-weight: 600; font-size: 12px;">' + p.name + '</div>';
+        html += '<div style="font-size: 9px; color: var(--muted);">' + (p.category || p.description || '') + '</div>';
+        html += '</div>';
+        html += '</div>';
 
-        // Direction
-        html += '<div style="text-align: center;"><span style="padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 600; background: ' + pBg + '; color: ' + pColor + ';">';
-        html += (p.type === 'BULLISH' ? 'CALL' : p.type === 'BEARISH' ? 'PUT' : 'WAIT') + '</span></div>';
+        // Right side: Stats
+        html += '<div style="display: flex; align-items: center; gap: 16px;">';
+
+        // Direction badge
+        html += '<span style="padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; background: ' + pBg + '; color: ' + pColor + ';">';
+        html += (p.type === 'BULLISH' ? 'CALL' : p.type === 'BEARISH' ? 'PUT' : 'WAIT');
+        html += '</span>';
 
         // Timeframe
-        html += '<div style="text-align: center; font-size: 11px; color: #3b82f6; font-weight: 600;">' + p.timeframe + '</div>';
+        html += '<span style="font-size: 10px; color: #3b82f6; font-weight: 600; padding: 4px 8px; background: rgba(59,130,246,0.1); border-radius: 4px;">' + (p.timeframe || 'D') + '</span>';
 
         // Win Rate
-        html += '<div style="text-align: center;"><div style="font-size: 14px; font-weight: 700; color: ' + wrColor + ';">' + p.winRate + '%</div>';
-        html += '<div style="font-size: 9px; color: #888;">win rate</div></div>';
+        if (p.winRate) {
+            html += '<div style="text-align: center;">';
+            html += '<div style="font-size: 13px; font-weight: 700; color: ' + wrColor + ';">' + p.winRate + '%</div>';
+            html += '<div style="font-size: 8px; color: var(--muted);">win</div>';
+            html += '</div>';
+        }
 
         // Reliability
-        html += '<div style="text-align: center;"><span style="font-size: 9px; color: ' + relColor + ';">' + relStars + '</span></div>';
+        html += '<span style="font-size: 10px; color: ' + relColor + ';">' + relStars + '</span>';
 
         html += '</div>';
+        html += '</div>';
     });
-
-    html += '</div>';
 
     container.innerHTML = html;
 }
@@ -39102,18 +39237,299 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// MINOR TURN CALCULATOR
+// MINOR TURN CALCULATOR WITH AUTO-VERIFICATION
 // ============================================
+
+// Turn store for predictions and accuracy tracking
+var turnStore = {
+    predictions: {},  // { symbol: [predictions] }
+    accuracy: {}      // { symbol: { total, correct, avgDaysOff, ... } }
+};
+
+// Load turn store from localStorage
+function loadTurnStore() {
+    try {
+        var saved = localStorage.getItem('minorTurnStore');
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            turnStore.predictions = parsed.predictions || {};
+            turnStore.accuracy = parsed.accuracy || {};
+        }
+    } catch (e) {
+        console.warn('Could not load turn store:', e);
+    }
+}
+
+// Save turn store to localStorage
+function saveTurnStore() {
+    try {
+        localStorage.setItem('minorTurnStore', JSON.stringify(turnStore));
+    } catch (e) {
+        console.warn('Could not save turn store:', e);
+    }
+}
+
+// Auto-store a prediction
+function autoStoreTurnPrediction(symbol, predictedDate, predictedType) {
+    if (!symbol || !predictedDate || !predictedType) return null;
+
+    if (!turnStore.predictions[symbol]) {
+        turnStore.predictions[symbol] = [];
+    }
+
+    // Check if already exists
+    var exists = turnStore.predictions[symbol].find(function(p) {
+        return p.predictedDate === predictedDate && p.predictedType === predictedType;
+    });
+
+    if (exists) return exists;
+
+    var prediction = {
+        id: 'turn_' + Date.now(),
+        symbol: symbol,
+        predictedDate: predictedDate,
+        predictedType: predictedType.toUpperCase(),
+        createdAt: new Date().toISOString(),
+        status: 'PENDING',
+        actual: null
+    };
+
+    turnStore.predictions[symbol].unshift(prediction);
+
+    // Keep last 50
+    if (turnStore.predictions[symbol].length > 50) {
+        turnStore.predictions[symbol] = turnStore.predictions[symbol].slice(0, 50);
+    }
+
+    saveTurnStore();
+    return prediction;
+}
+
+// Find matching swing for verification
+function findMatchingSwingForTurn(swings, predictedDate, predictedType, toleranceDays) {
+    var predDate = new Date(predictedDate);
+    toleranceDays = toleranceDays || 5;
+
+    // Find swings within tolerance
+    var candidates = swings.filter(function(s) {
+        var swingDate = new Date(s.date);
+        var daysDiff = Math.abs((swingDate - predDate) / 86400000);
+        return daysDiff <= toleranceDays;
+    });
+
+    // First try to find matching type
+    var correctType = candidates.filter(function(s) { return s.type === predictedType; });
+    if (correctType.length > 0) {
+        correctType.sort(function(a, b) {
+            var aDiff = Math.abs(new Date(a.date) - predDate);
+            var bDiff = Math.abs(new Date(b.date) - predDate);
+            return aDiff - bDiff;
+        });
+        return { swing: correctType[0], directionCorrect: true };
+    }
+
+    // If no matching type, return wrong type (to show direction was wrong)
+    if (candidates.length > 0) {
+        candidates.sort(function(a, b) {
+            var aDiff = Math.abs(new Date(a.date) - predDate);
+            var bDiff = Math.abs(new Date(b.date) - predDate);
+            return aDiff - bDiff;
+        });
+        return { swing: candidates[0], directionCorrect: false };
+    }
+
+    return null;
+}
+
+// Verify predictions against actual swings
+function verifyTurnPredictionsManual() {
+    var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get()) || 'SPY';
+
+    if (!turnStore.predictions[symbol]) {
+        turnStore.predictions[symbol] = [];
+    }
+
+    var priceData = allSymbolsData && allSymbolsData[symbol] ? allSymbolsData[symbol] : null;
+    if (!priceData || priceData.length < 10) {
+        console.warn('Not enough price data for verification');
+        updateTurnCalculatorUI(symbol);
+        return;
+    }
+
+    // Detect all swing points
+    var swings = findSwingPoints(priceData, 3);
+
+    // Check each pending prediction
+    var pending = turnStore.predictions[symbol].filter(function(p) { return p.status === 'PENDING'; });
+
+    for (var i = 0; i < pending.length; i++) {
+        var prediction = pending[i];
+        var predDate = new Date(prediction.predictedDate);
+        var today = new Date();
+        var daysSince = (today - predDate) / 86400000;
+
+        // Wait at least 2 days after prediction date for confirmation
+        if (daysSince < 2) continue;
+
+        // Find matching swing
+        var match = findMatchingSwingForTurn(swings, prediction.predictedDate, prediction.predictedType, 5);
+
+        if (match) {
+            var actualDate = new Date(match.swing.date);
+            var daysOff = Math.round((actualDate - predDate) / 86400000);
+
+            prediction.actual = {
+                date: match.swing.date,
+                type: match.swing.type,
+                price: match.swing.price,
+                daysOff: daysOff,
+                directionCorrect: match.directionCorrect
+            };
+
+            prediction.status = match.directionCorrect ? 'VERIFIED' : 'WRONG_DIRECTION';
+        } else if (daysSince > 10) {
+            prediction.status = 'MISSED';
+        }
+    }
+
+    // Update accuracy stats
+    updateTurnAccuracyStats(symbol);
+    saveTurnStore();
+    updateTurnCalculatorUI(symbol);
+}
+
+// Update accuracy stats
+function updateTurnAccuracyStats(symbol) {
+    var predictions = turnStore.predictions[symbol] || [];
+    var verified = predictions.filter(function(p) { return p.status !== 'PENDING'; });
+
+    if (verified.length === 0) {
+        turnStore.accuracy[symbol] = null;
+        return;
+    }
+
+    var correct = verified.filter(function(p) { return p.status === 'VERIFIED'; });
+    var wrongDir = verified.filter(function(p) { return p.status === 'WRONG_DIRECTION'; });
+    var missed = verified.filter(function(p) { return p.status === 'MISSED'; });
+
+    var totalDaysOff = correct.reduce(function(sum, p) { return sum + Math.abs(p.actual ? p.actual.daysOff : 0); }, 0);
+    var avgDaysOff = correct.length > 0 ? totalDaysOff / correct.length : 0;
+    var perfect = correct.filter(function(p) { return Math.abs(p.actual ? p.actual.daysOff : 0) <= 1; });
+
+    turnStore.accuracy[symbol] = {
+        total: verified.length,
+        correct: correct.length,
+        wrongDirection: wrongDir.length,
+        missed: missed.length,
+        winRate: ((correct.length / verified.length) * 100).toFixed(1),
+        avgDaysOff: avgDaysOff.toFixed(1),
+        perfectCount: perfect.length,
+        perfectRate: ((perfect.length / verified.length) * 100).toFixed(1)
+    };
+}
+
+// Update the enhanced UI
+function updateTurnCalculatorUI(symbol) {
+    // Update symbol display
+    var symbolEl = document.getElementById('turnCalcSymbol');
+    if (symbolEl) symbolEl.textContent = symbol;
+
+    // Update accuracy stats
+    var accuracy = turnStore.accuracy[symbol];
+    if (accuracy) {
+        var winRateEl = document.getElementById('statTurnWinRate');
+        var correctEl = document.getElementById('statTurnCorrect');
+        var avgOffEl = document.getElementById('statTurnAvgOff');
+        var perfectEl = document.getElementById('statTurnPerfect');
+
+        if (winRateEl) winRateEl.textContent = accuracy.winRate + '%';
+        if (correctEl) correctEl.textContent = accuracy.correct + '/' + accuracy.total;
+        if (avgOffEl) avgOffEl.textContent = accuracy.avgDaysOff + 'd';
+        if (perfectEl) perfectEl.textContent = accuracy.perfectRate + '%';
+    } else {
+        var winRateEl = document.getElementById('statTurnWinRate');
+        var correctEl = document.getElementById('statTurnCorrect');
+        var avgOffEl = document.getElementById('statTurnAvgOff');
+        var perfectEl = document.getElementById('statTurnPerfect');
+
+        if (winRateEl) winRateEl.textContent = '--%';
+        if (correctEl) correctEl.textContent = '--';
+        if (avgOffEl) avgOffEl.textContent = '--';
+        if (perfectEl) perfectEl.textContent = '--%';
+    }
+
+    // Update history table
+    renderTurnHistory(symbol);
+}
+
+// Render turn history table
+function renderTurnHistory(symbol) {
+    var container = document.getElementById('turnHistoryTable');
+    if (!container) return;
+
+    var predictions = turnStore.predictions[symbol] || [];
+
+    if (predictions.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted); font-size: 11px;">No prediction history yet</div>';
+        return;
+    }
+
+    var statusStyles = {
+        PENDING: { bg: 'rgba(59,130,246,0.15)', color: '#3b82f6', icon: '⏳' },
+        VERIFIED: { bg: 'rgba(34,197,94,0.15)', color: '#22c55e', icon: '✓' },
+        WRONG_DIRECTION: { bg: 'rgba(239,68,68,0.15)', color: '#ef4444', icon: '✗' },
+        MISSED: { bg: 'rgba(136,136,136,0.15)', color: '#888', icon: '○' }
+    };
+
+    var html = '<table style="width: 100%; border-collapse: collapse; font-size: 10px;">' +
+        '<thead>' +
+        '<tr style="background: rgba(59,130,246,0.1);">' +
+        '<th style="padding: 8px; text-align: left;">Predicted</th>' +
+        '<th style="padding: 8px; text-align: center;">Type</th>' +
+        '<th style="padding: 8px; text-align: left;">Actual</th>' +
+        '<th style="padding: 8px; text-align: center;">Type</th>' +
+        '<th style="padding: 8px; text-align: center;">Off</th>' +
+        '<th style="padding: 8px; text-align: center;">Status</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>';
+
+    predictions.slice(0, 20).forEach(function(p) {
+        var style = statusStyles[p.status] || statusStyles.PENDING;
+        var predDate = new Date(p.predictedDate);
+        var actDate = p.actual ? new Date(p.actual.date) : null;
+
+        html += '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">' +
+            '<td style="padding: 8px;">' + predDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' +
+            '<span style="padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; background: ' + (p.predictedType === 'LOW' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)') + '; color: ' + (p.predictedType === 'LOW' ? '#22c55e' : '#ef4444') + ';">' + p.predictedType + '</span>' +
+            '</td>' +
+            '<td style="padding: 8px;">' + (actDate ? actDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '--') + '</td>' +
+            '<td style="padding: 8px; text-align: center;">' +
+            (p.actual ? '<span style="padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; background: ' + (p.actual.type === 'LOW' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)') + '; color: ' + (p.actual.type === 'LOW' ? '#22c55e' : '#ef4444') + ';">' + p.actual.type + '</span>' : '--') +
+            '</td>' +
+            '<td style="padding: 8px; text-align: center; font-weight: 600; color: ' + (p.actual ? (Math.abs(p.actual.daysOff) <= 1 ? '#22c55e' : Math.abs(p.actual.daysOff) <= 3 ? '#f59e0b' : '#ef4444') : '#888') + ';">' +
+            (p.actual ? (p.actual.daysOff === 0 ? '🎯' : (p.actual.daysOff > 0 ? '+' : '') + p.actual.daysOff + 'd') : '--') +
+            '</td>' +
+            '<td style="padding: 8px; text-align: center;">' +
+            '<span style="padding: 3px 8px; border-radius: 4px; font-size: 8px; font-weight: 600; background: ' + style.bg + '; color: ' + style.color + ';">' + style.icon + ' ' + p.status + '</span>' +
+            '</td>' +
+            '</tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
 
 function calculateMinorTurn() {
     // Use global symbol from SymbolManager or banner
     var symbol = (typeof SymbolManager !== 'undefined' && SymbolManager.get()) ||
                  (typeof currentSymbol !== 'undefined' && currentSymbol) ||
-                 document.getElementById('symbolSelect')?.value ||
+                 (document.getElementById('symbolSelect') ? document.getElementById('symbolSelect').value : null) ||
                  'SPY';
 
     // Update the display to show current symbol
-    var symbolDisplay = document.getElementById('turnCalcCurrentSymbol');
+    var symbolDisplay = document.getElementById('turnCalcSymbol');
     if (symbolDisplay) symbolDisplay.textContent = symbol;
 
     console.log('Minor Turn Calculator loading:', symbol);
@@ -39123,20 +39539,20 @@ function calculateMinorTurn() {
     if (!priceData || priceData.length < 50) {
         console.log('Insufficient data for turn calculation: ' + symbol + ' has ' + (priceData ? priceData.length : 0) + ' bars');
         // Update UI to show error message
-        var dateEl = document.getElementById('nextTurnDate');
-        var daysEl = document.getElementById('nextTurnDaysAway');
-        if (dateEl) dateEl.textContent = 'Insufficient Data';
-        if (daysEl) daysEl.textContent = symbol + ' needs 50+ bars (' + (priceData ? priceData.length : 0) + ' available)';
+        var dateEl = document.getElementById('predictedTurnDate');
+        var daysEl = document.getElementById('daysUntilTurn');
+        if (dateEl) dateEl.textContent = 'No Data';
+        if (daysEl) daysEl.textContent = '--';
         return;
     }
 
     // Find swing points
     var swings = findSwingPoints(priceData, 5);
     if (swings.length < 3) {
-        var dateEl = document.getElementById('nextTurnDate');
-        var daysEl = document.getElementById('nextTurnDaysAway');
-        if (dateEl) dateEl.textContent = 'Not Enough Swings';
-        if (daysEl) daysEl.textContent = 'Need 3+ swing points to calculate';
+        var dateEl = document.getElementById('predictedTurnDate');
+        var daysEl = document.getElementById('daysUntilTurn');
+        if (dateEl) dateEl.textContent = 'N/A';
+        if (daysEl) daysEl.textContent = '--';
         return;
     }
 
@@ -39183,41 +39599,38 @@ function calculateMinorTurn() {
     var methodsInRange = predictions.filter(function(p) { return Math.abs(p.daysAway - consensusDaysAway) <= 3; }).length;
     var confidence = Math.min(90, Math.round((methodsInRange / Math.max(predictions.length, 1)) * 100));
 
-    // Expected direction
-    var expectedDir = lastSwing.type === 'HIGH' ? 'LOW (Pullback)' : 'HIGH (Rally)';
-    var dirColor = lastSwing.type === 'HIGH' ? '#ef4444' : '#22c55e';
-    var dirBg = lastSwing.type === 'HIGH' ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)';
+    // Expected direction (opposite of last swing)
+    var expectedType = lastSwing.type === 'HIGH' ? 'LOW' : 'HIGH';
+    var dirColor = expectedType === 'LOW' ? '#ef4444' : '#22c55e';
 
-    // Update UI
-    document.getElementById('nextTurnDate').textContent = consensusDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    document.getElementById('nextTurnDaysAway').textContent = consensusDaysAway <= 0 ? 'NOW!' : consensusDaysAway + ' days away';
-    document.getElementById('nextTurnDaysAway').style.color = consensusDaysAway <= 2 ? '#ef4444' : 'var(--muted)';
+    // Update enhanced UI
+    var dateEl = document.getElementById('predictedTurnDate');
+    var typeEl = document.getElementById('predictedTurnType');
+    var daysEl = document.getElementById('daysUntilTurn');
+    var suggestionEl = document.getElementById('turnTradeSuggestion');
 
-    var dirEl = document.getElementById('nextTurnDirection');
-    dirEl.textContent = 'Expected: ' + expectedDir;
-    dirEl.style.background = dirBg;
-    dirEl.style.color = dirColor;
+    if (dateEl) dateEl.textContent = consensusDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (typeEl) {
+        typeEl.textContent = expectedType;
+        typeEl.style.color = dirColor;
+    }
+    if (daysEl) {
+        daysEl.textContent = consensusDaysAway <= 0 ? 'NOW!' : consensusDaysAway + 'd';
+        daysEl.style.color = consensusDaysAway <= 0 ? '#ef4444' : consensusDaysAway <= 2 ? '#f59e0b' : '#22c55e';
+    }
+    if (suggestionEl) {
+        var suggestion = expectedType === 'LOW' ? 'CALL 📈' : 'PUT 📉';
+        suggestionEl.textContent = suggestion;
+        suggestionEl.style.background = expectedType === 'LOW' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)';
+        suggestionEl.style.color = expectedType === 'LOW' ? '#22c55e' : '#ef4444';
+    }
 
-    document.getElementById('turnConfidenceVal').textContent = confidence + '%';
-    document.getElementById('turnConfidenceVal').style.color = confidence >= 60 ? '#22c55e' : '#f59e0b';
-    document.getElementById('turnMethodsVal').textContent = methodsInRange + '/' + predictions.length;
-    document.getElementById('lastTurnVal').textContent = new Date(lastSwing.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' (' + lastSwing.type + ')';
-    document.getElementById('avgSwingVal').textContent = Math.round(avgSwingLength) + ' days';
+    // Auto-store this prediction
+    var predDateStr = consensusDate.toISOString().split('T')[0];
+    autoStoreTurnPrediction(symbol, predDateStr, expectedType);
 
-    // Update methods detail
-    var detailHtml = '';
-    predictions.slice(0, 6).forEach(function(p) {
-        var isClose = Math.abs(p.daysAway - consensusDaysAway) <= 3;
-        var statusBg = isClose ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)';
-        var statusColor = isClose ? '#22c55e' : '#f59e0b';
-        detailHtml += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: ' + statusBg + '; border-radius: 6px;">' +
-            '<span style="font-size: 16px;">' + p.icon + '</span>' +
-            '<span style="flex: 1; font-weight: 600;">' + p.method + '</span>' +
-            '<span style="color: ' + statusColor + '; font-weight: 700;">' + p.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' +
-            '<span style="color: var(--muted); font-size: 10px;">' + p.daysAway + 'd</span>' +
-        '</div>';
-    });
-    document.getElementById('turnMethodsDetail').innerHTML = detailHtml;
+    // Update accuracy UI
+    updateTurnCalculatorUI(symbol);
 }
 
 function findSwingPoints(priceData, lookback) {
@@ -39265,11 +39678,16 @@ function daysUntil(date) {
     return Math.floor((date - new Date()) / (1000 * 60 * 60 * 24));
 }
 
-// Auto-calculate on load
+// Auto-calculate on load and load turn store
 document.addEventListener('DOMContentLoaded', function() {
+    // Load prediction store from localStorage
+    loadTurnStore();
+
     setTimeout(function() {
         if (typeof allSymbolsData !== 'undefined' && Object.keys(allSymbolsData).length > 0) {
             calculateMinorTurn();
+            // Auto-verify pending predictions
+            verifyTurnPredictionsManual();
         }
     }, 4500);
 });
