@@ -9482,11 +9482,11 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                         <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfPositionBias">BULLISH</div>
                         <div style="font-size: 11px; color: #666;">Updated: Dec 6</div>
                     </div>
-                    <div style="background: rgba(34,197,94,0.1); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; text-align: center;">
+                    <div id="mtfConfluenceCard" style="background: rgba(34,197,94,0.1); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; text-align: center;">
                         <div style="font-size: 12px; color: #666;">🎯 CONFLUENCE</div>
                         <div style="font-size: 11px; color: #666;">All Timeframes</div>
                         <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfConfluence">3/3</div>
-                        <div style="font-size: 11px; color: #22c55e;">ALIGNED BULLISH</div>
+                        <div style="font-size: 11px;" id="mtfAlignmentText">ALIGNED BULLISH</div>
                     </div>
                 </div>
 
@@ -17831,13 +17831,48 @@ function updateMTFBiasSummary(symbol) {
     if (positionBias === 'BULLISH') bullishCount++;
 
     const confluenceEl = document.getElementById('mtfConfluence');
+    var bearishCount = 3 - bullishCount;
+    var isBullish = bullishCount >= 2;
+    var isBearish = bearishCount >= 2;
+    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+
     if (confluenceEl) {
-        var isBullish = bullishCount >= 2;
-        confluenceEl.textContent = bullishCount + '/3 ' + (isBullish ? 'BULLISH' : 'BEARISH');
-        confluenceEl.style.color = isBullish ? '#22c55e' : '#ef4444';
+        if (isBullish) {
+            confluenceEl.textContent = bullishCount + '/3 BULLISH';
+        } else {
+            confluenceEl.textContent = bearishCount + '/3 BEARISH';
+        }
+        confluenceEl.style.color = biasColor;
     }
 
-    console.log('MTF Bias Summary updated for ' + symbol);
+    // Update alignment text
+    var alignmentEl = document.getElementById('mtfAlignmentText');
+    if (alignmentEl) {
+        if (bullishCount === 3) {
+            alignmentEl.textContent = 'ALIGNED BULLISH';
+            alignmentEl.style.color = '#22c55e';
+        } else if (bearishCount === 3) {
+            alignmentEl.textContent = 'ALIGNED BEARISH';
+            alignmentEl.style.color = '#ef4444';
+        } else {
+            alignmentEl.textContent = 'MIXED BIAS';
+            alignmentEl.style.color = '#f59e0b';
+        }
+    }
+
+    // Update confluence card styling
+    var confluenceCard = document.getElementById('mtfConfluenceCard');
+    if (confluenceCard) {
+        if (isBullish) {
+            confluenceCard.style.background = 'rgba(34,197,94,0.1)';
+            confluenceCard.style.borderColor = '#22c55e';
+        } else {
+            confluenceCard.style.background = 'rgba(239,68,68,0.1)';
+            confluenceCard.style.borderColor = '#ef4444';
+        }
+    }
+
+    console.log('MTF Bias Summary updated for ' + symbol + ': ' + bullishCount + ' bullish, ' + bearishCount + ' bearish');
 }
 
 // Update chart for specific timeframe
@@ -25894,11 +25929,19 @@ function updateMTFSignal(panel, signal) {
     
     let bullish = 0;
     [intraday, swing, position].forEach(s => { if (s === 'CALL') bullish++; });
-    
+
+    const bearish = 3 - bullish;
+    const isBullish = bullish >= 2;
+
     const overallEl = document.getElementById('overallBias');
     if (overallEl) {
-        overallEl.textContent = `${bullish}/3 ${bullish >= 2 ? 'BULLISH' : 'BEARISH'}`;
-        overallEl.className = `value ${bullish >= 2 ? 'bullish' : 'bearish'}`;
+        // Show correct count based on direction
+        if (isBullish) {
+            overallEl.textContent = `${bullish}/3 BULLISH`;
+        } else {
+            overallEl.textContent = `${bearish}/3 BEARISH`;
+        }
+        overallEl.className = `value ${isBullish ? 'bullish' : 'bearish'}`;
     }
 }
 
@@ -40536,8 +40579,15 @@ function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confir
         if (momentumConfirmed >= 2) bullishCount++;
         if (confirmConfirmed >= 2) bullishCount++;
 
+        var bearishCount = 3 - bullishCount;
         var overallBullish = bullishCount >= 2;
-        overallEl.textContent = bullishCount + '/3 ' + (overallBullish ? 'BULLISH' : 'BEARISH');
+
+        // Show correct count based on direction
+        if (overallBullish) {
+            overallEl.textContent = bullishCount + '/3 BULLISH';
+        } else {
+            overallEl.textContent = bearishCount + '/3 BEARISH';
+        }
         overallEl.style.color = overallBullish ? '#22c55e' : '#ef4444';
         overallEl.className = 'value ' + (overallBullish ? 'bullish' : 'bearish');
     }
