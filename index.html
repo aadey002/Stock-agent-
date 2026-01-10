@@ -40541,55 +40541,97 @@ function updateEMAColumnHeaders(isBullish) {
 
 // Sync MTF Bias Summary with EMA Signal Tracker direction
 function syncMTFBiasWithEMA(isBullish, earlyConfirmed, momentumConfirmed, confirmConfirmed) {
-    var biasText = isBullish ? 'BULLISH' : 'BEARISH';
-    var biasColor = isBullish ? '#22c55e' : '#ef4444';
+    // When isBullish=true, confirmations mean bullish signals
+    // When isBullish=false, confirmations mean BEARISH signals (price BELOW EMAs)
 
     // Update Intraday Bias (based on early signal - price vs 9 EMA)
     var intradayEl = document.getElementById('intradayBias');
     if (intradayEl) {
-        var intradayBullish = earlyConfirmed >= 2;
-        intradayEl.textContent = intradayBullish ? 'BULLISH' : 'BEARISH';
-        intradayEl.style.color = intradayBullish ? '#22c55e' : '#ef4444';
-        intradayEl.className = 'value ' + (intradayBullish ? 'bullish' : 'bearish');
+        // If bearish trend and 2+ TFs confirm price below 9 EMA = BEARISH
+        // If bullish trend and 2+ TFs confirm price above 9 EMA = BULLISH
+        var intradayConfirmed = earlyConfirmed >= 2;
+        var intradayBullish = isBullish && intradayConfirmed;
+        var intradayBearish = !isBullish && intradayConfirmed;
+
+        if (intradayBullish) {
+            intradayEl.textContent = 'BULLISH';
+            intradayEl.style.color = '#22c55e';
+            intradayEl.className = 'value bullish';
+        } else if (intradayBearish) {
+            intradayEl.textContent = 'BEARISH';
+            intradayEl.style.color = '#ef4444';
+            intradayEl.className = 'value bearish';
+        } else {
+            intradayEl.textContent = 'NEUTRAL';
+            intradayEl.style.color = '#f59e0b';
+            intradayEl.className = 'value neutral';
+        }
     }
 
     // Update Swing Bias (based on momentum signal - price vs 21 EMA)
     var swingEl = document.getElementById('swingBias');
     if (swingEl) {
-        var swingBullish = momentumConfirmed >= 2;
-        swingEl.textContent = swingBullish ? 'BULLISH' : 'BEARISH';
-        swingEl.style.color = swingBullish ? '#22c55e' : '#ef4444';
-        swingEl.className = 'value ' + (swingBullish ? 'bullish' : 'bearish');
+        var swingConfirmed = momentumConfirmed >= 2;
+        var swingBullish = isBullish && swingConfirmed;
+        var swingBearish = !isBullish && swingConfirmed;
+
+        if (swingBullish) {
+            swingEl.textContent = 'BULLISH';
+            swingEl.style.color = '#22c55e';
+            swingEl.className = 'value bullish';
+        } else if (swingBearish) {
+            swingEl.textContent = 'BEARISH';
+            swingEl.style.color = '#ef4444';
+            swingEl.className = 'value bearish';
+        } else {
+            swingEl.textContent = 'NEUTRAL';
+            swingEl.style.color = '#f59e0b';
+            swingEl.className = 'value neutral';
+        }
     }
 
     // Update Position Bias (based on confirm signal - 9 EMA vs 21 EMA)
     var positionEl = document.getElementById('positionBias');
     if (positionEl) {
-        var positionBullish = confirmConfirmed >= 2;
-        positionEl.textContent = positionBullish ? 'BULLISH' : 'BEARISH';
-        positionEl.style.color = positionBullish ? '#22c55e' : '#ef4444';
-        positionEl.className = 'value ' + (positionBullish ? 'bullish' : 'bearish');
+        var positionConfirmed = confirmConfirmed >= 2;
+        var positionBullish = isBullish && positionConfirmed;
+        var positionBearish = !isBullish && positionConfirmed;
+
+        if (positionBullish) {
+            positionEl.textContent = 'BULLISH';
+            positionEl.style.color = '#22c55e';
+            positionEl.className = 'value bullish';
+        } else if (positionBearish) {
+            positionEl.textContent = 'BEARISH';
+            positionEl.style.color = '#ef4444';
+            positionEl.className = 'value bearish';
+        } else {
+            positionEl.textContent = 'NEUTRAL';
+            positionEl.style.color = '#f59e0b';
+            positionEl.className = 'value neutral';
+        }
     }
 
     // Update Overall/Confluence Bias
     var overallEl = document.getElementById('overallBias');
     if (overallEl) {
-        var bullishCount = 0;
-        if (earlyConfirmed >= 2) bullishCount++;
-        if (momentumConfirmed >= 2) bullishCount++;
-        if (confirmConfirmed >= 2) bullishCount++;
+        // Count how many TFs have strong confirmations (>=2 signals)
+        var confirmedCount = 0;
+        if (earlyConfirmed >= 2) confirmedCount++;
+        if (momentumConfirmed >= 2) confirmedCount++;
+        if (confirmConfirmed >= 2) confirmedCount++;
 
-        var bearishCount = 3 - bullishCount;
-        var overallBullish = bullishCount >= 2;
-
-        // Show correct count based on direction
-        if (overallBullish) {
-            overallEl.textContent = bullishCount + '/3 BULLISH';
+        // The direction is determined by isBullish
+        // confirmedCount tells us how many TFs agree with that direction
+        if (isBullish) {
+            overallEl.textContent = confirmedCount + '/3 BULLISH';
+            overallEl.style.color = '#22c55e';
+            overallEl.className = 'value bullish';
         } else {
-            overallEl.textContent = bearishCount + '/3 BEARISH';
+            overallEl.textContent = confirmedCount + '/3 BEARISH';
+            overallEl.style.color = '#ef4444';
+            overallEl.className = 'value bearish';
         }
-        overallEl.style.color = overallBullish ? '#22c55e' : '#ef4444';
-        overallEl.className = 'value ' + (overallBullish ? 'bullish' : 'bearish');
     }
 }
 
