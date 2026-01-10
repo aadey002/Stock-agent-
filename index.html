@@ -40174,8 +40174,13 @@ function scanEMASignals() {
         { name: 'daily', label: 'Daily', multiplier: 1 }
     ];
 
+    // Determine trend direction from Daily EMA (9 EMA vs 21 EMA)
+    var dailyEMA9 = calculateEMA(priceData, 9);
+    var dailyEMA21 = calculateEMA(priceData, 21);
+    var isBullish = dailyEMA9 > dailyEMA21;
+
     var results = [];
-    var earlyBullish = 0, momentumBullish = 0, confirmBullish = 0;
+    var earlyConfirmed = 0, momentumConfirmed = 0, confirmConfirmed = 0;
 
     // Generate simulated timestamps
     var now = new Date();
@@ -40194,24 +40199,33 @@ function scanEMASignals() {
             ema21 = ema21 + variance * 1.2;
         }
 
-        // Determine signals
-        var priceVs9 = currentPrice > ema9;
-        var priceVs21 = currentPrice > ema21;
-        var ema9Vs21 = ema9 > ema21;
+        // Determine signals based on trend direction
+        var earlySignal, momentumSignal, confirmSignal;
+        if (isBullish) {
+            // Bullish: check if price ABOVE EMAs
+            earlySignal = currentPrice > ema9;
+            momentumSignal = currentPrice > ema21;
+            confirmSignal = ema9 > ema21;
+        } else {
+            // Bearish: check if price BELOW EMAs
+            earlySignal = currentPrice < ema9;
+            momentumSignal = currentPrice < ema21;
+            confirmSignal = ema9 < ema21;
+        }
 
-        // Count bullish signals
-        if (priceVs9) earlyBullish++;
-        if (priceVs21) momentumBullish++;
-        if (ema9Vs21) confirmBullish++;
+        // Count confirmed signals (aligned with trend direction)
+        if (earlySignal) earlyConfirmed++;
+        if (momentumSignal) momentumConfirmed++;
+        if (confirmSignal) confirmConfirmed++;
 
         results.push({
             tf: tf,
             ema9: ema9,
             ema21: ema21,
             price: currentPrice,
-            early: priceVs9 ? 'bullish' : 'bearish',
-            momentum: priceVs21 ? 'bullish' : 'bearish',
-            confirm: ema9Vs21 ? 'bullish' : 'bearish',
+            early: earlySignal ? 'confirmed' : 'not_confirmed',
+            momentum: momentumSignal ? 'confirmed' : 'not_confirmed',
+            confirm: confirmSignal ? 'confirmed' : 'not_confirmed',
             timestamps: timestamps[idx]
         });
     });
@@ -40221,9 +40235,9 @@ function scanEMASignals() {
     if (tableBody) {
         var html = '';
         results.forEach(function(r) {
-            var earlyBg = r.early === 'bullish' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
-            var momBg = r.momentum === 'bullish' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
-            var confBg = r.confirm === 'bullish' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
+            var earlyBg = r.early === 'confirmed' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
+            var momBg = r.momentum === 'confirmed' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
+            var confBg = r.confirm === 'confirmed' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.05)';
 
             html += '<tr style="border-bottom: 1px solid var(--border);">';
             html += '<td style="padding: 12px 8px; text-align: center; font-weight: 700; color: #3b82f6; background: rgba(59,130,246,0.05);">' + r.tf.label + '</td>';
@@ -40238,37 +40252,37 @@ function scanEMASignals() {
         var momentumConfirmedTFs = [];
         var confirmConfirmedTFs = [];
         results.forEach(function(r) {
-            if (r.early === 'bullish') earlyConfirmedTFs.push(r.tf.label);
-            if (r.momentum === 'bullish') momentumConfirmedTFs.push(r.tf.label);
-            if (r.confirm === 'bullish') confirmConfirmedTFs.push(r.tf.label);
+            if (r.early === 'confirmed') earlyConfirmedTFs.push(r.tf.label);
+            if (r.momentum === 'confirmed') momentumConfirmedTFs.push(r.tf.label);
+            if (r.confirm === 'confirmed') confirmConfirmedTFs.push(r.tf.label);
         });
 
         // Add confluence row
         html += '<tr style="background: rgba(139,92,246,0.1); border-top: 2px solid rgba(139,92,246,0.3);">';
         html += '<td style="padding: 14px 8px; text-align: center; font-weight: 600; color: #8b5cf6; font-size: 11px;">CONFLUENCE</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(earlyBullish, earlyConfirmedTFs) + '</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(momentumBullish, momentumConfirmedTFs) + '</td>';
-        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(confirmBullish, confirmConfirmedTFs) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(earlyConfirmed, earlyConfirmedTFs) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(momentumConfirmed, momentumConfirmedTFs) + '</td>';
+        html += '<td style="padding: 14px 8px; text-align: center;">' + getConfluenceBadge(confirmConfirmed, confirmConfirmedTFs) + '</td>';
         html += '</tr>';
 
         tableBody.innerHTML = html;
     }
 
     // Calculate scores (0.25 per TF, max 1.0 per signal type)
-    var earlyScore = (earlyBullish / 4).toFixed(2);
-    var momentumScore = (momentumBullish / 4).toFixed(2);
-    var confirmScore = (confirmBullish / 4).toFixed(2);
+    var earlyScore = (earlyConfirmed / 4).toFixed(2);
+    var momentumScore = (momentumConfirmed / 4).toFixed(2);
+    var confirmScore = (confirmConfirmed / 4).toFixed(2);
     var overallScore = (parseFloat(earlyScore) + parseFloat(momentumScore) + parseFloat(confirmScore)).toFixed(1);
 
     // Update TF count displays
-    updateElement('emaEarlyTfCount', earlyBullish + '/4 TFs confirmed');
-    updateElement('emaMomentumTfCount', momentumBullish + '/4 TFs confirmed');
-    updateElement('emaConfirmTfCount', confirmBullish + '/4 TFs confirmed');
+    updateElement('emaEarlyTfCount', earlyConfirmed + '/4 TFs confirmed');
+    updateElement('emaMomentumTfCount', momentumConfirmed + '/4 TFs confirmed');
+    updateElement('emaConfirmTfCount', confirmConfirmed + '/4 TFs confirmed');
 
     // Update score cards with enhanced styling
-    updateEMAScoreCardEnhanced('emaEarlyScoreCard', 'emaEarlyScoreVal', 'emaEarlyScoreBar', earlyScore, earlyBullish);
-    updateEMAScoreCardEnhanced('emaMomentumScoreCard', 'emaMomentumScoreVal', 'emaMomentumScoreBar', momentumScore, momentumBullish);
-    updateEMAScoreCardEnhanced('emaConfirmScoreCard', 'emaConfirmScoreVal', 'emaConfirmScoreBar', confirmScore, confirmBullish);
+    updateEMAScoreCardEnhanced('emaEarlyScoreCard', 'emaEarlyScoreVal', 'emaEarlyScoreBar', earlyScore, earlyConfirmed);
+    updateEMAScoreCardEnhanced('emaMomentumScoreCard', 'emaMomentumScoreVal', 'emaMomentumScoreBar', momentumScore, momentumConfirmed);
+    updateEMAScoreCardEnhanced('emaConfirmScoreCard', 'emaConfirmScoreVal', 'emaConfirmScoreBar', confirmScore, confirmConfirmed);
 
     // Update overall score
     var overallEl = document.getElementById('emaOverallScore');
@@ -40280,9 +40294,8 @@ function scanEMASignals() {
     // Update calculation formula breakdown
     updateEMACalcFormula(earlyScore, momentumScore, confirmScore, overallScore);
 
-    // Update bias direction
+    // Update bias direction (based on Daily EMA comparison determined at top)
     var biasEl = document.getElementById('emaBiasDirection');
-    var isBullish = parseFloat(overallScore) >= 1.5;
     if (biasEl) {
         biasEl.innerHTML = isBullish ?
             '<span style="color: #22c55e;">📈 BULLISH BIAS</span>' :
@@ -40297,7 +40310,7 @@ function scanEMASignals() {
     updateEmaTier2Feed(parseFloat(overallScore));
 
     // Update trade readiness
-    updateEMATradeReadiness(parseFloat(overallScore), earlyBullish, momentumBullish, confirmBullish, isBullish);
+    updateEMATradeReadiness(parseFloat(overallScore), earlyConfirmed, momentumConfirmed, confirmConfirmed, isBullish);
 
     // Generate and display Confirmation Log
     generateEMAConfirmationLog(currentSymbol, priceData);
@@ -40342,10 +40355,10 @@ function generateEMATimestamps(baseDate, timeframes) {
 }
 
 function getEMASignalBadgeWithTime(signal, timestamp) {
-    var isBullish = signal === 'bullish';
-    var color = isBullish ? '#22c55e' : '#ef4444';
-    var bg = isBullish ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
-    var icon = isBullish ? '✓ YES' : '✗ NO';
+    var isConfirmed = signal === 'confirmed';
+    var color = isConfirmed ? '#22c55e' : '#ef4444';
+    var bg = isConfirmed ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
+    var icon = isConfirmed ? '✓ YES' : '✗ NO';
     var timeStr = timestamp ? formatEMATimestamp(timestamp) : 'Pending...';
 
     return '<div style="display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; background: ' + bg + '; color: ' + color + '; margin-bottom: 4px;">' + icon + '</div>' +
