@@ -8769,68 +8769,6 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
 
         <!-- MULTI-CHARTS TAB -->
                 <div id="multi-charts" class="tab-content">
-            <div class="card" style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div class="card-title" style="margin: 0;">📊 Multi-Timeframe Chart Analysis <span id="multiChartsLastUpdated" class="section-timestamp" style="font-size: 10px; color: var(--muted); font-weight: normal; margin-left: 10px;" title="Last updated">⏱️ --</span></div>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <label style="font-size: 11px; color: var(--muted);">Symbol:</label>
-                        <select id="multiChartSymbol" onchange="syncSymbolFromMultiCharts(); if(typeof scanEMASignals === 'function') scanEMASignals();" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600;">
-                            <optgroup label="Index ETFs">
-                                <option value="SPY">SPY</option>
-                                <option value="QQQ">QQQ</option>
-                                <option value="IWM">IWM</option>
-                                <option value="DIA">DIA</option>
-                            </optgroup>
-                            <optgroup label="Sector ETFs">
-                                <option value="XLF">XLF</option>
-                                <option value="XLE">XLE</option>
-                                <option value="XLK">XLK</option>
-                                <option value="XLV">XLV</option>
-                                <option value="XLI">XLI</option>
-                                <option value="XLB">XLB</option>
-                                <option value="XLU">XLU</option>
-                                <option value="XLP">XLP</option>
-                                <option value="XLY">XLY</option>
-                            </optgroup>
-                            <optgroup label="Mega Caps">
-                                <option value="AAPL">AAPL</option>
-                                <option value="MSFT">MSFT</option>
-                                <option value="NVDA">NVDA</option>
-                                <option value="TSLA">TSLA</option>
-                                <option value="AMZN">AMZN</option>
-                                <option value="GOOGL">GOOGL</option>
-                                <option value="META">META</option>
-                                <option value="JPM">JPM</option>
-                                <option value="AMD">AMD</option>
-                                <option value="NFLX">NFLX</option>
-                            </optgroup>
-                            <optgroup label="Additional Stocks">
-                                <option value="V">V</option>
-                                <option value="MA">MA</option>
-                                <option value="UNH">UNH</option>
-                                <option value="HD">HD</option>
-                                <option value="PG">PG</option>
-                                <option value="BAC">BAC</option>
-                                <option value="WMT">WMT</option>
-                                <option value="DIS">DIS</option>
-                                <option value="COST">COST</option>
-                                <option value="CRM">CRM</option>
-                                <option value="INTC">INTC</option>
-                                <option value="CSCO">CSCO</option>
-                                <option value="ADBE">ADBE</option>
-                                <option value="ORCL">ORCL</option>
-                                <option value="PFE">PFE</option>
-                                <option value="MRK">MRK</option>
-                                <option value="ABBV">ABBV</option>
-                                <option value="LLY">LLY</option>
-                                <option value="CVX">CVX</option>
-                                <option value="XOM">XOM</option>
-                            </optgroup>
-                        </select>
-                        <button onclick="updateMultiCharts(document.getElementById('multiChartSymbol')?.value || currentSymbol)" style="padding: 6px 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 11px;">🔄 Refresh All</button>
-                    </div>
-                </div>
-            </div>
 
             <!-- MTF Bias Summary -->
             <div class="mtf-summary">
@@ -18675,6 +18613,9 @@ async function changeSymbol() {
     if (typeof updateSignalsForSymbol === 'function') updateSignalsForSymbol(currentSymbol);
     if (typeof updateDailyAnalysisForSymbol === 'function') updateDailyAnalysisForSymbol(currentSymbol);
     if (typeof updateHeaderForSymbol === 'function') updateHeaderForSymbol(currentSymbol);
+
+    // === UPDATE EMA SIGNAL TRACKER ===
+    if (typeof scanEMASignals === 'function') scanEMASignals();
 
     // Update Gann Analysis tab if active
     const gannTab = document.getElementById('gann-analysis');
@@ -40154,20 +40095,20 @@ var emaBacktestData = {}; // Store backtest results per symbol
 
 function scanEMASignals() {
     var symbolEl = document.getElementById('emaTrackerSymbol');
-    // Use multiChartSymbol dropdown as primary source
-    var multiChartSelect = document.getElementById('multiChartSymbol');
-    var currentSymbol = multiChartSelect ? multiChartSelect.value : (document.getElementById('symbolSelect') ? document.getElementById('symbolSelect').value : 'SPY');
+    // Use main symbolSelect dropdown
+    var symbolSelect = document.getElementById('symbolSelect');
+    var symbol = symbolSelect ? symbolSelect.value : 'SPY';
 
-    if (symbolEl) symbolEl.textContent = currentSymbol;
+    if (symbolEl) symbolEl.textContent = symbol;
 
     // Update backtest symbol badge
     var backtestSymbol = document.getElementById('emaBacktestSymbol');
-    if (backtestSymbol) backtestSymbol.textContent = currentSymbol;
+    if (backtestSymbol) backtestSymbol.textContent = symbol;
 
     // Get price data
     var priceData = null;
-    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[currentSymbol] && allSymbolsData[currentSymbol].length > 30) {
-        priceData = allSymbolsData[currentSymbol];
+    if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 30) {
+        priceData = allSymbolsData[symbol];
     }
 
     if (!priceData || priceData.length < 30) {
@@ -40325,10 +40266,10 @@ function scanEMASignals() {
     updateEMATradeReadiness(parseFloat(overallScore), earlyConfirmed, momentumConfirmed, confirmConfirmed, isBullish);
 
     // Generate and display Confirmation Log
-    generateEMAConfirmationLog(currentSymbol, priceData);
+    generateEMAConfirmationLog(symbol, priceData);
 
     // Generate and display Backtest History
-    generateEMABacktestHistory(currentSymbol, priceData);
+    generateEMABacktestHistory(symbol, priceData);
 }
 
 function generateEMATimestamps(baseDate, timeframes) {
