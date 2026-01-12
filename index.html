@@ -9129,7 +9129,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     </div>
                     <div class="mtf-summary-item">
                         <div class="title">🔥 Confluence</div>
-                        <div class="value bullish" id="mtfOverallBias">2/3 BULLISH</div>
+                        <div class="value bullish" id="mtfOverallBias">6/6 BULLISH</div>
                     </div>
                 </div>
             </div>
@@ -9655,7 +9655,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                     <div id="mtfConfluenceCard" style="background: rgba(34,197,94,0.1); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; text-align: center;">
                         <div style="font-size: 12px; color: #666;">🎯 CONFLUENCE</div>
                         <div style="font-size: 11px; color: #666;">All Timeframes</div>
-                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfConfluence">3/3</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #22c55e; margin: 10px 0;" id="mtfConfluence">6/6</div>
                         <div style="font-size: 11px;" id="mtfAlignmentText">ALIGNED BULLISH</div>
                     </div>
                 </div>
@@ -17997,12 +17997,15 @@ function updateMTFBiasSummary(symbol) {
     updateBias('mtfPositionBias', biasText, biasColor);
 
     // ALSO update non-prefixed elements for consistency
+    updateBias('scalpBias', biasText, biasColor);
     updateBias('intradayBias', biasText, biasColor);
     updateBias('swingBias', biasText, biasColor);
     updateBias('positionBias', biasText, biasColor);
+    updateBias('weeklyBias', biasText, biasColor);
+    updateBias('quarterlyBias', biasText, biasColor);
 
     // Update confluence - all 3 are the same direction
-    var confluenceText = '3/3 ' + biasText;
+    var confluenceText = '6/6 ' + biasText;
 
     var confluenceEl = document.getElementById('mtfConfluence');
     if (confluenceEl) {
@@ -38906,7 +38909,7 @@ function checkMtfAlignment(tfResults, currentPrice) {
         alignmentEl.style.borderColor = alignmentDir === 'CALL' ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)';
         badgeEl.style.background = alignmentDir === 'CALL' ? '#22c55e' : '#ef4444';
         badgeEl.style.color = 'white';
-        badgeEl.textContent = '3/3 ' + alignmentDir;
+        badgeEl.textContent = '6/6 ' + alignmentDir;
     } else if (alignmentStrength === 2) {
         alignmentEl.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1))';
         alignmentEl.style.borderColor = 'rgba(245,158,11,0.3)';
