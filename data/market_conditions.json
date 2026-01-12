@@ -1,49 +1,60 @@
 {
-  "timestamp": "2026-01-09T21:47:54.321124",
+  "timestamp": "2026-01-12T14:34:46.335703",
   "trade_allowed": true,
-  "position_size_multiplier": 0.5,
+  "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 27.38,
-      "uvxy_price": 34.23,
+      "vix_estimate": 28.12,
+      "uvxy_price": 35.15,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 2,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
+          "timing": "TODAY"
+        },
+        {
+          "name": "Retail Sales",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": 0.93,
-      "momentum_20d": 0.28,
+      "momentum_5d": 0.92,
+      "momentum_20d": 0.92,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 1.36,
-      "cyclical_avg": 1.26,
-      "defensive_avg": -0.11,
-      "strongest": "Energy (+3.54%)",
-      "weakest": "Utilities (-2.26%)",
+      "rotation_strength": 2.05,
+      "cyclical_avg": 2.59,
+      "defensive_avg": 0.54,
+      "strongest": "Consumer Disc (+5.12%)",
+      "weakest": "Utilities (-1.55%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
-  "overall_score": 35
+  "overall_score": 25
 }
