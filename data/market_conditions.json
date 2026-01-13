@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-01-12T21:54:50.236387",
+  "timestamp": "2026-01-13T14:34:17.675817",
   "trade_allowed": true,
   "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 27.43,
-      "uvxy_price": 34.29,
+      "vix_estimate": 27.47,
+      "uvxy_price": 34.34,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 2,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -27,7 +32,7 @@
         {
           "name": "Retail Sales",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -38,23 +43,24 @@
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": 0.92,
-      "momentum_20d": 0.92,
+      "momentum_5d": 0.48,
+      "momentum_20d": 0.48,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_ON",
-      "rotation_strength": 2.05,
-      "cyclical_avg": 2.59,
-      "defensive_avg": 0.54,
-      "strongest": "Consumer Disc (+5.12%)",
-      "weakest": "Utilities (-1.55%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": 1.4,
+      "defensive_avg": 1.63,
+      "strongest": "Consumer Stap (+3.66%)",
+      "weakest": "Financials (-1.50%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
-  "overall_score": 25
+  "overall_score": 15
 }
