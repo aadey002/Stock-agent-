@@ -43580,6 +43580,969 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 });
 
+// ============================================================================
+// CENTRAL DATA HUB FOR AI AGENTS
+// ============================================================================
+
+const AIDataHub = {
+
+    // Collect ALL data for current symbol
+    collectAllData: function(symbol) {
+        return {
+            symbol: symbol,
+            timestamp: new Date().toISOString(),
+
+            // Tab 1: Overview
+            overview: this.getOverviewData(symbol),
+
+            // Tab 2: Trade Action
+            tradeAction: this.getTradeActionData(symbol),
+
+            // Tab 3: Multi-Charts
+            multiCharts: this.getMultiChartsData(symbol),
+
+            // Tab 4: MTF Bias
+            mtfBias: this.getMTFBiasData(symbol),
+
+            // Tab 5: Signals & Agents
+            signalsAgents: this.getSignalsAgentsData(symbol),
+
+            // Tab 6: Patterns
+            patterns: this.getPatternsData(symbol),
+
+            // Tab 7: Gann Analysis
+            gannAnalysis: this.getGannAnalysisData(symbol),
+
+            // Tab 8: Dual Trade Setup
+            dualTradeSetup: this.getDualTradeData(symbol),
+
+            // Tab 9: SQ9 Scanner
+            sq9Scanner: this.getSQ9Data(symbol),
+
+            // Tab 10: Gann Cycles
+            gannCycles: this.getGannCyclesData(symbol),
+
+            // Tab 11: Market Analysis
+            marketAnalysis: this.getMarketAnalysisData(symbol),
+
+            // Tab 12: Performance
+            performance: this.getPerformanceData(symbol)
+        };
+    },
+
+    // ============ DATA EXTRACTORS FOR EACH TAB ============
+
+    getOverviewData: function(symbol) {
+        return {
+            price: parseFloat(document.getElementById('currentPrice')?.textContent?.replace(',', '') || 0),
+            change: document.getElementById('priceChange')?.textContent || '',
+            changePercent: document.getElementById('priceChangePercent')?.textContent || '',
+            volume: document.getElementById('volume')?.textContent || '',
+            high52w: document.getElementById('high52w')?.textContent || '',
+            low52w: document.getElementById('low52w')?.textContent || '',
+            healthStatus: document.getElementById('healthStatus')?.textContent || ''
+        };
+    },
+
+    getTradeActionData: function(symbol) {
+        return {
+            recommendation: document.querySelector('.trade-recommendation')?.textContent || '',
+            direction: document.querySelector('.trade-direction')?.textContent || '',
+            confidence: document.querySelector('.trade-confidence')?.textContent || '',
+            entry: document.getElementById('tradeEntry')?.textContent || '',
+            target: document.getElementById('tradeTarget')?.textContent || '',
+            stop: document.getElementById('tradeStop')?.textContent || ''
+        };
+    },
+
+    getMultiChartsData: function(symbol) {
+        return {
+            intraday: {
+                bias: document.getElementById('intradayBias')?.textContent || '',
+                ema9: document.getElementById('intradayEma9')?.textContent || '',
+                ema21: document.getElementById('intradayEma21')?.textContent || '',
+                support: document.getElementById('intradaySupport')?.textContent || '',
+                resistance: document.getElementById('intradayResistance')?.textContent || ''
+            },
+            swing: {
+                bias: document.getElementById('swingBias')?.textContent || '',
+                ema9: document.getElementById('swingEma9')?.textContent || '',
+                ema21: document.getElementById('swingEma21')?.textContent || '',
+                support: document.getElementById('swingSupport')?.textContent || '',
+                resistance: document.getElementById('swingResistance')?.textContent || ''
+            },
+            position: {
+                bias: document.getElementById('positionBias')?.textContent || '',
+                ema9: document.getElementById('positionEma9')?.textContent || '',
+                ema21: document.getElementById('positionEma21')?.textContent || '',
+                support: document.getElementById('positionSupport')?.textContent || '',
+                resistance: document.getElementById('positionResistance')?.textContent || ''
+            },
+            scalp5m: {
+                bias: document.getElementById('scalp5mBias')?.textContent || '',
+                support: document.getElementById('scalp5mSupport')?.textContent || '',
+                resistance: document.getElementById('scalp5mResistance')?.textContent || ''
+            },
+            weekly: {
+                bias: document.getElementById('weeklyBias')?.textContent || '',
+                support: document.getElementById('weeklySupport')?.textContent || '',
+                resistance: document.getElementById('weeklyResistance')?.textContent || ''
+            },
+            quarterly: {
+                bias: document.getElementById('quarterlyBias')?.textContent || '',
+                support: document.getElementById('quarterlySupport')?.textContent || '',
+                resistance: document.getElementById('quarterlyResistance')?.textContent || ''
+            }
+        };
+    },
+
+    getMTFBiasData: function(symbol) {
+        var biases = [];
+        document.querySelectorAll('.mtf-bias-item, .timeframe-bias').forEach(function(el) {
+            biases.push({
+                timeframe: el.querySelector('.timeframe-label')?.textContent || '',
+                bias: el.querySelector('.bias-value')?.textContent || ''
+            });
+        });
+
+        return {
+            biases: biases,
+            confluence: document.getElementById('mtfConfluence')?.textContent || '',
+            overallBias: document.getElementById('overallMTFBias')?.textContent || '',
+            score: document.getElementById('mtfScore')?.textContent || ''
+        };
+    },
+
+    getSignalsAgentsData: function(symbol) {
+        var agents = [];
+        document.querySelectorAll('.agent-row, .agent-signal-row').forEach(function(row) {
+            agents.push({
+                name: row.querySelector('.agent-name')?.textContent || '',
+                intraday: row.querySelector('.intraday-signal')?.textContent || '',
+                swing: row.querySelector('.swing-signal')?.textContent || '',
+                position: row.querySelector('.position-signal')?.textContent || '',
+                confidence: row.querySelector('.agent-confidence')?.textContent || ''
+            });
+        });
+
+        return {
+            agents: agents,
+            consensus: {
+                intraday: document.getElementById('consensusIntraday')?.textContent || '',
+                swing: document.getElementById('consensusSwing')?.textContent || '',
+                position: document.getElementById('consensusPosition')?.textContent || ''
+            },
+            overallConsensus: document.getElementById('overallConsensus')?.textContent || ''
+        };
+    },
+
+    getPatternsData: function(symbol) {
+        var patterns = [];
+        document.querySelectorAll('.pattern-item, .detected-pattern').forEach(function(el) {
+            patterns.push({
+                name: el.querySelector('.pattern-name')?.textContent || '',
+                timeframe: el.querySelector('.pattern-timeframe')?.textContent || '',
+                direction: el.querySelector('.pattern-direction')?.textContent || '',
+                reliability: el.querySelector('.pattern-reliability')?.textContent || ''
+            });
+        });
+
+        return {
+            detectedPatterns: patterns,
+            patternCount: patterns.length,
+            dominantPattern: patterns[0] || null
+        };
+    },
+
+    getGannAnalysisData: function(symbol) {
+        return {
+            sq9Level: document.getElementById('sq9Level')?.textContent || '',
+            sq9Distance: document.getElementById('sq9Distance')?.textContent || '',
+            gannAngle: document.getElementById('gannAngle')?.textContent || '',
+            timeTarget: document.getElementById('gannTimeTarget')?.textContent || '',
+            priceTarget: document.getElementById('gannPriceTarget')?.textContent || '',
+            support1: document.getElementById('gannSupport1')?.textContent || '',
+            support2: document.getElementById('gannSupport2')?.textContent || '',
+            resistance1: document.getElementById('gannResistance1')?.textContent || '',
+            resistance2: document.getElementById('gannResistance2')?.textContent || ''
+        };
+    },
+
+    getDualTradeData: function(symbol) {
+        return {
+            trade1: {
+                direction: document.querySelector('#trade1 .trade-direction, .trade1-direction')?.textContent || '',
+                label: document.querySelector('#trade1 .trade-label, .trade1-label')?.textContent || '',
+                entry: document.getElementById('trade1Entry')?.textContent || '',
+                target: document.getElementById('trade1Target')?.textContent || '',
+                stop: document.getElementById('trade1Stop')?.textContent || '',
+                rr: document.getElementById('trade1RR')?.textContent || ''
+            },
+            trade2: {
+                direction: document.querySelector('#trade2 .trade-direction, .trade2-direction')?.textContent || '',
+                label: document.querySelector('#trade2 .trade-label, .trade2-label')?.textContent || '',
+                entry: document.getElementById('trade2Entry')?.textContent || '',
+                target: document.getElementById('trade2Target')?.textContent || '',
+                stop: document.getElementById('trade2Stop')?.textContent || '',
+                rr: document.getElementById('trade2RR')?.textContent || ''
+            },
+            turnDate: document.getElementById('turnDate')?.textContent || '',
+            turnType: document.getElementById('turnType')?.textContent || ''
+        };
+    },
+
+    getSQ9Data: function(symbol) {
+        return {
+            currentPrice: document.getElementById('sq9CurrentPrice')?.textContent || '',
+            nearestLevel: document.getElementById('sq9NearestLevel')?.textContent || '',
+            distancePercent: document.getElementById('sq9DistancePercent')?.textContent || '',
+            direction: document.getElementById('sq9Direction')?.textContent || '',
+            supports: [
+                document.getElementById('sq9Support1')?.textContent || '',
+                document.getElementById('sq9Support2')?.textContent || ''
+            ],
+            resistances: [
+                document.getElementById('sq9Resistance1')?.textContent || '',
+                document.getElementById('sq9Resistance2')?.textContent || ''
+            ]
+        };
+    },
+
+    getGannCyclesData: function(symbol) {
+        var cycles = [];
+        document.querySelectorAll('.cycle-row, .gann-cycle-item').forEach(function(row) {
+            cycles.push({
+                name: row.querySelector('.cycle-name')?.textContent || '',
+                targetDate: row.querySelector('.cycle-date')?.textContent || '',
+                daysAway: row.querySelector('.days-away')?.textContent || '',
+                expected: row.querySelector('.expected-move')?.textContent || ''
+            });
+        });
+
+        return {
+            cycles: cycles,
+            nextCycle: cycles[0] || null,
+            backtestPerformance: {
+                sq9Support: document.getElementById('backtest-sq9')?.textContent || '',
+                jubilee49: document.getElementById('backtest-49d')?.textContent || '',
+                quarter90: document.getElementById('backtest-90d')?.textContent || '',
+                continuation: document.getElementById('backtest-cont')?.textContent || ''
+            }
+        };
+    },
+
+    getMarketAnalysisData: function(symbol) {
+        return {
+            marketTrend: document.getElementById('marketTrend')?.textContent || '',
+            sectorStrength: document.getElementById('sectorStrength')?.textContent || '',
+            vix: document.getElementById('vixLevel')?.textContent || '',
+            breadth: document.getElementById('marketBreadth')?.textContent || '',
+            sentiment: document.getElementById('marketSentiment')?.textContent || ''
+        };
+    },
+
+    getPerformanceData: function(symbol) {
+        return {
+            totalTrades: document.getElementById('totalTrades')?.textContent || '',
+            winRate: document.getElementById('winRate')?.textContent || '',
+            avgWin: document.getElementById('avgWin')?.textContent || '',
+            avgLoss: document.getElementById('avgLoss')?.textContent || '',
+            profitFactor: document.getElementById('profitFactor')?.textContent || '',
+            totalPnL: document.getElementById('totalPnL')?.textContent || ''
+        };
+    }
+};
+
+// Expose globally
+window.AIDataHub = AIDataHub;
+
+// ============================================================================
+// AI AGENT ANALYSIS ENGINE
+// ============================================================================
+
+const AIAgentEngine = {
+
+    // Generate comprehensive insight from ALL data
+    generateInsight: function(symbol) {
+        var allData = AIDataHub.collectAllData(symbol);
+
+        return {
+            symbol: symbol,
+            timestamp: allData.timestamp,
+
+            // Overall recommendation
+            recommendation: this.calculateRecommendation(allData),
+
+            // Confidence level
+            confidence: this.calculateConfidence(allData),
+
+            // Key insights from each area
+            insights: {
+                technical: this.analyzeTechnical(allData),
+                patterns: this.analyzePatterns(allData),
+                gann: this.analyzeGann(allData),
+                mtf: this.analyzeMTF(allData),
+                agents: this.analyzeAgents(allData)
+            },
+
+            // Trade setup
+            tradeSetup: this.generateTradeSetup(allData),
+
+            // Risk assessment
+            riskLevel: this.assessRisk(allData),
+
+            // Summary
+            summary: this.generateSummary(allData)
+        };
+    },
+
+    calculateRecommendation: function(data) {
+        var bullishScore = 0;
+        var bearishScore = 0;
+
+        // Count MTF biases
+        if (data.mtfBias.overallBias && data.mtfBias.overallBias.includes('BULLISH')) bullishScore += 2;
+        if (data.mtfBias.overallBias && data.mtfBias.overallBias.includes('BEARISH')) bearishScore += 2;
+
+        // Count agent consensus
+        if (data.signalsAgents.overallConsensus && data.signalsAgents.overallConsensus.includes('BULLISH')) bullishScore += 2;
+        if (data.signalsAgents.overallConsensus && data.signalsAgents.overallConsensus.includes('BEARISH')) bearishScore += 2;
+
+        // Count pattern direction
+        if (data.patterns.dominantPattern && data.patterns.dominantPattern.direction === 'BULLISH') bullishScore += 1;
+        if (data.patterns.dominantPattern && data.patterns.dominantPattern.direction === 'BEARISH') bearishScore += 1;
+
+        // Gann direction
+        if (data.sq9Scanner.direction && data.sq9Scanner.direction.includes('CALL')) bullishScore += 1;
+        if (data.sq9Scanner.direction && data.sq9Scanner.direction.includes('PUT')) bearishScore += 1;
+
+        if (bullishScore > bearishScore) {
+            return { direction: 'CALL', strength: bullishScore };
+        } else if (bearishScore > bullishScore) {
+            return { direction: 'PUT', strength: bearishScore };
+        } else {
+            return { direction: 'NEUTRAL', strength: 0 };
+        }
+    },
+
+    calculateConfidence: function(data) {
+        var agreementCount = 0;
+        var totalSources = 0;
+
+        var direction = this.calculateRecommendation(data).direction;
+        var targetBias = direction === 'CALL' ? 'BULLISH' : 'BEARISH';
+
+        // Check agreement across sources
+        if (data.mtfBias.overallBias && data.mtfBias.overallBias.includes(targetBias)) {
+            agreementCount++;
+        }
+        totalSources++;
+
+        if (data.signalsAgents.overallConsensus && data.signalsAgents.overallConsensus.includes(targetBias)) {
+            agreementCount++;
+        }
+        totalSources++;
+
+        var confidencePercent = (agreementCount / totalSources) * 100;
+
+        if (confidencePercent >= 80) return 'HIGH';
+        if (confidencePercent >= 60) return 'MEDIUM';
+        return 'LOW';
+    },
+
+    analyzeTechnical: function(data) {
+        var charts = data.multiCharts;
+        return {
+            trend: this.determineTrend(charts),
+            keyLevels: {
+                support: charts.swing ? charts.swing.support : '',
+                resistance: charts.swing ? charts.swing.resistance : ''
+            },
+            emaStatus: this.checkEMAAlignment(charts)
+        };
+    },
+
+    analyzePatterns: function(data) {
+        return {
+            count: data.patterns.patternCount,
+            dominant: data.patterns.dominantPattern,
+            reliability: data.patterns.dominantPattern ? (data.patterns.dominantPattern.reliability || 'N/A') : 'N/A'
+        };
+    },
+
+    analyzeGann: function(data) {
+        return {
+            sq9Level: data.sq9Scanner.nearestLevel,
+            distance: data.sq9Scanner.distancePercent,
+            nextCycle: data.gannCycles.nextCycle,
+            cycleDirection: data.gannCycles.nextCycle ? data.gannCycles.nextCycle.expected : ''
+        };
+    },
+
+    analyzeMTF: function(data) {
+        return {
+            confluence: data.mtfBias.confluence,
+            score: data.mtfBias.score,
+            alignment: data.mtfBias.biases
+        };
+    },
+
+    analyzeAgents: function(data) {
+        return {
+            consensus: data.signalsAgents.overallConsensus,
+            agentCount: data.signalsAgents.agents.length,
+            agreement: this.checkAgentAgreement(data.signalsAgents.agents)
+        };
+    },
+
+    generateTradeSetup: function(data) {
+        return {
+            trade1: data.dualTradeSetup.trade1,
+            trade2: data.dualTradeSetup.trade2,
+            turnDate: data.dualTradeSetup.turnDate,
+            turnType: data.dualTradeSetup.turnType
+        };
+    },
+
+    assessRisk: function(data) {
+        var confidence = this.calculateConfidence(data);
+        var mtfAlignment = data.mtfBias.confluence &&
+            (data.mtfBias.confluence.includes('6/6') || data.mtfBias.confluence.includes('5/6'));
+
+        if (confidence === 'HIGH' && mtfAlignment) return 'LOW';
+        if (confidence === 'MEDIUM') return 'MEDIUM';
+        return 'HIGH';
+    },
+
+    generateSummary: function(data) {
+        var rec = this.calculateRecommendation(data);
+        var conf = this.calculateConfidence(data);
+        var risk = this.assessRisk(data);
+
+        return data.symbol + ': ' + rec.direction + ' recommendation with ' + conf + ' confidence. ' +
+               'Risk level: ' + risk + '. ' +
+               'MTF: ' + (data.mtfBias.confluence || 'N/A') + '. ' +
+               'Agents: ' + (data.signalsAgents.overallConsensus || 'N/A') + '. ' +
+               'Next turn: ' + (data.dualTradeSetup.turnDate || 'N/A') + ' (' + (data.dualTradeSetup.turnType || 'N/A') + ').';
+    },
+
+    // Helper functions
+    determineTrend: function(charts) {
+        var bullish = 0, bearish = 0;
+        var timeframes = ['intraday', 'swing', 'position'];
+        timeframes.forEach(function(tf) {
+            if (charts[tf] && charts[tf].bias) {
+                if (charts[tf].bias.includes('BULLISH') || charts[tf].bias.includes('CALL')) bullish++;
+                if (charts[tf].bias.includes('BEARISH') || charts[tf].bias.includes('PUT')) bearish++;
+            }
+        });
+        return bullish > bearish ? 'UPTREND' : bearish > bullish ? 'DOWNTREND' : 'SIDEWAYS';
+    },
+
+    checkEMAAlignment: function(charts) {
+        return 'ALIGNED';
+    },
+
+    checkAgentAgreement: function(agents) {
+        return agents.length > 0 ? agents.length + ' agents' : 'No agents';
+    }
+};
+
+// Expose globally
+window.AIAgentEngine = AIAgentEngine;
+
+// ============================================================================
+// AI QUESTION PARSER - Parse user questions to extract symbol/tab/timeframe
+// ============================================================================
+
+const AIQuestionParser = {
+
+    // Extract symbol from question
+    extractSymbol: function(question) {
+        var upperQ = question.toUpperCase();
+
+        // List of all symbols
+        var allSymbols = [
+            'SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLB',
+            'XLU', 'XLP', 'XLY', 'XLC', 'XLRE', 'XBI', 'XRT', 'XHB', 'XOP', 'GLD',
+            'SLV', 'TLT', 'HYG', 'EEM', 'VXX', 'ARKK',
+            'AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL', 'META', 'JPM', 'AMD',
+            'NFLX', 'V', 'MA', 'UNH', 'HD', 'PG', 'BAC', 'WMT', 'DIS', 'COST',
+            'CRM', 'INTC', 'CSCO', 'ADBE', 'ORCL', 'LLY', 'PFE', 'MRK'
+        ];
+
+        for (var i = 0; i < allSymbols.length; i++) {
+            if (upperQ.includes(allSymbols[i])) {
+                return allSymbols[i];
+            }
+        }
+
+        // Default to current symbol if none found
+        return typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY';
+    },
+
+    // Extract tab/section from question
+    extractTab: function(question) {
+        var lowerQ = question.toLowerCase();
+
+        var tabKeywords = {
+            'mtf': 'mtf-bias',
+            'multi-timeframe': 'mtf-bias',
+            'multi timeframe': 'mtf-bias',
+            'bias': 'mtf-bias',
+            'chart': 'multi-charts',
+            'charts': 'multi-charts',
+            'multi-chart': 'multi-charts',
+            'pattern': 'patterns',
+            'patterns': 'patterns',
+            'candle': 'patterns',
+            'candlestick': 'patterns',
+            'agent': 'signals-agents',
+            'agents': 'signals-agents',
+            'signal': 'signals-agents',
+            'signals': 'signals-agents',
+            'gann': 'gann-analysis',
+            'sq9': 'sq9-scanner',
+            'cycle': 'gann-cycles',
+            'cycles': 'gann-cycles',
+            'trade': 'dual-trade-setup',
+            'dual trade': 'dual-trade-setup',
+            'setup': 'dual-trade-setup',
+            'performance': 'performance',
+            'overview': 'overview',
+            'market': 'market-analysis'
+        };
+
+        for (var keyword in tabKeywords) {
+            if (lowerQ.includes(keyword)) {
+                return tabKeywords[keyword];
+            }
+        }
+
+        return 'all'; // Search all tabs
+    },
+
+    // Extract timeframe from question
+    extractTimeframe: function(question) {
+        var lowerQ = question.toLowerCase();
+
+        if (lowerQ.includes('5 min') || lowerQ.includes('5min') || lowerQ.includes('scalp')) return '5min';
+        if (lowerQ.includes('15 min') || lowerQ.includes('15min') || lowerQ.includes('intraday')) return 'intraday';
+        if (lowerQ.includes('daily') || lowerQ.includes('swing')) return 'daily';
+        if (lowerQ.includes('weekly')) return 'weekly';
+        if (lowerQ.includes('monthly') || lowerQ.includes('position')) return 'monthly';
+        if (lowerQ.includes('quarterly')) return 'quarterly';
+
+        return 'all';
+    },
+
+    // Extract data type from question
+    extractDataType: function(question) {
+        var lowerQ = question.toLowerCase();
+
+        if (lowerQ.includes('candle') || lowerQ.includes('pattern')) return 'candlePattern';
+        if (lowerQ.includes('ema') || lowerQ.includes('moving average')) return 'ema';
+        if (lowerQ.includes('support') || lowerQ.includes('resistance')) return 'levels';
+        if (lowerQ.includes('bias') || lowerQ.includes('direction')) return 'bias';
+        if (lowerQ.includes('signal') || lowerQ.includes('recommendation')) return 'signal';
+        if (lowerQ.includes('target') || lowerQ.includes('entry') || lowerQ.includes('stop')) return 'trade';
+        if (lowerQ.includes('cycle') || lowerQ.includes('turn')) return 'cycle';
+
+        return 'general';
+    }
+};
+
+// Expose globally
+window.AIQuestionParser = AIQuestionParser;
+
+// ============================================================================
+// AI DATA FETCHER - Symbol-specific data fetcher with candle pattern detection
+// ============================================================================
+
+const AIDataFetcher = {
+
+    // Get MTF data for specific symbol
+    getMTFData: function(symbol) {
+        var self = this;
+        // Switch to the symbol first
+        if (typeof selectSymbol === 'function') {
+            selectSymbol(symbol);
+        }
+
+        // Return promise that resolves after data loads
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                var data = {
+                    symbol: symbol,
+                    timeframes: {
+                        '5min': self.getTimeframeBias('scalp5m'),
+                        '15min': self.getTimeframeBias('intraday'),
+                        'daily': self.getTimeframeBias('swing'),
+                        'weekly': self.getTimeframeBias('weekly'),
+                        'monthly': self.getTimeframeBias('position'),
+                        'quarterly': self.getTimeframeBias('quarterly')
+                    },
+                    confluence: document.getElementById('mtfConfluence')?.textContent || '',
+                    overallBias: document.getElementById('overallMTFBias')?.textContent || ''
+                };
+                resolve(data);
+            }, 500);
+        });
+    },
+
+    getTimeframeBias: function(tfId) {
+        return {
+            bias: document.getElementById(tfId + 'Bias')?.textContent || '',
+            ema9: document.getElementById(tfId + 'Ema9')?.textContent || '',
+            ema21: document.getElementById(tfId + 'Ema21')?.textContent || '',
+            candlePattern: document.getElementById(tfId + 'CandlePattern')?.textContent ||
+                          document.querySelector('#' + tfId + ' .candle-pattern')?.textContent ||
+                          this.detectCandlePattern(tfId)
+        };
+    },
+
+    // Detect candle pattern from chart data
+    detectCandlePattern: function(tfId) {
+        var chartData = window[tfId + 'ChartData'] || [];
+        if (chartData.length < 3) return 'Insufficient data';
+
+        var last = chartData[chartData.length - 1];
+        var prev = chartData[chartData.length - 2];
+        var prev2 = chartData[chartData.length - 3];
+
+        // Detect common patterns
+        if (this.isDoji(last)) return 'Doji - Indecision';
+        if (this.isHammer(last)) return 'Hammer - Potential reversal up';
+        if (this.isShootingStar(last)) return 'Shooting Star - Potential reversal down';
+        if (this.isBullishEngulfing(prev, last)) return 'Bullish Engulfing - Reversal up';
+        if (this.isBearishEngulfing(prev, last)) return 'Bearish Engulfing - Reversal down';
+        if (this.isMorningStar(prev2, prev, last)) return 'Morning Star - Bullish reversal';
+        if (this.isEveningStar(prev2, prev, last)) return 'Evening Star - Bearish reversal';
+
+        // Trend continuation
+        if (last.close > last.open && prev.close > prev.open) return 'Consecutive Green - Bullish continuation';
+        if (last.close < last.open && prev.close < prev.open) return 'Consecutive Red - Bearish continuation';
+
+        return 'No clear pattern';
+    },
+
+    // Pattern detection helpers
+    isDoji: function(candle) {
+        if (!candle) return false;
+        var bodySize = Math.abs(candle.close - candle.open);
+        var range = candle.high - candle.low;
+        return range > 0 && bodySize < range * 0.1;
+    },
+
+    isHammer: function(candle) {
+        if (!candle) return false;
+        var bodySize = Math.abs(candle.close - candle.open);
+        var lowerWick = Math.min(candle.open, candle.close) - candle.low;
+        var upperWick = candle.high - Math.max(candle.open, candle.close);
+        return bodySize > 0 && lowerWick > bodySize * 2 && upperWick < bodySize * 0.5;
+    },
+
+    isShootingStar: function(candle) {
+        if (!candle) return false;
+        var bodySize = Math.abs(candle.close - candle.open);
+        var upperWick = candle.high - Math.max(candle.open, candle.close);
+        var lowerWick = Math.min(candle.open, candle.close) - candle.low;
+        return bodySize > 0 && upperWick > bodySize * 2 && lowerWick < bodySize * 0.5;
+    },
+
+    isBullishEngulfing: function(prev, curr) {
+        if (!prev || !curr) return false;
+        return prev.close < prev.open &&
+               curr.close > curr.open &&
+               curr.open < prev.close &&
+               curr.close > prev.open;
+    },
+
+    isBearishEngulfing: function(prev, curr) {
+        if (!prev || !curr) return false;
+        return prev.close > prev.open &&
+               curr.close < curr.open &&
+               curr.open > prev.close &&
+               curr.close < prev.open;
+    },
+
+    isMorningStar: function(first, second, third) {
+        if (!first || !second || !third) return false;
+        return first.close < first.open &&
+               Math.abs(second.close - second.open) < (first.high - first.low) * 0.3 &&
+               third.close > third.open &&
+               third.close > (first.open + first.close) / 2;
+    },
+
+    isEveningStar: function(first, second, third) {
+        if (!first || !second || !third) return false;
+        return first.close > first.open &&
+               Math.abs(second.close - second.open) < (first.high - first.low) * 0.3 &&
+               third.close < third.open &&
+               third.close < (first.open + first.close) / 2;
+    },
+
+    // Get patterns for specific symbol and timeframe
+    getCandlePatterns: function(symbol, timeframe) {
+        return {
+            symbol: symbol,
+            timeframe: timeframe,
+            pattern: this.detectCandlePattern(timeframe),
+            lastCandle: this.getLastCandleInfo(timeframe),
+            trend: this.getTrendFromCandles(timeframe)
+        };
+    },
+
+    getLastCandleInfo: function(tfId) {
+        var chartData = window[tfId + 'ChartData'] || [];
+        if (chartData.length === 0) return null;
+
+        var last = chartData[chartData.length - 1];
+        return {
+            open: last.open,
+            high: last.high,
+            low: last.low,
+            close: last.close,
+            color: last.close > last.open ? 'GREEN' : 'RED',
+            bodySize: Math.abs(last.close - last.open).toFixed(2),
+            range: (last.high - last.low).toFixed(2)
+        };
+    },
+
+    getTrendFromCandles: function(tfId) {
+        var chartData = window[tfId + 'ChartData'] || [];
+        if (chartData.length < 5) return 'Insufficient data';
+
+        var recent = chartData.slice(-5);
+        var greenCount = recent.filter(function(c) { return c.close > c.open; }).length;
+
+        if (greenCount >= 4) return 'Strong Uptrend';
+        if (greenCount >= 3) return 'Uptrend';
+        if (greenCount === 2) return 'Neutral/Choppy';
+        if (greenCount === 1) return 'Downtrend';
+        return 'Strong Downtrend';
+    }
+};
+
+// Expose globally
+window.AIDataFetcher = AIDataFetcher;
+
+// ============================================================================
+// AI RESPONSE GENERATOR - Smart response generator for AI chatbot
+// ============================================================================
+
+const AIResponseGenerator = {
+
+    // Generate response based on parsed question
+    generateResponse: function(question) {
+        var self = this;
+        var symbol = AIQuestionParser.extractSymbol(question);
+        var tab = AIQuestionParser.extractTab(question);
+        var timeframe = AIQuestionParser.extractTimeframe(question);
+        var dataType = AIQuestionParser.extractDataType(question);
+
+        console.log('[AI Parser]', { symbol: symbol, tab: tab, timeframe: timeframe, dataType: dataType });
+
+        // Return a promise for async handling
+        return new Promise(function(resolve) {
+            var response = '';
+
+            if (tab === 'mtf-bias' || dataType === 'candlePattern') {
+                AIDataFetcher.getMTFData(symbol).then(function(mtfData) {
+                    var patternData = AIDataFetcher.getCandlePatterns(symbol, timeframe === 'all' ? 'swing' : timeframe);
+                    response = self.formatMTFResponse(symbol, mtfData, patternData, timeframe);
+                    resolve(response);
+                });
+            } else if (tab === 'patterns') {
+                var patternData = AIDataFetcher.getCandlePatterns(symbol, timeframe === 'all' ? 'swing' : timeframe);
+                response = self.formatPatternResponse(symbol, patternData);
+                resolve(response);
+            } else if (tab === 'signals-agents') {
+                var agentData = AIDataHub.getSignalsAgentsData(symbol);
+                response = self.formatAgentResponse(symbol, agentData);
+                resolve(response);
+            } else if (tab === 'dual-trade-setup') {
+                var tradeData = AIDataHub.getDualTradeData(symbol);
+                response = self.formatTradeResponse(symbol, tradeData);
+                resolve(response);
+            } else {
+                // General analysis
+                var allData = AIDataHub.collectAllData(symbol);
+                response = self.formatGeneralResponse(symbol, allData, question);
+                resolve(response);
+            }
+        });
+    },
+
+    formatMTFResponse: function(symbol, mtfData, patternData, timeframe) {
+        var response = '**' + symbol + ' MTF Analysis**\n\n';
+
+        // Overall
+        response += '**Overall Bias:** ' + (mtfData.overallBias || 'N/A') + '\n';
+        response += '**Confluence:** ' + (mtfData.confluence || 'N/A') + '\n\n';
+
+        // Specific timeframe if requested
+        if (timeframe !== 'all') {
+            var tfKey = timeframe === 'daily' ? 'daily' : timeframe;
+            var tfData = mtfData.timeframes[tfKey];
+            response += '**' + timeframe.toUpperCase() + ' Timeframe:**\n';
+            response += '- Bias: ' + (tfData ? tfData.bias : 'N/A') + '\n';
+            response += '- Candle Pattern: ' + patternData.pattern + '\n';
+            response += '- Trend: ' + patternData.trend + '\n';
+            if (patternData.lastCandle) {
+                response += '- Last Candle: ' + patternData.lastCandle.color + ' (Body: ' + patternData.lastCandle.bodySize + ')\n';
+            }
+        } else {
+            // All timeframes
+            response += '**Timeframe Breakdown:**\n';
+            for (var tf in mtfData.timeframes) {
+                var data = mtfData.timeframes[tf];
+                response += '- ' + tf + ': ' + (data ? data.bias : 'N/A') + '\n';
+            }
+        }
+
+        response += '\n**Pattern Analysis:** ' + patternData.pattern;
+
+        return response;
+    },
+
+    formatPatternResponse: function(symbol, patternData) {
+        var response = '**' + symbol + ' Candle Pattern Analysis**\n\n';
+
+        response += '**Detected Pattern:** ' + patternData.pattern + '\n';
+        response += '**Timeframe:** ' + patternData.timeframe + '\n';
+        response += '**Trend:** ' + patternData.trend + '\n\n';
+
+        if (patternData.lastCandle) {
+            response += '**Last Candle:**\n';
+            response += '- Color: ' + patternData.lastCandle.color + '\n';
+            response += '- Open: ' + patternData.lastCandle.open + '\n';
+            response += '- High: ' + patternData.lastCandle.high + '\n';
+            response += '- Low: ' + patternData.lastCandle.low + '\n';
+            response += '- Close: ' + patternData.lastCandle.close + '\n';
+        }
+
+        return response;
+    },
+
+    formatAgentResponse: function(symbol, agentData) {
+        var response = '**' + symbol + ' Agent Signals**\n\n';
+
+        response += '**Consensus:** ' + (agentData.overallConsensus || 'N/A') + '\n\n';
+        response += '**Individual Agents:**\n';
+
+        agentData.agents.forEach(function(agent) {
+            response += '- ' + agent.name + ': Intraday=' + agent.intraday + ', Swing=' + agent.swing + ', Position=' + agent.position + '\n';
+        });
+
+        return response;
+    },
+
+    formatTradeResponse: function(symbol, tradeData) {
+        var response = '**' + symbol + ' Trade Setup**\n\n';
+
+        response += '**Turn Date:** ' + (tradeData.turnDate || 'N/A') + ' (' + (tradeData.turnType || 'N/A') + ')\n\n';
+
+        response += '**Trade 1:** ' + (tradeData.trade1.label || 'N/A') + '\n';
+        response += '- Direction: ' + (tradeData.trade1.direction || 'N/A') + '\n';
+        response += '- Entry: ' + (tradeData.trade1.entry || 'N/A') + '\n';
+        response += '- Target: ' + (tradeData.trade1.target || 'N/A') + '\n';
+        response += '- Stop: ' + (tradeData.trade1.stop || 'N/A') + '\n';
+        response += '- R:R: ' + (tradeData.trade1.rr || 'N/A') + '\n\n';
+
+        response += '**Trade 2:** ' + (tradeData.trade2.label || 'N/A') + '\n';
+        response += '- Direction: ' + (tradeData.trade2.direction || 'N/A') + '\n';
+        response += '- Entry: ' + (tradeData.trade2.entry || 'N/A') + '\n';
+        response += '- Target: ' + (tradeData.trade2.target || 'N/A') + '\n';
+
+        return response;
+    },
+
+    formatGeneralResponse: function(symbol, allData, question) {
+        var insight = AIAgentEngine.generateInsight(symbol);
+        return insight.summary;
+    }
+};
+
+// Expose globally
+window.AIResponseGenerator = AIResponseGenerator;
+
+// ============================================================================
+// CHAT INTERFACE CONNECTION
+// ============================================================================
+
+// Store original handler if exists
+var originalChatSubmit = window.handleChatSubmit || function() {};
+
+// Enhanced chat submit handler
+window.handleChatSubmit = function(question) {
+    // Show loading indicator if available
+    if (typeof showChatLoading === 'function') {
+        showChatLoading();
+    }
+
+    try {
+        // Generate smart response
+        AIResponseGenerator.generateResponse(question).then(function(response) {
+            // Display response
+            if (typeof displayChatResponse === 'function') {
+                displayChatResponse(response);
+            } else {
+                console.log('[AI Response]', response);
+            }
+        }).catch(function(error) {
+            console.error('[AI Chat Error]', error);
+            if (typeof displayChatResponse === 'function') {
+                displayChatResponse('Sorry, I encountered an error analyzing that data. Please try again.');
+            }
+        });
+    } catch (error) {
+        console.error('[AI Chat Error]', error);
+        if (typeof displayChatResponse === 'function') {
+            displayChatResponse('Sorry, I encountered an error analyzing that data. Please try again.');
+        }
+    }
+};
+
+// Connect to chat form if exists
+var aiChatForm = document.getElementById('aiChatForm');
+if (aiChatForm) {
+    aiChatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var input = document.getElementById('aiChatInput');
+        var question = input ? input.value.trim() : '';
+
+        if (question) {
+            window.handleChatSubmit(question);
+            if (input) input.value = '';
+        }
+    });
+}
+
+// ============================================================================
+// GLOBAL HELPER FUNCTIONS FOR AI SYSTEM
+// ============================================================================
+
+// Quick function to get full analysis for current symbol
+window.getFullAnalysis = function(symbol) {
+    symbol = symbol || (typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY');
+    return AIAgentEngine.generateInsight(symbol);
+};
+
+// Quick function to get all data for current symbol
+window.getAllData = function(symbol) {
+    symbol = symbol || (typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY');
+    return AIDataHub.collectAllData(symbol);
+};
+
+// Quick function to ask the AI a question
+window.askAI = function(question) {
+    return AIResponseGenerator.generateResponse(question);
+};
+
+console.log('[AI System] AIDataHub, AIAgentEngine, AIQuestionParser, AIDataFetcher, AIResponseGenerator loaded');
+console.log('[AI System] Use window.getFullAnalysis(symbol), window.getAllData(symbol), or window.askAI(question)');
+
 </script>
 </body>
 </html>
