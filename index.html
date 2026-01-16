@@ -10274,9 +10274,9 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
         <div id="gann-cycles" class="tab-content">
 
             <!-- Pivot Timelines -->
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="card" style="margin-bottom: 20px;" id="majorPivotsCard">
                 <h3 style="font-size: 14px; margin-bottom: 15px; color: #1e293b;">📍 Major Pivots & Cycle Timeline</h3>
-
+                <div id="majorPivotsContainer">
                 <!-- SPY Low Pivot -->
                 <div style="background: #f8fafc; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -10367,6 +10367,7 @@ Try: "Show me all ETFs with 4/4 consensus"</div>
                             <div style="font-size: 9px; color: #f59e0b;">Feb 14 🚨</div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -34905,6 +34906,146 @@ function addSq9Alert(symbol, icon, message) {
 }
 
 // Select ETF tab
+
+// ============================================
+// MAJOR PIVOTS & CYCLE TIMELINE DYNAMIC UPDATE
+// ============================================
+function updateMajorPivotsTimeline(symbol) {
+    const container = document.getElementById('majorPivotsContainer');
+    if (!container) return;
+    
+    // Get pivot data for the symbol
+    const roadmapData = typeof gannRoadmapData !== 'undefined' ? gannRoadmapData[symbol] : null;
+    const extendedPivot = typeof sq9ExtendedPivots !== 'undefined' ? sq9ExtendedPivots[symbol] : null;
+    const basicPivot = typeof sq9PivotData !== 'undefined' ? sq9PivotData[symbol] : null;
+    
+    const today = new Date();
+    
+    // Helper to add days to date string
+    function addDays(dateStr, days) {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + days);
+        return date.toISOString().split('T')[0];
+    }
+    
+    // Generate cycle dots helper function
+    function generateCycleDots(pivotDate, cycles) {
+        let html = '<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">';
+        
+        cycles.forEach(function(cycle) {
+            const targetDate = new Date(cycle.targetDate);
+            const daysDiff = Math.floor((today - targetDate) / (1000 * 60 * 60 * 24));
+            const isPast = daysDiff > 0;
+            const isImminent = daysDiff >= -7 && daysDiff <= 7;
+            
+            let dotColor = '#9ca3af'; // gray - future
+            let textColor = '#888';
+            let dateColor = '#666';
+            let labelSuffix = '';
+            
+            if (cycle.result === 'correct' || isPast) {
+                dotColor = '#22c55e'; // green - passed/correct
+                textColor = '#22c55e';
+                labelSuffix = ' ✓';
+            } else if (isImminent || cycle.result === 'pending') {
+                dotColor = '#ef4444'; // red - imminent
+                textColor = '#ef4444';
+                dateColor = '#ef4444';
+                labelSuffix = ' 🚨';
+            }
+            
+            const formattedDate = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const pulseStyle = isImminent ? ' animation: gannPulse 1s infinite;' : '';
+            const fontWeight = isImminent ? ' font-weight: 600;' : '';
+            const emoji = isImminent ? ' 🚨' : '';
+            
+            html += '<div style="text-align: center; flex: 1; min-width: 55px;">';
+            html += '<div style="width: 12px; height: 12px; border-radius: 50%; background: ' + dotColor + '; margin: 0 auto 4px;' + pulseStyle + '"></div>';
+            html += '<div style="font-size: 10px; color: ' + textColor + ';' + fontWeight + '">' + cycle.days + 'd' + labelSuffix + '</div>';
+            html += '<div style="font-size: 9px; color: ' + dateColor + ';">' + formattedDate + emoji + '</div>';
+            html += '</div>';
+        });
+        
+        html += '</div>';
+        return html;
+    }
+    
+    // Generate pivot block HTML
+    function generatePivotBlock(pivotData, type, isLast) {
+        const bgBadge = type === 'LOW' ? 
+            'background: #dcfce7; color: #16a34a;' : 
+            'background: #fee2e2; color: #dc2626;';
+        
+        const formattedDate = new Date(pivotData.date).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        const cycles = pivotData.cycles || [
+            { days: 49, targetDate: addDays(pivotData.date, 49), result: null },
+            { days: 90, targetDate: addDays(pivotData.date, 90), result: null },
+            { days: 120, targetDate: addDays(pivotData.date, 120), result: null },
+            { days: 144, targetDate: addDays(pivotData.date, 144), result: null },
+            { days: 180, targetDate: addDays(pivotData.date, 180), result: null },
+            { days: 270, targetDate: addDays(pivotData.date, 270), result: null },
+            { days: 360, targetDate: addDays(pivotData.date, 360), result: null }
+        ];
+        
+        let html = '<div style="background: #f8fafc; border-radius: 10px; padding: 15px;' + (isLast ? '' : ' margin-bottom: 15px;') + ' border: 1px solid #e2e8f0;">';
+        html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">';
+        html += '<div>';
+        html += '<span style="font-weight: 600; font-size: 15px; color: #1e293b;">' + symbol + '</span>';
+        html += '<span style="font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; ' + bgBadge + ' margin-left: 8px;">' + type + '</span>';
+        html += '</div>';
+        html += '<div style="text-align: right;">';
+        html += '<div style="font-weight: 600; color: #1e293b;">' + formattedDate + '</div>';
+        html += '<div style="font-size: 12px; color: #64748b;">$' + pivotData.price.toFixed(2) + '</div>';
+        html += '</div></div>';
+        html += generateCycleDots(pivotData.date, cycles);
+        html += '</div>';
+        
+        return html;
+    }
+    
+    let html = '';
+    
+    // If we have full roadmap data with HIGH and LOW
+    if (roadmapData && roadmapData.LOW && roadmapData.HIGH) {
+        html += generatePivotBlock(roadmapData.LOW, 'LOW', false);
+        html += generatePivotBlock(roadmapData.HIGH, 'HIGH', true);
+    } 
+    // If we only have extended/basic pivot data (LOW only)
+    else if (extendedPivot || basicPivot) {
+        const pivot = extendedPivot || basicPivot;
+        html += generatePivotBlock({
+            date: pivot.date,
+            price: pivot.price,
+            cycles: null
+        }, 'LOW', true);
+    }
+    // No data available
+    else {
+        html = '<div style="text-align: center; padding: 30px; color: #64748b;">';
+        html += '<div style="font-size: 24px; margin-bottom: 10px;">📊</div>';
+        html += '<div>No pivot data available for ' + symbol + '</div>';
+        html += '</div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+// Initialize Major Pivots on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        if (typeof sq9SelectedEtf !== 'undefined') {
+            updateMajorPivotsTimeline(sq9SelectedEtf);
+        } else {
+            updateMajorPivotsTimeline('SPY');
+        }
+    }, 1500);
+});
+
 function selectSq9Etf(symbol) {
     sq9SelectedEtf = symbol;
 
@@ -34915,6 +35056,9 @@ function selectSq9Etf(symbol) {
     event.target.classList.add('active');
 
     updateSq9Monitor();
+    
+    // Update Major Pivots and Cycle Timeline
+    updateMajorPivotsTimeline(symbol);
 }
 
 // Main update function
