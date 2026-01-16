@@ -629,7 +629,26 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         apiKey: localStorage.getItem('alpaca_api_key') || '',
         apiSecret: localStorage.getItem('alpaca_api_secret') || '',
         baseURL: 'https://paper-api.alpaca.markets',
-        enabled: localStorage.getItem('alpaca_enabled') === 'true'
+        enabled: localStorage.getItem('alpaca_enabled') === 'true',
+        useProxy: localStorage.getItem('alpaca_use_proxy') === 'true',
+        proxyURL: 'https://corsproxy.io/?'
+    };
+
+    // Enable/disable CORS proxy (required for browser-based requests)
+    TS.useProxy = function(enabled) {
+        this.alpaca.useProxy = enabled;
+        localStorage.setItem('alpaca_use_proxy', String(enabled));
+        console.log('[Alpaca] CORS Proxy:', enabled ? 'ENABLED' : 'DISABLED');
+        return enabled ? 'CORS proxy ENABLED - browser requests will work' : 'CORS proxy DISABLED';
+    };
+
+    // Get the actual URL to use (with or without proxy)
+    TS.getAlpacaURL = function(endpoint) {
+        var url = this.alpaca.baseURL + endpoint;
+        if (this.alpaca.useProxy) {
+            return this.alpaca.proxyURL + encodeURIComponent(url);
+        }
+        return url;
     };
 
     // Set Alpaca API keys
@@ -667,7 +686,8 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         }
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/account', {
+            const response = await fetch(this.getAlpacaURL('/v2/account'), {
+                method: 'GET',
                 headers: this.getAlpacaHeaders()
             });
 
@@ -695,7 +715,8 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         if (!this.alpaca.apiKey) return { error: 'Keys not set' };
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/positions', {
+            const response = await fetch(this.getAlpacaURL('/v2/positions'), {
+                method: 'GET',
                 headers: this.getAlpacaHeaders()
             });
             const data = await response.json();
@@ -721,7 +742,8 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         if (!this.alpaca.apiKey) return { error: 'Keys not set' };
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/orders?status=all&limit=10', {
+            const response = await fetch(this.getAlpacaURL('/v2/orders?status=all&limit=10'), {
+                method: 'GET',
                 headers: this.getAlpacaHeaders()
             });
             const data = await response.json();
@@ -760,7 +782,7 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         console.log('[Alpaca] Placing order:', order);
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/orders', {
+            const response = await fetch(this.getAlpacaURL('/v2/orders'), {
                 method: 'POST',
                 headers: this.getAlpacaHeaders(),
                 body: JSON.stringify(order)
@@ -787,7 +809,7 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         if (!this.alpaca.apiKey) return { error: 'Keys not set' };
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/positions/' + symbol.toUpperCase(), {
+            const response = await fetch(this.getAlpacaURL('/v2/positions/' + symbol.toUpperCase()), {
                 method: 'DELETE',
                 headers: this.getAlpacaHeaders()
             });
@@ -805,7 +827,7 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         if (!this.alpaca.apiKey) return { error: 'Keys not set' };
 
         try {
-            const response = await fetch(this.alpaca.baseURL + '/v2/positions', {
+            const response = await fetch(this.getAlpacaURL('/v2/positions'), {
                 method: 'DELETE',
                 headers: this.getAlpacaHeaders()
             });
@@ -881,6 +903,7 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         console.log('API Key: ' + (this.alpaca.apiKey ? 'SET (' + this.alpaca.apiKey.substring(0, 4) + '...)' : 'NOT SET'));
         console.log('API Secret: ' + (this.alpaca.apiSecret ? 'SET' : 'NOT SET'));
         console.log('Auto-Trade: ' + (this.alpaca.enabled ? 'ENABLED' : 'DISABLED'));
+        console.log('CORS Proxy: ' + (this.alpaca.useProxy ? 'ENABLED' : 'DISABLED'));
         console.log('Base URL: ' + this.alpaca.baseURL);
         console.log('===========================');
         return 'See console';
@@ -891,10 +914,11 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         console.log('');
         console.log('====== ALPACA COMMANDS ======');
         console.log('');
-        console.log('SETUP:');
-        console.log('  TradingSignals.setAlpacaKeys("KEY", "SECRET")');
-        console.log('  TradingSignals.enableAlpaca(true)');
-        console.log('  TradingSignals.getAlpacaAccount()');
+        console.log('SETUP (Run in order):');
+        console.log('  1. TradingSignals.setAlpacaKeys("KEY", "SECRET")');
+        console.log('  2. TradingSignals.useProxy(true)  // REQUIRED for browser');
+        console.log('  3. TradingSignals.enableAlpaca(true)');
+        console.log('  4. TradingSignals.getAlpacaAccount()  // Test connection');
         console.log('');
         console.log('VIEW:');
         console.log('  TradingSignals.getAlpacaPositions()');
@@ -908,6 +932,7 @@ console.log('  SignalScanner.scanAll() - Scan all symbols');
         console.log('  TradingSignals.closeAlpacaPosition("SPY")');
         console.log('  TradingSignals.closeAllAlpacaPositions()');
         console.log('');
+        console.log('NOTE: CORS Proxy must be enabled for browser-based requests!');
         console.log('=============================');
         return 'See console';
     };
