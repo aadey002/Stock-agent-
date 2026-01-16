@@ -5,7 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Agent 4 - Q5D Options Trading Platform</title>
     <!-- v2.1 - Market Trade Timeframe Buttons -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js">
+// ============================================
+// MASTER DIRECTION FUNCTION - SINGLE SOURCE OF TRUTH
+// RULE: BULLISH/UP = CALL, BEARISH/DOWN = PUT
+// ============================================
+function getTradeDirection(bias) {
+    // Normalize the bias input
+    const normalizedBias = (bias || '').toString().toUpperCase().trim();
+
+    // BULLISH indicators
+    const isBullish = ['BULLISH', 'UP', 'CALL', 'LONG', 'BUY', 'RALLY', 'BOUNCE'].includes(normalizedBias) ||
+                      normalizedBias.includes('BULL') || normalizedBias.includes('CALL');
+
+    if (isBullish) {
+        return {
+            direction: 'CALL',
+            badge: 'CALL',
+            badgeColor: '#22c55e',
+            badgeBg: 'rgba(34,197,94,0.15)',
+            badgeClass: 'call',
+            trade1Label: 'RALLY',
+            trade2Label: 'DIP BUY',
+            trade1Action: 'BUY CALL NOW',
+            trade2Action: 'BUY CALL at support',
+            icon: '📈',
+            isBullish: true
+        };
+    } else {
+        return {
+            direction: 'PUT',
+            badge: 'PUT',
+            badgeColor: '#ef4444',
+            badgeBg: 'rgba(239,68,68,0.15)',
+            badgeClass: 'put',
+            trade1Label: 'DROP',
+            trade2Label: 'RALLY SHORT',
+            trade1Action: 'BUY PUT NOW',
+            trade2Action: 'BUY PUT at resistance',
+            icon: '📉',
+            isBullish: false
+        };
+    }
+}
+
+// Helper to convert any signal to consistent CALL/PUT
+function normalizeSignal(signal) {
+    const s = (signal || '').toString().toUpperCase().trim();
+    if (['BULLISH', 'UP', 'CALL', 'LONG', 'BUY'].includes(s) || s.includes('BULL') || s.includes('CALL')) {
+        return 'CALL';
+    }
+    if (['BEARISH', 'DOWN', 'PUT', 'SHORT', 'SELL'].includes(s) || s.includes('BEAR') || s.includes('PUT')) {
+        return 'PUT';
+    }
+    return 'HOLD';
+}
+
+</script>
     <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <style>
@@ -16485,8 +16541,9 @@ function generateTradeSequence(data) {
     }
 
     // Use agent consensus if available, otherwise fall back to turnType logic
+    // RULE: Agent says CALL → trade CALL, Agent says PUT → trade PUT (NEVER INVERT!)
     var useAgentDirection = agentDir && (agentDir === 'CALL' || agentDir === 'PUT');
-    var trade1Dir = useAgentDirection ? agentDir : (turnType === 'LOW' ? 'PUT' : 'CALL');
+    var trade1Dir = useAgentDirection ? normalizeSignal(agentDir) : (turnType === 'LOW' ? 'PUT' : 'CALL');
     var trade1Phase = trade1Dir === 'PUT' ? 'PULLBACK' : 'RALLY';
 
     if (trade1Dir === 'PUT') {
