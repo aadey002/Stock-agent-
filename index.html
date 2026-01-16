@@ -43678,10 +43678,10 @@ const AIDataHub = {
                 support: document.getElementById('positionSupport')?.textContent || '',
                 resistance: document.getElementById('positionResistance')?.textContent || ''
             },
-            scalp5m: {
-                bias: document.getElementById('scalp5mBias')?.textContent || '',
-                support: document.getElementById('scalp5mSupport')?.textContent || '',
-                resistance: document.getElementById('scalp5mResistance')?.textContent || ''
+            scalp: {
+                bias: document.getElementById('scalpBias')?.textContent || '',
+                support: document.getElementById('scalpSupport')?.textContent || '',
+                resistance: document.getElementById('scalpResistance')?.textContent || ''
             },
             weekly: {
                 bias: document.getElementById('weeklyBias')?.textContent || '',
@@ -43697,19 +43697,22 @@ const AIDataHub = {
     },
 
     getMTFBiasData: function(symbol) {
-        var biases = [];
-        document.querySelectorAll('.mtf-bias-item, .timeframe-bias').forEach(function(el) {
-            biases.push({
-                timeframe: el.querySelector('.timeframe-label')?.textContent || '',
-                bias: el.querySelector('.bias-value')?.textContent || ''
-            });
-        });
+        // Read directly from the actual element IDs
+        var biases = [
+            { timeframe: 'Scalp', bias: document.getElementById('scalpBias')?.textContent?.trim() || '' },
+            { timeframe: 'Intraday', bias: document.getElementById('intradayBias')?.textContent?.trim() || document.getElementById('mtfIntradayBias')?.textContent?.trim() || '' },
+            { timeframe: 'Swing', bias: document.getElementById('swingBias')?.textContent?.trim() || document.getElementById('mtfSwingBias')?.textContent?.trim() || '' },
+            { timeframe: 'Position', bias: document.getElementById('positionBias')?.textContent?.trim() || document.getElementById('mtfPositionBias')?.textContent?.trim() || '' },
+            { timeframe: 'Weekly', bias: document.getElementById('weeklyBias')?.textContent?.trim() || '' },
+            { timeframe: 'Quarterly', bias: document.getElementById('quarterlyBias')?.textContent?.trim() || '' }
+        ];
 
         return {
             biases: biases,
-            confluence: document.getElementById('mtfConfluence')?.textContent || '',
-            overallBias: document.getElementById('overallMTFBias')?.textContent || '',
-            score: document.getElementById('mtfScore')?.textContent || ''
+            confluence: document.getElementById('mtfConfluence')?.textContent?.trim() || '',
+            overallBias: document.getElementById('mtfOverallBias')?.textContent?.trim() || '',
+            alignmentText: document.getElementById('mtfAlignmentText')?.textContent?.trim() || '',
+            score: document.getElementById('mtfScore')?.textContent?.trim() || ''
         };
     },
 
@@ -44175,15 +44178,16 @@ const AIDataFetcher = {
                 var data = {
                     symbol: symbol,
                     timeframes: {
-                        '5min': self.getTimeframeBias('scalp5m'),
-                        '15min': self.getTimeframeBias('intraday'),
+                        'scalp': self.getTimeframeBias('scalp'),
+                        'intraday': self.getTimeframeBias('intraday'),
                         'daily': self.getTimeframeBias('swing'),
                         'weekly': self.getTimeframeBias('weekly'),
                         'monthly': self.getTimeframeBias('position'),
                         'quarterly': self.getTimeframeBias('quarterly')
                     },
-                    confluence: document.getElementById('mtfConfluence')?.textContent || '',
-                    overallBias: document.getElementById('overallMTFBias')?.textContent || ''
+                    confluence: document.getElementById('mtfConfluence')?.textContent?.trim() || '',
+                    overallBias: document.getElementById('mtfOverallBias')?.textContent?.trim() || '',
+                    alignmentText: document.getElementById('mtfAlignmentText')?.textContent?.trim() || ''
                 };
                 resolve(data);
             }, 500);
@@ -44376,47 +44380,73 @@ async function handleAIChat(userQuestion) {
 // ============ MTF ANALYSIS ============
 
 function generateMTFAnalysis(symbol, question) {
-    // Get REAL data from the DOM
+    // Get REAL data from the DOM - use correct element IDs
     var data = {
-        scalp5m: document.querySelector('#scalp5mBias, [data-tf="5min"] .bias')?.textContent || 'N/A',
-        intraday: document.querySelector('#intradayBias, [data-tf="15min"] .bias')?.textContent || 'N/A',
-        daily: document.querySelector('#swingBias, [data-tf="daily"] .bias')?.textContent || 'N/A',
-        weekly: document.querySelector('#weeklyBias, [data-tf="weekly"] .bias')?.textContent || 'N/A',
-        monthly: document.querySelector('#positionBias, [data-tf="monthly"] .bias')?.textContent || 'N/A',
-        quarterly: document.querySelector('#quarterlyBias, [data-tf="quarterly"] .bias')?.textContent || 'N/A',
-        confluence: document.querySelector('#mtfConfluence, .confluence-value')?.textContent || 'N/A'
+        scalp: document.getElementById('scalpBias')?.textContent?.trim() ||
+               document.querySelector('[data-tf="scalp"] .bias')?.textContent?.trim() || 'N/A',
+        intraday: document.getElementById('intradayBias')?.textContent?.trim() ||
+                  document.getElementById('mtfIntradayBias')?.textContent?.trim() || 'N/A',
+        daily: document.getElementById('swingBias')?.textContent?.trim() ||
+               document.getElementById('mtfSwingBias')?.textContent?.trim() || 'N/A',
+        weekly: document.getElementById('weeklyBias')?.textContent?.trim() || 'N/A',
+        monthly: document.getElementById('positionBias')?.textContent?.trim() ||
+                 document.getElementById('mtfPositionBias')?.textContent?.trim() || 'N/A',
+        quarterly: document.getElementById('quarterlyBias')?.textContent?.trim() || 'N/A',
+        confluence: document.getElementById('mtfConfluence')?.textContent?.trim() ||
+                    document.getElementById('mtfOverallBias')?.textContent?.trim() || 'N/A',
+        alignmentText: document.getElementById('mtfAlignmentText')?.textContent?.trim() || ''
     };
 
     // Count biases
-    var biases = [data.scalp5m, data.intraday, data.daily, data.weekly, data.monthly, data.quarterly];
-    var bullishCount = biases.filter(function(b) { return b && (b.includes('BULLISH') || b.includes('CALL')); }).length;
-    var bearishCount = biases.filter(function(b) { return b && (b.includes('BEARISH') || b.includes('PUT')); }).length;
+    var biases = [data.scalp, data.intraday, data.daily, data.weekly, data.monthly, data.quarterly];
+    var bullishCount = biases.filter(function(b) { return b && b !== 'N/A' && (b.toUpperCase().includes('BULLISH') || b.toUpperCase().includes('CALL')); }).length;
+    var bearishCount = biases.filter(function(b) { return b && b !== 'N/A' && (b.toUpperCase().includes('BEARISH') || b.toUpperCase().includes('PUT')); }).length;
 
     // Determine specific timeframe if asked
     var tfFocus = '';
     if (question.includes('daily')) {
-        var dailyAction = data.daily && data.daily.includes('BULLISH') ? 'Favors CALL positions' :
-                         data.daily && data.daily.includes('BEARISH') ? 'Favors PUT positions' : 'Neutral - wait for clarity';
+        var dailyAction = data.daily && data.daily.toUpperCase().includes('BULLISH') ? 'Favors CALL positions' :
+                         data.daily && data.daily.toUpperCase().includes('BEARISH') ? 'Favors PUT positions' : 'Neutral - wait for clarity';
         tfFocus = '\n\n**Daily Timeframe Focus:**\n- Bias: ' + data.daily + '\n- This is the swing trading timeframe\n- ' + dailyAction;
     } else if (question.includes('5 min') || question.includes('5min') || question.includes('scalp')) {
-        var scalpAction = data.scalp5m && data.scalp5m.includes('BULLISH') ? 'Quick CALL scalps favored' :
-                         data.scalp5m && data.scalp5m.includes('BEARISH') ? 'Quick PUT scalps favored' : 'Choppy - avoid scalping';
-        tfFocus = '\n\n**5-Min Timeframe Focus:**\n- Bias: ' + data.scalp5m + '\n- This is the scalping timeframe\n- ' + scalpAction;
+        var scalpAction = data.scalp && data.scalp.toUpperCase().includes('BULLISH') ? 'Quick CALL scalps favored' :
+                         data.scalp && data.scalp.toUpperCase().includes('BEARISH') ? 'Quick PUT scalps favored' : 'Choppy - avoid scalping';
+        tfFocus = '\n\n**Scalp Timeframe Focus:**\n- Bias: ' + data.scalp + '\n- This is the scalping timeframe\n- ' + scalpAction;
+    } else if (question.includes('intraday') || question.includes('15 min') || question.includes('15min')) {
+        var intradayAction = data.intraday && data.intraday.toUpperCase().includes('BULLISH') ? 'Favors CALL entries' :
+                            data.intraday && data.intraday.toUpperCase().includes('BEARISH') ? 'Favors PUT entries' : 'Mixed signals';
+        tfFocus = '\n\n**Intraday Timeframe Focus:**\n- Bias: ' + data.intraday + '\n- This is the intraday/day trading timeframe\n- ' + intradayAction;
     } else if (question.includes('weekly')) {
-        var weeklyAction = data.weekly && data.weekly.includes('BULLISH') ? 'Longer-term CALL positions favored' :
-                          data.weekly && data.weekly.includes('BEARISH') ? 'Longer-term PUT positions favored' : 'No clear weekly trend';
+        var weeklyAction = data.weekly && data.weekly.toUpperCase().includes('BULLISH') ? 'Longer-term CALL positions favored' :
+                          data.weekly && data.weekly.toUpperCase().includes('BEARISH') ? 'Longer-term PUT positions favored' : 'No clear weekly trend';
         tfFocus = '\n\n**Weekly Timeframe Focus:**\n- Bias: ' + data.weekly + '\n- This is the position trading timeframe\n- ' + weeklyAction;
+    } else if (question.includes('monthly') || question.includes('position')) {
+        var monthlyAction = data.monthly && data.monthly.toUpperCase().includes('BULLISH') ? 'Long-term CALL positions favored' :
+                           data.monthly && data.monthly.toUpperCase().includes('BEARISH') ? 'Long-term PUT positions favored' : 'No clear monthly trend';
+        tfFocus = '\n\n**Monthly/Position Timeframe Focus:**\n- Bias: ' + data.monthly + '\n- This is the long-term position trading timeframe\n- ' + monthlyAction;
     }
 
-    var overallBias = bullishCount > bearishCount ? '**Overall BULLISH** - Favor CALL positions' :
+    // Determine overall bias from confluence or count
+    var overallBias = '';
+    if (data.confluence && data.confluence !== 'N/A') {
+        if (data.confluence.toUpperCase().includes('BULLISH') || data.alignmentText.toUpperCase().includes('BULLISH')) {
+            overallBias = '**Overall BULLISH** (' + data.confluence + ') - Favor CALL positions';
+        } else if (data.confluence.toUpperCase().includes('BEARISH') || data.alignmentText.toUpperCase().includes('BEARISH')) {
+            overallBias = '**Overall BEARISH** (' + data.confluence + ') - Favor PUT positions';
+        } else {
+            overallBias = '**Confluence:** ' + data.confluence + ' ' + data.alignmentText;
+        }
+    } else {
+        overallBias = bullishCount > bearishCount ? '**Overall BULLISH** - Favor CALL positions' :
                       bearishCount > bullishCount ? '**Overall BEARISH** - Favor PUT positions' :
                       '**MIXED** - Wait for alignment';
+    }
 
     return '**' + symbol + ' Multi-Timeframe Analysis**\n\n' +
-           '**Confluence:** ' + data.confluence + '\n\n' +
+           '**Confluence:** ' + data.confluence + (data.alignmentText ? ' (' + data.alignmentText + ')' : '') + '\n\n' +
            '**Timeframe Breakdown:**\n' +
-           '- 5-Min (Scalp): ' + data.scalp5m + '\n' +
-           '- 15-Min (Intraday): ' + data.intraday + '\n' +
+           '- Scalp: ' + data.scalp + '\n' +
+           '- Intraday (15min/1hr): ' + data.intraday + '\n' +
            '- Daily (Swing): ' + data.daily + '\n' +
            '- Weekly: ' + data.weekly + '\n' +
            '- Monthly (Position): ' + data.monthly + '\n' +
@@ -44443,16 +44473,24 @@ function generateCandleAnalysis(symbol, question) {
     var lastCandleEl = document.querySelector('.last-candle, #lastCandle');
     var candleColor = lastCandleEl ? lastCandleEl.textContent : 'Unknown';
 
-    // Get EMA relationship
-    var priceText = document.querySelector('#currentPrice, .price-display')?.textContent || '0';
+    // Get EMA relationship - try multiple sources
+    var priceText = document.getElementById('currentPrice')?.textContent ||
+                   document.querySelector('.price-display, .current-price')?.textContent || '0';
     var price = parseFloat(priceText.replace(/[$,]/g, '') || 0);
-    var ema9Text = document.querySelector('#ema9, .ema-9')?.textContent || '0';
+
+    // Try to get EMA values from swing (daily) timeframe first, then others
+    var ema9Text = document.getElementById('swingEma9')?.textContent ||
+                   document.getElementById('intradayEma9')?.textContent ||
+                   document.querySelector('.ema-9, [data-ema="9"]')?.textContent || '0';
     var ema9 = parseFloat(ema9Text.replace(/[$,]/g, '') || 0);
-    var ema21Text = document.querySelector('#ema21, .ema-21')?.textContent || '0';
+
+    var ema21Text = document.getElementById('swingEma21')?.textContent ||
+                    document.getElementById('intradayEma21')?.textContent ||
+                    document.querySelector('.ema-21, [data-ema="21"]')?.textContent || '0';
     var ema21 = parseFloat(ema21Text.replace(/[$,]/g, '') || 0);
 
     var emaAnalysis = '';
-    if (price && ema9 && ema21) {
+    if (price > 0 && ema9 > 0 && ema21 > 0) {
         if (price > ema9 && ema9 > ema21) {
             emaAnalysis = 'Price > EMA9 > EMA21 = **Strong Uptrend**';
             trend = 'Strong Uptrend';
@@ -44468,6 +44506,19 @@ function generateCandleAnalysis(symbol, question) {
         } else {
             emaAnalysis = 'Mixed EMA signals = **Consolidation**';
             trend = 'Consolidation';
+        }
+    } else {
+        // Fallback: Use MTF bias to determine trend
+        var mtfBias = document.getElementById('swingBias')?.textContent?.trim() ||
+                      document.getElementById('mtfSwingBias')?.textContent?.trim() || '';
+        if (mtfBias.toUpperCase().includes('BULLISH')) {
+            trend = 'Bullish (per MTF Bias)';
+            emaAnalysis = 'EMA data not available - using MTF Bias: **' + mtfBias + '**';
+        } else if (mtfBias.toUpperCase().includes('BEARISH')) {
+            trend = 'Bearish (per MTF Bias)';
+            emaAnalysis = 'EMA data not available - using MTF Bias: **' + mtfBias + '**';
+        } else {
+            emaAnalysis = 'EMA data not available. Check Multi-Charts tab for EMA values.';
         }
     }
 
@@ -44606,18 +44657,37 @@ function generateSQ9Analysis(symbol) {
 // ============ FULL RECOMMENDATION ============
 
 function generateFullRecommendation(symbol) {
-    var priceEl = document.querySelector('#currentPrice, .price-display');
+    var priceEl = document.getElementById('currentPrice');
     var price = priceEl ? priceEl.textContent : 'N/A';
-    var mtfBias = document.querySelector('#mtfConfluence, .confluence-value')?.textContent || 'N/A';
-    var agentConsensus = document.querySelector('#consensusRow, .consensus')?.textContent || 'N/A';
-    var trade1Dir = document.querySelector('#trade1 .direction, .trade1-action')?.textContent || 'N/A';
+
+    // Get MTF data from correct elements
+    var mtfConfluence = document.getElementById('mtfConfluence')?.textContent?.trim() || '';
+    var mtfOverallBias = document.getElementById('mtfOverallBias')?.textContent?.trim() || '';
+    var mtfAlignment = document.getElementById('mtfAlignmentText')?.textContent?.trim() || '';
+    var mtfBias = mtfOverallBias || mtfConfluence || 'N/A';
+
+    // Get individual timeframe biases
+    var intradayBias = document.getElementById('intradayBias')?.textContent?.trim() ||
+                       document.getElementById('mtfIntradayBias')?.textContent?.trim() || '';
+    var swingBias = document.getElementById('swingBias')?.textContent?.trim() ||
+                    document.getElementById('mtfSwingBias')?.textContent?.trim() || '';
+
+    // Get agent consensus
+    var agentConsensus = document.querySelector('.consensus-row, #consensusRow')?.textContent?.trim() ||
+                         document.getElementById('overallConsensus')?.textContent?.trim() || 'Check Signals tab';
+
+    // Get trade direction
+    var trade1Dir = document.querySelector('#trade1 .direction, .trade1-direction')?.textContent?.trim() ||
+                    document.getElementById('trade1Entry')?.closest('.trade-card')?.querySelector('.direction')?.textContent?.trim() || 'Check Trade Setup';
 
     var analysis = '';
     var action = '';
-    if (mtfBias.includes('BULLISH')) {
+    var biasToCheck = (mtfBias + ' ' + mtfAlignment + ' ' + swingBias).toUpperCase();
+
+    if (biasToCheck.includes('BULLISH') || biasToCheck.includes('CALL')) {
         analysis = 'BULLISH signals - favor CALL positions';
         action = '-> Look for CALL entries on pullbacks\n-> Use Dual Trade Setup tab for entry/target/stop';
-    } else if (mtfBias.includes('BEARISH')) {
+    } else if (biasToCheck.includes('BEARISH') || biasToCheck.includes('PUT')) {
         analysis = 'BEARISH signals - favor PUT positions';
         action = '-> Look for PUT entries on rallies\n-> Use Dual Trade Setup tab for entry/target/stop';
     } else {
@@ -44627,7 +44697,9 @@ function generateFullRecommendation(symbol) {
 
     return '**' + symbol + ' Full Recommendation**\n\n' +
            '**Current Price:** ' + price + '\n' +
-           '**MTF Confluence:** ' + mtfBias + '\n' +
+           '**MTF Confluence:** ' + mtfConfluence + (mtfAlignment ? ' (' + mtfAlignment + ')' : '') + '\n' +
+           '**Intraday Bias:** ' + intradayBias + '\n' +
+           '**Swing Bias:** ' + swingBias + '\n' +
            '**Agent Consensus:** ' + agentConsensus + '\n' +
            '**Trade Direction:** ' + trade1Dir + '\n\n' +
            '**My Analysis:**\n' +
