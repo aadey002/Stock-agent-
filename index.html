@@ -44508,35 +44508,78 @@ function generateMTFAnalysis(symbol, question) {
 // ============ CANDLE PATTERN ANALYSIS ============
 
 function generateCandleAnalysis(symbol, question) {
-    // Try to get candle data from charts
-    var patternInfo = 'Unable to detect pattern - chart data not available';
     var trend = 'Unknown';
+    var patternInfo = '';
 
-    // Check for pattern indicators in DOM
-    var patternEl = document.querySelector('.candle-pattern, #candlePattern, [data-pattern]');
-    if (patternEl) {
-        patternInfo = patternEl.textContent;
+    // GET REAL DATA FROM allSymbolsData or currentData
+    var priceData = null;
+    if (symbol === currentSymbol && typeof currentData !== 'undefined' && currentData.length > 0) {
+        priceData = currentData;
+    } else if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol] && allSymbolsData[symbol].length > 0) {
+        priceData = allSymbolsData[symbol];
     }
 
-    // Check last candle color from chart
-    var lastCandleEl = document.querySelector('.last-candle, #lastCandle');
-    var candleColor = lastCandleEl ? lastCandleEl.textContent : 'Unknown';
+    var price = 0;
+    var ema9 = 0;
+    var ema21 = 0;
+    var lastCandle = null;
+    var prevCandle = null;
 
-    // Get EMA relationship - try multiple sources
-    var priceText = document.getElementById('currentPrice')?.textContent ||
-                   document.querySelector('.price-display, .current-price')?.textContent || '0';
-    var price = parseFloat(priceText.replace(/[$,]/g, '') || 0);
+    if (priceData && priceData.length >= 21) {
+        // Get current price from latest data
+        lastCandle = priceData[priceData.length - 1];
+        prevCandle = priceData[priceData.length - 2];
+        price = parseFloat(lastCandle.Close) || 0;
 
-    // Try to get EMA values from swing (daily) timeframe first, then others
-    var ema9Text = document.getElementById('swingEma9')?.textContent ||
-                   document.getElementById('intradayEma9')?.textContent ||
-                   document.querySelector('.ema-9, [data-ema="9"]')?.textContent || '0';
-    var ema9 = parseFloat(ema9Text.replace(/[$,]/g, '') || 0);
+        // Calculate EMAs from actual data
+        if (typeof calculateEMAForTier2 === 'function') {
+            ema9 = calculateEMAForTier2(priceData, 9);
+            ema21 = calculateEMAForTier2(priceData, 21);
+        } else if (typeof calculateEMA === 'function') {
+            ema9 = calculateEMA(priceData, 9);
+            ema21 = calculateEMA(priceData, 21);
+        }
 
-    var ema21Text = document.getElementById('swingEma21')?.textContent ||
-                    document.getElementById('intradayEma21')?.textContent ||
-                    document.querySelector('.ema-21, [data-ema="21"]')?.textContent || '0';
-    var ema21 = parseFloat(ema21Text.replace(/[$,]/g, '') || 0);
+        // Detect candle pattern from actual OHLC data
+        var open = parseFloat(lastCandle.Open) || 0;
+        var high = parseFloat(lastCandle.High) || 0;
+        var low = parseFloat(lastCandle.Low) || 0;
+        var close = parseFloat(lastCandle.Close) || 0;
+        var body = Math.abs(close - open);
+        var range = high - low;
+        var upperWick = high - Math.max(open, close);
+        var lowerWick = Math.min(open, close) - low;
+
+        // Pattern detection
+        if (range > 0 && body < range * 0.1) {
+            patternInfo = 'DOJI - Indecision candle, potential reversal';
+        } else if (lowerWick > body * 2 && upperWick < body * 0.5 && close > open) {
+            patternInfo = 'HAMMER - Bullish reversal pattern';
+        } else if (upperWick > body * 2 && lowerWick < body * 0.5 && close < open) {
+            patternInfo = 'SHOOTING STAR - Bearish reversal pattern';
+        } else if (prevCandle) {
+            var prevOpen = parseFloat(prevCandle.Open) || 0;
+            var prevClose = parseFloat(prevCandle.Close) || 0;
+            if (prevClose < prevOpen && close > open && open < prevClose && close > prevOpen) {
+                patternInfo = 'BULLISH ENGULFING - Strong buy signal';
+            } else if (prevClose > prevOpen && close < open && open > prevClose && close < prevOpen) {
+                patternInfo = 'BEARISH ENGULFING - Strong sell signal';
+            } else if (close > open) {
+                patternInfo = 'BULLISH CANDLE - Buyers in control';
+            } else if (close < open) {
+                patternInfo = 'BEARISH CANDLE - Sellers in control';
+            } else {
+                patternInfo = 'NEUTRAL - No clear pattern';
+            }
+        } else {
+            patternInfo = close > open ? 'BULLISH CANDLE' : 'BEARISH CANDLE';
+        }
+    } else {
+        // Fallback to DOM if no price data
+        var priceText = document.getElementById('currentPrice')?.textContent || '0';
+        price = parseFloat(priceText.replace(/[$,]/g, '') || 0);
+        patternInfo = 'Price data limited - check chart visually';
+    }
 
     var emaAnalysis = '';
     if (price > 0 && ema9 > 0 && ema21 > 0) {
@@ -44556,7 +44599,7 @@ function generateCandleAnalysis(symbol, question) {
             emaAnalysis = 'Mixed EMA signals = **Consolidation**';
             trend = 'Consolidation';
         }
-    } else {
+    } else if (price > 0) {
         // Fallback: Use MTF bias to determine trend
         var mtfBias = document.getElementById('swingBias')?.textContent?.trim() ||
                       document.getElementById('mtfSwingBias')?.textContent?.trim() || '';
@@ -44572,21 +44615,33 @@ function generateCandleAnalysis(symbol, question) {
     }
 
     var actionAdvice = '';
-    if (trend.includes('Uptrend')) actionAdvice = '-> Look for CALL entries on pullbacks to EMA9';
-    if (trend.includes('Downtrend')) actionAdvice = '-> Look for PUT entries on rallies to EMA9';
-    if (trend.includes('Pullback')) actionAdvice = '-> Potential dip-buy zone if support holds';
-    if (trend.includes('Consolidation')) actionAdvice = '-> Wait for breakout before entering';
+    if (trend.includes('Uptrend') || trend.includes('Bullish')) {
+        actionAdvice = '-> BULLISH - Look for CALL entries on pullbacks to EMA9 ($' + ema9.toFixed(2) + ')';
+    } else if (trend.includes('Downtrend') || trend.includes('Bearish')) {
+        actionAdvice = '-> BEARISH - Look for PUT entries on rallies to EMA9 ($' + ema9.toFixed(2) + ')';
+    } else if (trend.includes('Pullback')) {
+        actionAdvice = '-> Potential dip-buy zone - watch for support at EMA21 ($' + ema21.toFixed(2) + ')';
+    } else if (trend.includes('Rally in')) {
+        actionAdvice = '-> Counter-trend rally - watch for rejection at EMA21 ($' + ema21.toFixed(2) + ')';
+    } else if (trend.includes('Consolidation')) {
+        actionAdvice = '-> NEUTRAL - Wait for breakout direction before entering';
+    } else {
+        actionAdvice = '-> Check chart for visual confirmation of trend';
+    }
 
-    return '**' + symbol + ' Candle Pattern Analysis**\n\n' +
-           '**Current Trend:** ' + trend + '\n\n' +
-           '**EMA Analysis:**\n' +
-           emaAnalysis + '\n' +
-           '- Price: $' + price.toFixed(2) + '\n' +
-           '- EMA 9: $' + ema9.toFixed(2) + '\n' +
-           '- EMA 21: $' + ema21.toFixed(2) + '\n\n' +
-           '**Pattern Detection:** ' + patternInfo + '\n\n' +
-           '**What This Means:**\n' +
-           actionAdvice;
+    // Build response with actual calculated values
+    var response = '**' + symbol + ' Candle Pattern Analysis**\n\n';
+    response += '**Current Trend:** ' + trend + '\n\n';
+    response += '**EMA Analysis:**\n';
+    response += emaAnalysis + '\n';
+    response += '- Current Price: $' + price.toFixed(2) + '\n';
+    if (ema9 > 0) response += '- EMA 9: $' + ema9.toFixed(2) + '\n';
+    if (ema21 > 0) response += '- EMA 21: $' + ema21.toFixed(2) + '\n';
+    response += '\n';
+    response += '**Candle Pattern:** ' + patternInfo + '\n\n';
+    response += '**Trading Implication:**\n' + actionAdvice;
+
+    return response;
 }
 
 // ============ AGENT ANALYSIS ============
