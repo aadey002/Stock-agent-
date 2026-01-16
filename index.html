@@ -42574,7 +42574,10 @@ async function loadDualTradeAnalysis(symbol) {
         }
 
         var t1Entry = price;
-        var t1Target = sq9Level;
+        // FIX: Target must respect direction - PUT targets lower, CALL targets higher
+        var t1Target = t1.dir === 'PUT' ? 
+            Math.min(sq9Level, dataStop, price * 0.97) :  // PUT: target is BELOW entry
+            Math.max(sq9Level, dataTarget, price * 1.03);  // CALL: target is ABOVE entry
         var t1Stop = t1.dir === 'PUT' ? price * 1.015 : price * 0.985;
         var t1RR = Math.abs((t1Target - t1Entry) / (t1Stop - t1Entry)).toFixed(1);
 
