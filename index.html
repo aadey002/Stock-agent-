@@ -43307,8 +43307,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Register callback: Update Dual Trade Analysis
     SymbolManager.onSymbolChange(function(symbol) {
-        if (typeof loadDualTradeAnalysis === 'function') {
+        console.log('[Dual Trade] Symbol changed to:', symbol);
+        
+        // Always sync the dropdown
+        var dualTradeSelect = document.getElementById('dualTradeSymbolSelect');
+        if (dualTradeSelect) {
+            dualTradeSelect.value = symbol;
+        }
+        
+        // If container exists (tab is visible), update immediately
+        var container = document.getElementById('dualTradeDisplayArea');
+        if (container && typeof loadDualTradeAnalysis === 'function') {
             loadDualTradeAnalysis(symbol);
+        } else {
+            // Store pending symbol for when tab becomes visible
+            window._pendingDualTradeSymbol = symbol;
         }
     });
 
@@ -43485,7 +43498,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (actionCenterTab) {
         actionCenterTab.addEventListener('click', function() {
             setTimeout(function() {
-                loadDualTradeAnalysis(SymbolManager.get());
+                // Use pending symbol if exists, otherwise current symbol
+                var symbol = window._pendingDualTradeSymbol || SymbolManager.get();
+                console.log('[Dual Trade Tab] Loading analysis for:', symbol);
+                loadDualTradeAnalysis(symbol);
+                window._pendingDualTradeSymbol = null;  // Clear pending
             }, 100);
         });
     }
