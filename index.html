@@ -23103,13 +23103,62 @@ function buildDashboardContext() {
 
 function generateLocalResponse(message, context) {
     const lowerMsg = message.toLowerCase();
-    
+
+    // Extract symbol from message
+    const symbol = extractSymbolFromQuestion ? extractSymbolFromQuestion(message) : null;
+    const targetSymbol = symbol || (typeof getCurrentSymbol === 'function' ? getCurrentSymbol() : currentSymbol || 'SPY');
+
+    // MTF ANALYSIS - HIGHEST PRIORITY (check before pattern scan)
+    if (lowerMsg.includes('mtf') || lowerMsg.includes('multi-timeframe') || lowerMsg.includes('multi timeframe') || lowerMsg.includes('timeframe bias')) {
+        // Route to the improved MTF analysis function
+        if (typeof generateMTFAnalysis === 'function') {
+            return generateMTFAnalysis(targetSymbol, lowerMsg);
+        }
+    }
+
+    // CANDLE PATTERN ANALYSIS (specific candle questions, not general pattern scan)
+    if ((lowerMsg.includes('candle') && lowerMsg.includes('pattern')) ||
+        (lowerMsg.includes('candle') && lowerMsg.includes('daily')) ||
+        (lowerMsg.includes('ema') && (lowerMsg.includes('analysis') || lowerMsg.includes('signal')))) {
+        if (typeof generateCandleAnalysis === 'function') {
+            return generateCandleAnalysis(targetSymbol, lowerMsg);
+        }
+    }
+
+    // AGENT/SIGNAL ANALYSIS
+    if (lowerMsg.includes('agent') || lowerMsg.includes('signal') || (lowerMsg.includes('consensus') && !lowerMsg.includes('high consensus'))) {
+        if (typeof generateAgentAnalysis === 'function') {
+            return generateAgentAnalysis(targetSymbol);
+        }
+    }
+
+    // TRADE SETUP ANALYSIS
+    if ((lowerMsg.includes('trade') && lowerMsg.includes('setup')) || lowerMsg.includes('dual trade') || lowerMsg.includes('entry') || lowerMsg.includes('target') || lowerMsg.includes('stop')) {
+        if (typeof generateTradeAnalysis === 'function') {
+            return generateTradeAnalysis(targetSymbol);
+        }
+    }
+
+    // SQ9/GANN ANALYSIS
+    if (lowerMsg.includes('sq9') || lowerMsg.includes('square of 9') || lowerMsg.includes('gann level')) {
+        if (typeof generateSQ9Analysis === 'function') {
+            return generateSQ9Analysis(targetSymbol);
+        }
+    }
+
+    // FULL RECOMMENDATION
+    if (lowerMsg.includes('recommend') || lowerMsg.includes('what should') || lowerMsg.includes('should i buy') || lowerMsg.includes('should i trade')) {
+        if (typeof generateFullRecommendation === 'function') {
+            return generateFullRecommendation(targetSymbol);
+        }
+    }
+
     // MORNING BREAKOUT PATTERN
     if (lowerMsg.includes('breakout') || lowerMsg.includes('breaking out') || lowerMsg.includes('breaking above')) {
         return generateBreakoutResponse();
     }
-    
-    // PATTERN SCAN - General
+
+    // PATTERN SCAN - General (only if not caught by specific handlers above)
     if (lowerMsg.includes('pattern') || lowerMsg.includes('setup') || lowerMsg.includes('forming')) {
         return generatePatternScanResponse();
     }
