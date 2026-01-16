@@ -42581,9 +42581,12 @@ async function loadDualTradeAnalysis(symbol) {
         var t1Stop = t1.dir === 'PUT' ? price * 1.015 : price * 0.985;
         var t1RR = Math.abs((t1Target - t1Entry) / (t1Stop - t1Entry)).toFixed(1);
 
-        var t2Entry = sq9Level;
-        var t2Target = t2.dir === 'CALL' ? dataTarget : dataStop;
-        var t2Stop = t2.dir === 'CALL' ? sq9Level * 0.985 : sq9Level * 1.015;
+        // FIX: Trade 2 starts FROM the turn (Trade 1's target)
+        var t2Entry = t1Target;  // Trade 2 entry = Trade 1 target (the turn price)
+        var t2Target = t2.dir === 'CALL' ? 
+            Math.max(dataTarget, price * 1.03) :  // CALL bounces UP from low
+            Math.min(dataStop, price * 0.97);      // PUT drops DOWN from high
+        var t2Stop = t2.dir === 'CALL' ? t1Target * 0.985 : t1Target * 1.015;
         var t2RR = Math.abs((t2Target - t2Entry) / (t2Stop - t2Entry)).toFixed(1);
 
         // RENDER
