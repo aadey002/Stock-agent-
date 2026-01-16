@@ -44328,196 +44328,404 @@ const AIDataFetcher = {
 window.AIDataFetcher = AIDataFetcher;
 
 // ============================================================================
-// AI RESPONSE GENERATOR - Smart response generator for AI chatbot
+// SMART AI CHAT HANDLER - REAL DATA ANALYSIS
 // ============================================================================
 
-const AIResponseGenerator = {
+// Main AI Chat Handler - routes questions to appropriate analysis functions
+async function handleAIChat(userQuestion) {
+    var question = userQuestion.toLowerCase();
 
-    // Generate response based on parsed question
-    generateResponse: function(question) {
-        var self = this;
-        var symbol = AIQuestionParser.extractSymbol(question);
-        var tab = AIQuestionParser.extractTab(question);
-        var timeframe = AIQuestionParser.extractTimeframe(question);
-        var dataType = AIQuestionParser.extractDataType(question);
+    // Extract symbol (default to current)
+    var symbol = extractSymbolFromQuestion(question) || getCurrentSymbol();
 
-        console.log('[AI Parser]', { symbol: symbol, tab: tab, timeframe: timeframe, dataType: dataType });
-
-        // Return a promise for async handling
-        return new Promise(function(resolve) {
-            var response = '';
-
-            if (tab === 'mtf-bias' || dataType === 'candlePattern') {
-                AIDataFetcher.getMTFData(symbol).then(function(mtfData) {
-                    var patternData = AIDataFetcher.getCandlePatterns(symbol, timeframe === 'all' ? 'swing' : timeframe);
-                    response = self.formatMTFResponse(symbol, mtfData, patternData, timeframe);
-                    resolve(response);
-                });
-            } else if (tab === 'patterns') {
-                var patternData = AIDataFetcher.getCandlePatterns(symbol, timeframe === 'all' ? 'swing' : timeframe);
-                response = self.formatPatternResponse(symbol, patternData);
-                resolve(response);
-            } else if (tab === 'signals-agents') {
-                var agentData = AIDataHub.getSignalsAgentsData(symbol);
-                response = self.formatAgentResponse(symbol, agentData);
-                resolve(response);
-            } else if (tab === 'dual-trade-setup') {
-                var tradeData = AIDataHub.getDualTradeData(symbol);
-                response = self.formatTradeResponse(symbol, tradeData);
-                resolve(response);
-            } else {
-                // General analysis
-                var allData = AIDataHub.collectAllData(symbol);
-                response = self.formatGeneralResponse(symbol, allData, question);
-                resolve(response);
-            }
-        });
-    },
-
-    formatMTFResponse: function(symbol, mtfData, patternData, timeframe) {
-        var response = '**' + symbol + ' MTF Analysis**\n\n';
-
-        // Overall
-        response += '**Overall Bias:** ' + (mtfData.overallBias || 'N/A') + '\n';
-        response += '**Confluence:** ' + (mtfData.confluence || 'N/A') + '\n\n';
-
-        // Specific timeframe if requested
-        if (timeframe !== 'all') {
-            var tfKey = timeframe === 'daily' ? 'daily' : timeframe;
-            var tfData = mtfData.timeframes[tfKey];
-            response += '**' + timeframe.toUpperCase() + ' Timeframe:**\n';
-            response += '- Bias: ' + (tfData ? tfData.bias : 'N/A') + '\n';
-            response += '- Candle Pattern: ' + patternData.pattern + '\n';
-            response += '- Trend: ' + patternData.trend + '\n';
-            if (patternData.lastCandle) {
-                response += '- Last Candle: ' + patternData.lastCandle.color + ' (Body: ' + patternData.lastCandle.bodySize + ')\n';
-            }
-        } else {
-            // All timeframes
-            response += '**Timeframe Breakdown:**\n';
-            for (var tf in mtfData.timeframes) {
-                var data = mtfData.timeframes[tf];
-                response += '- ' + tf + ': ' + (data ? data.bias : 'N/A') + '\n';
-            }
-        }
-
-        response += '\n**Pattern Analysis:** ' + patternData.pattern;
-
-        return response;
-    },
-
-    formatPatternResponse: function(symbol, patternData) {
-        var response = '**' + symbol + ' Candle Pattern Analysis**\n\n';
-
-        response += '**Detected Pattern:** ' + patternData.pattern + '\n';
-        response += '**Timeframe:** ' + patternData.timeframe + '\n';
-        response += '**Trend:** ' + patternData.trend + '\n\n';
-
-        if (patternData.lastCandle) {
-            response += '**Last Candle:**\n';
-            response += '- Color: ' + patternData.lastCandle.color + '\n';
-            response += '- Open: ' + patternData.lastCandle.open + '\n';
-            response += '- High: ' + patternData.lastCandle.high + '\n';
-            response += '- Low: ' + patternData.lastCandle.low + '\n';
-            response += '- Close: ' + patternData.lastCandle.close + '\n';
-        }
-
-        return response;
-    },
-
-    formatAgentResponse: function(symbol, agentData) {
-        var response = '**' + symbol + ' Agent Signals**\n\n';
-
-        response += '**Consensus:** ' + (agentData.overallConsensus || 'N/A') + '\n\n';
-        response += '**Individual Agents:**\n';
-
-        agentData.agents.forEach(function(agent) {
-            response += '- ' + agent.name + ': Intraday=' + agent.intraday + ', Swing=' + agent.swing + ', Position=' + agent.position + '\n';
-        });
-
-        return response;
-    },
-
-    formatTradeResponse: function(symbol, tradeData) {
-        var response = '**' + symbol + ' Trade Setup**\n\n';
-
-        response += '**Turn Date:** ' + (tradeData.turnDate || 'N/A') + ' (' + (tradeData.turnType || 'N/A') + ')\n\n';
-
-        response += '**Trade 1:** ' + (tradeData.trade1.label || 'N/A') + '\n';
-        response += '- Direction: ' + (tradeData.trade1.direction || 'N/A') + '\n';
-        response += '- Entry: ' + (tradeData.trade1.entry || 'N/A') + '\n';
-        response += '- Target: ' + (tradeData.trade1.target || 'N/A') + '\n';
-        response += '- Stop: ' + (tradeData.trade1.stop || 'N/A') + '\n';
-        response += '- R:R: ' + (tradeData.trade1.rr || 'N/A') + '\n\n';
-
-        response += '**Trade 2:** ' + (tradeData.trade2.label || 'N/A') + '\n';
-        response += '- Direction: ' + (tradeData.trade2.direction || 'N/A') + '\n';
-        response += '- Entry: ' + (tradeData.trade2.entry || 'N/A') + '\n';
-        response += '- Target: ' + (tradeData.trade2.target || 'N/A') + '\n';
-
-        return response;
-    },
-
-    formatGeneralResponse: function(symbol, allData, question) {
-        var insight = AIAgentEngine.generateInsight(symbol);
-        return insight.summary;
+    // Ensure we have data for this symbol
+    if (typeof selectSymbol === 'function') {
+        selectSymbol(symbol);
     }
-};
+
+    var response = '';
+
+    // ============ QUESTION ROUTING ============
+
+    if (question.includes('mtf') || question.includes('multi-timeframe') || question.includes('timeframe')) {
+        response = generateMTFAnalysis(symbol, question);
+    }
+    else if (question.includes('candle') || question.includes('pattern')) {
+        response = generateCandleAnalysis(symbol, question);
+    }
+    else if (question.includes('agent') || question.includes('signal') || question.includes('consensus')) {
+        response = generateAgentAnalysis(symbol);
+    }
+    else if (question.includes('trade') || question.includes('setup') || question.includes('entry')) {
+        response = generateTradeAnalysis(symbol);
+    }
+    else if (question.includes('sq9') || question.includes('square of 9') || question.includes('gann')) {
+        response = generateSQ9Analysis(symbol);
+    }
+    else if (question.includes('what should i') || question.includes('recommend') || question.includes('best')) {
+        response = generateFullRecommendation(symbol);
+    }
+    else {
+        // Default: Full analysis
+        response = generateFullAnalysis(symbol);
+    }
+
+    return response;
+}
+
+// ============ MTF ANALYSIS ============
+
+function generateMTFAnalysis(symbol, question) {
+    // Get REAL data from the DOM
+    var data = {
+        scalp5m: document.querySelector('#scalp5mBias, [data-tf="5min"] .bias')?.textContent || 'N/A',
+        intraday: document.querySelector('#intradayBias, [data-tf="15min"] .bias')?.textContent || 'N/A',
+        daily: document.querySelector('#swingBias, [data-tf="daily"] .bias')?.textContent || 'N/A',
+        weekly: document.querySelector('#weeklyBias, [data-tf="weekly"] .bias')?.textContent || 'N/A',
+        monthly: document.querySelector('#positionBias, [data-tf="monthly"] .bias')?.textContent || 'N/A',
+        quarterly: document.querySelector('#quarterlyBias, [data-tf="quarterly"] .bias')?.textContent || 'N/A',
+        confluence: document.querySelector('#mtfConfluence, .confluence-value')?.textContent || 'N/A'
+    };
+
+    // Count biases
+    var biases = [data.scalp5m, data.intraday, data.daily, data.weekly, data.monthly, data.quarterly];
+    var bullishCount = biases.filter(function(b) { return b && (b.includes('BULLISH') || b.includes('CALL')); }).length;
+    var bearishCount = biases.filter(function(b) { return b && (b.includes('BEARISH') || b.includes('PUT')); }).length;
+
+    // Determine specific timeframe if asked
+    var tfFocus = '';
+    if (question.includes('daily')) {
+        var dailyAction = data.daily && data.daily.includes('BULLISH') ? 'Favors CALL positions' :
+                         data.daily && data.daily.includes('BEARISH') ? 'Favors PUT positions' : 'Neutral - wait for clarity';
+        tfFocus = '\n\n**Daily Timeframe Focus:**\n- Bias: ' + data.daily + '\n- This is the swing trading timeframe\n- ' + dailyAction;
+    } else if (question.includes('5 min') || question.includes('5min') || question.includes('scalp')) {
+        var scalpAction = data.scalp5m && data.scalp5m.includes('BULLISH') ? 'Quick CALL scalps favored' :
+                         data.scalp5m && data.scalp5m.includes('BEARISH') ? 'Quick PUT scalps favored' : 'Choppy - avoid scalping';
+        tfFocus = '\n\n**5-Min Timeframe Focus:**\n- Bias: ' + data.scalp5m + '\n- This is the scalping timeframe\n- ' + scalpAction;
+    } else if (question.includes('weekly')) {
+        var weeklyAction = data.weekly && data.weekly.includes('BULLISH') ? 'Longer-term CALL positions favored' :
+                          data.weekly && data.weekly.includes('BEARISH') ? 'Longer-term PUT positions favored' : 'No clear weekly trend';
+        tfFocus = '\n\n**Weekly Timeframe Focus:**\n- Bias: ' + data.weekly + '\n- This is the position trading timeframe\n- ' + weeklyAction;
+    }
+
+    var overallBias = bullishCount > bearishCount ? '**Overall BULLISH** - Favor CALL positions' :
+                      bearishCount > bullishCount ? '**Overall BEARISH** - Favor PUT positions' :
+                      '**MIXED** - Wait for alignment';
+
+    return '**' + symbol + ' Multi-Timeframe Analysis**\n\n' +
+           '**Confluence:** ' + data.confluence + '\n\n' +
+           '**Timeframe Breakdown:**\n' +
+           '- 5-Min (Scalp): ' + data.scalp5m + '\n' +
+           '- 15-Min (Intraday): ' + data.intraday + '\n' +
+           '- Daily (Swing): ' + data.daily + '\n' +
+           '- Weekly: ' + data.weekly + '\n' +
+           '- Monthly (Position): ' + data.monthly + '\n' +
+           '- Quarterly: ' + data.quarterly + '\n\n' +
+           '**Summary:** ' + bullishCount + ' bullish vs ' + bearishCount + ' bearish timeframes\n' +
+           overallBias +
+           tfFocus;
+}
+
+// ============ CANDLE PATTERN ANALYSIS ============
+
+function generateCandleAnalysis(symbol, question) {
+    // Try to get candle data from charts
+    var patternInfo = 'Unable to detect pattern - chart data not available';
+    var trend = 'Unknown';
+
+    // Check for pattern indicators in DOM
+    var patternEl = document.querySelector('.candle-pattern, #candlePattern, [data-pattern]');
+    if (patternEl) {
+        patternInfo = patternEl.textContent;
+    }
+
+    // Check last candle color from chart
+    var lastCandleEl = document.querySelector('.last-candle, #lastCandle');
+    var candleColor = lastCandleEl ? lastCandleEl.textContent : 'Unknown';
+
+    // Get EMA relationship
+    var priceText = document.querySelector('#currentPrice, .price-display')?.textContent || '0';
+    var price = parseFloat(priceText.replace(/[$,]/g, '') || 0);
+    var ema9Text = document.querySelector('#ema9, .ema-9')?.textContent || '0';
+    var ema9 = parseFloat(ema9Text.replace(/[$,]/g, '') || 0);
+    var ema21Text = document.querySelector('#ema21, .ema-21')?.textContent || '0';
+    var ema21 = parseFloat(ema21Text.replace(/[$,]/g, '') || 0);
+
+    var emaAnalysis = '';
+    if (price && ema9 && ema21) {
+        if (price > ema9 && ema9 > ema21) {
+            emaAnalysis = 'Price > EMA9 > EMA21 = **Strong Uptrend**';
+            trend = 'Strong Uptrend';
+        } else if (price < ema9 && ema9 < ema21) {
+            emaAnalysis = 'Price < EMA9 < EMA21 = **Strong Downtrend**';
+            trend = 'Strong Downtrend';
+        } else if (price > ema21 && price < ema9) {
+            emaAnalysis = 'Price between EMAs = **Pullback in uptrend**';
+            trend = 'Pullback';
+        } else if (price < ema21 && price > ema9) {
+            emaAnalysis = 'Price between EMAs = **Rally in downtrend**';
+            trend = 'Counter-trend rally';
+        } else {
+            emaAnalysis = 'Mixed EMA signals = **Consolidation**';
+            trend = 'Consolidation';
+        }
+    }
+
+    var actionAdvice = '';
+    if (trend.includes('Uptrend')) actionAdvice = '-> Look for CALL entries on pullbacks to EMA9';
+    if (trend.includes('Downtrend')) actionAdvice = '-> Look for PUT entries on rallies to EMA9';
+    if (trend.includes('Pullback')) actionAdvice = '-> Potential dip-buy zone if support holds';
+    if (trend.includes('Consolidation')) actionAdvice = '-> Wait for breakout before entering';
+
+    return '**' + symbol + ' Candle Pattern Analysis**\n\n' +
+           '**Current Trend:** ' + trend + '\n\n' +
+           '**EMA Analysis:**\n' +
+           emaAnalysis + '\n' +
+           '- Price: $' + price.toFixed(2) + '\n' +
+           '- EMA 9: $' + ema9.toFixed(2) + '\n' +
+           '- EMA 21: $' + ema21.toFixed(2) + '\n\n' +
+           '**Pattern Detection:** ' + patternInfo + '\n\n' +
+           '**What This Means:**\n' +
+           actionAdvice;
+}
+
+// ============ AGENT ANALYSIS ============
+
+function generateAgentAnalysis(symbol) {
+    // Get agent data from DOM
+    var agents = [];
+    document.querySelectorAll('.agent-row, tr[data-agent]').forEach(function(row) {
+        var name = row.querySelector('.agent-name, td:first-child')?.textContent || '';
+        var intraday = row.querySelector('.intraday-signal, td:nth-child(2)')?.textContent || '';
+        var swing = row.querySelector('.swing-signal, td:nth-child(4)')?.textContent || '';
+        var position = row.querySelector('.position-signal, td:nth-child(6)')?.textContent || '';
+        if (name && !name.includes('CONSENSUS')) {
+            agents.push({ name: name, intraday: intraday, swing: swing, position: position });
+        }
+    });
+
+    var consensusEl = document.querySelector('.consensus-row, #consensusRow, tr:last-child');
+    var consensus = consensusEl ? consensusEl.textContent : 'N/A';
+
+    var agentList = '';
+    if (agents.length > 0) {
+        agents.forEach(function(a) {
+            agentList += '- **' + a.name + ':** Intra=' + a.intraday + ', Swing=' + a.swing + ', Pos=' + a.position + '\n';
+        });
+    } else {
+        agentList = '- Base Confluence Agent\n- Gann-Elliott Agent\n- DQN/RL Agent\n- 3-Wave Agent\n(Unable to read current signals)';
+    }
+
+    var interpretation = '';
+    if (consensus.includes('BULLISH') || consensus.includes('CALL')) {
+        interpretation = 'Agents favor BULLISH/CALL positions';
+    } else if (consensus.includes('BEARISH') || consensus.includes('PUT')) {
+        interpretation = 'Agents favor BEARISH/PUT positions';
+    } else if (consensus.includes('NEUTRAL') || consensus.includes('MIXED')) {
+        interpretation = 'Agents are split - lower confidence setup';
+    }
+
+    return '**' + symbol + ' Agent Signals**\n\n' +
+           '**Agents:**\n' +
+           agentList + '\n' +
+           '**Consensus:** ' + consensus + '\n\n' +
+           '**Interpretation:**\n' +
+           interpretation;
+}
+
+// ============ TRADE SETUP ANALYSIS ============
+
+function generateTradeAnalysis(symbol) {
+    var trade1 = {
+        direction: document.querySelector('#trade1 .direction, .trade1-direction')?.textContent ||
+                   document.querySelector('[class*="trade1"] [class*="direction"]')?.textContent || '',
+        entry: document.getElementById('trade1Entry')?.textContent || '',
+        target: document.getElementById('trade1Target')?.textContent || '',
+        stop: document.getElementById('trade1Stop')?.textContent || '',
+        rr: document.getElementById('trade1RR')?.textContent || ''
+    };
+
+    var trade2 = {
+        direction: document.querySelector('#trade2 .direction, .trade2-direction')?.textContent || '',
+        entry: document.getElementById('trade2Entry')?.textContent || '',
+        target: document.getElementById('trade2Target')?.textContent || '',
+        stop: document.getElementById('trade2Stop')?.textContent || ''
+    };
+
+    var turnDate = document.getElementById('turnDate')?.textContent ||
+                   document.querySelector('.turn-date')?.textContent || 'N/A';
+    var turnType = document.getElementById('turnType')?.textContent ||
+                   document.querySelector('.turn-type')?.textContent || '';
+
+    var action = '';
+    if (trade1.direction && trade1.direction.includes('PUT')) {
+        action = 'BUY PUT now, exit before turn date';
+    } else if (trade1.direction && trade1.direction.includes('CALL')) {
+        action = 'BUY CALL now, exit before turn date';
+    } else {
+        action = 'Review Dual Trade Setup tab';
+    }
+
+    return '**' + symbol + ' Trade Setup**\n\n' +
+           '**Next Turn:** ' + turnDate + ' -> ' + turnType + '\n\n' +
+           '**TRADE 1 (Active Now):**\n' +
+           '- Direction: ' + (trade1.direction || 'Check dashboard') + '\n' +
+           '- Entry: ' + (trade1.entry || 'N/A') + '\n' +
+           '- Target: ' + (trade1.target || 'N/A') + '\n' +
+           '- Stop: ' + (trade1.stop || 'N/A') + '\n' +
+           '- Risk/Reward: ' + (trade1.rr || 'N/A') + '\n\n' +
+           '**TRADE 2 (After Turn):**\n' +
+           '- Direction: ' + (trade2.direction || 'Check dashboard') + '\n' +
+           '- Entry: ' + (trade2.entry || 'N/A') + '\n' +
+           '- Target: ' + (trade2.target || 'N/A') + '\n\n' +
+           '**Action:** ' + action;
+}
+
+// ============ SQ9 ANALYSIS ============
+
+function generateSQ9Analysis(symbol) {
+    var sq9Data = AIDataHub.getSQ9Data(symbol);
+    var gannData = AIDataHub.getGannAnalysisData(symbol);
+
+    return '**' + symbol + ' SQ9/Gann Analysis**\n\n' +
+           '**Current Price:** ' + (sq9Data.currentPrice || 'N/A') + '\n' +
+           '**Nearest SQ9 Level:** ' + (sq9Data.nearestLevel || 'N/A') + '\n' +
+           '**Distance:** ' + (sq9Data.distancePercent || 'N/A') + '\n' +
+           '**Direction:** ' + (sq9Data.direction || 'N/A') + '\n\n' +
+           '**Support Levels:**\n' +
+           '- S1: ' + (sq9Data.supports[0] || 'N/A') + '\n' +
+           '- S2: ' + (sq9Data.supports[1] || 'N/A') + '\n\n' +
+           '**Resistance Levels:**\n' +
+           '- R1: ' + (sq9Data.resistances[0] || 'N/A') + '\n' +
+           '- R2: ' + (sq9Data.resistances[1] || 'N/A') + '\n\n' +
+           '**Gann Angle:** ' + (gannData.gannAngle || 'N/A') + '\n' +
+           '**Time Target:** ' + (gannData.timeTarget || 'N/A') + '\n' +
+           '**Price Target:** ' + (gannData.priceTarget || 'N/A');
+}
+
+// ============ FULL RECOMMENDATION ============
+
+function generateFullRecommendation(symbol) {
+    var priceEl = document.querySelector('#currentPrice, .price-display');
+    var price = priceEl ? priceEl.textContent : 'N/A';
+    var mtfBias = document.querySelector('#mtfConfluence, .confluence-value')?.textContent || 'N/A';
+    var agentConsensus = document.querySelector('#consensusRow, .consensus')?.textContent || 'N/A';
+    var trade1Dir = document.querySelector('#trade1 .direction, .trade1-action')?.textContent || 'N/A';
+
+    var analysis = '';
+    var action = '';
+    if (mtfBias.includes('BULLISH')) {
+        analysis = 'BULLISH signals - favor CALL positions';
+        action = '-> Look for CALL entries on pullbacks\n-> Use Dual Trade Setup tab for entry/target/stop';
+    } else if (mtfBias.includes('BEARISH')) {
+        analysis = 'BEARISH signals - favor PUT positions';
+        action = '-> Look for PUT entries on rallies\n-> Use Dual Trade Setup tab for entry/target/stop';
+    } else {
+        analysis = 'Mixed signals - wait for clarity';
+        action = '-> Wait for MTF alignment before entering\n-> Monitor for breakout direction';
+    }
+
+    return '**' + symbol + ' Full Recommendation**\n\n' +
+           '**Current Price:** ' + price + '\n' +
+           '**MTF Confluence:** ' + mtfBias + '\n' +
+           '**Agent Consensus:** ' + agentConsensus + '\n' +
+           '**Trade Direction:** ' + trade1Dir + '\n\n' +
+           '**My Analysis:**\n' +
+           'Based on the multi-timeframe bias and agent consensus, ' + symbol + ' is showing:\n' +
+           analysis + '\n\n' +
+           '**Suggested Action:**\n' +
+           action;
+}
+
+// ============ FULL ANALYSIS (DEFAULT) ============
+
+function generateFullAnalysis(symbol) {
+    return generateFullRecommendation(symbol);
+}
+
+// ============ HELPER: Extract Symbol ============
+
+function extractSymbolFromQuestion(question) {
+    var upperQ = question.toUpperCase();
+    var symbols = ['SPY','QQQ','IWM','DIA','XLF','XLE','XLK','XLV','XLI','XLB','XLU','XLP','XLY','XLC','XLRE','XBI','XRT','XHB','XOP','GLD','SLV','TLT','HYG','EEM','VXX','ARKK','AAPL','MSFT','NVDA','TSLA','AMZN','GOOGL','META','JPM','AMD','NFLX','V','MA','UNH','HD','PG','BAC','WMT','DIS','COST','CRM','INTC','CSCO','ADBE','ORCL','LLY','PFE','MRK'];
+
+    for (var i = 0; i < symbols.length; i++) {
+        if (upperQ.includes(symbols[i])) return symbols[i];
+    }
+    return null;
+}
+
+// ============ HELPER: Get Current Symbol ============
+
+function getCurrentSymbol() {
+    return typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY';
+}
+
+// ============ DISPLAY CHAT RESPONSE ============
+
+function displayAIChatResponse(response) {
+    var chatOutput = document.getElementById('aiChatOutput') || document.querySelector('.ai-chat-response');
+    if (chatOutput) {
+        chatOutput.innerHTML = response.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    }
+    // Also try displayChatResponse if it exists
+    if (typeof displayChatResponse === 'function') {
+        displayChatResponse(response);
+    }
+}
 
 // Expose globally
-window.AIResponseGenerator = AIResponseGenerator;
+window.handleAIChat = handleAIChat;
+window.generateMTFAnalysis = generateMTFAnalysis;
+window.generateCandleAnalysis = generateCandleAnalysis;
+window.generateAgentAnalysis = generateAgentAnalysis;
+window.generateTradeAnalysis = generateTradeAnalysis;
+window.generateSQ9Analysis = generateSQ9Analysis;
+window.generateFullRecommendation = generateFullRecommendation;
+window.extractSymbolFromQuestion = extractSymbolFromQuestion;
+window.displayAIChatResponse = displayAIChatResponse;
 
 // ============================================================================
 // CHAT INTERFACE CONNECTION
 // ============================================================================
 
-// Store original handler if exists
-var originalChatSubmit = window.handleChatSubmit || function() {};
-
-// Enhanced chat submit handler
-window.handleChatSubmit = function(question) {
-    // Show loading indicator if available
-    if (typeof showChatLoading === 'function') {
-        showChatLoading();
-    }
-
-    try {
-        // Generate smart response
-        AIResponseGenerator.generateResponse(question).then(function(response) {
-            // Display response
-            if (typeof displayChatResponse === 'function') {
-                displayChatResponse(response);
-            } else {
-                console.log('[AI Response]', response);
-            }
-        }).catch(function(error) {
-            console.error('[AI Chat Error]', error);
-            if (typeof displayChatResponse === 'function') {
-                displayChatResponse('Sorry, I encountered an error analyzing that data. Please try again.');
-            }
-        });
-    } catch (error) {
-        console.error('[AI Chat Error]', error);
-        if (typeof displayChatResponse === 'function') {
-            displayChatResponse('Sorry, I encountered an error analyzing that data. Please try again.');
-        }
-    }
-};
-
-// Connect to chat form if exists
+// Connect to chat form
 var aiChatForm = document.getElementById('aiChatForm');
 if (aiChatForm) {
-    aiChatForm.addEventListener('submit', function(e) {
+    aiChatForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        var input = document.getElementById('aiChatInput');
+        var input = document.getElementById('aiChatInput') || document.querySelector('.ai-chat-input input');
         var question = input ? input.value.trim() : '';
 
         if (question) {
-            window.handleChatSubmit(question);
+            var response = await handleAIChat(question);
+            displayAIChatResponse(response);
             if (input) input.value = '';
         }
     });
 }
+
+// Handle enter key on chat input
+var chatInput = document.querySelector('.ai-chat-input input');
+if (chatInput) {
+    chatInput.addEventListener('keypress', async function(e) {
+        if (e.key === 'Enter') {
+            var question = e.target.value.trim();
+            if (question) {
+                var response = await handleAIChat(question);
+                displayAIChatResponse(response);
+                e.target.value = '';
+            }
+        }
+    });
+}
+
+// Legacy handler for backward compatibility
+window.handleChatSubmit = async function(question) {
+    var response = await handleAIChat(question);
+    displayAIChatResponse(response);
+    return response;
+};
 
 // ============================================================================
 // GLOBAL HELPER FUNCTIONS FOR AI SYSTEM
@@ -44525,23 +44733,23 @@ if (aiChatForm) {
 
 // Quick function to get full analysis for current symbol
 window.getFullAnalysis = function(symbol) {
-    symbol = symbol || (typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY');
+    symbol = symbol || getCurrentSymbol();
     return AIAgentEngine.generateInsight(symbol);
 };
 
 // Quick function to get all data for current symbol
 window.getAllData = function(symbol) {
-    symbol = symbol || (typeof SymbolManager !== 'undefined' ? SymbolManager.get() : 'SPY');
+    symbol = symbol || getCurrentSymbol();
     return AIDataHub.collectAllData(symbol);
 };
 
 // Quick function to ask the AI a question
-window.askAI = function(question) {
-    return AIResponseGenerator.generateResponse(question);
+window.askAI = async function(question) {
+    return await handleAIChat(question);
 };
 
-console.log('[AI System] AIDataHub, AIAgentEngine, AIQuestionParser, AIDataFetcher, AIResponseGenerator loaded');
-console.log('[AI System] Use window.getFullAnalysis(symbol), window.getAllData(symbol), or window.askAI(question)');
+console.log('[AI System] Enhanced AI Chat with real data analysis loaded');
+console.log('[AI System] Use window.askAI(question), window.getFullAnalysis(symbol), or window.getAllData(symbol)');
 
 </script>
 </body>
