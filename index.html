@@ -16526,24 +16526,30 @@ function generateTradeSequence(data) {
 
     var trade1, trade2;
 
-    // Get agent consensus direction - this takes priority over turnType
+    // Get agent consensus direction - THIS TAKES ABSOLUTE PRIORITY
     var agentDir = null;
     try {
         var agentSignals = typeof getAgentSignals === 'function' ? getAgentSignals() : null;
         if (agentSignals && agentSignals.signal) {
             agentDir = agentSignals.signal.toUpperCase();
+            console.log('Trade direction from AGENT CONSENSUS: ' + agentDir);
         }
-    } catch(e) { }
-
-    // Also check data for explicit direction override
-    if (data.direction) {
-        agentDir = data.direction.toUpperCase();
+    } catch(e) { 
+        console.log('Error getting agent signals:', e);
     }
 
-    // Use agent consensus if available, otherwise fall back to turnType logic
-    // RULE: Agent says CALL → trade CALL, Agent says PUT → trade PUT (NEVER INVERT!)
+    // ONLY use data.direction as FALLBACK if agent consensus not available
+    if (!agentDir && data.direction) {
+        agentDir = data.direction.toUpperCase();
+        console.log('Trade direction from data.direction fallback: ' + agentDir);
+    }
+
+    // Use agent consensus - NEVER INVERT THIS!
+    // CALL from agents = Trade 1 is CALL
+    // PUT from agents = Trade 1 is PUT
     var useAgentDirection = agentDir && (agentDir === 'CALL' || agentDir === 'PUT');
-    var trade1Dir = useAgentDirection ? normalizeSignal(agentDir) : (turnType === 'LOW' ? 'PUT' : 'CALL');
+    var trade1Dir = useAgentDirection ? agentDir : (turnType === 'LOW' ? 'PUT' : 'CALL');
+    console.log('Final Trade 1 direction: ' + trade1Dir + ' (useAgentDirection=' + useAgentDirection + ')');
     var trade1Phase = trade1Dir === 'PUT' ? 'PULLBACK' : 'RALLY';
 
     if (trade1Dir === 'PUT') {
