@@ -614,3 +614,304 @@ console.log('  TradingSignals.setWebhook("https://...") - Set webhook URL');
 console.log('  PaperTrading.getStats() - View performance');
 console.log('  PaperTrading.getOpenPositions() - View open trades');
 console.log('  SignalScanner.scanAll() - Scan all symbols');
+
+// ============================================================
+// ALPACA PAPER TRADING INTEGRATION
+// ============================================================
+
+(function() {
+    // Extend TradingSignals with Alpaca functionality
+    const TS = window.TradingSignals;
+    if (!TS) return;
+
+    // Alpaca configuration
+    TS.alpaca = {
+        apiKey: localStorage.getItem('alpaca_api_key') || '',
+        apiSecret: localStorage.getItem('alpaca_api_secret') || '',
+        baseURL: 'https://paper-api.alpaca.markets',
+        enabled: localStorage.getItem('alpaca_enabled') === 'true'
+    };
+
+    // Set Alpaca API keys
+    TS.setAlpacaKeys = function(apiKey, apiSecret) {
+        this.alpaca.apiKey = apiKey;
+        this.alpaca.apiSecret = apiSecret;
+        localStorage.setItem('alpaca_api_key', apiKey);
+        localStorage.setItem('alpaca_api_secret', apiSecret);
+        console.log('[Alpaca] API keys saved!');
+        return 'Alpaca keys configured! Now run: TradingSignals.enableAlpaca(true)';
+    };
+
+    // Enable/disable Alpaca auto-trading
+    TS.enableAlpaca = function(enabled) {
+        this.alpaca.enabled = enabled;
+        localStorage.setItem('alpaca_enabled', String(enabled));
+        console.log('[Alpaca] Auto-trade:', enabled ? 'ENABLED' : 'DISABLED');
+        return enabled ? 'Alpaca auto-trade ENABLED!' : 'Alpaca auto-trade DISABLED';
+    };
+
+    // Get Alpaca headers
+    TS.getAlpacaHeaders = function() {
+        return {
+            'APCA-API-KEY-ID': this.alpaca.apiKey,
+            'APCA-API-SECRET-KEY': this.alpaca.apiSecret,
+            'Content-Type': 'application/json'
+        };
+    };
+
+    // Get Alpaca account info
+    TS.getAlpacaAccount = async function() {
+        if (!this.alpaca.apiKey) {
+            console.error('[Alpaca] Keys not set! Run: TradingSignals.setAlpacaKeys("key", "secret")');
+            return { error: 'Keys not set' };
+        }
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/account', {
+                headers: this.getAlpacaHeaders()
+            });
+
+            if (!response.ok) {
+                const err = await response.text();
+                console.error('[Alpaca] API Error:', err);
+                return { error: err };
+            }
+
+            const data = await response.json();
+            console.log('[Alpaca] Connected!');
+            console.log('[Alpaca] Buying Power: $' + parseFloat(data.buying_power).toLocaleString());
+            console.log('[Alpaca] Portfolio: $' + parseFloat(data.portfolio_value).toLocaleString());
+            console.log('[Alpaca] Equity: $' + parseFloat(data.equity).toLocaleString());
+            console.log('[Alpaca] Cash: $' + parseFloat(data.cash).toLocaleString());
+            return data;
+        } catch (error) {
+            console.error('[Alpaca] Connection error:', error.message);
+            return { error: error.message };
+        }
+    };
+
+    // Get Alpaca positions
+    TS.getAlpacaPositions = async function() {
+        if (!this.alpaca.apiKey) return { error: 'Keys not set' };
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/positions', {
+                headers: this.getAlpacaHeaders()
+            });
+            const data = await response.json();
+
+            if (data.length === 0) {
+                console.log('[Alpaca] No open positions');
+            } else {
+                console.log('[Alpaca] Open Positions:');
+                data.forEach(function(p) {
+                    var pnl = parseFloat(p.unrealized_pl);
+                    var pnlPct = parseFloat(p.unrealized_plpc) * 100;
+                    console.log('  ' + p.symbol + ': ' + p.qty + ' @ $' + parseFloat(p.avg_entry_price).toFixed(2) + ' | P&L: $' + pnl.toFixed(2) + ' (' + pnlPct.toFixed(2) + '%)');
+                });
+            }
+            return data;
+        } catch (error) {
+            return { error: error.message };
+        }
+    };
+
+    // Get Alpaca orders
+    TS.getAlpacaOrders = async function() {
+        if (!this.alpaca.apiKey) return { error: 'Keys not set' };
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/orders?status=all&limit=10', {
+                headers: this.getAlpacaHeaders()
+            });
+            const data = await response.json();
+
+            console.log('[Alpaca] Recent Orders:');
+            data.forEach(function(o) {
+                console.log('  ' + o.side.toUpperCase() + ' ' + o.qty + ' ' + o.symbol + ' - ' + o.status);
+            });
+            return data;
+        } catch (error) {
+            return { error: error.message };
+        }
+    };
+
+    // Place Alpaca order
+    TS.placeAlpacaOrder = async function(symbol, qty, side, type, limitPrice) {
+        if (!this.alpaca.apiKey) {
+            console.error('[Alpaca] Keys not set');
+            return { error: 'Keys not set' };
+        }
+
+        type = type || 'market';
+
+        var order = {
+            symbol: symbol.toUpperCase(),
+            qty: String(qty),
+            side: side.toLowerCase(),
+            type: type,
+            time_in_force: 'day'
+        };
+
+        if (type === 'limit' && limitPrice) {
+            order.limit_price = String(limitPrice);
+        }
+
+        console.log('[Alpaca] Placing order:', order);
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/orders', {
+                method: 'POST',
+                headers: this.getAlpacaHeaders(),
+                body: JSON.stringify(order)
+            });
+
+            const data = await response.json();
+
+            if (data.id) {
+                console.log('[Alpaca] Order placed! ID:', data.id);
+                console.log('[Alpaca] ' + data.side.toUpperCase() + ' ' + data.qty + ' ' + data.symbol + ' - ' + data.status);
+            } else {
+                console.error('[Alpaca] Order failed:', data);
+            }
+
+            return data;
+        } catch (error) {
+            console.error('[Alpaca] Order error:', error.message);
+            return { error: error.message };
+        }
+    };
+
+    // Close position
+    TS.closeAlpacaPosition = async function(symbol) {
+        if (!this.alpaca.apiKey) return { error: 'Keys not set' };
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/positions/' + symbol.toUpperCase(), {
+                method: 'DELETE',
+                headers: this.getAlpacaHeaders()
+            });
+
+            const data = await response.json();
+            console.log('[Alpaca] Position closed:', symbol);
+            return data;
+        } catch (error) {
+            return { error: error.message };
+        }
+    };
+
+    // Close all positions
+    TS.closeAllAlpacaPositions = async function() {
+        if (!this.alpaca.apiKey) return { error: 'Keys not set' };
+
+        try {
+            const response = await fetch(this.alpaca.baseURL + '/v2/positions', {
+                method: 'DELETE',
+                headers: this.getAlpacaHeaders()
+            });
+
+            console.log('[Alpaca] All positions closed');
+            return await response.json();
+        } catch (error) {
+            return { error: error.message };
+        }
+    };
+
+    // Execute signal on Alpaca
+    TS.executeOnAlpaca = async function(signal) {
+        if (!this.alpaca.enabled) {
+            console.log('[Alpaca] Auto-trade disabled, skipping');
+            return { skipped: true };
+        }
+
+        var account = await this.getAlpacaAccount();
+        if (account.error) return account;
+
+        var buyingPower = parseFloat(account.buying_power);
+        var positionSize = Math.min(1000, buyingPower * 0.05); // $1000 or 5% max
+        var price = signal.currentPrice || 100;
+        var qty = Math.floor(positionSize / price);
+
+        if (qty < 1) {
+            console.error('[Alpaca] Position size too small');
+            return { error: 'Position too small' };
+        }
+
+        var side = signal.direction === 'CALL' ? 'buy' : 'sell';
+        console.log('[Alpaca] Executing: ' + side.toUpperCase() + ' ' + qty + ' ' + signal.symbol);
+
+        return this.placeAlpacaOrder(signal.symbol, qty, side);
+    };
+
+    // Trade on Alpaca (manual)
+    TS.alpacaTrade = async function(symbol, direction) {
+        // Get price
+        var price = 100;
+        if (typeof allSymbolsData !== 'undefined' && allSymbolsData[symbol.toUpperCase()]) {
+            var data = allSymbolsData[symbol.toUpperCase()];
+            if (data.length > 0) {
+                price = parseFloat(data[data.length - 1].Close) || 100;
+            }
+        }
+
+        var signal = {
+            symbol: symbol.toUpperCase(),
+            direction: direction.toUpperCase(),
+            currentPrice: price,
+            signalType: 'MANUAL'
+        };
+
+        console.log('[Alpaca] Manual trade:', signal);
+
+        // Show notification
+        this.showSignalNotification(signal);
+
+        // Execute if enabled
+        if (this.alpaca.enabled) {
+            return await this.executeOnAlpaca(signal);
+        }
+
+        return signal;
+    };
+
+    // Alpaca status
+    TS.alpacaStatus = function() {
+        console.log('');
+        console.log('====== ALPACA STATUS ======');
+        console.log('API Key: ' + (this.alpaca.apiKey ? 'SET (' + this.alpaca.apiKey.substring(0, 4) + '...)' : 'NOT SET'));
+        console.log('API Secret: ' + (this.alpaca.apiSecret ? 'SET' : 'NOT SET'));
+        console.log('Auto-Trade: ' + (this.alpaca.enabled ? 'ENABLED' : 'DISABLED'));
+        console.log('Base URL: ' + this.alpaca.baseURL);
+        console.log('===========================');
+        return 'See console';
+    };
+
+    // Alpaca help
+    TS.alpacaHelp = function() {
+        console.log('');
+        console.log('====== ALPACA COMMANDS ======');
+        console.log('');
+        console.log('SETUP:');
+        console.log('  TradingSignals.setAlpacaKeys("KEY", "SECRET")');
+        console.log('  TradingSignals.enableAlpaca(true)');
+        console.log('  TradingSignals.getAlpacaAccount()');
+        console.log('');
+        console.log('VIEW:');
+        console.log('  TradingSignals.getAlpacaPositions()');
+        console.log('  TradingSignals.getAlpacaOrders()');
+        console.log('  TradingSignals.alpacaStatus()');
+        console.log('');
+        console.log('TRADE:');
+        console.log('  TradingSignals.alpacaTrade("SPY", "CALL")');
+        console.log('  TradingSignals.alpacaTrade("QQQ", "PUT")');
+        console.log('  TradingSignals.placeAlpacaOrder("SPY", 10, "buy")');
+        console.log('  TradingSignals.closeAlpacaPosition("SPY")');
+        console.log('  TradingSignals.closeAllAlpacaPositions()');
+        console.log('');
+        console.log('=============================');
+        return 'See console';
+    };
+
+    console.log('[Alpaca] Integration loaded! Type TradingSignals.alpacaHelp()');
+
+})();
