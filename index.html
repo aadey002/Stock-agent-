@@ -43820,6 +43820,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 600);
     });
 
+    // Register callback: Sync Gann Cycles Tab with Global Symbol
+    SymbolManager.onSymbolChange(function(symbol) {
+        console.log('[Gann Cycles] Syncing to symbol:', symbol);
+        
+        // 1. Update SQ9 Monitor ETF selection
+        if (typeof sq9SelectedEtf !== 'undefined') {
+            sq9SelectedEtf = symbol;
+        }
+        
+        // Update SQ9 tab styling
+        document.querySelectorAll('#sq9EtfTabs .sq9-etf-tab').forEach(function(tab) {
+            tab.classList.remove('active');
+            if (tab.textContent.trim() === symbol) {
+                tab.classList.add('active');
+            }
+        });
+        
+        // 2. Update SQ9 Monitor display
+        if (typeof updateSq9Monitor === 'function') {
+            updateSq9Monitor();
+        }
+        
+        // 3. Update Major Pivots Timeline
+        if (typeof updateMajorPivotsTimeline === 'function') {
+            updateMajorPivotsTimeline(symbol);
+        }
+        
+        // 4. Update Roadmap ETF selection
+        if (typeof roadmapSelectedETF !== 'undefined') {
+            roadmapSelectedETF = symbol;
+        }
+        
+        // Update Roadmap tab styling
+        document.querySelectorAll('#gannRoadmapEtfTabs .gann-etf-tab').forEach(function(tab) {
+            tab.classList.remove('active');
+            var tabSymbol = tab.textContent.replace(/[^A-Z]/g, '');
+            if (tabSymbol === symbol) {
+                tab.classList.add('active');
+            }
+        });
+        
+        // 5. Re-render Roadmap
+        if (typeof renderGannRoadmap === 'function') {
+            renderGannRoadmap();
+        }
+        
+        // 6. Update Gann Dashboard prices header
+        var gannSymbolDisplay = document.getElementById('gannCycleSymbolDisplay');
+        if (gannSymbolDisplay) gannSymbolDisplay.textContent = symbol;
+    });
+
     // Auto-load after short delay
     setTimeout(function() {
         var initialSymbol = SymbolManager.get();
@@ -43844,6 +43895,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof renderActionCenter === 'function') {
                     renderActionCenter();
                 }
+            }, 100);
+        });
+    }
+
+    // Tab click handler for Gann Cycles - sync with global symbol
+    var gannCyclesTab = document.querySelector('[data-tab="gann-cycles"]');
+    if (gannCyclesTab) {
+        gannCyclesTab.addEventListener('click', function() {
+            setTimeout(function() {
+                var symbol = SymbolManager.get();
+                console.log('[Gann Cycles Tab] Syncing to:', symbol);
+                
+                // Update SQ9 selection
+                if (typeof sq9SelectedEtf !== 'undefined') {
+                    sq9SelectedEtf = symbol;
+                }
+                document.querySelectorAll('#sq9EtfTabs .sq9-etf-tab').forEach(function(tab) {
+                    tab.classList.remove('active');
+                    if (tab.textContent.trim() === symbol) {
+                        tab.classList.add('active');
+                    }
+                });
+                if (typeof updateSq9Monitor === 'function') updateSq9Monitor();
+                
+                // Update Major Pivots
+                if (typeof updateMajorPivotsTimeline === 'function') {
+                    updateMajorPivotsTimeline(symbol);
+                }
+                
+                // Update Roadmap selection
+                if (typeof roadmapSelectedETF !== 'undefined') {
+                    roadmapSelectedETF = symbol;
+                }
+                document.querySelectorAll('#gannRoadmapEtfTabs .gann-etf-tab').forEach(function(tab) {
+                    tab.classList.remove('active');
+                    var tabSymbol = tab.textContent.replace(/[^A-Z]/g, '');
+                    if (tabSymbol === symbol) {
+                        tab.classList.add('active');
+                    }
+                });
+                if (typeof renderGannRoadmap === 'function') renderGannRoadmap();
             }, 100);
         });
     }
