@@ -16470,15 +16470,34 @@ function generateTradeSequence(data) {
 
     var trade1, trade2;
 
-    if (turnType === 'LOW') {
-        // Expecting LOW = Pullback first (PUT), then Bounce (CALL)
+    // Get agent consensus direction - this takes priority over turnType
+    var agentDir = null;
+    try {
+        var agentSignals = typeof getAgentSignals === 'function' ? getAgentSignals() : null;
+        if (agentSignals && agentSignals.signal) {
+            agentDir = agentSignals.signal.toUpperCase();
+        }
+    } catch(e) { }
+
+    // Also check data for explicit direction override
+    if (data.direction) {
+        agentDir = data.direction.toUpperCase();
+    }
+
+    // Use agent consensus if available, otherwise fall back to turnType logic
+    var useAgentDirection = agentDir && (agentDir === 'CALL' || agentDir === 'PUT');
+    var trade1Dir = useAgentDirection ? agentDir : (turnType === 'LOW' ? 'PUT' : 'CALL');
+    var trade1Phase = trade1Dir === 'PUT' ? 'PULLBACK' : 'RALLY';
+
+    if (trade1Dir === 'PUT') {
+        // Trade 1: PUT (Pullback/Drop)
         var pullbackTarget = sq9Level || currentPrice * 0.985;
         var bounceTarget = targetPrice || currentPrice * 1.03;
 
-        // TRADE 1: PUT (Ride the pullback to LOW)
+        // TRADE 1: PUT (Ride the pullback)
         trade1 = {
             direction: 'PUT',
-            phase: 'PULLBACK',
+            phase: trade1Phase,
             timing: 'Now → ' + turnDateStr,
             entry: currentPrice,
             target: pullbackTarget,
@@ -16503,14 +16522,14 @@ function generateTradeSequence(data) {
         };
 
     } else {
-        // Expecting HIGH = Rally first (CALL), then Drop (PUT)
+        // Trade 1: CALL (Rally/Bounce)
         var rallyTarget = sq9Level || currentPrice * 1.015;
         var dropTarget = targetPrice || currentPrice * 0.97;
 
-        // TRADE 1: CALL (Ride the rally to HIGH)
+        // TRADE 1: CALL (Ride the rally)
         trade1 = {
             direction: 'CALL',
-            phase: 'RALLY',
+            phase: trade1Phase,
             timing: 'Now → ' + turnDateStr,
             entry: currentPrice,
             target: rallyTarget,
