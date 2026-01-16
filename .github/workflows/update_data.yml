@@ -14,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
@@ -26,6 +27,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas yfinance numpy
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Pull latest changes first
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git pull origin main --rebase || true
 
       - name: Fetch all symbol data
         run: |
@@ -41,7 +48,11 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/ reports/
+          git add data/ reports/ || true
           git diff --staged --quiet || git commit -m "Update market data - $(date +'%Y-%m-%d %H:%M')"
-          git pull --rebase origin main
-          git push
+          
+          # Pull with autostash to handle any conflicts
+          git pull --rebase --autostash origin main || git pull origin main --no-rebase || true
+          
+          # Push with retry
+          git push || (sleep 5 && git pull --rebase --autostash origin main && git push) || true
