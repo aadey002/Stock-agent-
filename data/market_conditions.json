@@ -1,44 +1,51 @@
 {
-  "timestamp": "2026-01-23T21:55:01.456300",
+  "timestamp": "2026-01-26T14:37:49.789695",
   "trade_allowed": true,
-  "position_size_multiplier": 0.5,
+  "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 28.37,
-      "uvxy_price": 35.47,
+      "vix_estimate": 28.04,
+      "uvxy_price": 35.05,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 0,
-      "upcoming_events": [],
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TODAY"
+        }
+      ],
       "status": "OK",
-      "recommendation": "CLEAR"
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": -0.47,
-      "momentum_20d": -0.47,
+      "momentum_5d": -0.35,
+      "momentum_20d": -0.35,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 1.25,
-      "cyclical_avg": -0.56,
-      "defensive_avg": 0.7,
-      "strongest": "Energy (+4.06%)",
-      "weakest": "Consumer Disc (-1.28%)",
+      "rotation_strength": 1.01,
+      "cyclical_avg": -0.95,
+      "defensive_avg": 0.06,
+      "strongest": "Energy (+3.15%)",
+      "weakest": "Financials (-2.52%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: GDP Release - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 25
+  "overall_score": 5
 }
