@@ -1,44 +1,51 @@
 {
-  "timestamp": "2026-02-05T21:54:47.548552",
+  "timestamp": "2026-02-06T14:49:44.795690",
   "trade_allowed": true,
-  "position_size_multiplier": 0.5,
+  "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 33.45,
-      "uvxy_price": 41.81,
+      "vix_estimate": 30.25,
+      "uvxy_price": 37.81,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 0,
-      "upcoming_events": [],
+      "upcoming_events": [
+        {
+          "name": "Non-Farm Payrolls",
+          "impact": "HIGH",
+          "timing": "TODAY"
+        }
+      ],
       "status": "OK",
-      "recommendation": "CLEAR"
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
-      "sentiment": "NEUTRAL",
-      "sentiment_score": 50,
+      "sentiment": "BEARISH",
+      "sentiment_score": 29,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": -1.13,
-      "momentum_20d": -0.81,
+      "momentum_5d": -2.07,
+      "momentum_20d": -1.73,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 2.22,
-      "cyclical_avg": -0.8,
-      "defensive_avg": 1.42,
-      "strongest": "Energy (+7.33%)",
-      "weakest": "Technology (-5.45%)",
+      "rotation_strength": 3.64,
+      "cyclical_avg": -2.51,
+      "defensive_avg": 1.12,
+      "strongest": "Energy (+5.11%)",
+      "weakest": "Technology (-8.39%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 25
+  "overall_score": 0
 }
