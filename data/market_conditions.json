@@ -1,51 +1,50 @@
 {
-  "timestamp": "2026-02-06T21:54:05.135386",
+  "timestamp": "2026-02-09T15:01:26.339072",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 29.78,
-      "uvxy_price": 37.23,
+      "vix_estimate": 29.28,
+      "uvxy_price": 36.6,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 1,
-      "events_tomorrow": 0,
+      "events_today": 0,
+      "events_tomorrow": 1,
       "upcoming_events": [
         {
-          "name": "Non-Farm Payrolls",
+          "name": "CPI Release",
           "impact": "HIGH",
-          "timing": "TODAY"
+          "timing": "TOMORROW"
         }
       ],
-      "status": "OK",
-      "recommendation": "REDUCE_EXPOSURE"
+      "status": "OK"
     },
     "sentiment": {
-      "sentiment": "BEARISH",
-      "sentiment_score": 29,
+      "sentiment": "NEUTRAL",
+      "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": -2.07,
-      "momentum_20d": -1.73,
+      "momentum_5d": -0.69,
+      "momentum_20d": -0.69,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 3.64,
-      "cyclical_avg": -2.51,
-      "defensive_avg": 1.12,
-      "strongest": "Energy (+5.11%)",
-      "weakest": "Technology (-8.39%)",
+      "rotation_strength": 2.06,
+      "cyclical_avg": 0.42,
+      "defensive_avg": 2.48,
+      "strongest": "Consumer Stap (+5.30%)",
+      "weakest": "Consumer Disc (-2.62%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
-    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT",
+    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 0
+  "overall_score": 15
 }
