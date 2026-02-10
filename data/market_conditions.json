@@ -1,50 +1,56 @@
 {
-  "timestamp": "2026-02-09T21:58:17.207410",
+  "timestamp": "2026-02-10T15:09:00.126406",
   "trade_allowed": true,
-  "position_size_multiplier": 0.5,
+  "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 28.39,
-      "uvxy_price": 35.49,
+      "vix_estimate": 28.24,
+      "uvxy_price": 35.3,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": -0.69,
-      "momentum_20d": -0.69,
+      "momentum_5d": 0.64,
+      "momentum_20d": -0.17,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 2.06,
-      "cyclical_avg": 0.42,
-      "defensive_avg": 2.48,
-      "strongest": "Consumer Stap (+5.30%)",
-      "weakest": "Consumer Disc (-2.62%)",
+      "rotation_strength": 2.32,
+      "cyclical_avg": -0.35,
+      "defensive_avg": 1.96,
+      "strongest": "Energy (+7.17%)",
+      "weakest": "Consumer Disc (-3.62%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT",
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 15
+  "overall_score": 5
 }
