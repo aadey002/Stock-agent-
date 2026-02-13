@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-02-12T21:51:14.831757",
+  "timestamp": "2026-02-13T14:51:46.978556",
   "trade_allowed": true,
   "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 31.57,
-      "uvxy_price": 39.46,
+      "vix_estimate": 33.04,
+      "uvxy_price": 41.3,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 2,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -27,35 +32,36 @@
         {
           "name": "Retail Sales",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
       "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
-      "sentiment": "BULLISH",
-      "sentiment_score": 71,
+      "sentiment": "NEUTRAL",
+      "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": 2.12,
-      "momentum_20d": -0.26,
+      "momentum_5d": -1.35,
+      "momentum_20d": -1.32,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 3.97,
-      "cyclical_avg": -0.76,
-      "defensive_avg": 3.2,
-      "strongest": "Energy (+9.85%)",
-      "weakest": "Consumer Disc (-3.45%)",
+      "rotation_strength": 5.06,
+      "cyclical_avg": -1.81,
+      "defensive_avg": 3.26,
+      "strongest": "Utilities (+4.65%)",
+      "weakest": "Consumer Disc (-4.02%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 15
+  "overall_score": 5
 }
