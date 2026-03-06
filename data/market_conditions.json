@@ -1,43 +1,50 @@
 {
-  "timestamp": "2026-03-05T21:52:23.531386",
+  "timestamp": "2026-03-06T14:46:26.949353",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.125,
   "conditions": {
     "volatility": {
-      "vix_estimate": 35.74,
-      "uvxy_price": 44.68,
+      "vix_estimate": 40.66,
+      "uvxy_price": 50.83,
       "level": "EXTREME",
       "status": "OK",
       "recommendation": "AVOID_TRADING"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 0,
-      "upcoming_events": [],
+      "upcoming_events": [
+        {
+          "name": "Non-Farm Payrolls",
+          "impact": "HIGH",
+          "timing": "TODAY"
+        }
+      ],
       "status": "OK",
-      "recommendation": "CLEAR"
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
-      "momentum_5d": -0.6,
-      "momentum_20d": -0.64,
+      "momentum_5d": -0.68,
+      "momentum_20d": -0.71,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 1.65,
-      "cyclical_avg": 1.08,
-      "defensive_avg": -0.57,
-      "strongest": "Energy (+1.89%)",
-      "weakest": "Consumer Stap (-2.03%)",
+      "rotation_strength": 2.02,
+      "cyclical_avg": -0.64,
+      "defensive_avg": -2.66,
+      "strongest": "Energy (+2.50%)",
+      "weakest": "Consumer Stap (-4.83%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: EXTREME VOLATILITY - Consider avoiding trades"
+    "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
+    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT"
   ],
-  "overall_score": 30
+  "overall_score": 10
 }
