@@ -1,26 +1,32 @@
 {
-  "timestamp": "2026-03-09T21:57:09.069345",
+  "timestamp": "2026-03-10T14:59:10.564058",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.125,
   "conditions": {
     "volatility": {
-      "vix_estimate": 36.8,
-      "uvxy_price": 46.0,
+      "vix_estimate": 35.02,
+      "uvxy_price": 43.77,
       "level": "EXTREME",
       "status": "OK",
       "recommendation": "AVOID_TRADING"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
@@ -32,18 +38,18 @@
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_ON",
-      "rotation_strength": 1.63,
-      "cyclical_avg": -1.72,
-      "defensive_avg": -3.35,
-      "strongest": "Technology (+0.72%)",
-      "weakest": "Consumer Stap (-4.49%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": -1.73,
+      "defensive_avg": -2.29,
+      "strongest": "Technology (+0.16%)",
+      "weakest": "Industrials (-4.45%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
-  "overall_score": 20
+  "overall_score": 0
 }
