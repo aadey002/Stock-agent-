@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-03-12T21:57:19.653053",
+  "timestamp": "2026-03-13T14:52:53.200339",
   "trade_allowed": true,
   "position_size_multiplier": 0.125,
   "conditions": {
     "volatility": {
-      "vix_estimate": 40.66,
-      "uvxy_price": 50.82,
+      "vix_estimate": 40.03,
+      "uvxy_price": 50.03,
       "level": "EXTREME",
       "status": "OK",
       "recommendation": "AVOID_TRADING"
     },
     "economic_calendar": {
-      "events_today": 2,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -27,7 +32,7 @@
         {
           "name": "Retail Sales",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -39,21 +44,22 @@
       "fear_greed": "FEAR",
       "fear_greed_score": 30,
       "momentum_5d": -0.94,
-      "momentum_20d": -3.77,
+      "momentum_20d": -3.74,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "NEUTRAL",
       "rotation_strength": 0,
-      "cyclical_avg": -4.26,
-      "defensive_avg": -4.05,
-      "strongest": "Energy (+0.82%)",
-      "weakest": "Industrials (-7.64%)",
+      "cyclical_avg": -3.17,
+      "defensive_avg": -3.13,
+      "strongest": "Energy (+1.75%)",
+      "weakest": "Industrials (-5.81%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
   "overall_score": 0
