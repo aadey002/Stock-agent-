@@ -1,21 +1,26 @@
 {
-  "timestamp": "2026-03-23T21:46:18.131057",
+  "timestamp": "2026-03-24T15:09:34.978807",
   "trade_allowed": true,
   "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 39.9,
-      "uvxy_price": 49.88,
+      "vix_estimate": 39.96,
+      "uvxy_price": 49.95,
       "level": "EXTREME",
       "status": "OK",
       "recommendation": "AVOID_TRADING"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "BEARISH",
@@ -28,16 +33,17 @@
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 3.88,
-      "cyclical_avg": -0.19,
-      "defensive_avg": -4.06,
-      "strongest": "Energy (+3.34%)",
-      "weakest": "Utilities (-4.64%)",
+      "rotation_strength": 3.36,
+      "cyclical_avg": -1.26,
+      "defensive_avg": -4.62,
+      "strongest": "Energy (+2.99%)",
+      "weakest": "Utilities (-5.25%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: EXTREME VOLATILITY - Consider avoiding trades"
+    "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT"
   ],
-  "overall_score": 20
+  "overall_score": 10
 }
