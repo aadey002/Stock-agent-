@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-02T21:49:16.699091",
+  "timestamp": "2026-04-03T14:54:12.344462",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.125,
   "conditions": {
     "volatility": {
       "vix_estimate": 40.42,
@@ -11,11 +11,17 @@
       "recommendation": "AVOID_TRADING"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 0,
-      "upcoming_events": [],
+      "upcoming_events": [
+        {
+          "name": "Non-Farm Payrolls",
+          "impact": "HIGH",
+          "timing": "TODAY"
+        }
+      ],
       "status": "OK",
-      "recommendation": "CLEAR"
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "BULLISH",
@@ -23,22 +29,23 @@
       "fear_greed": "FEAR",
       "fear_greed_score": 30,
       "momentum_5d": 3.43,
-      "momentum_20d": -3.6,
+      "momentum_20d": -4.28,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 2.3,
-      "cyclical_avg": -0.38,
-      "defensive_avg": 1.92,
-      "strongest": "Utilities (+3.48%)",
-      "weakest": "Consumer Disc (-1.79%)",
+      "rotation_strength": 1.99,
+      "cyclical_avg": -0.28,
+      "defensive_avg": 1.71,
+      "strongest": "Utilities (+2.77%)",
+      "weakest": "Energy (-2.61%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: EXTREME VOLATILITY - Consider avoiding trades",
+    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 20
+  "overall_score": 0
 }
