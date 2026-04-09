@@ -1,21 +1,26 @@
 {
-  "timestamp": "2026-04-08T22:09:26.987611",
+  "timestamp": "2026-04-09T15:43:36.333918",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 35.17,
-      "uvxy_price": 43.96,
-      "level": "EXTREME",
+      "vix_estimate": 33.86,
+      "uvxy_price": 42.33,
+      "level": "HIGH",
       "status": "OK",
-      "recommendation": "AVOID_TRADING"
+      "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "CPI Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "BULLISH",
@@ -23,7 +28,7 @@
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
       "momentum_5d": 3.17,
-      "momentum_20d": -0.33,
+      "momentum_20d": -0.17,
       "status": "OK"
     },
     "sector_rotation": {
@@ -37,7 +42,8 @@
     }
   },
   "warnings": [
-    "WARNING: EXTREME VOLATILITY - Consider avoiding trades"
+    "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
   ],
-  "overall_score": 40
+  "overall_score": 45
 }
