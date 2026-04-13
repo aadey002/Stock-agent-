@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-04-10T21:49:31.173304",
+  "timestamp": "2026-04-13T15:22:22.338080",
   "trade_allowed": true,
   "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 33.54,
-      "uvxy_price": 41.92,
+      "vix_estimate": 33.06,
+      "uvxy_price": 41.33,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 1,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -22,7 +27,12 @@
         {
           "name": "PPI Release",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
+        },
+        {
+          "name": "Retail Sales",
+          "impact": "MEDIUM",
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -31,24 +41,25 @@
     "sentiment": {
       "sentiment": "BULLISH",
       "sentiment_score": 81,
-      "fear_greed": "NEUTRAL",
-      "fear_greed_score": 50,
+      "fear_greed": "GREED",
+      "fear_greed_score": 70,
       "momentum_5d": 3.12,
-      "momentum_20d": 0.46,
+      "momentum_20d": 3.12,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 3.85,
-      "cyclical_avg": 4.95,
-      "defensive_avg": 1.1,
-      "strongest": "Technology (+7.31%)",
-      "weakest": "Energy (-7.05%)",
+      "rotation_strength": 2.76,
+      "cyclical_avg": 3.45,
+      "defensive_avg": 0.69,
+      "strongest": "Technology (+4.27%)",
+      "weakest": "Energy (-4.59%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
   "overall_score": 35
