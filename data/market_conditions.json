@@ -1,21 +1,26 @@
 {
-  "timestamp": "2026-04-23T22:03:49.703026",
+  "timestamp": "2026-04-24T15:15:37.350926",
   "trade_allowed": true,
   "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 31.18,
-      "uvxy_price": 38.97,
+      "vix_estimate": 31.1,
+      "uvxy_price": 38.87,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
@@ -23,22 +28,23 @@
       "fear_greed": "EXTREME_GREED",
       "fear_greed_score": 85,
       "momentum_5d": -0.24,
-      "momentum_20d": 8.46,
+      "momentum_20d": 7.86,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 2.67,
-      "cyclical_avg": 2.86,
-      "defensive_avg": 0.18,
-      "strongest": "Technology (+7.03%)",
-      "weakest": "Healthcare (-1.17%)",
+      "rotation_strength": 1.76,
+      "cyclical_avg": 1.73,
+      "defensive_avg": -0.03,
+      "strongest": "Technology (+5.34%)",
+      "weakest": "Healthcare (-1.74%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT",
     "WARNING: EXTREME GREED - Market may be overextended"
   ],
-  "overall_score": 45
+  "overall_score": 35
 }
