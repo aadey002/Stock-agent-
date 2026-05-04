@@ -1,27 +1,21 @@
 {
-  "timestamp": "2026-05-01T22:08:03.633645",
+  "timestamp": "2026-05-04T16:06:04.999249",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 29.62,
-      "uvxy_price": 37.02,
+      "vix_estimate": 30.18,
+      "uvxy_price": 37.73,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 1,
+      "events_today": 0,
       "events_tomorrow": 0,
-      "upcoming_events": [
-        {
-          "name": "Non-Farm Payrolls",
-          "impact": "HIGH",
-          "timing": "TODAY"
-        }
-      ],
+      "upcoming_events": [],
       "status": "OK",
-      "recommendation": "REDUCE_EXPOSURE"
+      "recommendation": "CLEAR"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
@@ -29,24 +23,22 @@
       "fear_greed": "EXTREME_GREED",
       "fear_greed_score": 85,
       "momentum_5d": 0.77,
-      "momentum_20d": 9.98,
+      "momentum_20d": 9.37,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_OFF",
-      "rotation_strength": 1.19,
-      "cyclical_avg": 1.02,
-      "defensive_avg": 2.21,
-      "strongest": "Energy (+6.77%)",
-      "weakest": "Consumer Disc (-0.52%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": 0.56,
+      "defensive_avg": 0.87,
+      "strongest": "Energy (+3.48%)",
+      "weakest": "Consumer Disc (-0.05%)",
       "status": "OK"
     }
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
-    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT",
-    "WARNING: EXTREME GREED - Market may be overextended",
-    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+    "WARNING: EXTREME GREED - Market may be overextended"
   ],
-  "overall_score": 5
+  "overall_score": 35
 }
