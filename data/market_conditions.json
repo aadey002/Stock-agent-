@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-05-12T21:52:03.422201",
+  "timestamp": "2026-05-13T16:27:21.811586",
   "trade_allowed": true,
   "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 28.59,
-      "uvxy_price": 35.74,
+      "vix_estimate": 29.11,
+      "uvxy_price": 36.39,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 2,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -27,7 +32,7 @@
         {
           "name": "Retail Sales",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -54,6 +59,7 @@
   },
   "warnings": [
     "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
     "WARNING: EXTREME GREED - Market may be overextended"
   ],
