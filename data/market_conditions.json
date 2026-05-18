@@ -1,61 +1,43 @@
 {
-  "timestamp": "2026-05-15T22:14:13.896848",
+  "timestamp": "2026-05-18T16:50:39.420484",
   "trade_allowed": true,
-  "position_size_multiplier": 0.25,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 28.61,
-      "uvxy_price": 35.76,
+      "vix_estimate": 28.1,
+      "uvxy_price": 35.12,
       "level": "HIGH",
       "status": "OK",
       "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 3,
+      "events_today": 0,
       "events_tomorrow": 0,
-      "upcoming_events": [
-        {
-          "name": "FOMC Meeting",
-          "impact": "EXTREME",
-          "timing": "TODAY"
-        },
-        {
-          "name": "PPI Release",
-          "impact": "MEDIUM",
-          "timing": "TODAY"
-        },
-        {
-          "name": "Retail Sales",
-          "impact": "MEDIUM",
-          "timing": "TODAY"
-        }
-      ],
+      "upcoming_events": [],
       "status": "OK",
-      "recommendation": "REDUCE_EXPOSURE"
+      "recommendation": "CLEAR"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
-      "fear_greed": "EXTREME_GREED",
-      "fear_greed_score": 85,
+      "fear_greed": "GREED",
+      "fear_greed_score": 70,
       "momentum_5d": -0.02,
-      "momentum_20d": 5.6,
+      "momentum_20d": 4.3,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_ON",
-      "rotation_strength": 2.51,
-      "cyclical_avg": 0.9,
-      "defensive_avg": -1.61,
-      "strongest": "Technology (+6.42%)",
-      "weakest": "Utilities (-5.39%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": -0.98,
+      "defensive_avg": -0.08,
+      "strongest": "Energy (+6.71%)",
+      "weakest": "Consumer Disc (-3.05%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: HIGH VOLATILITY - Reduce position size",
-    "CALENDAR: FOMC Meeting - TODAY - EXTREME IMPACT",
-    "WARNING: EXTREME GREED - Market may be overextended"
+    "WARNING: HIGH VOLATILITY - Reduce position size"
   ],
-  "overall_score": 25
+  "overall_score": 35
 }
