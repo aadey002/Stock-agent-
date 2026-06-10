@@ -1,26 +1,32 @@
 {
-  "timestamp": "2026-06-09T22:53:57.583365",
+  "timestamp": "2026-06-10T17:27:09.472135",
   "trade_allowed": true,
-  "position_size_multiplier": 1.0,
+  "position_size_multiplier": 0.25,
   "conditions": {
     "volatility": {
-      "vix_estimate": 24.43,
-      "uvxy_price": 30.54,
-      "level": "MODERATE",
+      "vix_estimate": 25.99,
+      "uvxy_price": 32.48,
+      "level": "HIGH",
       "status": "OK",
-      "recommendation": "NORMAL"
+      "recommendation": "REDUCE_SIZE"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "BEARISH",
@@ -42,8 +48,9 @@
     }
   },
   "warnings": [
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT",
+    "WARNING: HIGH VOLATILITY - Reduce position size",
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 25
+  "overall_score": 0
 }
