@@ -1,21 +1,26 @@
 {
-  "timestamp": "2026-06-23T22:06:16.714701",
+  "timestamp": "2026-06-24T16:27:40.852362",
   "trade_allowed": true,
   "position_size_multiplier": 1.0,
   "conditions": {
     "volatility": {
-      "vix_estimate": 22.4,
-      "uvxy_price": 28.0,
+      "vix_estimate": 21.67,
+      "uvxy_price": 27.09,
       "level": "MODERATE",
       "status": "OK",
       "recommendation": "NORMAL"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "BEARISH",
@@ -37,7 +42,8 @@
     }
   },
   "warnings": [
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 35
+  "overall_score": 25
 }
