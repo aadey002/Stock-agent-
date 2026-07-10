@@ -1,48 +1,55 @@
 {
-  "timestamp": "2026-07-09T22:04:28.256230",
+  "timestamp": "2026-07-10T16:28:57.536325",
   "trade_allowed": true,
-  "position_size_multiplier": 1.0,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 19.23,
-      "uvxy_price": 24.04,
+      "vix_estimate": 18.66,
+      "uvxy_price": 23.33,
       "level": "MODERATE",
       "status": "OK",
       "recommendation": "NORMAL"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
-      "fear_greed": "NEUTRAL",
-      "fear_greed_score": 50,
+      "fear_greed": "GREED",
+      "fear_greed_score": 70,
       "momentum_5d": 0.93,
-      "momentum_20d": 1.99,
+      "momentum_20d": 3.62,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_ON",
-      "rotation_strength": 1.37,
-      "cyclical_avg": 0.56,
-      "defensive_avg": -0.81,
-      "strongest": "Financials (+3.39%)",
-      "weakest": "Utilities (-1.93%)",
+      "rotation": "RISK_OFF",
+      "rotation_strength": 1.06,
+      "cyclical_avg": -0.43,
+      "defensive_avg": 0.64,
+      "strongest": "Financials (+3.60%)",
+      "weakest": "Technology (-2.71%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
+    "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 55
+  "overall_score": 25
 }
