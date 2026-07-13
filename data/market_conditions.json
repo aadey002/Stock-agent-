@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-07-10T22:28:23.444322",
+  "timestamp": "2026-07-13T16:39:32.011272",
   "trade_allowed": true,
   "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 18.54,
-      "uvxy_price": 23.18,
+      "vix_estimate": 19.12,
+      "uvxy_price": 23.89,
       "level": "MODERATE",
       "status": "OK",
       "recommendation": "NORMAL"
     },
     "economic_calendar": {
-      "events_today": 1,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -22,7 +27,12 @@
         {
           "name": "PPI Release",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
+        },
+        {
+          "name": "Retail Sales",
+          "impact": "MEDIUM",
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -31,25 +41,25 @@
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
-      "fear_greed": "GREED",
-      "fear_greed_score": 70,
+      "fear_greed": "NEUTRAL",
+      "fear_greed_score": 50,
       "momentum_5d": 0.49,
-      "momentum_20d": 4.07,
+      "momentum_20d": 0.49,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_OFF",
-      "rotation_strength": 1.02,
-      "cyclical_avg": -0.1,
-      "defensive_avg": 0.93,
-      "strongest": "Financials (+3.92%)",
-      "weakest": "Technology (-2.49%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": -0.55,
+      "defensive_avg": -0.14,
+      "strongest": "Energy (+3.67%)",
+      "weakest": "Industrials (-1.96%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
-    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT"
   ],
-  "overall_score": 25
+  "overall_score": 35
 }
