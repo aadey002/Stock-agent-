@@ -1,26 +1,21 @@
 {
-  "timestamp": "2026-07-17T22:25:16.162500",
+  "timestamp": "2026-07-20T15:56:46.727559",
   "trade_allowed": true,
   "position_size_multiplier": 1.0,
   "conditions": {
     "volatility": {
-      "vix_estimate": 20.35,
-      "uvxy_price": 25.44,
+      "vix_estimate": 19.11,
+      "uvxy_price": 23.89,
       "level": "MODERATE",
       "status": "OK",
       "recommendation": "NORMAL"
     },
     "economic_calendar": {
-      "events_today": 1,
+      "events_today": 0,
       "events_tomorrow": 0,
-      "upcoming_events": [
-        {
-          "name": "Retail Sales",
-          "impact": "MEDIUM",
-          "timing": "TODAY"
-        }
-      ],
-      "status": "OK"
+      "upcoming_events": [],
+      "status": "OK",
+      "recommendation": "CLEAR"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
@@ -28,19 +23,21 @@
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
       "momentum_5d": -0.78,
-      "momentum_20d": 0.31,
+      "momentum_20d": -0.78,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "NEUTRAL",
-      "rotation_strength": 0,
-      "cyclical_avg": -1.23,
-      "defensive_avg": -0.94,
-      "strongest": "Energy (+5.56%)",
-      "weakest": "Healthcare (-2.04%)",
+      "rotation": "RISK_OFF",
+      "rotation_strength": 2.15,
+      "cyclical_avg": -1.85,
+      "defensive_avg": 0.3,
+      "strongest": "Energy (+4.72%)",
+      "weakest": "Technology (-5.48%)",
       "status": "OK"
     }
   },
-  "warnings": [],
-  "overall_score": 35
+  "warnings": [
+    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+  ],
+  "overall_score": 45
 }
