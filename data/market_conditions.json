@@ -1,41 +1,49 @@
 {
-  "timestamp": "2026-08-05T22:36:21.410516",
+  "timestamp": "2026-08-07T00:17:37.532872",
   "trade_allowed": true,
-  "position_size_multiplier": 1.0,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 17.65,
-      "uvxy_price": 22.06,
+      "vix_estimate": 17.25,
+      "uvxy_price": 21.56,
       "level": "LOW",
       "status": "OK",
       "recommendation": "LOW_VOL"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 1,
       "events_tomorrow": 0,
-      "upcoming_events": [],
+      "upcoming_events": [
+        {
+          "name": "Non-Farm Payrolls",
+          "impact": "HIGH",
+          "timing": "TODAY"
+        }
+      ],
       "status": "OK",
-      "recommendation": "CLEAR"
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "BULLISH",
-      "sentiment_score": 88,
+      "sentiment_score": 79,
       "fear_greed": "GREED",
       "fear_greed_score": 70,
-      "momentum_5d": 3.79,
-      "momentum_20d": 2.46,
+      "momentum_5d": 2.88,
+      "momentum_20d": 3.11,
       "status": "OK"
     },
     "sector_rotation": {
       "rotation": "RISK_ON",
-      "rotation_strength": 5.68,
-      "cyclical_avg": 4.35,
-      "defensive_avg": -1.33,
-      "strongest": "Consumer Disc (+7.04%)",
-      "weakest": "Utilities (-4.42%)",
+      "rotation_strength": 6.6,
+      "cyclical_avg": 3.73,
+      "defensive_avg": -2.87,
+      "strongest": "Technology (+8.32%)",
+      "weakest": "Utilities (-4.70%)",
       "status": "OK"
     }
   },
-  "warnings": [],
-  "overall_score": 85
+  "warnings": [
+    "CALENDAR: Non-Farm Payrolls - TODAY - HIGH IMPACT"
+  ],
+  "overall_score": 65
 }
