@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-23T21:42:53.097738",
+  "timestamp": "2026-09-24T00:00:48.931905",
   "trade_allowed": true,
   "position_size_multiplier": 1.0,
   "conditions": {
@@ -12,10 +12,15 @@
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
@@ -23,7 +28,7 @@
       "fear_greed": "NEUTRAL",
       "fear_greed_score": 50,
       "momentum_5d": 0.68,
-      "momentum_20d": 0.57,
+      "momentum_20d": 0.25,
       "status": "OK"
     },
     "sector_rotation": {
@@ -36,6 +41,8 @@
       "status": "OK"
     }
   },
-  "warnings": [],
-  "overall_score": 75
+  "warnings": [
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT"
+  ],
+  "overall_score": 65
 }
