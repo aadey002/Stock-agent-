@@ -1,48 +1,60 @@
 {
-  "timestamp": "2026-10-09T23:26:34.989458",
+  "timestamp": "2026-10-12T22:03:21.308265",
   "trade_allowed": true,
-  "position_size_multiplier": 1.0,
+  "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 13.06,
-      "uvxy_price": 16.32,
+      "vix_estimate": 12.78,
+      "uvxy_price": 15.98,
       "level": "LOW",
       "status": "OK",
       "recommendation": "LOW_VOL"
     },
     "economic_calendar": {
-      "events_today": 0,
+      "events_today": 2,
       "events_tomorrow": 1,
       "upcoming_events": [
         {
           "name": "CPI Release",
           "impact": "HIGH",
+          "timing": "TODAY"
+        },
+        {
+          "name": "PPI Release",
+          "impact": "MEDIUM",
+          "timing": "TODAY"
+        },
+        {
+          "name": "Retail Sales",
+          "impact": "MEDIUM",
           "timing": "TOMORROW"
         }
       ],
-      "status": "OK"
+      "status": "OK",
+      "recommendation": "REDUCE_EXPOSURE"
     },
     "sentiment": {
       "sentiment": "NEUTRAL",
       "sentiment_score": 50,
       "fear_greed": "GREED",
       "fear_greed_score": 70,
-      "momentum_5d": 0.48,
-      "momentum_20d": 2.12,
+      "momentum_5d": -0.13,
+      "momentum_20d": 2.26,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "NEUTRAL",
-      "rotation_strength": 0,
-      "cyclical_avg": 1.75,
-      "defensive_avg": 2.09,
-      "strongest": "Energy (+5.75%)",
-      "weakest": "Healthcare (+0.05%)",
+      "rotation": "RISK_OFF",
+      "rotation_strength": 3.59,
+      "cyclical_avg": 0.69,
+      "defensive_avg": 4.28,
+      "strongest": "Energy (+5.08%)",
+      "weakest": "Technology (-1.73%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
+    "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
+    "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
-  "overall_score": 55
+  "overall_score": 35
 }
