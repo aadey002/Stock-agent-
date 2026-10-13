@@ -1,19 +1,24 @@
 {
-  "timestamp": "2026-10-12T22:03:21.308265",
+  "timestamp": "2026-10-13T20:10:12.190551",
   "trade_allowed": true,
   "position_size_multiplier": 0.5,
   "conditions": {
     "volatility": {
-      "vix_estimate": 12.78,
-      "uvxy_price": 15.98,
+      "vix_estimate": 12.73,
+      "uvxy_price": 15.91,
       "level": "LOW",
       "status": "OK",
       "recommendation": "LOW_VOL"
     },
     "economic_calendar": {
-      "events_today": 2,
+      "events_today": 3,
       "events_tomorrow": 1,
       "upcoming_events": [
+        {
+          "name": "FOMC Meeting",
+          "impact": "EXTREME",
+          "timing": "TOMORROW"
+        },
         {
           "name": "CPI Release",
           "impact": "HIGH",
@@ -27,7 +32,7 @@
         {
           "name": "Retail Sales",
           "impact": "MEDIUM",
-          "timing": "TOMORROW"
+          "timing": "TODAY"
         }
       ],
       "status": "OK",
@@ -44,15 +49,16 @@
     },
     "sector_rotation": {
       "rotation": "RISK_OFF",
-      "rotation_strength": 3.59,
-      "cyclical_avg": 0.69,
-      "defensive_avg": 4.28,
-      "strongest": "Energy (+5.08%)",
-      "weakest": "Technology (-1.73%)",
+      "rotation_strength": 3.44,
+      "cyclical_avg": 0.25,
+      "defensive_avg": 3.69,
+      "strongest": "Consumer Stap (+4.16%)",
+      "weakest": "Technology (-2.27%)",
       "status": "OK"
     }
   },
   "warnings": [
+    "CALENDAR: FOMC Meeting - TOMORROW - EXTREME IMPACT",
     "CALENDAR: CPI Release - TODAY - HIGH IMPACT",
     "ROTATION: RISK-OFF detected - Defensive sectors leading"
   ],
