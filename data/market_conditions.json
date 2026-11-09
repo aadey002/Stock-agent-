@@ -1,43 +1,48 @@
 {
-  "timestamp": "2026-11-07T00:15:27.874526",
+  "timestamp": "2026-11-09T23:21:47.434282",
   "trade_allowed": true,
   "position_size_multiplier": 1.0,
   "conditions": {
     "volatility": {
-      "vix_estimate": 18.46,
-      "uvxy_price": 23.08,
-      "level": "MODERATE",
+      "vix_estimate": 14.73,
+      "uvxy_price": 18.41,
+      "level": "LOW",
       "status": "OK",
-      "recommendation": "NORMAL"
+      "recommendation": "LOW_VOL"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "CPI Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
-      "sentiment": "BEARISH",
-      "sentiment_score": 28,
+      "sentiment": "NEUTRAL",
+      "sentiment_score": 50,
       "fear_greed": "FEAR",
       "fear_greed_score": 30,
-      "momentum_5d": -2.24,
-      "momentum_20d": -4.99,
+      "momentum_5d": -0.22,
+      "momentum_20d": -3.27,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_OFF",
-      "rotation_strength": 6.04,
-      "cyclical_avg": -3.35,
-      "defensive_avg": 2.69,
-      "strongest": "Consumer Stap (+3.73%)",
-      "weakest": "Technology (-13.75%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": 0.9,
+      "defensive_avg": 1.45,
+      "strongest": "Consumer Disc (+4.88%)",
+      "weakest": "Energy (-11.54%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+    "CALENDAR: CPI Release - TOMORROW - HIGH IMPACT"
   ],
-  "overall_score": 35
+  "overall_score": 55
 }
