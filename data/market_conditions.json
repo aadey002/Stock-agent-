@@ -1,44 +1,49 @@
 {
-  "timestamp": "2026-11-21T02:53:05.679173",
+  "timestamp": "2026-11-24T01:35:47.005873",
   "trade_allowed": true,
   "position_size_multiplier": 1.0,
   "conditions": {
     "volatility": {
-      "vix_estimate": 24.9,
-      "uvxy_price": 31.13,
+      "vix_estimate": 19.74,
+      "uvxy_price": 24.67,
       "level": "MODERATE",
       "status": "OK",
       "recommendation": "NORMAL"
     },
     "economic_calendar": {
       "events_today": 0,
-      "events_tomorrow": 0,
-      "upcoming_events": [],
-      "status": "OK",
-      "recommendation": "CLEAR"
+      "events_tomorrow": 1,
+      "upcoming_events": [
+        {
+          "name": "GDP Release",
+          "impact": "HIGH",
+          "timing": "TOMORROW"
+        }
+      ],
+      "status": "OK"
     },
     "sentiment": {
-      "sentiment": "BEARISH",
-      "sentiment_score": 0,
+      "sentiment": "NEUTRAL",
+      "sentiment_score": 50,
       "fear_greed": "EXTREME_FEAR",
       "fear_greed_score": 15,
-      "momentum_5d": -6.78,
-      "momentum_20d": -9.71,
+      "momentum_5d": -1.39,
+      "momentum_20d": -5.63,
       "status": "OK"
     },
     "sector_rotation": {
-      "rotation": "RISK_OFF",
-      "rotation_strength": 5.98,
-      "cyclical_avg": -9.26,
-      "defensive_avg": -3.29,
-      "strongest": "Consumer Stap (-1.08%)",
-      "weakest": "Technology (-14.54%)",
+      "rotation": "NEUTRAL",
+      "rotation_strength": 0,
+      "cyclical_avg": -2.19,
+      "defensive_avg": -2.9,
+      "strongest": "Consumer Disc (-1.03%)",
+      "weakest": "Energy (-6.00%)",
       "status": "OK"
     }
   },
   "warnings": [
-    "WARNING: EXTREME FEAR - Potential bounce opportunity",
-    "ROTATION: RISK-OFF detected - Defensive sectors leading"
+    "CALENDAR: GDP Release - TOMORROW - HIGH IMPACT",
+    "WARNING: EXTREME FEAR - Potential bounce opportunity"
   ],
-  "overall_score": 35
+  "overall_score": 45
 }
